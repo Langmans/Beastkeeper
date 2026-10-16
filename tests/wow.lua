@@ -632,13 +632,13 @@ function NewClient(opts)
         return toast and toast.shown and toast.Title.text or nil
     end
 
-    ---Runs the toast's OnUpdate for `seconds`, in frames of `step`. Like the client, a hidden frame
-    ---gets no more updates.
+    ---Runs the toast clock's OnUpdate for `seconds`, in frames of `step`. Like the client, a
+    ---hidden frame gets no more updates.
     function client:animate(seconds, step)
         step = step or 0.05
-        local toast, elapsed = self:toast(), 0
-        while toast and elapsed < seconds - 1e-9 and toast.shown and toast.scripts.OnUpdate do
-            toast.scripts.OnUpdate(toast, step)
+        local driver, elapsed = self.Kennel:ToastDriver(), 0
+        while driver and elapsed < seconds - 1e-9 and driver.shown do
+            driver.scripts.OnUpdate(driver, step)
             elapsed = elapsed + step
         end
         return self

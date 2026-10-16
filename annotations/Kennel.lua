@@ -18,6 +18,7 @@
 ---@field db AceDBObject-3.0? set by the core before the module's OnInitialize, when it has defaults
 ---@field command string? the word after /kennel that reaches its commands
 ---@field commands table<string, KennelCommand>? by the word after `command`, lowercase
+---@field toastTypes table<string, string>? the kinds of toast it shows, by kind with a localized name; each can have a look of its own
 ---@field GetOptions (fun(self: KennelModule): table)? an AceConfig group (args, and name if not title); the core adds type and disabled
 
 ---A module that offers macros (Kennel:OfferMacros, Kennel:CreateMacros).
@@ -38,6 +39,8 @@
 ---What Kennel:ShowToast shows.
 ---@class KennelToastInfo
 ---@field key string one toast per key; "<module>:<what>", so the module can drop its own
+---@field type string? "<module>:<kind>", one of the module's toastTypes: picks the skin
+---@field source string? who it comes from, such as the module's title (the splash shows it)
 ---@field title string
 ---@field text string?
 ---@field hint string? shown in grey below the text
@@ -50,15 +53,48 @@
 ---@field duration number seconds it stays before it fades
 ---@field scale number
 ---@field pos [string, string, number, number]? point, relativePoint, x, y, once dragged
+---@field skin string the skin id for every toast
+---@field skins table<string, string> a skin id per kind of toast ("<module>:<kind>"), where chosen
 
----The toast frame, with its parts as fields like a template's parentKeys.
----@class KennelToastFrame: Frame
+---What draws a toast (Core\Toast.lua). Kennel brings "card" and "splash"; another addon adds its
+---own with Kennel:RegisterToastSkin(id, skin), to draw in its own style or to hand the toast to
+---something else. The engine keeps the queue and the clock and calls, for one toast: Show once,
+---Update every frame until the fade is done, then Hide. Kennel:NewToastFrame gives a frame that
+---drags and closes like the others, Kennel:PlaceToast puts it where the player dragged it.
+---@class KennelToastSkin
+---@field name string shown in the look choice; localized
+---@field Show fun(self: KennelToastSkin, info: KennelToastInfo, settings: KennelToastSettings) fill it in and show it; Update follows at once
+---@field Update fun(self: KennelToastSkin, intro: number, fade: number, left: number) each 0 to 1: how far the intro is, how far the fade is (1 = gone), how much of its stay is left
+---@field Hide fun(self: KennelToastSkin)
+---@field IsMouseOver fun(self: KennelToastSkin): boolean while true, its stay does not count down
+---@field Frame (fun(self: KennelToastSkin): Frame?)? its frame, when it has one
+
+---The card skin's frame, with its parts as fields like a template's parentKeys.
+---@class KennelCardFrame: Frame
 ---@field Accent Texture the coloured side bar
 ---@field Icon Texture
 ---@field Title FontString
 ---@field Text FontString
 ---@field Hint FontString
 ---@field Timer Texture the bar along the bottom that runs down
+
+---@class KennelCardSkin: KennelToastSkin
+---@field frame KennelCardFrame? made on its first toast
+
+---The splash skin's frame.
+---@class KennelSplashFrame: Frame
+---@field Source FontString the module's name at the top
+---@field Divider Texture the line under it
+---@field Diamond Texture the accent square turned 45 degrees
+---@field Inner Texture the dark square inside it
+---@field Icon Texture
+---@field Title FontString
+---@field Text FontString
+---@field Hint FontString
+---@field Timer Texture
+
+---@class KennelSplashSkin: KennelToastSkin
+---@field frame KennelSplashFrame?
 
 ---The mode in force: solo or dungeon as AutocastCheck picks it, kite or tank as the player chose.
 ---@alias KennelAutocastMode "solo"|"dungeon"|"kite"|"tank"

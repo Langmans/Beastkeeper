@@ -4,6 +4,8 @@
     <Script file="Sounds.lua"/>
     <Script file="Pet.lua"/>
     <Script file="Toast.lua"/>
+    <Script file="Skins\Card.lua"/>
+    <Script file="Skins\Splash.lua"/>
     <Script file="Macro.lua"/>
     <Script file="Options.lua"/>
     <Script file="Commands.lua"/>

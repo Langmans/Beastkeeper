@@ -51,11 +51,72 @@ function Kennel:GetProfileOptions()
     }
 end
 
+-- What the per-kind skin choices store for "the same as every toast": no entry at all.
+local SAME = "same"
+
+---The skin choices: a select for every toast, and one per kind of toast the modules show, from
+---order 10 on.
+---@param settings KennelToastSettings
+---@param args table<string, table> the toast box's options, added to
+function Kennel:AddSkinOptions(settings, args)
+    ---@type table<string, string>
+    local names = {}
+    for id, skin in pairs(self:ToastSkins()) do
+        names[id] = skin.name
+    end
+    args.skin = {
+        type = "select",
+        name = L.TOAST_SKIN,
+        desc = L.TOAST_SKIN_DESC,
+        order = 0.5,
+        values = names,
+        get = function()
+            return self:ToastSkinFor(nil)
+        end,
+        ---@param _ table AceConfig's info about the option
+        ---@param value string
+        set = function(_, value)
+            settings.skin = value
+        end,
+    }
+
+    ---@type table<string, string>
+    local perKind = { [SAME] = L.TOAST_SKIN_SAME }
+    for id, name in pairs(names) do
+        perKind[id] = name
+    end
+    local order = 10
+    local kinds = self:ToastTypes()
+    ---@type string[]
+    local sorted = {}
+    for kind in pairs(kinds) do
+        sorted[#sorted + 1] = kind
+    end
+    table.sort(sorted)
+    for _, kind in ipairs(sorted) do
+        args["skin:" .. kind] = {
+            type = "select",
+            name = kinds[kind],
+            order = order,
+            values = perKind,
+            get = function()
+                return settings.skins[kind] or SAME
+            end,
+            ---@param _ table AceConfig's info about the option
+            ---@param value string
+            set = function(_, value)
+                settings.skins[kind] = value ~= SAME and value or nil
+            end,
+        }
+        order = order + 1
+    end
+end
+
 ---The toast's settings, shared by every module, as a box on Kennel's page below the switches.
 ---@return AceConfig.OptionsTable
 function Kennel:GetToastOptions()
     local settings = self.db.profile.toast --[[@as KennelToastSettings]]
-    return {
+    local options = {
         type = "group",
         inline = true,
         name = L.TOAST,
@@ -110,6 +171,7 @@ function Kennel:GetToastOptions()
                 func = function()
                     self:ShowToast({
                         key = "Kennel:test",
+                        source = addonName,
                         title = L.TOAST_TEST_TITLE,
                         text = L.TOAST_TEST_TEXT,
                         -- The icon of Kennel's entry in the addon list.
@@ -119,6 +181,8 @@ function Kennel:GetToastOptions()
             },
         },
     }
+    self:AddSkinOptions(settings, options.args)
+    return options
 end
 
 ---@return AceConfig.OptionsTable

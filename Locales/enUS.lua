@@ -33,6 +33,14 @@ L.TOAST_DURATION = "Stays for (seconds)"
 L.TOAST_SCALE = "Size"
 -- Button: puts the toast back in its standard spot.
 L.TOAST_RESET = "Reset position"
+-- Select: the look of every toast. Its choices are skin names, such as "Card" and "Splash".
+L.TOAST_SKIN = "Look"
+L.TOAST_SKIN_DESC = "How toasts look. Below it, each kind of toast can have a look of its own."
+-- The looks Kennel brings: a small card near the top, or a large splash in the middle.
+L.TOAST_SKIN_CARD = "Card: small, near the top"
+L.TOAST_SKIN_SPLASH = "Splash: large, in the middle"
+-- Choice in the select of one kind of toast: use the look chosen for every toast.
+L.TOAST_SKIN_SAME = "Same as all toasts"
 -- Button: shows an example toast.
 L.TOAST_TEST = "Show an example"
 -- The example toast: its title and text.

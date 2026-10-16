@@ -33,6 +33,8 @@ local M = Kennel:NewModule("AutocastCheck")
 M.title = L.AUTOCAST_TITLE
 M.description = L.AUTOCAST_DESC
 M.command = "autocast"
+-- Its one kind of toast, which can have a look of its own (Kennel's page).
+M.toastTypes = { problem = L.AUTOCAST_TOASTTYPE_PROBLEM }
 M.defaults = {
     profile = {
         mode = "auto",
@@ -186,6 +188,8 @@ function M:ProblemToast(key, mode, name, icon)
     name = name or spellName
     return {
         key = self.moduleName .. ":" .. key,
+        type = self.moduleName .. ":problem",
+        source = self.title,
         title = problem.title:format(name),
         icon = icon or spellIcon,
         text = REASONS[mode],

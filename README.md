@@ -16,9 +16,11 @@ modules move in one at a time.
   profile until you pick another. The module switches are part of the
   profile, so a profile can, for instance, turn a module off on one character
   only.
-- **The toast**: modules tell you things with a small card near the top of the
-  screen. Drag it to move it, right-click to close it, hover over it to keep it
-  up. How long it stays and how big it is are on Kennel's page.
+- **The toast**: modules tell you things with a toast. Drag it to move it,
+  right-click to close it, hover over it to keep it up. On Kennel's page you
+  choose how long it stays, how big it is, and its look: a small **card** near
+  the top, or a large **splash** in the middle. Every kind of toast (such as
+  Autocast Check's) can have a look of its own; other addons can add looks.
 
 ### Autocast Check
 
@@ -69,7 +71,8 @@ Core\Core.xml     the core, in this order:
   Addon.lua       the AceAddon object, KennelDB, the module switches
   Sounds.lua      pet sounds per family (Kennel.sounds.*_PER_FAMILY)
   Pet.lua         spell names and icons, the pet's family and its sound
-  Toast.lua       the toast every module shows
+  Toast.lua       the toast engine: queue, clock, sound, skin choice
+  Skins\          the card and the splash skin
   Macro.lua       macros a module makes for the player
   Options.lua     the AceConfig options and the pages in the settings window
   Commands.lua    /kennel
@@ -140,12 +143,52 @@ end
 
 ### What the core offers modules
 
-- **Toast** (`Core\Toast.lua`): `Kennel:ShowToast(info)` with a key, title,
-  text, hint, icon, accent colour and sound (`KennelToastInfo`). One toast per
-  key is up or waiting; toasts for different keys show one after the other.
-  Keys are `"<Module>:<what>"`: `Kennel:DropToast(key)` takes one away when it
-  is solved, `Kennel:DropToasts("<Module>:")` all of a module's when it is
-  switched off. Its duration, size and position are core settings.
+- **Toast** (`Core\Toast.lua`): `Kennel:ShowToast(info)` with a key, kind,
+  source, title, text, hint, icon, accent colour and sound
+  (`KennelToastInfo`). One toast per key is up or waiting; toasts for
+  different keys show one after the other. Keys are `"<Module>:<what>"`:
+  `Kennel:DropToast(key)` takes one away when it is solved,
+  `Kennel:DropToasts("<Module>:")` all of a module's when it is switched off.
+  A module lists its kinds of toast in `toastTypes` (`{ problem = L.X }`) and
+  sets `type = "<Module>:problem"` on each toast, so the player can give that
+  kind a look of its own. Duration, size, position and looks are core
+  settings.
+
+### Toast skins
+
+The toast is an engine and a skin. The engine (`Core\Toast.lua`) keeps the
+queue, the clock (intro, stay, fade; the stay stands still while the mouse is
+over the toast), the sound and the settings. A skin draws: Kennel brings
+`card` and `splash` (`Core\Skins\`), and another addon can register its own,
+either to draw in its own style (an ElvUI look, say) or as an adapter that
+hands the toast to something else.
+
+A skin is a table with a localized `name` and four methods
+(`KennelToastSkin` in `annotations\Kennel.lua`). The engine calls `Show` once,
+`Update` every frame until the fade is done, then `Hide`:
+
+```lua
+local Kennel = LibStub("AceAddon-3.0"):GetAddon("Kennel", true)
+if Kennel then
+    local skin = { name = "My look" }
+    function skin:Show(info, settings)
+        -- info: key, type, source, title, text, hint, icon, accent; settings: scale, pos, ...
+        self.frame = self.frame or Kennel:NewToastFrame("MyAddonToast") -- drags and closes like Kennel's
+        -- fill in self.frame from info
+        Kennel:PlaceToast(self.frame, "TOP", 0, -150) -- or where the player dragged the toast
+        self.frame:Show()
+    end
+    function skin:Update(intro, fade, left) -- each 0 to 1
+        self.frame:SetAlpha(intro * (1 - fade))
+    end
+    function skin:Hide() self.frame:Hide() end
+    function skin:IsMouseOver() return self.frame:IsMouseOver() end
+    Kennel:RegisterToastSkin("mylook", skin)
+end
+```
+
+The player then picks "My look" on Kennel's page. A saved choice whose skin
+is gone (its addon disabled) falls back to the card.
 - **Macros** (`Core\Macro.lua`): a module with a `Macros()` method returning
   `{ name, icon, body }` entries calls `Kennel:OfferMacros(self)` from
   `OnEnable`. They are made once per character (per character, or

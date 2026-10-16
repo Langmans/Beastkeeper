@@ -11,6 +11,9 @@ L.AUTOCAST_TITLE = "Autocast Check"
 -- Settings window: the tooltip of the module's switch.
 L.AUTOCAST_DESC = "A toast when your pet's Growl or Cower autocast does not fit what you are doing: solo, in a dungeon group, kiting or tanking."
 
+-- Settings window, Kennel's page: the kind of toast this module shows, for choosing its look.
+-- Shown after "Autocast Check: ".
+L.AUTOCAST_TOASTTYPE_PROBLEM = "autocast does not fit"
 -- Toast title when an ability is on autocast but should not be. %s: the ability's name.
 L.AUTOCAST_TOAST_ON = "%s is on autocast"
 -- Toast title when an ability is not on autocast but should be. %s: the ability's name.

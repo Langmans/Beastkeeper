@@ -1,40 +1,47 @@
 local _, ns = ...
 
--- The toast every module shows: a card near the top of the screen. A dark panel with a 1-pixel
--- edge and a coloured bar down its left side, a square icon, and to its right a title in that
--- colour, a line of text and a grey hint. A thin bar along the bottom runs down while the toast
--- stays, and stands still while the mouse is over it. It slides in from a little higher and fades
--- out at the end. Drag it to move it (the spot is saved in the profile), right-click to close it.
+-- The toast every module shows, split in two:
+--   - the engine, here: which toast is up and which wait, how long one stays, its sound, and the
+--     clock that runs its intro, its stay and its fade;
+--   - a skin, which draws it: Core\Skins\ has the card and the splash, and any other addon can add
+--     one with Kennel:RegisterToastSkin, to draw in its own style or to hand the toast to another
+--     addon altogether. What a skin does is described by KennelToastSkin in annotations\Kennel.lua.
+--
+-- Which skin draws a toast is a setting: one for every toast, and per kind of toast (the kinds a
+-- module lists in its toastTypes) "the same as every toast" or a skin of its own. A skin that is
+-- not registered (an addon that provided it is gone) falls back to the card.
 --
 -- Each toast has a key, such as "AutocastCheck:growlOn". One key has at most one toast up or
 -- waiting; toasts for different keys show one after the other. A module takes its toast away with
 -- DropToast when what it was about is solved, and drops all of its own when it is switched off.
 --
--- The frame is made on the first toast, so a session without one creates nothing.
+-- The clock: a toast's intro and fade count from when it showed; its stay counts only while the
+-- mouse is not over it, so hovering keeps it up to be read. A small frame of its own drives the
+-- clock (OnUpdate runs only while a frame is shown), made on the first toast.
 
 ---@type Kennel
 local Kennel = ns
 
-local WIDTH = 340
-local ICON_SIZE = 40
-local PAD = 12
-local ACCENT_WIDTH = 4
-local EDGE = { 0.28, 0.3, 0.33, 1 }
-local PANEL = { 0.06, 0.07, 0.08, 0.94 }
-local HINT_COLOR = { 0.62, 0.64, 0.67 }
--- The colour of a toast that brings none: a warm amber.
+-- Seconds.
+local INTRO, FADE_OUT = 0.2, 0.35
+
+-- The skin a toast falls back to.
+local DEFAULT_SKIN = "card"
+
+-- What a skin draws when the toast brings none: a warm amber accent, a question mark icon.
 Kennel.TOAST_ACCENT = { 1, 0.62, 0.18 }
-local FALLBACK_ICON = 134400 -- INV_Misc_QuestionMark
+Kennel.TOAST_ICON = 134400 -- INV_Misc_QuestionMark
 
--- Timings, in seconds, and how far it slides.
-local SLIDE_IN, SLIDE_DISTANCE = 0.2, 12
-local FADE_OUT = 0.35
-
----@type KennelToastFrame?
-local frame
----The toast up now; nil when none is.
----@type KennelToastInfo?
-local current
+---@type table<string, KennelToastSkin>
+local skins = {}
+---The skin that drew the last toast; for tests and for ToastFrame.
+---@type KennelToastSkin?
+local lastSkin
+---@type Frame?
+local driver
+---The toast up now, and the skin drawing it; nil when none is.
+---@type KennelToastInfo?, KennelToastSkin?
+local current, currentSkin
 ---Toasts waiting while another is up; each shows when the one before it is gone.
 ---@type KennelToastInfo[]
 local queue = {}
@@ -43,33 +50,50 @@ local queue = {}
 ---@type number, number, number, number?
 local clock, shownFor, stay, fadeStart = 0, 0, 0, nil
 
--- The functions that call each other in a circle (Display starts Animate, which ends in
+-- The functions that call each other in a circle (Display starts the clock, which ends in
 -- ShowNext, which calls Display) are fields here rather than locals declared ahead.
-local Toast = {}
+local Engine = {}
 
 ---@return KennelToastSettings
 local function Settings()
     return Kennel.db.profile.toast --[[@as KennelToastSettings]]
 end
 
----Puts the toast where it was dragged to, or in its standard spot near the top; `drop` lifts it
----that many pixels, for the slide in.
----@param drop number
-local function Position(drop)
-    local toast = frame --[[@as KennelToastFrame]]
-    toast:ClearAllPoints()
-    local pos = Settings().pos
-    if pos then
-        toast:SetPoint(pos[1], UIParent, pos[2], pos[3], pos[4] + drop)
-    else
-        toast:SetPoint("TOP", UIParent, "TOP", 0, -120 + drop)
-    end
+---Makes a skin available. Another addon calls this on Kennel's addon object
+---(LibStub("AceAddon-3.0"):GetAddon("Kennel", true)), at any time after Kennel has loaded.
+---@param id string kept in the saved settings; a short lowercase word
+---@param skin KennelToastSkin
+function Kennel:RegisterToastSkin(id, skin)
+    skins[id] = skin
 end
 
----@param p number from 0 to 1
----@return number
-local function EaseOut(p)
-    return 1 - (1 - p) * (1 - p)
+---The registered skins, by id.
+---@return table<string, KennelToastSkin>
+function Kennel:ToastSkins()
+    return skins
+end
+
+---The id of the skin that draws toasts of `kind`: its own choice, else the one for every toast,
+---else the card, whichever of those is registered first.
+---@param kind string? "<Module>:<type>"
+---@return string
+function Kennel:ToastSkinFor(kind)
+    local settings = Settings()
+    local chosen = kind and settings.skins[kind]
+    if chosen and skins[chosen] then return chosen end
+    if skins[settings.skin] then return settings.skin end
+    return DEFAULT_SKIN
+end
+
+---Shows the next waiting toast, if any; called whenever one is gone.
+local function ShowNext()
+    current, currentSkin = nil, nil
+    local info = table.remove(queue, 1)
+    if info then
+        Engine.Display(info)
+    else
+        (driver --[[@as Frame]]):Hide()
+    end
 end
 
 ---How far an animation that starts at `delay` and lasts `duration` is at time `t`, from 0 to 1.
@@ -81,139 +105,20 @@ local function Progress(t, delay, duration)
     return math.max(0, math.min(1, (t - delay) / duration))
 end
 
----Shows the next waiting toast, if any; called whenever one is gone.
-local function ShowNext()
-    current = nil
-    local info = table.remove(queue, 1)
-    if info then Toast.Display(info) end
-end
-
----@param toast KennelToastFrame
+---The clock, every frame while a toast is up.
+---@param _ Frame the driver
 ---@param elapsed number seconds since the previous frame
-local function Animate(toast, elapsed)
+local function Tick(_, elapsed)
+    local skin = currentSkin --[[@as KennelToastSkin]]
     clock = clock + elapsed
-    -- Its stay stands still while the mouse is over it, so it can be read.
-    if not toast:IsMouseOver() then shownFor = shownFor + elapsed end
-
-    local slide = EaseOut(Progress(clock, 0, SLIDE_IN))
-    Position(SLIDE_DISTANCE * (1 - slide))
-    local alpha = slide
-
-    local left = 1 - Progress(shownFor, 0, stay)
-    toast.Timer:SetWidth(math.max(1, (WIDTH - ACCENT_WIDTH) * left))
-
+    if not skin:IsMouseOver() then shownFor = shownFor + elapsed end
     if not fadeStart and shownFor >= stay then fadeStart = clock end
-    if fadeStart then
-        local p = Progress(clock, fadeStart, FADE_OUT)
-        alpha = alpha * (1 - p)
-        if p >= 1 then
-            toast:SetScript("OnUpdate", nil)
-            toast:Hide()
-            ShowNext()
-            return
-        end
+    local fade = fadeStart and Progress(clock, fadeStart, FADE_OUT) or 0
+    skin:Update(Progress(clock, 0, INTRO), fade, 1 - Progress(shownFor, 0, stay))
+    if fade >= 1 then
+        skin:Hide()
+        ShowNext()
     end
-    toast:SetAlpha(alpha)
-end
-
----Closes the toast at once, without the fade; the next waiting one, if any, follows.
-function Kennel:HideToast()
-    if not frame then return end
-    frame:SetScript("OnUpdate", nil)
-    frame:Hide()
-    ShowNext()
-end
-
----@param toast KennelToastFrame
-local function OnDragStart(toast)
-    toast:StartMoving()
-end
-
----@param toast KennelToastFrame
-local function OnDragStop(toast)
-    toast:StopMovingOrSizing()
-    local point, _, relativePoint, x, y = toast:GetPoint(1)
-    if point then Settings().pos = { point, relativePoint, x, y } end
-end
-
----@param _ KennelToastFrame
----@param button string
-local function OnMouseUp(_, button)
-    if button == "RightButton" then Kennel:HideToast() end
-end
-
----A texture of one colour on `parent`, in `layer`.
----@param parent Frame
----@param layer DrawLayer
----@param color number[]
----@return Texture
-local function Solid(parent, layer, color)
-    local texture = parent:CreateTexture(nil, layer)
-    texture:SetColorTexture(color[1], color[2], color[3], color[4] or 1)
-    return texture
-end
-
----Makes the frame, the first time a toast shows.
----@return KennelToastFrame
-local function Build()
-    local toast = CreateFrame("Frame", "KennelToast", UIParent) --[[@as KennelToastFrame]]
-    toast:SetSize(WIDTH, ICON_SIZE + 2 * PAD)
-    toast:SetFrameStrata("HIGH")
-    toast:SetClampedToScreen(true)
-    toast:EnableMouse(true)
-    toast:SetMovable(true)
-    toast:RegisterForDrag("LeftButton")
-    toast:SetScript("OnDragStart", OnDragStart)
-    toast:SetScript("OnDragStop", OnDragStop)
-    toast:SetScript("OnMouseUp", OnMouseUp)
-
-    -- The edge is the frame filled in its colour, with the panel one pixel inside it.
-    Solid(toast, "BACKGROUND", EDGE):SetAllPoints(toast)
-    local panel = Solid(toast, "BORDER", PANEL)
-    panel:SetPoint("TOPLEFT", toast, "TOPLEFT", 1, -1)
-    panel:SetPoint("BOTTOMRIGHT", toast, "BOTTOMRIGHT", -1, 1)
-
-    toast.Accent = Solid(toast, "ARTWORK", Kennel.TOAST_ACCENT)
-    toast.Accent:SetPoint("TOPLEFT", panel, "TOPLEFT")
-    toast.Accent:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT")
-    toast.Accent:SetWidth(ACCENT_WIDTH)
-
-    local iconEdge = Solid(toast, "ARTWORK", { 0, 0, 0, 1 })
-    iconEdge:SetSize(ICON_SIZE + 2, ICON_SIZE + 2)
-    iconEdge:SetPoint("TOPLEFT", panel, "TOPLEFT", ACCENT_WIDTH + PAD - 1, -PAD + 1)
-    toast.Icon = toast:CreateTexture(nil, "OVERLAY")
-    toast.Icon:SetSize(ICON_SIZE, ICON_SIZE)
-    toast.Icon:SetPoint("CENTER", iconEdge, "CENTER")
-    toast.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-
-    local textWidth = WIDTH - ACCENT_WIDTH - ICON_SIZE - 3 * PAD
-    toast.Title = toast:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    toast.Title:SetPoint("TOPLEFT", iconEdge, "TOPRIGHT", PAD, -1)
-    toast.Text = toast:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    toast.Text:SetPoint("TOPLEFT", toast.Title, "BOTTOMLEFT", 0, -4)
-    toast.Hint = toast:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    toast.Hint:SetPoint("TOPLEFT", toast.Text, "BOTTOMLEFT", 0, -4)
-    toast.Hint:SetTextColor(HINT_COLOR[1], HINT_COLOR[2], HINT_COLOR[3])
-    for _, text in ipairs({ toast.Title, toast.Text, toast.Hint }) do
-        text:SetWidth(textWidth)
-        text:SetJustifyH("LEFT")
-        text:SetWordWrap(true)
-    end
-
-    toast.Timer = Solid(toast, "OVERLAY", Kennel.TOAST_ACCENT)
-    toast.Timer:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", ACCENT_WIDTH, 0)
-    toast.Timer:SetHeight(2)
-
-    toast:Hide()
-    return toast
-end
-
----The height the text needs, and at least the icon's, with the padding around it.
----@param toast KennelToastFrame
----@return number
-local function Height(toast)
-    local text = toast.Title:GetStringHeight() + toast.Text:GetStringHeight() + toast.Hint:GetStringHeight() + 8
-    return math.max(ICON_SIZE, text) + 2 * PAD
 end
 
 ---Plays a toast's sound: a sound file, or a sound kit.
@@ -227,30 +132,28 @@ local function Play(sound)
     end
 end
 
----Fills the toast with `info` and starts it.
+---Hands `info` to its skin and starts the clock.
 ---@param info KennelToastInfo
-function Toast.Display(info)
-    frame = frame or Build()
-    local toast = frame --[[@as KennelToastFrame]]
-    current = info
-    local accent = info.accent or Kennel.TOAST_ACCENT
-    toast.Accent:SetColorTexture(accent[1], accent[2], accent[3], 1)
-    toast.Timer:SetColorTexture(accent[1], accent[2], accent[3], 1)
-    toast.Title:SetTextColor(accent[1], accent[2], accent[3])
-    toast.Icon:SetTexture(info.icon or FALLBACK_ICON)
-    toast.Title:SetText(info.title)
-    toast.Text:SetText(info.text or "")
-    toast.Hint:SetText(info.hint or "")
-    toast:SetHeight(Height(toast))
-
+function Engine.Display(info)
+    if not driver then
+        driver = CreateFrame("Frame", "KennelToastDriver", UIParent)
+        driver:SetScript("OnUpdate", Tick)
+    end
     local settings = Settings()
-    toast:SetScale(settings.scale)
+    current, currentSkin = info, skins[Kennel:ToastSkinFor(info.type)]
+    lastSkin = currentSkin
     clock, shownFor, fadeStart, stay = 0, 0, nil, settings.duration
-    toast:SetAlpha(0)
-    Position(SLIDE_DISTANCE)
-    toast:SetScript("OnUpdate", Animate)
-    toast:Show()
+    currentSkin:Show(info, settings)
+    currentSkin:Update(0, 0, 1)
+    driver:Show()
     Play(info.sound)
+end
+
+---Closes the toast at once, without the fade; the next waiting one, if any, follows.
+function Kennel:HideToast()
+    if not currentSkin then return end
+    currentSkin:Hide()
+    ShowNext()
 end
 
 ---The place in the queue of the toast for `key`, or nil.
@@ -271,7 +174,7 @@ function Kennel:ShowToast(info)
     if current then
         queue[#queue + 1] = info
     else
-        Toast.Display(info)
+        Engine.Display(info)
     end
 end
 
@@ -292,13 +195,90 @@ function Kennel:DropToasts(prefix)
     if current and current.key:sub(1, #prefix) == prefix then self:DropToast(current.key) end
 end
 
----The toast frame, once one has shown; for tests and for modules that place things by it.
----@return KennelToastFrame?
+---The frame that drives the clock, once a toast has shown; for tests.
+---@return Frame?
+function Kennel:ToastDriver()
+    return driver
+end
+
+---The frame of the skin that drew the last toast, if that skin has one to give.
+---@return Frame?
 function Kennel:ToastFrame()
+    return lastSkin and lastSkin.Frame and lastSkin:Frame()
+end
+
+-- What every skin's frame does the same way: it moves where it is dragged (the spot is saved in
+-- the profile, shared by all skins) and closes on a right-click.
+
+---@param frame Frame
+local function OnDragStart(frame)
+    frame:StartMoving()
+end
+
+---@param frame Frame
+local function OnDragStop(frame)
+    frame:StopMovingOrSizing()
+    local point, _, relativePoint, x, y = frame:GetPoint(1)
+    if point then Settings().pos = { point, relativePoint, x, y } end
+end
+
+---@param _ Frame
+---@param button string
+local function OnMouseUp(_, button)
+    if button == "RightButton" then Kennel:HideToast() end
+end
+
+---A frame for a skin: on top of the UI, kept on screen, draggable, closed by a right-click.
+---Hidden until the skin shows it.
+---@param name string? a global name, for /fstack and other addons
+---@return Frame
+function Kennel:NewToastFrame(name)
+    local frame = CreateFrame("Frame", name, UIParent)
+    frame:SetFrameStrata("HIGH")
+    frame:SetClampedToScreen(true)
+    frame:EnableMouse(true)
+    frame:SetMovable(true)
+    frame:RegisterForDrag("LeftButton")
+    frame:SetScript("OnDragStart", OnDragStart)
+    frame:SetScript("OnDragStop", OnDragStop)
+    frame:SetScript("OnMouseUp", OnMouseUp)
+    frame:Hide()
     return frame
+end
+
+---Places a skin's frame where it was dragged to, or at the skin's own standard spot; `lift`
+---raises it that many pixels (for a slide in).
+---@param frame Frame
+---@param point string the standard spot: an anchor point on UIParent
+---@param x number
+---@param y number
+---@param lift number?
+function Kennel:PlaceToast(frame, point, x, y, lift)
+    lift = lift or 0
+    frame:ClearAllPoints()
+    local pos = Settings().pos
+    if pos then
+        frame:SetPoint(pos[1], UIParent, pos[2], pos[3], pos[4] + lift)
+    else
+        frame:SetPoint(point, UIParent, point, x, y + lift)
+    end
 end
 
 ---Puts the toast back in its standard spot.
 function Kennel:ResetToastPosition()
     Settings().pos = nil
+end
+
+---The kinds of toast the modules show, as "<Module>:<type>" with their names, for the skin
+---choice; from each module's toastTypes.
+---@return table<string, string>
+function Kennel:ToastTypes()
+    ---@type table<string, string>
+    local kinds = {}
+    for name, module in pairs(self.modules) do
+        for kind, label in pairs(module.toastTypes or {}) do
+            kinds[name .. ":" .. kind] = (module.title or name) .. ": " .. label
+        end
+    end
+    return kinds
 end
