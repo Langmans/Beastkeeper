@@ -84,6 +84,7 @@ Core\Core.xml     the core, in this order:
 Integrations\     what Kennel does with other addons, a folder per addon; each
                   file does nothing unless its addon is loaded (OptionalDeps)
   EllesmereUI\Toast.lua   the card and the splash in EllesmereUI's look
+  LibSink\Toast.lua       a look that hands toasts to LibSink's outputs
 Modules\Modules.xml   one Include per module
 Modules\<Name>\   a module: <Name>.xml, Locale.lua, <Name>.lua, Options.lua
 annotations\      editor-only types (not in the .toc)
@@ -194,8 +195,13 @@ if Kennel then
 end
 ```
 
-An adapter that hands toasts to something else (no frame of its own) is a
-plain table with `name`, `Show`, `Update`, `Hide` and `IsMouseOver`.
+An adapter that hands toasts to something else sets `instant = true` and
+needs only `name` and `Show`: the engine plays the sound and moves on to the
+next toast at once. A skin with settings of its own adds `GetOptions()`,
+returning an AceConfig group that appears in the toast box under its id.
+`Integrations\LibSink\Toast.lua` is such an adapter: it pours the toast as one
+line through LibSink, where the player picks the output (Blizzard's floating
+text by default, chat, raid warning, MikSBT, ...).
 
 To restyle the card or the splash rather than draw anew,
 `Kennel:NewCardSkin(name, style)` and `Kennel:NewSplashSkin(name, style)` take
@@ -235,6 +241,11 @@ fetches them for a release; `tests/libs.lua` reads the same `.pkgmeta` block
 and fetches the same commits into `Libs\` before the tests. To move to a
 newer Ace3, change the commit in `.pkgmeta` (all entries) and run the tests:
 the libraries are fetched again when the block changes.
+
+LibSink-2.0 lives only in CurseForge's svn, so its external is `type: svn`
+with a release tag. `tests/libs.lua` needs no svn client for it: the svn
+server lists each directory as a page of links and serves each file at its own
+address, which curl downloads.
 
 The `.toc` lists Ace3 and LibStub as `OptionalDeps`, so a separately
 installed Ace3 loads first and LibStub keeps the newest copy of each library.

@@ -128,6 +128,22 @@ describe("the skin contract", function()
         assert.is_nil(Kennel:ToastSkins().x)
     end)
 
+    it("needs only a name and Show from an instant skin, which hands the toast on at once", function()
+        local poured = {}
+        local skin = { name = "Hand on", instant = true }
+        function skin:Show(info)
+            poured[#poured + 1] = info.key
+        end
+        Kennel:RegisterToastSkin("handon", skin)
+        Kennel:ToastSettings().skin = "handon"
+        Kennel:ShowToast({ key = "a", title = "t" })
+        Kennel:ShowToast({ key = "b", title = "t" })
+        assert.are.same({ "a", "b" }, poured)
+        assert.has_error(function()
+            Kennel:RegisterToastSkin("nothing", { name = "No show", instant = true })
+        end, "Kennel:RegisterToastSkin(nothing): the skin has no Show")
+    end)
+
     for _, method in ipairs({ "Show", "Update", "IsMouseOver" }) do
         it("hands a toast to the card when a skin's " .. method .. " errors, and reports it", function()
             local skin = recordingSkin()
@@ -253,10 +269,11 @@ describe("the look choice", function()
     end)
 
     it("offers every registered skin for every toast", function()
-        assert.are.same(
-            { card = "Card: small, near the top", splash = "Splash: large, in the middle" },
-            args.skin.values
-        )
+        assert.are.same({
+            card = "Card: small, near the top",
+            splash = "Splash: large, in the middle",
+            libsink = "Floating text and more (LibSink)",
+        }, args.skin.values)
         assert.are.equal("card", args.skin.get())
         args.skin.set({}, "splash")
         assert.are.equal("splash", Kennel.db.profile.toast.skin)

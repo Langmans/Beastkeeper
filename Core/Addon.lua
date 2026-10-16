@@ -29,7 +29,8 @@ function Kennel:OnInitialize()
             modules = switches,
             -- The toast every module shows (Core\Toast\): the skin for every toast, a skin per
             -- kind of toast where chosen; pos is set once it is dragged.
-            toast = { duration = 6, scale = 1, skin = "card", skins = {} },
+            -- sink: LibSink's output choice (Integrations\LibSink\).
+            toast = { duration = 6, scale = 1, skin = "card", skins = {}, sink = {} },
         },
         -- Per character: which modules made their macros already (Core\Macro.lua).
         char = { macrosMade = {} },

@@ -39,6 +39,8 @@ L.TOAST_SKIN_DESC = "How toasts look. Below it, each kind of toast can have a lo
 -- The looks Kennel brings: a small card near the top, or a large splash in the middle.
 L.TOAST_SKIN_CARD = "Card: small, near the top"
 L.TOAST_SKIN_SPLASH = "Splash: large, in the middle"
+-- The look that sends a toast as one line of text where LibSink sends it (floating combat text, chat, raid warning, ...). "LibSink" is a library's name and stays as it is.
+L.TOAST_SKIN_LIBSINK = "Floating text and more (LibSink)"
 -- Choice in the select of one kind of toast: use the look chosen for every toast.
 L.TOAST_SKIN_SAME = "Same as all toasts"
 -- Button: shows an example toast.

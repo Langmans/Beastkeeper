@@ -55,6 +55,7 @@
 ---@field pos [string, string, number, number]? point, relativePoint, x, y, once dragged
 ---@field skin string the skin id for every toast
 ---@field skins table<string, string> a skin id per kind of toast ("<module>:<kind>"), where chosen
+---@field sink table LibSink's output choice, kept by LibSink itself
 
 ---What draws a toast (Core\Toast\). Kennel brings "card" and "splash"; another addon adds its
 ---own with Kennel:RegisterToastSkin(id, skin), to draw in its own style or to hand the toast to
@@ -64,10 +65,12 @@
 ---@class KennelToastSkin
 ---@field name string shown in the look choice; localized
 ---@field Show fun(self: KennelToastSkin, info: KennelToastInfo, settings: KennelToastSettings) fill it in and show it; Update follows at once
----@field Update fun(self: KennelToastSkin, intro: number, fade: number, left: number) each 0 to 1: how far the intro is, how far the fade is (1 = gone), how much of its stay is left
----@field Hide fun(self: KennelToastSkin)
----@field IsMouseOver fun(self: KennelToastSkin): boolean while true, its stay does not count down
+---@field Update (fun(self: KennelToastSkin, intro: number, fade: number, left: number))? each 0 to 1: how far the intro is, how far the fade is (1 = gone), how much of its stay is left; required unless instant
+---@field Hide (fun(self: KennelToastSkin))? required unless instant
+---@field IsMouseOver (fun(self: KennelToastSkin): boolean)? while true, its stay does not count down; required unless instant
 ---@field Frame (fun(self: KennelToastSkin): Frame?)? its frame, when it has one
+---@field instant boolean? it hands the toast on in Show and is done: the next toast follows at once
+---@field GetOptions (fun(self: KennelToastSkin): table)? an AceConfig group of its own on Kennel's page
 
 ---A skin from Kennel:NewToastSkin: it draws in self.frame, and Hide, IsMouseOver and Frame are
 ---done; it adds Show and Update.

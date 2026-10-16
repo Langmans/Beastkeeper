@@ -54,8 +54,8 @@ end
 -- What the per-kind skin choices store for "the same as every toast": no entry at all.
 local SAME = "same"
 
----The skin choices: a select for every toast, and one per kind of toast the modules show, from
----order 10 on.
+---The skin choices: a select for every toast, one per kind of toast the modules show (from order
+---10), and the options of skins that have their own (GetOptions, from order 50, by skin id).
 ---@param settings KennelToastSettings
 ---@param args table<string, table> the toast box's options, added to
 function Kennel:AddSkinOptions(settings, args)
@@ -63,6 +63,10 @@ function Kennel:AddSkinOptions(settings, args)
     local names = {}
     for id, skin in pairs(self:ToastSkins()) do
         names[id] = skin.name
+        if skin.GetOptions then
+            args[id] = skin:GetOptions()
+            args[id].order = 50
+        end
     end
     args.skin = {
         type = "select",

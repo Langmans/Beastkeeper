@@ -122,9 +122,16 @@ function Engine.Display(info)
     lastSkin = currentSkin
     clock, shownFor, fadeStart, stay = 0, 0, nil, settings.duration
     Call("Show", info, settings)
+    Play(info.sound)
+    -- An instant skin is done once shown (it handed the toast on): the next one follows at once.
+    if
+        (currentSkin --[[@as KennelToastSkin]]).instant
+    then
+        ShowNext()
+        return
+    end
     Call("Update", 0, 0, 1)
     driver:Show()
-    Play(info.sound)
 end
 
 ---Closes the toast at once, without the fade; the next waiting one, if any, follows.

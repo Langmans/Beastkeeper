@@ -20,8 +20,10 @@ function Kennel.DefaultToastAccent()
     return Kennel.TOAST_ACCENT
 end
 
--- What every skin must have (KennelToastSkin): RegisterToastSkin refuses one without.
+-- What a skin must have (KennelToastSkin): RegisterToastSkin refuses one without. An instant
+-- skin hands the toast on and is done, so it needs only Show.
 local SKIN_METHODS = { "Show", "Update", "Hide", "IsMouseOver" }
+local INSTANT_METHODS = { "Show" }
 
 ---@type table<string, KennelToastSkin>
 local skins = {}
@@ -43,7 +45,7 @@ function Kennel:RegisterToastSkin(id, skin)
     ---@type string[]
     local missing = {}
     if type(skin.name) ~= "string" then missing[#missing + 1] = "name (a string)" end
-    for _, method in ipairs(SKIN_METHODS) do
+    for _, method in ipairs(skin.instant and INSTANT_METHODS or SKIN_METHODS) do
         if type(skin[method]) ~= "function" then missing[#missing + 1] = method end
     end
     if #missing > 0 then

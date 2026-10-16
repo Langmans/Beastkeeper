@@ -549,7 +549,34 @@ function NewClient(opts)
     local function getMetadata(name, key)
         if name == "Kennel" then return TOC_METADATA[key] end
     end
-    C_AddOns = { GetAddOnMetadata = getMetadata }
+    C_AddOns = {
+        GetAddOnMetadata = getMetadata,
+        EnableAddOn = noop,
+        LoadAddOn = noop,
+        IsAddOnLoaded = function()
+            return false
+        end,
+    }
+
+    -- Where LibSink sends: client.combatText (Blizzard's floating text, its default), chat lines
+    -- sent (client.chatSent), raid warnings and the error frame.
+    client.combatText, client.chatSent = {}, {}
+    CombatText_StandardScroll = "UP"
+    function CombatText_AddMessage(text, _, r, g, b)
+        client.combatText[#client.combatText + 1] = { text = text, r = r, g = g, b = b }
+    end
+    C_ChatInfo = {
+        SendChatMessage = function(text, kind, _, target)
+            client.chatSent[#client.chatSent + 1] = { text, kind, target }
+        end,
+    }
+    function GetChannelList() end
+    function GetChannelName() end
+    function IsInRaid()
+        return false
+    end
+    RaidWarningFrame, UIErrorsFrame = newRegion(), newRegion()
+    RaidNotice_AddMessage = noop
 
     SlashCmdList = {}
     hash_SlashCmdList = {}

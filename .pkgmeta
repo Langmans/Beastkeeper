@@ -44,6 +44,11 @@ externals:
     url: https://github.com/WoWUIDev/Ace3.git
     commit: 40f4cc1356ae7fcc0cf71fc0a19dc7d50d6ae6c2
     path: AceConfig-3.0
+  # LibSink lives only in CurseForge's svn; pinned to a release tag.
+  Libs/LibSink-2.0:
+    url: https://repos.curseforge.com/wow/libsink-2-0/trunk/LibSink-2.0
+    tag: v12.1.1
+    type: svn
 
 # Release notes come from this file instead of the commit log, so commit
 # bodies and trailers stay out of the CurseForge page.
