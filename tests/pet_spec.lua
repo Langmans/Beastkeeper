@@ -28,9 +28,9 @@ describe("the pet helpers", function()
         assert.are.same({}, NewClient({ noSpellBookAPI = true }).Kennel.PetSpells())
     end)
 
-    it("give the pet's free training points through either API, nil without", function()
-        assert.are.equal(43, NewClient().Kennel.PetTrainingPoints())
-        assert.are.equal(43, NewClient({ oldTrainingAPI = true }).Kennel.PetTrainingPoints())
+    it("give the pet's free training points and its total through either API, nil without", function()
+        assert.are.same({ 43, 50 }, { NewClient().Kennel.PetTrainingPoints() })
+        assert.are.same({ 43, 50 }, { NewClient({ oldTrainingAPI = true }).Kennel.PetTrainingPoints() })
         assert.is_nil(NewClient({ noTrainingAPI = true }).Kennel.PetTrainingPoints())
         local client = NewClient()
         client.trainingPoints = { 5, 9 } -- more used than there are: none free, not a negative

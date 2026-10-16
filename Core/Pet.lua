@@ -55,16 +55,18 @@ function Kennel.PetSpells()
     return spells
 end
 
----The active pet's free training points (total minus used), from C_PetInfo on WoW: Forever or
----the global on older clients; nil without a pet, without the API or when the client hides them.
----@return number?
+---The active pet's free training points (total minus used) and its total, from C_PetInfo on
+---WoW: Forever or the global on older clients; nil without a pet, without the API or when the
+---client hides them.
+---@return number? free
+---@return number? total
 function Kennel.PetTrainingPoints()
     ---@type (fun(): GameValue, GameValue)?
     local get = (C_PetInfo and C_PetInfo.GetPetTrainingPoints) or GetPetTrainingPoints
     if not get or not UnitExists("pet") then return nil end
     local total, used = get()
     if type(total) ~= "number" or not Kennel.Readable(total) then return nil end
-    return math.max(0, total - (tonumber(used) or 0))
+    return math.max(0, total - (tonumber(used) or 0)), total
 end
 
 ---The active pet's CreatureFamily ID (1 wolf, 2 cat, ...), the same on every client language;

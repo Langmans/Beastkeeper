@@ -185,12 +185,14 @@
 ---@field sound "family"|"levelup"|"off"
 ---@field screenshot boolean
 ---@field hints boolean say in chat what a summoned pet can teach
+---@field points boolean toast when the pet gains training points
 
 ---AbilityLearned's per-character data, its namespace's char.
 ---@class KennelAbilityLearnedChar
 ---@field history KennelLearnEntry[] oldest first, the last 200
 ---@field known table<string, number> the highest rank known per ability name
 ---@field trainingRead boolean Beast Training has been read once
+---@field points table<string, number> each pet's training points total when last seen, by pet name
 
 ---A learn as AbilityLearned shows it.
 ---@class KennelLearn
@@ -227,6 +229,9 @@
 ---@field HistoryText fun(self: KennelAbilityLearned): string
 ---@field ReadBeastTraining fun(self: KennelAbilityLearned)
 ---@field CheckHints fun(self: KennelAbilityLearned)
+---@field CheckPoints fun(self: KennelAbilityLearned)
+---@field CheckPet fun(self: KennelAbilityLearned)
+---@field Sound fun(self: KennelAbilityLearned, fromPet: boolean): KennelSound?
 ---@field ReportTeachable fun(self: KennelAbilityLearned)
 
 ---The sound tables, Kennel.sounds.<KIND>_PER_FAMILY (Core\Sounds.lua).

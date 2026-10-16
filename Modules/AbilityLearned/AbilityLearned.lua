@@ -2,9 +2,10 @@ local _, ns = ...
 
 -- A toast when the hunter learns a pet ability from a tamed beast: the ability and its rank, the
 -- pet that taught it with its portrait and free training points, and that pet family's call.
--- Detect.lua finds the learn; Known.lua keeps the history and the ranks known per character, reads
--- Beast Training and says what a pet can still teach. Only a hunter learns pet abilities: on any
--- other class the module watches nothing.
+-- Another when the pet gains training points. Detect.lua finds the learn; Known.lua keeps the
+-- history, the ranks known and each pet's points per character, reads Beast Training and says
+-- what a pet can still teach. Only a hunter learns pet abilities: on any other class the module
+-- watches nothing.
 --
 -- The client replays known spells in the first seconds after login, and a trainer window lists
 -- ranks bought rather than learned; neither is news (self.ready, self.atTrainer).
@@ -17,11 +18,11 @@ local L = Kennel.L
 local M = Kennel:NewModule("AbilityLearned")
 M.title = L.ABILITYLEARNED_TITLE
 M.description = L.ABILITYLEARNED_DESC
-M.toastTypes = { learned = L.ABILITYLEARNED_TOASTTYPE_LEARNED }
+M.toastTypes = { learned = L.ABILITYLEARNED_TOASTTYPE_LEARNED, points = L.ABILITYLEARNED_TOASTTYPE_POINTS }
 M.toastSkins = { learned = "splash" }
 M.defaults = {
-    profile = { sound = "family", screenshot = false, hints = true },
-    char = { history = {}, known = {}, trainingRead = false },
+    profile = { sound = "family", screenshot = false, hints = true, points = true },
+    char = { history = {}, known = {}, trainingRead = false, points = {} },
 }
 
 local LEVEL_UP = 888 -- SOUNDKIT.LEVEL_UP
@@ -37,6 +38,7 @@ local EVENTS = {
     "TRAINER_CLOSED",
     "TRADE_SKILL_CLOSE",
     "UNIT_PET",
+    "UNIT_PET_TRAINING_POINTS",
 }
 
 ---The settings of the profile in use.
@@ -129,14 +131,27 @@ end
 -- What WoW: Forever sends when Beast Training closes.
 M.TRADE_SKILL_CLOSE = M.TRAINER_CLOSED
 
+---What to tell about the pet out: what it can teach, and the training points it gained.
+function M:CheckPet()
+    self:CheckHints()
+    self:CheckPoints()
+end
+
 -- A pet summoned, tamed or dismissed: its spellbook fills in just after.
 ---@param _ string the event
 ---@param unit string
 function M:UNIT_PET(_, unit)
     if unit ~= "player" then return end
     C_Timer.After(HINT_WAIT, function()
-        self:CheckHints()
+        self:CheckPet()
     end)
+end
+
+-- On WoW: Forever this comes for "pet" when the pet's total rises.
+---@param _ string the event
+---@param unit string
+function M:UNIT_PET_TRAINING_POINTS(_, unit)
+    if unit == "pet" then self:CheckPoints() end
 end
 
 function M:OnEnable()
@@ -149,7 +164,7 @@ function M:OnEnable()
     C_Timer.After(LOGIN_WAIT, function()
         if not self:IsEnabled() then return end
         self.ready = true
-        self:CheckHints()
+        self:CheckPet()
     end)
 end
 

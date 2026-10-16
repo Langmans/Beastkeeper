@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- AbilityLearned's page in the settings window (Kennel > Ability Learned): the sound, the
--- screenshot, the hints, an example toast, a simulated learn, what the pet can teach, and the
+-- screenshot, the hints, the training points toast, an example toast, a simulated learn, what the pet can teach, and the
 -- history.
 
 ---@type Kennel
@@ -33,6 +33,7 @@ function M:GetOptions()
     local soundGet, soundSet = Setting("sound")
     local screenshotGet, screenshotSet = Setting("screenshot")
     local hintsGet, hintsSet = Setting("hints")
+    local pointsGet, pointsSet = Setting("points")
     return {
         args = {
             sound = {
@@ -66,6 +67,15 @@ function M:GetOptions()
                 width = "full",
                 get = hintsGet,
                 set = hintsSet,
+            },
+            points = {
+                type = "toggle",
+                name = L.ABILITYLEARNED_OPTION_POINTS,
+                desc = L.ABILITYLEARNED_OPTION_POINTS_DESC,
+                order = 3.5,
+                width = "full",
+                get = pointsGet,
+                set = pointsSet,
             },
             test = {
                 type = "execute",

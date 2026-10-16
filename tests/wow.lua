@@ -1113,6 +1113,12 @@ function NewClient(opts)
         return self:fire("UNIT_PET", "player")
     end
 
+    ---The pet gets `count` training points: the total rises and the client says so.
+    function client:gainPoints(count)
+        self.trainingPoints[1] = self.trainingPoints[1] + count
+        return self:fire("UNIT_PET_TRAINING_POINTS", "pet")
+    end
+
     ---Opens the trainer window with `rows`: Beast Training, or a pet trainer's with `npc`.
     function client:openTrainer(rows, npc)
         self.trainer = { rows = rows, npc = npc == true }

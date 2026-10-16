@@ -1,8 +1,8 @@
 local _, ns = ...
 
 -- What this character has learned, per character (the namespace's char): every learn the module
--- saw (history), and the highest rank known per ability (known), from those learns and from the
--- Beast Training window. From that, what the pet out can still teach: said in chat when a pet is
+-- saw (history), the highest rank known per ability (known), from those learns and from the
+-- Beast Training window, and each pet's training points total (points). From that, what the pet out can still teach: said in chat when a pet is
 -- summoned or tamed ("Fluffy can teach you: Claw (Rank 3)."), and on the page's button.
 --
 -- Until Beast Training has been read once (trainingRead), an ability missing from what is known
@@ -19,6 +19,7 @@ local L = Kennel.L
 local M = Kennel:GetModule("AbilityLearned") --[[@as KennelAbilityLearned]]
 
 local HISTORY_MAX = 200
+local BEAST_TRAINING_ICON = "Interface\\Icons\\Ability_Hunter_BeastTraining"
 
 -- The list said last for each pet, so summoning it again stays quiet until there is news.
 ---@type table<string, string>
@@ -149,6 +150,31 @@ function M:CheckHints()
     if said == "" or lastSaid[pet] == said then return end
     lastSaid[pet] = said
     Say(pet, list, unsure)
+end
+
+---When the pet out has more training points in total than last time: a toast saying how many it
+---gained and how many are free. Each pet's total is kept by name, so a pet seen for the first time
+---is only noted, and one summoned again is told what it gained while away. Spending points at
+---Beast Training changes only what is used, not the total, and says nothing.
+function M:CheckPoints()
+    if not self.ready then return end
+    local free, total = Kennel.PetTrainingPoints()
+    if not total then return end
+    local pet = UnitName("pet")
+    local seen = Char().points
+    local before = seen[pet]
+    seen[pet] = total
+    if not before or total <= before or not self:Settings().points then return end
+    Kennel:ShowToast({
+        key = "AbilityLearned:points",
+        type = "AbilityLearned:points",
+        source = self.title,
+        title = L.ABILITYLEARNED_POINTS_GAINED:format(pet, total - before),
+        text = L.ABILITYLEARNED_POINTS_FREE:format(free),
+        icon = BEAST_TRAINING_ICON,
+        portrait = "pet",
+        sound = self:Sound(true),
+    })
 end
 
 ---The page's button: what the pet out can teach, whenever asked, also when that is nothing.
