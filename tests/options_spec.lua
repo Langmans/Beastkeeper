@@ -56,6 +56,41 @@ describe("the options", function()
         assert.is_false(args.Alpha.disabled())
         assert.is_true(args.Beta.disabled())
     end)
+
+    describe("Profiles page", function()
+        local function keys(tbl)
+            local list = {}
+            for key in pairs(tbl) do
+                list[#list + 1] = key
+            end
+            table.sort(list)
+            return list
+        end
+
+        it("lists every entry of AceDBOptions' own page", function()
+            -- No other addon is loaded here, so the shared table holds only AceDBOptions' entries.
+            -- A new AceDBOptions version with more entries fails this until PROFILE_OPTIONS has them.
+            local shared = LibStub("AceDBOptions-3.0"):GetOptionsTable(client.Kennel.db)
+            assert.are.same(keys(shared.args), keys(options.args.profiles.args))
+        end)
+
+        it("leaves out what other addons write into AceDBOptions' shared table", function()
+            -- As RestedXP Guides does with its guide buttons.
+            local shared = LibStub("AceDBOptions-3.0"):GetOptionsTable(client.Kennel.db)
+            shared.args.resetGuideProgress = { type = "execute", name = "Reset Guide Progress", func = function() end }
+            local profiles = client.Kennel:GetOptionsTable().args.profiles
+            assert.is_nil(profiles.args.resetGuideProgress)
+            assert.is_table(profiles.args.reset)
+            shared.args.resetGuideProgress = nil
+        end)
+
+        it("still changes KennelDB's profile", function()
+            local profiles = options.args.profiles
+            -- AceConfig calls a string `set` on the handler with AceConfig's info for the option.
+            profiles.handler:SetProfile({ arg = nil }, "Tank")
+            assert.are.equal("Tank", client.Kennel.db:GetCurrentProfile())
+        end)
+    end)
 end)
 
 describe("the settings window", function()

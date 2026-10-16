@@ -11,6 +11,46 @@ local addonName, ns = ...
 local Kennel = ns
 local L = Kennel.L
 
+-- The entries of AceDBOptions' own Profiles page. AceDBOptions hands every addon the same args
+-- table, and other addons write into it (RestedXP Guides adds "Reload guides and UI", "Reset Guide
+-- Progress" and "Set current profile as default"), so taking it as it is would put their buttons
+-- on Kennel's page. Kennel copies only these; tests/options_spec.lua checks the list still
+-- matches the AceDBOptions version in Libs/.
+Kennel.PROFILE_OPTIONS = {
+    "desc",
+    "descreset",
+    "reset",
+    "current",
+    "choosedesc",
+    "new",
+    "choose",
+    "copydesc",
+    "copyfrom",
+    "deldesc",
+    "delete",
+}
+
+---The Profiles page: AceDBOptions' group for KennelDB with a copy of only its own entries.
+---@return AceConfig.OptionsTable
+function Kennel:GetProfileOptions()
+    local shared = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+    -- GetOptionsTable always sets args.
+    local sharedArgs = shared.args --[[@as table<string, AceConfig.OptionsTable>]]
+    ---@type table<string, AceConfig.OptionsTable>
+    local args = {}
+    for _, key in ipairs(self.PROFILE_OPTIONS) do
+        args[key] = sharedArgs[key]
+    end
+    return {
+        type = "group",
+        name = shared.name,
+        desc = shared.desc,
+        handler = shared.handler,
+        order = 100,
+        args = args,
+    }
+end
+
 ---@return AceConfig.OptionsTable
 function Kennel:GetOptionsTable()
     local switches = {
@@ -21,10 +61,9 @@ function Kennel:GetOptionsTable()
         name = addonName,
         args = {
             modules = { type = "group", name = L.MODULES, order = 1, args = switches },
-            profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db),
+            profiles = self:GetProfileOptions(),
         },
     }
-    options.args.profiles.order = 100
 
     for name, module in pairs(self.modules) do
         switches[name] = {
