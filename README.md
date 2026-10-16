@@ -98,22 +98,29 @@ Dust Cloud, Mine!, Pinch, Savage Rend, Sonic Blast, Swipe, Tendon Rip and Web.
 What a pet trainer sells, and anything learned while a trainer window is open,
 does not.
 
-- **Training points**: a toast when your pet gains training points ("Fluffy
-  gained 3 training points", and how many are free for Beast Training), on the
-  look for every toast. Kennel keeps each pet's total, so a pet you summon
-  again is told what it gained while it was away; spending points says
-  nothing.
-- **Sound**, chosen apart for a learn and for training points: your pet
-  family's call (the level-up sound for a family without one), the level-up
-  sound, or none. Optionally a **screenshot** of each learn.
+- **Training points**: a toast when your pet gains training points, naming
+  why: "Fluffy reached level 16" or "Fluffy is now at Loyalty Level 5
+  (Faithful)", with the points gained and how many are free for Beast
+  Training; "Fluffy gained 19 training points" when both happened, or while
+  it was away. Kennel keeps each pet's points, level and loyalty, so a pet you
+  summon again is told what changed. Spending points says nothing, and so does
+  a level-up at loyalty level 1, which brings none.
+- **Loyalty**: a toast when your pet's loyalty level drops, with the new level
+  and the training points that cost. The loyalty name is coloured from
+  friendly green (level 1) to exalted teal (level 6).
+- The points and loyalty toasts use the look for every toast, and each has
+  its own sound choice.
+- **Sound**, chosen apart for a learn, training points and loyalty: your pet's
+  own (its call; its wound cry when loyalty drops; the level-up sound for a
+  family without one), the level-up sound, or none. Optionally a **screenshot** of each learn.
 - **History**: every learn, per character, with pet, zone and time; on the
   module's page, newest first.
 - **Hints**: when you summon or tame a pet, chat says which of its abilities it
   has at a higher rank than you know ("Fluffy can teach you: Claw (Rank 3).").
   Kennel knows your ranks from what it saw you learn and from the **Beast
   Training** window: open that once and the hints are complete.
-- The module's page has the sound, screenshot, hints and training points
-  switches, an example toast, a
+- The module's page has the sounds, the screenshot, and the hints, training
+  points and loyalty switches, an example toast, a
   simulated learn (the game's own chat line through the detection, kept out of
   the history), a "What can my pet teach?" button and the history. On other
   classes it does nothing.

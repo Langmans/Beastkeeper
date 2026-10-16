@@ -191,13 +191,21 @@
 ---@field hints boolean say in chat what a summoned pet can teach
 ---@field points boolean toast when the pet gains training points
 ---@field pointsSound "family"|"levelup"|"off" that toast's sound
+---@field loyalty boolean toast when the pet's loyalty level drops
+---@field loyaltySound "family"|"levelup"|"off" that toast's sound
 
 ---AbilityLearned's per-character data, its namespace's char.
 ---@class KennelAbilityLearnedChar
 ---@field history KennelLearnEntry[] oldest first, the last 200
 ---@field known table<string, number> the highest rank known per ability name
 ---@field trainingRead boolean Beast Training has been read once
----@field points table<string, number> each pet's training points total when last seen, by pet name
+---@field pets table<string, KennelPetGrowth> how each pet stood when last seen, by pet name
+
+---How a pet stood when AbilityLearned last saw it.
+---@class KennelPetGrowth
+---@field total number its training points total
+---@field level number
+---@field loyalty number? its loyalty level; nil on a client without GetPetLoyalty
 
 ---A learn as AbilityLearned shows it.
 ---@class KennelLearn
@@ -234,9 +242,9 @@
 ---@field HistoryText fun(self: KennelAbilityLearned): string
 ---@field ReadBeastTraining fun(self: KennelAbilityLearned)
 ---@field CheckHints fun(self: KennelAbilityLearned)
----@field CheckPoints fun(self: KennelAbilityLearned)
+---@field CheckGrowth fun(self: KennelAbilityLearned)
 ---@field CheckPet fun(self: KennelAbilityLearned)
----@field Sound fun(self: KennelAbilityLearned, key: "sound"|"pointsSound", fromPet: boolean): KennelSound?
+---@field Sound fun(self: KennelAbilityLearned, key: "sound"|"pointsSound"|"loyaltySound", petSound: "AGGRO"|"WOUND"|nil): KennelSound?
 ---@field ReportTeachable fun(self: KennelAbilityLearned)
 
 ---The sound tables, Kennel.sounds.<KIND>_PER_FAMILY (Core\Sounds.lua).

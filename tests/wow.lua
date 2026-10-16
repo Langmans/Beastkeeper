@@ -45,6 +45,7 @@ end
 ---@field oldTrainingAPI boolean? GetPetTrainingPoints instead of C_PetInfo's
 ---@field noTrainingAPI boolean? neither
 ---@field noLearnLines boolean? no ERR_LEARN_ABILITY_S / ERR_LEARN_SPELL_S
+---@field noLoyaltyAPI boolean? no GetPetLoyalty
 
 -- The spells the simulated client knows, per locale: id -> { name, icon, rank }; the rank is the
 -- client's subtext, "" for a spell without ranks.
@@ -419,6 +420,16 @@ function NewClient(opts)
     elseif not opts.noTrainingAPI then
         C_PetInfo = { GetPetTrainingPoints = trainingPoints }
     end
+    -- The pet's level (client.petLevel) and loyalty, as GetPetLoyalty words it (client.loyalty);
+    -- opts.noLoyaltyAPI: a client without GetPetLoyalty.
+    client.petLevel, client.loyalty = 15, "Loyalty Level 4 (Dependable)"
+    function UnitLevel(unit)
+        if unit == "pet" then return client.petLevel end
+        return 60
+    end
+    GetPetLoyalty = not opts.noLoyaltyAPI and function()
+        return client.loyalty
+    end or nil
     function GetZoneText()
         return client.zone
     end
@@ -1117,6 +1128,18 @@ function NewClient(opts)
     function client:gainPoints(count)
         self.trainingPoints[1] = self.trainingPoints[1] + count
         return self:fire("UNIT_PET_TRAINING_POINTS", "pet")
+    end
+
+    ---The pet levels up, which brings `points` training points (none at loyalty level 1).
+    function client:petLevelUp(points)
+        self.petLevel = self.petLevel + 1
+        return self:gainPoints(points)
+    end
+
+    ---The pet's loyalty changes to `loyalty` (the client's text), its total by `points`.
+    function client:loyaltyChange(loyalty, points)
+        self.loyalty = loyalty
+        return self:gainPoints(points)
     end
 
     ---Opens the trainer window with `rows`: Beast Training, or a pet trainer's with `npc`.

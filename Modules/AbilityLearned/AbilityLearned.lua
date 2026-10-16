@@ -2,8 +2,8 @@ local _, ns = ...
 
 -- A toast when the hunter learns a pet ability from a tamed beast: the ability and its rank, the
 -- pet that taught it with its portrait and free training points, and that pet family's call.
--- Another when the pet gains training points. Detect.lua finds the learn; Known.lua keeps the
--- history, the ranks known and each pet's points per character, reads Beast Training and says
+-- Others when the pet gains training points and when its loyalty drops. Detect.lua finds the
+-- learn; Known.lua keeps the history, the ranks known and how each pet stood per character, reads Beast Training and says
 -- what a pet can still teach. Only a hunter learns pet abilities: on any other class the module
 -- watches nothing.
 --
@@ -18,11 +18,23 @@ local L = Kennel.L
 local M = Kennel:NewModule("AbilityLearned")
 M.title = L.ABILITYLEARNED_TITLE
 M.description = L.ABILITYLEARNED_DESC
-M.toastTypes = { learned = L.ABILITYLEARNED_TOASTTYPE_LEARNED, points = L.ABILITYLEARNED_TOASTTYPE_POINTS }
+M.toastTypes = {
+    learned = L.ABILITYLEARNED_TOASTTYPE_LEARNED,
+    points = L.ABILITYLEARNED_TOASTTYPE_POINTS,
+    loyalty = L.ABILITYLEARNED_TOASTTYPE_LOYALTY,
+}
 M.toastSkins = { learned = "splash" }
 M.defaults = {
-    profile = { sound = "family", screenshot = false, hints = true, points = true, pointsSound = "family" },
-    char = { history = {}, known = {}, trainingRead = false, points = {} },
+    profile = {
+        sound = "family",
+        screenshot = false,
+        hints = true,
+        points = true,
+        pointsSound = "family",
+        loyalty = true,
+        loyaltySound = "family",
+    },
+    char = { history = {}, known = {}, trainingRead = false, pets = {} },
 }
 
 local LEVEL_UP = 888 -- SOUNDKIT.LEVEL_UP
@@ -39,6 +51,7 @@ local EVENTS = {
     "TRADE_SKILL_CLOSE",
     "UNIT_PET",
     "UNIT_PET_TRAINING_POINTS",
+    "PET_UI_UPDATE",
 }
 
 ---The settings of the profile in use.
@@ -47,15 +60,15 @@ function M:Settings()
     return self.db.profile --[[@as KennelAbilityLearnedSettings]]
 end
 
----The sound a sound setting asks for: the pet's call (the level-up sound when its family has none
+---The sound a sound setting asks for: the pet's own (the level-up sound when its family has none
 ---or it is not about the pet out), the level-up sound, or none.
----@param key "sound"|"pointsSound" the learn's setting, or the training points'
----@param fromPet boolean
+---@param key "sound"|"pointsSound"|"loyaltySound" the setting of the kind of toast
+---@param petSound "AGGRO"|"WOUND"|nil which of the pet's sounds; nil when it is not about the pet out
 ---@return KennelSound?
-function M:Sound(key, fromPet)
+function M:Sound(key, petSound)
     local setting = self:Settings()[key]
     if setting == "off" then return nil end
-    return setting == "family" and fromPet and Kennel.PetSound("AGGRO") or { kit = LEVEL_UP }
+    return setting == "family" and petSound and Kennel.PetSound(petSound) or { kit = LEVEL_UP }
 end
 
 ---The toast for a learn.
@@ -75,7 +88,7 @@ function M:Toast(learn)
         icon = learn.icon,
         portrait = teacher and "pet" or nil,
         screenshot = self:Settings().screenshot,
-        sound = self:Sound("sound", teacher ~= nil),
+        sound = self:Sound("sound", teacher and "AGGRO" or nil),
     }
 end
 
@@ -132,10 +145,10 @@ end
 -- What WoW: Forever sends when Beast Training closes.
 M.TRADE_SKILL_CLOSE = M.TRAINER_CLOSED
 
----What to tell about the pet out: what it can teach, and the training points it gained.
+---What to tell about the pet out: what it can teach, and how it grew.
 function M:CheckPet()
     self:CheckHints()
-    self:CheckPoints()
+    self:CheckGrowth()
 end
 
 -- A pet summoned, tamed or dismissed: its spellbook fills in just after.
@@ -152,7 +165,12 @@ end
 ---@param _ string the event
 ---@param unit string
 function M:UNIT_PET_TRAINING_POINTS(_, unit)
-    if unit == "pet" then self:CheckPoints() end
+    if unit == "pet" then self:CheckGrowth() end
+end
+
+-- What the pet window updates on; loyalty among it.
+function M:PET_UI_UPDATE()
+    self:CheckGrowth()
 end
 
 function M:OnEnable()

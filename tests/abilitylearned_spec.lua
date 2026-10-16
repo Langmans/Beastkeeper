@@ -31,7 +31,7 @@ describe("AbilityLearned", function()
             local toast = client:toast()
             assert.are.equal("New pet ability: Claw (Rank 2)", toast.Title.text)
             assert.are.equal("Fluffy has taught you Claw.", toast.Text.text)
-            assert.are.equal("Fluffy has 43 training points free.", toast.Hint.text)
+            assert.are.equal("Fluffy has 43 training |4point:points; free.", toast.Hint.text)
             assert.are.equal("Ability Learned", toast.Source.text, "the splash, by default")
             assert.are.equal(132140, toast.Icon.texture)
             assert.are.equal("pet", toast.Portrait.portrait)
@@ -318,7 +318,7 @@ describe("AbilityLearned", function()
         it("toast how many the pet got and how many are free", function()
             local client = ready():gainPoints(3)
             local toast = client:toast()
-            assert.are.equal("Fluffy gained 3 training points", toast.Title.text)
+            assert.are.equal("Fluffy gained 3 training |4point:points;", toast.Title.text)
             assert.are.equal("46 free to spend at Beast Training.", toast.Text.text)
             assert.are.equal("Interface\\Icons\\Ability_Hunter_BeastTraining", toast.Icon.texture)
             assert.are.equal("pet", toast.Portrait.portrait)
@@ -344,7 +344,7 @@ describe("AbilityLearned", function()
             assert.is_nil(client:toast(), "Fluffy as it was")
             client.trainingPoints = { 14, 0 }
             client:summon("Shadow", {}):advance(1)
-            assert.are.equal("Shadow gained 4 training points", client:toastTitle())
+            assert.are.equal("Shadow gained 4 training |4point:points;", client:toastTitle())
         end)
 
         it("are kept per character across a relog, and told once the login wait is over", function()
@@ -355,7 +355,7 @@ describe("AbilityLearned", function()
             relogged:login()
             assert.is_nil(relogged:toast(), "not in the login wait")
             relogged:advance(5)
-            assert.are.equal("Fluffy gained 2 training points", relogged:toastTitle())
+            assert.are.equal("Fluffy gained 2 training |4point:points;", relogged:toastTitle())
         end)
 
         it("are noted but not told with the toast off, or on a client without them", function()
@@ -383,7 +383,7 @@ describe("AbilityLearned", function()
             settings.pointsSound = "off"
             local count = #client.sounds
             client:gainPoints(1)
-            assert.are.equal("Fluffy gained 1 training points", client:toastTitle())
+            assert.are.equal("Fluffy gained 1 training |4point:points;", client:toastTitle())
             assert.are.equal(count, #client.sounds)
         end)
 
@@ -391,6 +391,71 @@ describe("AbilityLearned", function()
             local client = ready()
             client.Kennel:SetModuleOn("AbilityLearned", false)
             assert.is_nil(client:gainPoints(3):toast())
+        end)
+
+        it("name a pet level-up as their cause", function()
+            local toast = ready():petLevelUp(4):toast()
+            assert.are.equal("Fluffy reached level 16", toast.Title.text)
+            assert.are.equal("+4 training |4point:points;, 47 free for Beast Training.", toast.Text.text)
+        end)
+
+        it("are not there for a level-up at loyalty level 1, which says nothing", function()
+            local client = ready()
+            client.loyalty = "Loyalty Level 1 (Rebellious)"
+            module(client).db.char.pets.Fluffy.loyalty = 1
+            assert.is_nil(client:petLevelUp(0):toast())
+            assert.are.equal(16, module(client).db.char.pets.Fluffy.level, "the level is noted")
+        end)
+
+        it("name a loyalty level-up as their cause", function()
+            local toast = ready():loyaltyChange("Loyalty Level 5 (Faithful)", 15):toast()
+            assert.are.equal("Fluffy is now at Loyalty Level 5 (|cff00cca3Faithful|r)", toast.Title.text)
+            assert.are.equal("+15 training |4point:points;, 58 free for Beast Training.", toast.Text.text)
+        end)
+
+        it("name no cause when level and loyalty rose together", function()
+            local client = ready()
+            client.petLevel, client.loyalty = 16, "Loyalty Level 5 (Faithful)"
+            client:gainPoints(19)
+            assert.are.equal("Fluffy gained 19 training |4point:points;", client:toastTitle())
+        end)
+
+        it("name the level without a way to read loyalty", function()
+            assert.are.equal("Fluffy reached level 16", ready({ noLoyaltyAPI = true }):petLevelUp(4):toastTitle())
+        end)
+    end)
+
+    describe("loyalty dropping", function()
+        it("toasts with the new loyalty level, the pet's wound cry and the look for every toast", function()
+            local client = ready():loyaltyChange("Loyalty Level 3 (Submissive)", -15)
+            local toast = client:toast()
+            assert.are.equal("Fluffy's loyalty dropped", toast.Title.text)
+            assert.are.equal(
+                "Now Loyalty Level 3 (|cff00cc52Submissive|r). Keep it happy, or it may run away.",
+                toast.Text.text,
+                "the name coloured from friendly green at level 1 to exalted teal at 6"
+            )
+            assert.are.equal("-15 training |4point:points;, 28 free.", toast.Hint.text, "a lower loyalty costs points")
+            assert.are.equal("pet", toast.Portrait.portrait)
+            assert.are.same({ file = 562395, channel = "Master" }, client.sounds[#client.sounds])
+            assert.are.equal("card", client.Kennel:ToastSkinFor("AbilityLearned:loyalty"))
+        end)
+
+        it("is noted but not told with its toast off, and has a sound setting of its own", function()
+            local client = ready()
+            module(client).db.profile.loyalty = false
+            assert.is_nil(client:loyaltyChange("Loyalty Level 3 (Submissive)", -15):toast())
+            client = ready()
+            module(client).db.profile.loyaltySound = "off"
+            client:loyaltyChange("Loyalty Level 3 (Submissive)", -15)
+            assert.are.equal("Fluffy's loyalty dropped", client:toastTitle())
+            assert.are.same({}, client.sounds)
+        end)
+
+        it("is seen on the pet window's update too", function()
+            local client = ready()
+            client.loyalty = "Loyalty Level 3 (Submissive)"
+            assert.are.equal("Fluffy's loyalty dropped", client:fire("PET_UI_UPDATE"):toastTitle())
         end)
     end)
 
@@ -414,6 +479,12 @@ describe("AbilityLearned", function()
             assert.are.equal("family", args.pointsSound.get())
             args.pointsSound.set({}, "off")
             assert.are.equal("off", settings.pointsSound)
+            assert.is_true(args.loyalty.get())
+            args.loyalty.set({}, false)
+            assert.is_false(settings.loyalty)
+            assert.are.equal("family", args.loyaltySound.get())
+            args.loyaltySound.set({}, "levelup")
+            assert.are.equal("levelup", settings.loyaltySound)
         end)
 
         it("shows an example toast, kept out of the history", function()

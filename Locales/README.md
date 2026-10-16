@@ -52,6 +52,10 @@ English text.
 
 A module that moves in adds its namespace line to every language file.
 
+Plurals: AceLocale has none, but WoW draws `|4singular:plural;` after a
+number in the right form ("%d training |4point:points;"); languages with more
+forms list them all (`|4one:few:many;` in Russian).
+
 ## Getting strings onto the translation page
 
 The translation page only knows the phrases it has been given. After adding

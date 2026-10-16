@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- AbilityLearned's page in the settings window (Kennel > Ability Learned): the sound, the
--- screenshot, the hints, the training points toast, an example toast, a simulated learn, what the pet can teach, and the
+-- screenshot, the hints, the training points and loyalty toasts with their sounds, an example toast, a simulated learn, what the pet can teach, and the
 -- history.
 
 ---@type Kennel
@@ -18,7 +18,7 @@ local function Setting(key)
 end
 
 ---A sound choice for the setting `key`.
----@param key "sound"|"pointsSound"
+---@param key "sound"|"pointsSound"|"loyaltySound"
 ---@param name string
 ---@param order number
 ---@return table
@@ -45,6 +45,7 @@ function M:GetOptions()
     local screenshotGet, screenshotSet = Setting("screenshot")
     local hintsGet, hintsSet = Setting("hints")
     local pointsGet, pointsSet = Setting("points")
+    local loyaltyGet, loyaltySet = Setting("loyalty")
     return {
         args = {
             sound = SoundSelect("sound", L.ABILITYLEARNED_OPTION_SOUND, 1),
@@ -76,6 +77,15 @@ function M:GetOptions()
                 get = pointsGet,
                 set = pointsSet,
             },
+            loyalty = {
+                type = "toggle",
+                name = L.ABILITYLEARNED_OPTION_LOYALTY,
+                order = 3.7,
+                width = "full",
+                get = loyaltyGet,
+                set = loyaltySet,
+            },
+            loyaltySound = SoundSelect("loyaltySound", L.ABILITYLEARNED_OPTION_LOYALTY_SOUND, 3.8),
             test = {
                 type = "execute",
                 name = L.ABILITYLEARNED_OPTION_TEST,
