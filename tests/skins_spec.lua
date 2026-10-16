@@ -79,6 +79,72 @@ describe("toast skins", function()
     end)
 end)
 
+describe("the skin contract", function()
+    local client, Kennel
+
+    before_each(function()
+        client = quiet()
+        Kennel = client.Kennel
+    end)
+
+    it("refuses a skin without an id, a table, a name or a method, saying what is missing", function()
+        assert.has_error(function()
+            Kennel:RegisterToastSkin("", recordingSkin())
+        end, "Kennel:RegisterToastSkin: id must be a non-empty string")
+        assert.has_error(function()
+            Kennel:RegisterToastSkin("x", "skin")
+        end, "Kennel:RegisterToastSkin(x): skin must be a table")
+        local skin = recordingSkin()
+        skin.name, skin.Update, skin.Hide = nil, nil, nil
+        assert.has_error(function()
+            Kennel:RegisterToastSkin("x", skin)
+        end, "Kennel:RegisterToastSkin(x): the skin has no name (a string), Update, Hide")
+        assert.is_nil(Kennel:ToastSkins().x)
+    end)
+
+    for _, method in ipairs({ "Show", "Update", "IsMouseOver" }) do
+        it("hands a toast to the card when a skin's " .. method .. " errors, and reports it", function()
+            local skin = recordingSkin()
+            skin[method] = function()
+                error("broken " .. method)
+            end
+            Kennel:RegisterToastSkin("broken", skin)
+            Kennel.db.profile.toast.skin = "broken"
+            Kennel:ShowToast({ key = "x", title = "Still shown" })
+            client:animate(0.1)
+            assert.are.equal("Still shown", client:toastTitle())
+            assert.truthy(client.errors[1]:find("broken " .. method, 1, true))
+        end)
+    end
+
+    it("lets a toast go when its skin's Hide errors, without the card showing it again", function()
+        local skin = recordingSkin()
+        skin.Hide = function()
+            error("broken Hide")
+        end
+        Kennel:RegisterToastSkin("broken", skin)
+        Kennel.db.profile.toast.skin = "broken"
+        Kennel.db.profile.toast.duration = 1
+        Kennel:ShowToast({ key = "x", title = "Goes" })
+        client:animate(2)
+        assert.is_false(client.Kennel:ToastDriver().shown)
+        assert.is_nil(client:toastTitle())
+        assert.truthy(client.errors[1]:find("broken Hide", 1, true))
+    end)
+
+    it("reports an error of the card itself without replacing it", function()
+        local card = Kennel:ToastSkins().card
+        local update = card.Update
+        card.Update = function()
+            error("card broke")
+        end
+        Kennel:ShowToast({ key = "x", title = "t" })
+        card.Update = update
+        assert.truthy(client.errors[1]:find("card broke", 1, true))
+        assert.are.equal("t", client:toastTitle())
+    end)
+end)
+
 describe("the splash skin", function()
     local client, Kennel, frame
 

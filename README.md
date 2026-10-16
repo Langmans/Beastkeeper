@@ -189,6 +189,13 @@ end
 
 The player then picks "My look" on Kennel's page. A saved choice whose skin
 is gone (its addon disabled) falls back to the card.
+
+The contract is enforced in the game, not only in the editor types:
+`RegisterToastSkin` raises an error naming what is missing (an id, a `name`
+string, or one of the four methods) and does not register the skin. When a
+registered skin errors while it draws, the error goes to the error handler
+(BugSack shows it) and the card takes over that toast, so a broken skin
+cannot stop Kennel's toasts. An error in `Hide` only lets the toast go.
 - **Macros** (`Core\Macro.lua`): a module with a `Macros()` method returning
   `{ name, icon, body }` entries calls `Kennel:OfferMacros(self)` from
   `OnEnable`. They are made once per character (per character, or

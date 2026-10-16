@@ -59,11 +59,26 @@ local function Settings()
     return Kennel.db.profile.toast --[[@as KennelToastSettings]]
 end
 
+-- What every skin must have (KennelToastSkin): RegisterToastSkin refuses one without.
+local SKIN_METHODS = { "Show", "Update", "Hide", "IsMouseOver" }
+
 ---Makes a skin available. Another addon calls this on Kennel's addon object
 ---(LibStub("AceAddon-3.0"):GetAddon("Kennel", true)), at any time after Kennel has loaded.
+---Raises an error naming what is missing when the skin does not keep the contract.
 ---@param id string kept in the saved settings; a short lowercase word
 ---@param skin KennelToastSkin
 function Kennel:RegisterToastSkin(id, skin)
+    if type(id) ~= "string" or id == "" then error("Kennel:RegisterToastSkin: id must be a non-empty string", 2) end
+    if type(skin) ~= "table" then error("Kennel:RegisterToastSkin(" .. id .. "): skin must be a table", 2) end
+    ---@type string[]
+    local missing = {}
+    if type(skin.name) ~= "string" then missing[#missing + 1] = "name (a string)" end
+    for _, method in ipairs(SKIN_METHODS) do
+        if type(skin[method]) ~= "function" then missing[#missing + 1] = method end
+    end
+    if #missing > 0 then
+        error("Kennel:RegisterToastSkin(" .. id .. "): the skin has no " .. table.concat(missing, ", "), 2)
+    end
     skins[id] = skin
 end
 
@@ -83,6 +98,34 @@ function Kennel:ToastSkinFor(kind)
     if chosen and skins[chosen] then return chosen end
     if skins[settings.skin] then return settings.skin end
     return DEFAULT_SKIN
+end
+
+---Calls a method of the skin drawing the toast. When it errors, the error goes to the error
+---handler (BugSack and the like), and a skin other than the card is replaced by the card for the
+---rest of this toast: a broken skin from another addon cannot stop Kennel's toasts.
+---@param method string
+---@param ... any the method's arguments
+---@return boolean? result what IsMouseOver answers; false after an error
+local function Call(method, ...)
+    local skin = currentSkin --[[@as KennelToastSkin]]
+    local ok, result = pcall(skin[method], skin, ...)
+    if ok then
+        return result --[[@as boolean?]]
+    end
+    geterrorhandler()(result)
+    if skin ~= skins[DEFAULT_SKIN] then Engine.Fallback(method ~= "Hide") end
+    return false
+end
+
+---Puts the card in place of the skin that failed, for the toast that is up; `show` is false when
+---the toast was going away anyway.
+---@param show boolean
+function Engine.Fallback(show)
+    local failed = currentSkin --[[@as KennelToastSkin]]
+    pcall(failed.Hide, failed)
+    currentSkin = skins[DEFAULT_SKIN]
+    lastSkin = currentSkin
+    if show then Call("Show", current, Settings()) end
 end
 
 ---Shows the next waiting toast, if any; called whenever one is gone.
@@ -109,14 +152,13 @@ end
 ---@param _ Frame the driver
 ---@param elapsed number seconds since the previous frame
 local function Tick(_, elapsed)
-    local skin = currentSkin --[[@as KennelToastSkin]]
     clock = clock + elapsed
-    if not skin:IsMouseOver() then shownFor = shownFor + elapsed end
+    if not Call("IsMouseOver") then shownFor = shownFor + elapsed end
     if not fadeStart and shownFor >= stay then fadeStart = clock end
     local fade = fadeStart and Progress(clock, fadeStart, FADE_OUT) or 0
-    skin:Update(Progress(clock, 0, INTRO), fade, 1 - Progress(shownFor, 0, stay))
+    Call("Update", Progress(clock, 0, INTRO), fade, 1 - Progress(shownFor, 0, stay))
     if fade >= 1 then
-        skin:Hide()
+        Call("Hide")
         ShowNext()
     end
 end
@@ -143,8 +185,8 @@ function Engine.Display(info)
     current, currentSkin = info, skins[Kennel:ToastSkinFor(info.type)]
     lastSkin = currentSkin
     clock, shownFor, fadeStart, stay = 0, 0, nil, settings.duration
-    currentSkin:Show(info, settings)
-    currentSkin:Update(0, 0, 1)
+    Call("Show", info, settings)
+    Call("Update", 0, 0, 1)
     driver:Show()
     Play(info.sound)
 end
@@ -152,7 +194,7 @@ end
 ---Closes the toast at once, without the fade; the next waiting one, if any, follows.
 function Kennel:HideToast()
     if not currentSkin then return end
-    currentSkin:Hide()
+    Call("Hide")
     ShowNext()
 end
 
