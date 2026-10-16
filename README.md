@@ -4,30 +4,77 @@ Hunter pet tools in one addon. Each tool is a module that can be turned on or
 off on its own, in the game's settings window under **AddOns → Kennel**.
 
 Kennel is being put together from separate addons by the same author; the
-modules move in one at a time. This version is the framework: the settings
-page with a switch per module, profiles, and the `/kennel` command.
+modules move in one at a time.
 
 ## Use
 
-- `/kennel` opens the settings page.
+- `/kennel` opens the settings page: a switch per module, and the toast's
+  settings. Each module with settings has a page of its own below it.
 - `/kennel help` lists the commands the modules offer. Commands exist for what
   a macro needs; everything else is on the settings page.
 - **Profiles** (a page under Kennel): every character uses the `Default`
   profile until you pick another. The module switches are part of the
   profile, so a profile can, for instance, turn a module off on one character
   only.
+- **The toast**: modules tell you things with a small card near the top of the
+  screen. Drag it to move it, right-click to close it, hover over it to keep it
+  up. How long it stays and how big it is are on Kennel's page.
+
+### Autocast Check
+
+A toast when your pet's Growl or Cower autocast does not fit what you are
+doing:
+
+| Mode | Growl | Cower | When |
+| --- | --- | --- | --- |
+| **Solo** | on | off | by itself, anywhere but a dungeon group |
+| **Dungeon** | off | on | by itself, in a dungeon or raid instance while in a group |
+| **Kite** | off | on | chosen by you: the mob is on you, not on your pet |
+| **Tank** | on | off | chosen by you: your pet tanks for a group without a tank |
+
+A toast shows when something stops fitting (you zone into a dungeon with Growl
+on, summon a pet with Cower on, switch to kite mode) and goes away by itself
+once you fix it. When combat starts, whatever is still wrong toasts again.
+Growl and Cower are seen whether they are on the pet bar or only in the pet's
+spellbook. It plays your pet's call (the raid warning for a pet without one),
+or nothing.
+
+Kite and tank mode are switched by
+
+- `/kennel autocast kite [on|off]` and `/kennel autocast tank [on|off]`
+  (without a word they toggle; pressed again with `on` they say nothing, so
+  they fit a macro you press over and over);
+- a key binding each, under Esc > Options > Keybindings > AddOns > Kennel;
+- three macros Kennel makes for each hunter the first time, in the macro
+  window (`/macro`): **KennelKite** casts Distracting Shot and switches kite
+  mode on, **KennelKiteOff** switches it off, **KennelTank** switches tank
+  mode. Deleted ones stay gone; **Make the macros** on the module's page makes
+  them again.
+
+The module's page has the mode, which of Growl and Cower are watched, the
+combat reminder, the sound, and a button for an example toast. On other
+classes it does nothing.
 
 ## Technical
 
 ### Layout
 
 ```
-Kennel.toc
+Kennel.toc        loads embeds.xml, then the three folders' xml files
 embeds.xml        Ace3, loaded from Libs\ (not in the repository, see below)
-Locales\          AceLocale strings; enUS.lua is the source, see Locales\README.md
-Core\Addon.lua    the AceAddon object, KennelDB, the module switches
-Core\Options.lua  the AceConfig options and the pages in the settings window
-Core\Commands.lua /kennel
+Bindings.xml      the key bindings; each runs a /kennel command
+Locales\          AceLocale strings: Locales.xml, enUS.lua as the source,
+                  the other languages filled in by the packager (README.md there)
+Core\Core.xml     the core, in this order:
+  Addon.lua       the AceAddon object, KennelDB, the module switches
+  Sounds.lua      pet sounds per family (Kennel.sounds.*_PER_FAMILY)
+  Pet.lua         spell names and icons, the pet's family and its sound
+  Toast.lua       the toast every module shows
+  Macro.lua       macros a module makes for the player
+  Options.lua     the AceConfig options and the pages in the settings window
+  Commands.lua    /kennel
+Modules\Modules.xml   one Include per module
+Modules\<Name>\   a module: <Name>.xml, Locale.lua, <Name>.lua, Options.lua
 annotations\      editor-only types (not in the .toc)
 tests\            the specs, the simulated client and the tooling (check.lua)
 .busted, .luacov  test and coverage settings
@@ -36,26 +83,32 @@ kennel-dev-1.rockspec  the pinned test tools (not a rock of Kennel itself)
 
 ### Modules
 
-A module is an AceAddon module of Kennel, in its own file after the core in
-the `.toc`:
+A module is a folder under `Modules\` with an `.xml` that loads its files, and
+a line in `Modules\Modules.xml`:
+
+```
+Modules\PetCare\PetCare.xml   Locale.lua, PetCare.lua, Options.lua, in that order
+Modules\PetCare\Locale.lua    its English strings (Locales\README.md)
+Modules\PetCare\PetCare.lua   the module
+Modules\PetCare\Options.lua   its settings page (GetOptions)
+```
+
+Plus a `namespace="PetCare"` keyword line in every `Locales\<lang>.lua`, and
+its tests in `tests\<name>_spec.lua`. The module itself:
 
 ```lua
 local _, Kennel = ...
 local L = Kennel.L
 
----@class KennelPetCare: KennelModule
+---@type KennelPetCare -- a class in annotations\Kennel.lua
 local M = Kennel:NewModule("PetCare", "AceTimer-3.0")
 M.title = L.PETCARE_TITLE
 M.description = L.PETCARE_DESC
 M.defaults = { profile = { threshold = 40 } }
 M.command = "care"
 M.commands = {
-    revive = { desc = L.PETCARE_REVIVE_DESC, func = function(self, args) end },
+    revive = { desc = L.PETCARE_CMD_REVIVE, func = Revive }, -- Revive(module, args)
 }
-
-function M:GetOptions()
-    return { args = { ... } } -- an AceConfig group
-end
 
 function M:OnEnable()
     self:RegisterEvent("UNIT_HEALTH")
@@ -63,11 +116,12 @@ end
 
 function M:OnDisable()
     -- undo everything OnEnable did that AceEvent/AceTimer do not undo themselves
+    Kennel:DropToasts(self.moduleName .. ":")
 end
 ```
 
-What each field means is in `annotations/Kennel.lua` (`KennelModule`). The
-rules the core relies on:
+`Modules\AutocastCheck\` is a complete example. What each field means is in
+`annotations/Kennel.lua` (`KennelModule`). The rules the core relies on:
 
 - **The core owns the switch.** `profile.modules[name]` in `KennelDB` says
   whether a module runs; a module never calls `Enable`/`Disable` on itself.
@@ -83,6 +137,27 @@ rules the core relies on:
   `disabled`, and `name` when the group has none (the module's `title`).
 - Every module embeds AceEvent-3.0; anything else it lists in `NewModule`
   and in `embeds.xml` / `.pkgmeta`.
+
+### What the core offers modules
+
+- **Toast** (`Core\Toast.lua`): `Kennel:ShowToast(info)` with a key, title,
+  text, hint, icon, accent colour and sound (`KennelToastInfo`). One toast per
+  key is up or waiting; toasts for different keys show one after the other.
+  Keys are `"<Module>:<what>"`: `Kennel:DropToast(key)` takes one away when it
+  is solved, `Kennel:DropToasts("<Module>:")` all of a module's when it is
+  switched off. Its duration, size and position are core settings.
+- **Macros** (`Core\Macro.lua`): a module with a `Macros()` method returning
+  `{ name, icon, body }` entries calls `Kennel:OfferMacros(self)` from
+  `OnEnable`. They are made once per character (per character, or
+  account-wide when those are full; never in combat; an existing macro of the
+  same name is left alone), and `Kennel:CreateMacros(module, true)` makes the
+  missing ones again by hand.
+- **Pet** (`Core\Pet.lua`, `Core\Sounds.lua`): `Kennel.SpellInfo(id)` across
+  client generations, `Kennel.PetFamilyID()`, and `Kennel.PetAggroSound()`, the
+  attack call of the pet's family from `Kennel.sounds.AGGRO_PER_FAMILY`.
+- **Key bindings**: `Bindings.xml` at the top (the client reads only that
+  one); a binding calls a global function that runs a `/kennel` command, so a
+  module that is off says so instead of acting.
 
 ### Libraries
 

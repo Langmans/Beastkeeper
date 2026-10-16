@@ -4,6 +4,9 @@
 -- keeps its own in its own file and namespace.
 local L = LibStub("AceLocale-3.0"):NewLocale("Kennel", "enUS", true)
 
+-- One string per line, however long: see Locales\README.md.
+-- stylua: ignore start
+
 -- Settings window: title of the page with the on/off switch for each module.
 L.MODULES = "Modules"
 -- Settings window: the text above the module switches.
@@ -19,3 +22,32 @@ L.HELP_OPTIONS = "/kennel - open the options"
 -- Chat, /kennel help: one line per command. First %s: the module's command word, second %s:
 -- the command (both typed as they are, not translated), third %s: what the command does.
 L.HELP_COMMAND = "/kennel %s %s - %s"
+
+-- Settings window, Kennel's page: the toast every module shows (a small card near the top of the
+-- screen with an icon and a few lines of text).
+L.TOAST = "Toast"
+L.TOAST_DESC = "Drag a toast to move it, right-click to close it, hover over it to keep it up."
+-- Slider: how many seconds a toast stays before it fades.
+L.TOAST_DURATION = "Stays for (seconds)"
+-- Slider: the toast's size, 1 is normal.
+L.TOAST_SCALE = "Size"
+-- Button: puts the toast back in its standard spot.
+L.TOAST_RESET = "Reset position"
+-- Button: shows an example toast.
+L.TOAST_TEST = "Show an example"
+-- The example toast: its title and text.
+L.TOAST_TEST_TITLE = "This is a toast"
+L.TOAST_TEST_TEXT = "Kennel's modules show a toast like this when something needs your attention."
+
+-- Chat, after a module made its macros. %s: a list of macro names (KennelKite, ...).
+L.MACROS_MADE = "Made the macros %s for this character: drag them from the macro window (/macro) onto an action bar."
+-- Chat, when the character's macros were full. %s: a list of macro names.
+L.MACROS_MADE_ACCOUNT = "Made %s among the account-wide macros, since this character's are full."
+-- Chat, when there was no room at all. %s: a list of macro names.
+L.MACROS_FULL = "No room for %s: your character and account-wide macros are both full."
+-- Chat, after "Make the macros" when every macro was there already.
+L.MACROS_THERE = "The macros are there already."
+-- Chat, after "Make the macros" in combat.
+L.MACROS_COMBAT = "Macros cannot be made in combat; try again after the fight."
+
+-- stylua: ignore end

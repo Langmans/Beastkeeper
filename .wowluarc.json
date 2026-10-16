@@ -3,7 +3,14 @@
     "library": ["annotations/", "Libs/"],
     "ignore": ["tests/", "coverage/", ".release/", ".lua/", ".luarocks/", ".cache/", ".busted", ".luacov", "*.rockspec"],
     "globals": {
-        "write": ["KennelDB"]
+        "write": [
+            "KennelDB",
+            "BINDING_HEADER_KENNEL",
+            "BINDING_NAME_KENNEL_AUTOCAST_KITE",
+            "BINDING_NAME_KENNEL_AUTOCAST_TANK",
+            "Kennel_AutocastKite",
+            "Kennel_AutocastTank"
+        ]
     },
     "diagnostics": {
         "enable": [

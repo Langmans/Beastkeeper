@@ -51,10 +51,81 @@ function Kennel:GetProfileOptions()
     }
 end
 
+---The toast's settings, shared by every module, as a box on Kennel's page below the switches.
+---@return AceConfig.OptionsTable
+function Kennel:GetToastOptions()
+    local settings = self.db.profile.toast --[[@as KennelToastSettings]]
+    return {
+        type = "group",
+        inline = true,
+        name = L.TOAST,
+        order = 100,
+        args = {
+            desc = { type = "description", name = L.TOAST_DESC, order = 0 },
+            duration = {
+                type = "range",
+                name = L.TOAST_DURATION,
+                order = 1,
+                min = 1,
+                max = 30,
+                step = 1,
+                get = function()
+                    return settings.duration
+                end,
+                ---@param _ table AceConfig's info about the option
+                ---@param value number
+                set = function(_, value)
+                    settings.duration = value
+                end,
+            },
+            scale = {
+                type = "range",
+                name = L.TOAST_SCALE,
+                order = 2,
+                min = 0.5,
+                max = 2,
+                step = 0.05,
+                isPercent = true,
+                get = function()
+                    return settings.scale
+                end,
+                ---@param _ table AceConfig's info about the option
+                ---@param value number
+                set = function(_, value)
+                    settings.scale = value
+                end,
+            },
+            reset = {
+                type = "execute",
+                name = L.TOAST_RESET,
+                order = 3,
+                func = function()
+                    self:ResetToastPosition()
+                end,
+            },
+            test = {
+                type = "execute",
+                name = L.TOAST_TEST,
+                order = 4,
+                func = function()
+                    self:ShowToast({
+                        key = "Kennel:test",
+                        title = L.TOAST_TEST_TITLE,
+                        text = L.TOAST_TEST_TEXT,
+                        -- The icon of Kennel's entry in the addon list.
+                        icon = "Interface\\Icons\\Ability_Hunter_BeastCall",
+                    })
+                end,
+            },
+        },
+    }
+end
+
 ---@return AceConfig.OptionsTable
 function Kennel:GetOptionsTable()
     local switches = {
         intro = { type = "description", name = L.MODULES_DESC, order = 0 },
+        toast = self:GetToastOptions(),
     }
     local options = {
         type = "group",

@@ -1,0 +1,10 @@
+<Bindings>
+    <!-- Esc > Options > Keybindings > AddOns > Kennel. The names shown there are set by the modules
+         (Modules\AutocastCheck\AutocastCheck.lua); each binding runs a /kennel command. -->
+    <Binding name="KENNEL_AUTOCAST_KITE" header="KENNEL" category="ADDONS">
+        Kennel_AutocastKite()
+    </Binding>
+    <Binding name="KENNEL_AUTOCAST_TANK" category="ADDONS">
+        Kennel_AutocastTank()
+    </Binding>
+</Bindings>

@@ -10,17 +10,6 @@
 ## X-License: MIT
 
 embeds.xml
-Locales\enUS.lua
-Locales\deDE.lua
-Locales\esES.lua
-Locales\esMX.lua
-Locales\frFR.lua
-Locales\itIT.lua
-Locales\koKR.lua
-Locales\ptBR.lua
-Locales\ruRU.lua
-Locales\zhCN.lua
-Locales\zhTW.lua
-Core\Addon.lua
-Core\Options.lua
-Core\Commands.lua
+Locales\Locales.xml
+Core\Core.xml
+Modules\Modules.xml

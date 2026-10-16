@@ -23,6 +23,36 @@ end
 ---@field saved table? KennelDB as the saved file left it
 ---@field modules fun(Kennel: Kennel)? creates test modules after the files load, before login
 ---@field noSettingsPanel boolean? Settings without C_SettingsUtil.OpenSettingsPanel, like Forever
+---@field class string? the player's class file, HUNTER by default
+---@field oldSpellAPI boolean? GetSpellInfo instead of C_Spell
+---@field noSpellAPI boolean? neither C_Spell nor GetSpellInfo
+---@field noTextureAPI boolean? C_Spell without GetSpellTexture
+---@field noPetBarAPI boolean? no GetPetActionInfo
+---@field noSpellBookAPI boolean? no C_SpellBook
+---@field noPetSpellCount boolean? C_SpellBook without HasPetSpells
+---@field noMacroConsts boolean? no Constants.MacroConsts (the addon's own limits apply)
+
+-- The spells the simulated client knows, per locale: id -> { name, icon }.
+local SPELLS = {
+    enUS = {
+        [2649] = { "Growl", 132270 },
+        [14916] = { "Growl", 132270 }, -- a higher rank: same name
+        [1742] = { "Cower", 132118 },
+        [17253] = { "Bite", 132278 },
+        [16828] = { "Claw", 132140 },
+        [4187] = { "Great Stamina", 136112 },
+        [20736] = { "Distracting Shot", 135736 },
+    },
+    deDE = {
+        [2649] = { "Knurren", 132270 },
+        [14916] = { "Knurren", 132270 },
+        [1742] = { "Ducken", 132118 },
+        [17253] = { "Biss", 132278 },
+        [20736] = { "Ablenkender Schuss", 135736 },
+    },
+}
+
+GROWL, COWER = 2649, 1742
 
 ---@param opts TestClientOptions?
 function NewClient(opts)
@@ -85,7 +115,133 @@ function NewClient(opts)
             return 1
         end,
     })
-    PlaySound = noop
+    -- client.sounds: { file = FileDataID } for a sound file, { kit = SoundKit ID } for a kit.
+    client.sounds = {}
+    function PlaySoundFile(file, channel)
+        client.sounds[#client.sounds + 1] = { file = file, channel = channel }
+    end
+    function PlaySound(kit, channel)
+        client.sounds[#client.sounds + 1] = { kit = kit, channel = channel }
+    end
+
+    -- The pet: client.petBar is the pet bar, one entry per slot, { spellID, autocast } for a spell
+    -- (autocast nil when it cannot autocast) or { token = "PET_ACTION_ATTACK" }; nil means no pet
+    -- out. client.petBook is the pet's spellbook, alphabetical like the client's, entries as above,
+    -- { token = "Attack" } for a command and { broken = true } for an entry whose lookup errors.
+    -- As on Forever: Cower is in the book but not on the bar. The pet starts as solo wants it,
+    -- Growl on and Cower off.
+    client.petBar = {
+        { token = "PET_ACTION_ATTACK" },
+        { token = "PET_ACTION_FOLLOW" },
+        { 2649, true },
+        { 16828, true },
+        { 17253, true },
+    }
+    client.petBook =
+        { { token = "Attack" }, { 17253, true }, { 16828, true }, { 1742, false }, { 4187 }, { 2649, true } }
+    -- client.familyID: the pet's CreatureFamily ID (2 = cat). client.inGroup, client.instance:
+    -- the group and the instance type ("party", "raid", "pvp", "arena", or "none" outside).
+    client.familyID, client.inGroup, client.instance = 2, false, "none"
+    function UnitExists(unit)
+        return unit == "player" or (unit == "pet" and client.petBar ~= nil)
+    end
+    function UnitCreatureFamily(unit)
+        if unit == "pet" and client.petBar then return "Cat", client.familyID end
+    end
+    function IsInGroup()
+        return client.inGroup
+    end
+    function IsInInstance()
+        return client.instance ~= "none", client.instance
+    end
+    -- client.secret: a value the client hides from addons (in combat, on Forever).
+    function issecretvalue(value)
+        return value ~= nil and value == client.secret
+    end
+
+    -- Spells: C_Spell, GetSpellInfo with opts.oldSpellAPI, neither with opts.noSpellAPI. Names
+    -- for enUS and deDE; any other locale reads the English ones.
+    local spells = SPELLS[locale] or SPELLS.enUS
+    local function spellName(id)
+        return spells[id] and spells[id][1]
+    end
+    local function spellIcon(id)
+        return spells[id] and spells[id][2]
+    end
+    C_Spell, GetSpellInfo = nil, nil
+    if opts.oldSpellAPI then
+        function GetSpellInfo(id)
+            return spellName(id), nil, spellIcon(id)
+        end
+    elseif not opts.noSpellAPI then
+        C_Spell = { GetSpellName = spellName, GetSpellTexture = not opts.noTextureAPI and spellIcon or nil }
+    end
+
+    -- GetPetActionInfo as Forever returns it: name, texture, isToken (1, not true), isActive,
+    -- autoCastAllowed, autoCastEnabled, spellID.
+    NUM_PET_ACTION_SLOTS = 10
+    GetPetActionInfo = nil
+    if not opts.noPetBarAPI then
+        function GetPetActionInfo(slot)
+            local entry = client.petBar and client.petBar[slot]
+            if not entry then return nil end
+            if entry.token then return entry.token, entry.token .. "_TEXTURE", 1, nil, false, false end
+            return spellName(entry[1]), spellIcon(entry[1]), nil, nil, entry[2] ~= nil, entry[2] == true, entry[1]
+        end
+    end
+
+    -- The pet's spellbook through C_SpellBook, as Forever has it. A command has no autocast values.
+    local function bookEntry(index)
+        local entry = client.petBook[index]
+        assert(not entry.broken, "this entry's lookup errors")
+        if entry.token then return entry.token, nil, nil end
+        return spellName(entry[1]), entry[2] ~= nil, entry[2] == true
+    end
+    Enum = { SpellBookSpellBank = { Player = 0, Pet = 1 } }
+    C_SpellBook = nil
+    if not opts.noSpellBookAPI then
+        C_SpellBook = {
+            HasPetSpells = not opts.noPetSpellCount and function()
+                if client.petBar then return #client.petBook, "PET" end
+            end or nil,
+            GetSpellBookItemInfo = function(index, bank)
+                assert(bank == Enum.SpellBookSpellBank.Pet, "pet spellbook bank expected")
+                if client.petBook[index].noInfo then return nil end
+                return { name = (bookEntry(index)) }
+            end,
+            GetSpellBookItemAutoCast = function(index, bank)
+                assert(bank == Enum.SpellBookSpellBank.Pet, "pet spellbook bank expected")
+                local _, allowed, on = bookEntry(index)
+                return allowed, on
+            end,
+        }
+    end
+
+    -- Macros: client.macros (account-wide) and client.charMacros (this character's). The index
+    -- of a character macro counts on from the account maximum, as the client's does.
+    client.macros, client.charMacros = {}, {}
+    local MAX_ACCOUNT, MAX_CHARACTER = 120, opts.noMacroConsts and 18 or 30
+    Constants = not opts.noMacroConsts
+            and { MacroConsts = { MAX_ACCOUNT_MACROS = MAX_ACCOUNT, MAX_CHARACTER_MACROS = MAX_CHARACTER } }
+        or nil
+    function GetMacroIndexByName(name)
+        for i, macro in ipairs(client.macros) do
+            if macro.name == name then return i end
+        end
+        for i, macro in ipairs(client.charMacros) do
+            if macro.name == name then return MAX_ACCOUNT + i end
+        end
+        return 0
+    end
+    function GetNumMacros()
+        return #client.macros, #client.charMacros
+    end
+    function CreateMacro(name, icon, body, perCharacter)
+        assert(not client.inCombat, "macros are not made in combat")
+        local list = perCharacter and client.charMacros or client.macros
+        assert(#list < (perCharacter and MAX_CHARACTER or MAX_ACCOUNT), "no free macro slot")
+        list[#list + 1] = { name = name, icon = icon, body = body }
+    end
 
     -- client.timers: pending C_Timer callbacks; client:advance runs the ones that come due.
     client.timers = {}
@@ -101,7 +257,8 @@ function NewClient(opts)
     end
     UnitName = UnitNameUnmodified
     function UnitClass()
-        return "Hunter", "HUNTER", 3
+        local classFile = opts.class or "HUNTER"
+        return classFile, classFile
     end
     function UnitRace()
         return "Night Elf", "NightElf", 4
@@ -249,13 +406,48 @@ function NewClient(opts)
         return 1
     end
     function Region:GetScale()
-        return 1
+        return self.scale or 1
     end
     function Region:GetText()
         return self.text
     end
     function Region:SetText(text)
         self.text = text
+    end
+    -- What tests read back from the toast: scale, alpha, texture, colours and anchor points.
+    function Region:SetScale(scale)
+        self.scale = scale
+    end
+    function Region:SetAlpha(alpha)
+        self.alpha = alpha
+    end
+    function Region:SetTexture(texture)
+        self.texture = texture
+    end
+    function Region:SetColorTexture(r, g, b, a)
+        self.color = { r, g, b, a }
+    end
+    function Region:SetTextColor(r, g, b)
+        self.textColor = { r, g, b }
+    end
+    function Region:ClearAllPoints()
+        self.points = {}
+    end
+    function Region:SetPoint(point, relativeTo, relativePoint, x, y)
+        self.points = self.points or {}
+        self.points[#self.points + 1] = { point, relativeTo, relativePoint, x, y }
+    end
+    function Region:GetPoint(index)
+        local p = self.points and self.points[index or 1]
+        if p then return p[1], p[2], p[3], p[4], p[5] end
+    end
+    -- client.mouseOver: whether the mouse is over a frame (the toast, in practice).
+    function Region:IsMouseOver()
+        return client.mouseOver == true
+    end
+    -- Dropped somewhere: the client leaves the frame anchored where it was dropped.
+    function Region:StopMovingOrSizing()
+        self.points = { { "TOPLEFT", nil, "BOTTOMLEFT", 300, 700 } }
     end
     local function newRegion(fields)
         fields = fields or {}
@@ -390,13 +582,75 @@ function NewClient(opts)
         return self
     end
 
-    ---What the client does at login: ADDON_LOADED for each addon, then PLAYER_LOGIN.
+    ---What the client does at login: ADDON_LOADED for each addon, PLAYER_LOGIN, the macros
+    ---loading; then the moment the modules wait before their first check.
     function client:login()
         self:fire("ADDON_LOADED", "SomeOtherAddon")
         self:fire("ADDON_LOADED", "Kennel")
         self.loggedIn = true
         self:fire("PLAYER_LOGIN")
+        self:fire("UPDATE_MACROS")
+        return self:advance(0.2)
+    end
+
+    ---The pet bar changed (autocast switched, a pet summoned); the modules check a moment later.
+    function client:petBarUpdate()
+        self:fire("PET_BAR_UPDATE")
+        return self:advance(0.2)
+    end
+
+    ---Sets autocast of the ability `id` wherever the pet has it, bar and book, without an event.
+    function client:setAutocast(id, on)
+        for _, list in ipairs({ self.petBar or {}, self.petBook }) do
+            for _, entry in ipairs(list) do
+                if entry[1] == id then entry[2] = on end
+            end
+        end
         return self
+    end
+
+    ---Switches autocast of the ability `id`, as a right-click does: PET_BAR_UPDATE follows.
+    function client:autocast(id, on)
+        return self:setAutocast(id, on):petBarUpdate()
+    end
+
+    ---Joins or leaves a group.
+    function client:group(inGroup)
+        self.inGroup = inGroup
+        self:fire("GROUP_ROSTER_UPDATE")
+        return self:advance(0.2)
+    end
+
+    ---The toast frame, once a toast has shown.
+    function client:toast()
+        return self.Kennel:ToastFrame()
+    end
+
+    ---The title of the toast that is up, or nil.
+    function client:toastTitle()
+        local toast = self:toast()
+        return toast and toast.shown and toast.Title.text or nil
+    end
+
+    ---Runs the toast's OnUpdate for `seconds`, in frames of `step`. Like the client, a hidden frame
+    ---gets no more updates.
+    function client:animate(seconds, step)
+        step = step or 0.05
+        local toast, elapsed = self:toast(), 0
+        while toast and elapsed < seconds - 1e-9 and toast.shown and toast.scripts.OnUpdate do
+            toast.scripts.OnUpdate(toast, step)
+            elapsed = elapsed + step
+        end
+        return self
+    end
+
+    ---The macro of that name, this character's or the account's, or nil.
+    function client:macro(name)
+        for _, list in ipairs({ self.charMacros, self.macros }) do
+            for _, macro in ipairs(list) do
+                if macro.name == name then return macro end
+            end
+        end
     end
 
     ---What the client does at logout: AceDB strips the defaults from the saved table.

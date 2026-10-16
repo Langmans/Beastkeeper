@@ -17,6 +17,12 @@ translator sees one module's strings together.
 
 - Keys start with the module's prefix (`AUTOCAST_...`), so two modules never
   share a key in the one runtime table.
+- **One string per line, however long.** The strings sit between
+  `-- stylua: ignore start` and `-- stylua: ignore end`, so StyLua does not
+  wrap a long one onto the next line. A wrapped assignment is reported by Lua
+  on its second line and by luacov as missed on its first, which would break
+  the 100% line coverage; one line per string is also easier to read and to
+  import.
 - **Every string gets a comment** right above it saying where it appears
   (chat, toast, settings page, tooltip), what the player is doing at that
   moment, and what each `%s`/`%d` holds. Words that must stay as they are

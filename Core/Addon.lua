@@ -24,7 +24,15 @@ function Kennel:OnInitialize()
     for name, module in pairs(self.modules) do
         switches[name] = module.enabledByDefault ~= false
     end
-    self.db = LibStub("AceDB-3.0"):New("KennelDB", { profile = { modules = switches } }, true)
+    self.db = LibStub("AceDB-3.0"):New("KennelDB", {
+        profile = {
+            modules = switches,
+            -- The toast every module shows (Core\Toast.lua); pos is set once it is dragged.
+            toast = { duration = 6, scale = 1 },
+        },
+        -- Per character: which modules made their macros already (Core\Macro.lua).
+        char = { macrosMade = {} },
+    }, true)
 
     for name, module in pairs(self.modules) do
         if module.defaults then module.db = self.db:RegisterNamespace(name, module.defaults) end
@@ -37,6 +45,7 @@ function Kennel:OnInitialize()
 
     self:SetupOptions()
     self:SetupCommands()
+    self:SetupMacros()
 end
 
 ---Whether the current profile has this module switched on.

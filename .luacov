@@ -4,7 +4,7 @@
 return {
     statsfile = "coverage/luacov.stats.out",
     reportfile = "coverage/lcov.info",
-    include = { "^%./Core/", "^%./Locales/", "^Core/", "^Locales/" },
+    include = { "^%./Core/", "^%./Locales/", "^%./Modules/", "^Core/", "^Locales/", "^Modules/" },
     exclude = { "Libs/", "tests/" },
-    includeuntestedfiles = { "Core", "Locales" },
+    includeuntestedfiles = { "Core", "Locales", "Modules" },
 }

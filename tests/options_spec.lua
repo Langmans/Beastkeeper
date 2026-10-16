@@ -102,7 +102,13 @@ describe("the settings window", function()
             names[#names + 1] = parent .. " > " .. category.name
         end
         table.sort(names)
-        assert.are.same({ "- > Kennel", "Kennel > Alpha Title", "Kennel > Beta Page", "Kennel > Profiles" }, names)
+        assert.are.same({
+            "- > Kennel",
+            "Kennel > Alpha Title",
+            "Kennel > Autocast Check",
+            "Kennel > Beta Page",
+            "Kennel > Profiles",
+        }, names)
     end)
 
     it("uses the page name as category ID on a client without C_SettingsUtil", function()
@@ -119,14 +125,14 @@ describe("the settings window", function()
             onShow(category.frame)
             shown = shown + 1
         end
-        assert.are.equal(4, shown)
+        assert.are.equal(5, shown)
         assert.are.same({}, client.errors)
     end)
 
     it("can also be drawn by AceConfigDialog in a window of its own", function()
         local client = NewClient({ modules = modules }):login()
         local dialog = LibStub("AceConfigDialog-3.0")
-        for _, path in ipairs({ "modules", "Alpha", "Beta", "profiles" }) do
+        for _, path in ipairs({ "modules", "Alpha", "Beta", "AutocastCheck", "profiles" }) do
             dialog:Open("Kennel", path)
         end
         dialog:Close("Kennel")
