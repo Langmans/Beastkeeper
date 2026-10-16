@@ -3,7 +3,7 @@
 ---A logged-in client without a pet, so no module toasts by itself.
 local function quiet(opts)
     local client = NewClient(opts)
-    client.petBar = nil
+    client.pet = nil
     return client:login()
 end
 

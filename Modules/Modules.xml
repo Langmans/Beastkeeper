@@ -1,4 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- One line per module; each module folder loads its own files. -->
     <Include file="AutocastCheck\AutocastCheck.xml"/>
+    <Include file="CareButton\CareButton.xml"/>
 </Ui>

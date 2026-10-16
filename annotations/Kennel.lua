@@ -139,6 +139,39 @@
 ---@field on boolean
 ---@field icon (number|string)? from the pet bar; nil for one only in the spellbook
 
+---CareButton's saved settings, its namespace's profile.
+---@class KennelCareButtonSettings
+---@field died boolean toast when the pet dies
+---@field nopet boolean toast when combat starts without a pet
+---@field low number the health percentage for the low toast; 0 is never
+---@field sound "family"|"warning"|"off"
+
+---@class KennelCareButton: KennelMacroModule
+---@field db AceDBObject-3.0 always set: the module has defaults
+---@field lowShown boolean the low toast was given and health has not been above the line since
+---@field deadAfterCombat boolean a failed cast in combat showed the pet is dead
+---@field reviveCasts table<string, true> Revive Pet casts that started, by cast GUID
+---@field MEND_PET number
+---@field REVIVE_PET number
+---@field CALL_PET number
+---@field PET_STATES string
+---@field Settings fun(self: KennelCareButton): KennelCareButtonSettings
+---@field SpellName fun(id: number): string
+---@field Toast fun(self: KennelCareButton, kind: "dead"|"nopet"|"low", reason: string?, percent: number?): KennelToastInfo
+---@field CheckHealth fun(self: KennelCareButton)
+---@field OnPetState fun(self: KennelCareButton, state: string)
+---@field MacroText fun(self: KennelCareButton, petDead: boolean): string
+---@field PetDead fun(self: KennelCareButton): boolean
+---@field SetPetDead fun(self: KennelCareButton, dead: boolean): boolean
+---@field ApplyButton fun(self: KennelCareButton)
+---@field UpdateMacro fun(self: KennelCareButton)
+
+---The sound tables, Kennel.sounds.<KIND>_PER_FAMILY (Core\Sounds.lua).
+---@class KennelSounds
+---@field AGGRO_PER_FAMILY table<number, number>
+---@field DEATH_PER_FAMILY table<number, number>
+---@field WOUND_PER_FAMILY table<number, number>
+
 ---Any value the game hands over, before the addon checks its type.
 ---@alias GameValue string|number|boolean|table|nil
 

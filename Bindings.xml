@@ -7,4 +7,6 @@
     <Binding name="KENNEL_AUTOCAST_TANK" category="ADDONS">
         Kennel_AutocastTank()
     </Binding>
+    <!-- CareButton's secure button, clicked by the binding itself (Modules\CareButton\Button.lua). -->
+    <Binding name="CLICK KennelCareButton:LeftButton" category="ADDONS"/>
 </Bindings>

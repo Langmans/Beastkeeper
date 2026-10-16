@@ -58,17 +58,14 @@ local offered = {}
 -- and GetMacroIndexByName do not know the player's macros yet.
 local macrosLoaded = false
 
----Makes the waiting modules' macros, unless in combat; then they wait for the end of combat.
+---Makes the waiting modules' macros, now or once combat ends.
 function Kennel:MakeOfferedMacros()
-    if InCombatLockdown() then
-        self:RegisterEvent("PLAYER_REGEN_ENABLED", "MakeOfferedMacros")
-        return
-    end
-    self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-    for name, module in pairs(offered) do
-        offered[name] = nil
-        self:CreateMacros(module)
-    end
+    self:OutOfCombat("macros", function()
+        for name, module in pairs(offered) do
+            offered[name] = nil
+            self:CreateMacros(module)
+        end
+    end)
 end
 
 function Kennel:UPDATE_MACROS()

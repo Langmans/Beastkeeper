@@ -4,7 +4,7 @@
 ---A logged-in client without a pet, with LibSink drawing every toast.
 local function sinking()
     local client = NewClient()
-    client.petBar = nil
+    client.pet = nil
     client:login()
     client.Kennel:ToastSettings().skin = "libsink"
     return client

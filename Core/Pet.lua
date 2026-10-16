@@ -32,11 +32,21 @@ function Kennel.PetFamilyID()
     return tonumber(familyID)
 end
 
----The attack call of the active pet's family, as a toast sound; nil without a pet or for a family
----whose call is not known.
+---A sound of the active pet's family, as a toast sound; nil without a pet or for a family without
+---that sound.
+---@param kind "AGGRO"|"DEATH"|"WOUND" its attack call, death sound or wound cry
 ---@return KennelSound?
-function Kennel.PetAggroSound()
+function Kennel.PetSound(kind)
     local familyID = Kennel.PetFamilyID()
-    local file = familyID and Kennel.sounds.AGGRO_PER_FAMILY[familyID]
+    local sounds = Kennel.sounds[kind .. "_PER_FAMILY"] --[[@as table<number, number>]]
+    local file = familyID and sounds[familyID]
     return file and { file = file } or nil
+end
+
+---Whether the addon may read a value: WoW: Forever hides some (health, autocast) in combat. A
+---client without canaccessvalue hides nothing.
+---@param value GameValue
+---@return boolean
+function Kennel.Readable(value)
+    return not canaccessvalue or canaccessvalue(value)
 end

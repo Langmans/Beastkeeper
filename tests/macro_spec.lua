@@ -1,7 +1,19 @@
 -- The macros a module makes: once per character, per character or account-wide, never in combat.
--- AutocastCheck's three serve as the example.
+-- AutocastCheck's three serve as the example; CareButton, with a macro of its own, is switched off
+-- here so the counts and the order are AutocastCheck's alone.
 
 local NAMES = { "KennelKite", "KennelKiteOff", "KennelTank" }
+
+---A client with only AutocastCheck making macros; `modules` adds module switches.
+local function NewClient(opts, modules)
+    opts = opts or {}
+    local switches = { CareButton = false }
+    for name, on in pairs(modules or {}) do
+        switches[name] = on
+    end
+    opts.saved = opts.saved or { profiles = { Default = { modules = switches } } }
+    return _G.NewClient(opts)
+end
 
 describe("module macros", function()
     it("are made for the character at the first login, with the spells' names", function()
@@ -75,8 +87,7 @@ describe("module macros", function()
     end)
 
     it("are made at once for a module switched on after login", function()
-        local client = NewClient({ saved = { profiles = { Default = { modules = { AutocastCheck = false } } } } })
-        client:login()
+        local client = NewClient({}, { AutocastCheck = false }):login()
         assert.are.equal(0, #client.charMacros)
         client.Kennel:SetModuleOn("AutocastCheck", true)
         assert.are.equal(3, #client.charMacros)

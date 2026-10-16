@@ -29,3 +29,41 @@ Kennel.sounds.AGGRO_PER_FAMILY = {
     [26] = 557977, -- Bird of Prey: sound/creature/owl/owlaggro.ogg
     [27] = 559967, -- Wind Serpent: sound/creature/serpent/serpentaggro.ogg
 }
+
+-- The sound a pet makes when it dies. Hyena (25) has only later files, and Crocolisk, Scorpid and
+-- Bat have none of their own.
+---@type table<number, number>
+Kennel.sounds.DEATH_PER_FAMILY = {
+    [1] = 564219, -- Wolf: sound/creature/wolf/mwolfdeath1.ogg
+    [2] = 562391, -- Cat: sound/creature/tiger/mtigerdeatha.ogg
+    [3] = 561420, -- Spider: sound/creature/tarantula/mtarantuladeath1a.ogg
+    [4] = 544952, -- Bear: sound/creature/bear/mbeardeatha.ogg
+    [5] = 545132, -- Boar: sound/creature/boar/mwildboardeath1.ogg
+    [7] = 545944, -- Carrion Bird: sound/creature/carrion/mcarriondeatha.ogg
+    [8] = 546431, -- Crab: sound/creature/crab/crabdeatha.ogg
+    [9] = 550959, -- Gorilla: sound/creature/gorilla/gorilladeatha.ogg
+    [11] = 558876, -- Raptor: sound/creature/raptor/mraptordeatha.ogg
+    [12] = 561391, -- Tallstrider: sound/creature/tallstrider/tallstriderdeatha.ogg
+    [21] = 559874, -- Turtle: sound/creature/seaturtle/seaturtledeatha.ogg
+    [26] = 557976, -- Bird of Prey: sound/creature/owl/owldeath.ogg
+    [27] = 559971, -- Wind Serpent: sound/creature/serpent/serpentdeath.ogg
+}
+
+-- The cry of a pet critically wounded. Crocolisk, Scorpid and Bat have none of their own.
+---@type table<number, number>
+Kennel.sounds.WOUND_PER_FAMILY = {
+    [1] = 564231, -- Wolf: sound/creature/wolf/mwolfwoundcritical1.ogg
+    [2] = 562395, -- Cat: sound/creature/tiger/mtigerwoundcriticala.ogg
+    [3] = 561419, -- Spider: sound/creature/tarantula/mtarantulawoundcritical1a.ogg
+    [4] = 544958, -- Bear: sound/creature/bear/mbearwoundcriticala.ogg
+    [5] = 545130, -- Boar: sound/creature/boar/mwildboarwoundcritical1.ogg
+    [7] = 545936, -- Carrion Bird: sound/creature/carrion/mcarrionwoundcriticala.ogg
+    [8] = 546422, -- Crab: sound/creature/crab/crabwoundcrit.ogg
+    [9] = 550964, -- Gorilla: sound/creature/gorilla/gorillawoundcrit.ogg
+    [11] = 558875, -- Raptor: sound/creature/raptor/mraptorwoundcriticala.ogg
+    [12] = 561389, -- Tallstrider: sound/creature/tallstrider/tallstriderwoundcrit.ogg
+    [21] = 559875, -- Turtle: sound/creature/seaturtle/seaturtlewoundcrita.ogg
+    [25] = 552336, -- Hyena: sound/creature/hyena/hyenawoundcrit.ogg
+    [26] = 557975, -- Bird of Prey: sound/creature/owl/owlwoundcrit.ogg
+    [27] = 559974, -- Wind Serpent: sound/creature/serpent/serpentwoundcrit.ogg
+}

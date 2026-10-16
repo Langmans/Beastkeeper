@@ -3,6 +3,13 @@
 -- .toc's files (Ace3 included) into a fresh namespace, so tests never share state. The load order
 -- and the .toc's metadata come from tests/helper.lua (TOC_FILES, TOC_METADATA, TOC_SAVED).
 
+-- What a hidden value looks like to the addon: only issecretvalue tells it apart.
+SECRET = setmetatable({}, {
+    __tostring = function()
+        return "<secret>"
+    end,
+})
+
 ---Packs varargs with their count, nils included (Lua 5.1 has no table.pack).
 local function pack(...)
     return { n = select("#", ...), ... }
@@ -33,6 +40,8 @@ end
 ---@field noMacroConsts boolean? no Constants.MacroConsts (the addon's own limits apply)
 ---@field ellesmere boolean|table? EllesmereUI loaded before Kennel (a table: fields to leave out, set to false)
 ---@field messageQueue boolean? MessageQueue loaded before Kennel
+---@field noPet boolean? no pet unit at the start
+---@field inCombat boolean? in combat from the start
 
 -- The spells the simulated client knows, per locale: id -> { name, icon }.
 local SPELLS = {
@@ -44,8 +53,14 @@ local SPELLS = {
         [16828] = { "Claw", 132140 },
         [4187] = { "Great Stamina", 136112 },
         [20736] = { "Distracting Shot", 135736 },
+        [136] = { "Mend Pet", 132179 },
+        [982] = { "Revive Pet", 132163 },
+        [883] = { "Call Pet", 132161 },
     },
     deDE = {
+        [136] = { "Tier heilen", 132179 },
+        [982] = { "Tier wiederbeleben", 132163 },
+        [883] = { "Tier rufen", 132161 },
         [2649] = { "Knurren", 132270 },
         [14916] = { "Knurren", 132270 },
         [1742] = { "Ducken", 132118 },
@@ -66,6 +81,8 @@ function NewClient(opts)
         printed = {},
         errors = {},
         loggedIn = false,
+        -- In combat (opts.inCombat: from the start, as after a /reload mid-fight).
+        inCombat = opts.inCombat == true,
     }
 
     local locale = opts.locale or "enUS"
@@ -126,9 +143,12 @@ function NewClient(opts)
         client.sounds[#client.sounds + 1] = { kit = kit, channel = channel }
     end
 
-    -- The pet: client.petBar is the pet bar, one entry per slot, { spellID, autocast } for a spell
-    -- (autocast nil when it cannot autocast) or { token = "PET_ACTION_ATTACK" }; nil means no pet
-    -- out. client.petBook is the pet's spellbook, alphabetical like the client's, entries as above,
+    -- The pet: client.pet is the pet unit, { health, max, dead }; nil means no pet unit (none out,
+    -- or a dead one whose body is gone). opts.noPet starts without one.
+    client.pet = not opts.noPet and { health = 100, max = 100, dead = false } or nil
+    -- Its bar and book: client.petBar is the pet bar, one entry per slot, { spellID, autocast } for
+    -- a spell (autocast nil when it cannot autocast) or { token = "PET_ACTION_ATTACK" }.
+    -- client.petBook is the pet's spellbook, alphabetical like the client's, entries as above,
     -- { token = "Attack" } for a command and { broken = true } for an entry whose lookup errors.
     -- As on Forever: Cower is in the book but not on the bar. The pet starts as solo wants it,
     -- Growl on and Cower off.
@@ -145,10 +165,27 @@ function NewClient(opts)
     -- the group and the instance type ("party", "raid", "pvp", "arena", or "none" outside).
     client.familyID, client.inGroup, client.instance = 2, false, "none"
     function UnitExists(unit)
-        return unit == "player" or (unit == "pet" and client.petBar ~= nil)
+        return unit == "player" or (unit == "pet" and client.pet ~= nil)
     end
     function UnitCreatureFamily(unit)
-        if unit == "pet" and client.petBar then return "Cat", client.familyID end
+        if unit == "pet" and client.pet then return "Cat", client.familyID end
+    end
+    function UnitIsDead(unit)
+        return unit == "pet" and client.pet ~= nil and client.pet.dead
+    end
+    -- client.healthSecret: the pet's health is hidden, as Forever may hide it in combat.
+    function UnitHealth(unit)
+        if unit ~= "pet" or not client.pet then return 0 end
+        if client.healthSecret then return SECRET end
+        return client.pet.health
+    end
+    function UnitHealthMax(unit)
+        if unit ~= "pet" or not client.pet then return 0 end
+        return client.pet.max
+    end
+    -- client.mounted: on a mount, where Call Pet fails for that reason.
+    function IsMounted()
+        return client.mounted == true
     end
     -- IsInGroup(2) asks about an instance group (client.instanceGroup), as the client does.
     function IsInGroup(category)
@@ -159,8 +196,12 @@ function NewClient(opts)
         return client.instance ~= "none", client.instance
     end
     -- client.secret: a value the client hides from addons (in combat, on Forever).
+    -- client.secret: one more value the client hides, besides SECRET (as the autocast state may be).
     function issecretvalue(value)
-        return value ~= nil and value == client.secret
+        return value == SECRET or (value ~= nil and value == client.secret)
+    end
+    function canaccessvalue(value)
+        return not issecretvalue(value)
     end
 
     -- Spells: C_Spell, GetSpellInfo with opts.oldSpellAPI, neither with opts.noSpellAPI. Names
@@ -187,7 +228,7 @@ function NewClient(opts)
     GetPetActionInfo = nil
     if not opts.noPetBarAPI then
         function GetPetActionInfo(slot)
-            local entry = client.petBar and client.petBar[slot]
+            local entry = client.pet and client.petBar[slot]
             if not entry then return nil end
             if entry.token then return entry.token, entry.token .. "_TEXTURE", 1, nil, false, false end
             return spellName(entry[1]), spellIcon(entry[1]), nil, nil, entry[2] ~= nil, entry[2] == true, entry[1]
@@ -206,7 +247,7 @@ function NewClient(opts)
     if not opts.noSpellBookAPI then
         C_SpellBook = {
             HasPetSpells = not opts.noPetSpellCount and function()
-                if client.petBar then return #client.petBook, "PET" end
+                if client.pet then return #client.petBook, "PET" end
             end or nil,
             GetSpellBookItemInfo = function(index, bank)
                 assert(bank == Enum.SpellBookSpellBank.Pet, "pet spellbook bank expected")
@@ -245,6 +286,81 @@ function NewClient(opts)
         local list = perCharacter and client.charMacros or client.macros
         assert(#list < (perCharacter and MAX_CHARACTER or MAX_ACCOUNT), "no free macro slot")
         list[#list + 1] = { name = name, icon = icon, body = body }
+    end
+    ---The macro at a client index, or nil.
+    local function macroAt(index)
+        if index > MAX_ACCOUNT then return client.charMacros[index - MAX_ACCOUNT] end
+        return client.macros[index]
+    end
+    function GetMacroInfo(index)
+        local macro = macroAt(index)
+        if macro then return macro.name, macro.icon, macro.body end
+    end
+    -- client.macroEdits counts the edits, so tests can see an edit that changed nothing was skipped.
+    -- In combat an edit is blocked, as the client blocks it.
+    client.macroEdits = 0
+    function EditMacro(index, name, icon, body)
+        if client.inCombat then
+            client.blocked[#client.blocked + 1] = "EditMacro"
+            return
+        end
+        local macro = assert(macroAt(index), "no macro at " .. index)
+        macro.name, macro.icon, macro.body = name or macro.name, icon or macro.icon, body or macro.body
+        client.macroEdits = client.macroEdits + 1
+        client:fire("UPDATE_MACROS")
+    end
+    ---The body of the macro of that name, or nil.
+    function client:macroBody(name)
+        local macro = self:macro(name)
+        return macro and macro.body
+    end
+
+    -- Key bindings: client.bindings maps an action to a key.
+    client.bindings = {}
+    function GetBindingKey(action)
+        return client.bindings[action]
+    end
+    function GetBindingText(key)
+        return "<" .. key .. ">"
+    end
+    -- The client's "Your pet is dead" error, under the name the addon checks first.
+    ERR_PET_SPELL_DEAD, PETTAME_DEAD = "Your pet is dead.", nil
+
+    -- Macro conditions, as far as Kennel uses them: [@pet], dead, exists, nopet, mod:shift,
+    -- mod:ctrl. Brackets are alternatives, commas inside one all have to hold. client.mods: the
+    -- modifier keys held ({ shift = true }).
+    client.mods = {}
+    local function conditionHolds(group)
+        local target, holds = "player", true
+        for condition in group:gmatch("[^,]+") do
+            condition = condition:match("^%s*(.-)%s*$")
+            if condition == "@pet" then
+                target = "pet"
+            elseif condition == "dead" then
+                holds = holds and UnitIsDead(target)
+            elseif condition == "exists" then
+                holds = holds and UnitExists(target)
+            elseif condition == "nopet" then
+                holds = holds and not UnitExists("pet")
+            elseif condition == "mod:shift" or condition == "mod:ctrl" then
+                holds = holds and client.mods[condition:sub(5)] == true
+            else
+                error("unknown macro condition " .. condition)
+            end
+        end
+        return holds
+    end
+    ---What SecureCmdOptionParse answers for `options`: the value of the first clause whose
+    ---conditions hold, or nil.
+    function client:evaluate(options)
+        for clause in options:gmatch("[^;]+") do
+            local conditions, value = clause:match("^%s*(%[.*%])%s*(.-)%s*$")
+            if not conditions then return clause:match("^%s*(.-)%s*$") end
+            for group in conditions:gmatch("%[(.-)%]") do
+                if conditionHolds(group) then return value end
+            end
+        end
+        return nil
     end
 
     -- client.timers: pending C_Timer callbacks; client:advance runs the ones that come due.
@@ -459,8 +575,122 @@ function NewClient(opts)
     local function newRegion(fields)
         fields = fields or {}
         fields.shown = true
-        fields.events, fields.scripts = {}, {}
+        fields.events, fields.scripts, fields.hooks, fields.attributes, fields.refs = {}, {}, {}, {}, {}
         return setmetatable(fields, Region)
+    end
+    function Region:HookScript(script, handler)
+        self.hooks[script] = self.hooks[script] or {}
+        table.insert(self.hooks[script], handler)
+    end
+    -- A unit event is delivered only for its unit.
+    function Region:RegisterUnitEvent(event, unit)
+        self.events[event] = unit
+    end
+
+    -- The secure side, closely enough to run Kennel's own snippets: state drivers report changes
+    -- through `state-*` attributes, snippets run in an environment with nothing but `self` (a frame
+    -- handle) and their arguments, and in combat an insecure SetAttribute on a protected frame is
+    -- blocked and recorded in client.blocked, as the real client blocks it.
+    client.blocked, client.drivers = {}, {}
+    -- How deep we are in restricted code; insecure code is at 0.
+    local restricted = 0
+    local runSnippet
+
+    ---Sets an attribute as the client does: blocked in combat for insecure code on a protected
+    ---frame; a state-* attribute on a state handler runs its _onstate-* snippet; then the
+    ---OnAttributeChanged hooks run.
+    local function setAttribute(frame, name, value)
+        if frame.protected and client.inCombat and restricted == 0 then
+            client.blocked[#client.blocked + 1] = name
+            return
+        end
+        frame.attributes[name] = value
+        local stateID = name:match("^state%-(.+)$")
+        if frame.stateHandler and stateID then
+            local snippet = frame.attributes["_onstate-" .. stateID]
+            if snippet then runSnippet(frame, snippet, { stateid = stateID, newstate = value }) end
+        end
+        for _, hook in ipairs(frame.hooks.OnAttributeChanged or {}) do
+            hook(frame, name, value)
+        end
+    end
+    function Region:SetAttribute(name, value)
+        setAttribute(self, name, value)
+    end
+    function Region:GetAttribute(name)
+        return self.attributes[name]
+    end
+
+    ---A frame as restricted code sees it.
+    local function handle(frame)
+        return {
+            GetAttribute = function(_, name)
+                return frame.attributes[name]
+            end,
+            SetAttribute = function(_, name, value)
+                assert(not name:match("^_"), "restricted code cannot set _ attributes")
+                setAttribute(frame, name, value)
+            end,
+            RunAttribute = function(_, name)
+                runSnippet(frame, frame.attributes[name], {})
+            end,
+            GetFrameRef = function(_, label)
+                return handle(assert(frame.refs[label], "no frame ref " .. label))
+            end,
+        }
+    end
+    function runSnippet(frame, body, args)
+        local env = { self = handle(frame) }
+        for key, value in pairs(args) do
+            env[key] = value
+        end
+        local chunk = assert(loadstring(body, "=snippet"))
+        setfenv(chunk, env)
+        restricted = restricted + 1
+        chunk()
+        restricted = restricted - 1
+    end
+
+    function SecureHandlerSetFrameRef(frame, label, ref)
+        if client.inCombat then
+            client.blocked[#client.blocked + 1] = "SetFrameRef"
+            return
+        end
+        frame.refs[label] = ref
+    end
+    function SecureHandlerExecute(frame, body)
+        if client.inCombat then
+            client.blocked[#client.blocked + 1] = "Execute"
+            return
+        end
+        runSnippet(frame, body, {})
+    end
+    function RegisterStateDriver(frame, state, values)
+        assert(not client.inCombat, "a state driver is registered outside combat")
+        client.drivers[#client.drivers + 1] = { frame = frame, state = state, values = values }
+        client:updateDrivers()
+    end
+    function UnregisterStateDriver(frame, state)
+        assert(not client.inCombat, "a state driver is unregistered outside combat")
+        for i = #client.drivers, 1, -1 do
+            if client.drivers[i].frame == frame and client.drivers[i].state == state then
+                table.remove(client.drivers, i)
+            end
+        end
+    end
+
+    ---Re-evaluates every state driver, as the client does a few times a second.
+    function client:updateDrivers()
+        for _, driver in ipairs(self.drivers) do
+            local value = self:evaluate(driver.values)
+            local attribute = "state-" .. driver.state
+            if driver.frame.attributes[attribute] ~= value then
+                restricted = restricted + 1
+                setAttribute(driver.frame, attribute, value)
+                restricted = restricted - 1
+            end
+        end
+        return self
     end
     function Region:CreateTexture()
         return newRegion()
@@ -497,7 +727,14 @@ function NewClient(opts)
     }
 
     function CreateFrame(kind, name, parent, template)
-        local frame = newRegion({ kind = kind, name = name, parent = parent })
+        local frame = newRegion({ kind = kind, name = name, parent = parent, template = template })
+        frame.protected = (template or ""):find("Secure") ~= nil
+        frame.stateHandler = (template or ""):find("SecureHandlerStateTemplate") ~= nil
+        if kind == "Button" then
+            function frame:RegisterForClicks(...)
+                self.clicks = { ... }
+            end
+        end
         client.frames[#client.frames + 1] = frame
         if name then _G[name] = frame end
         for _, suffix in ipairs(name and TEMPLATE_CHILDREN[template] or {}) do
@@ -650,11 +887,80 @@ function NewClient(opts)
     if opts.modules then opts.modules(ns) end
 
     ---Delivers an event to every frame registered for it.
+    ---Delivers an event to every frame registered for it; a unit event only to frames registered
+    ---for its unit (the first argument).
     function client:fire(event, ...)
+        local unit = ...
         for _, frame in ipairs(self.frames) do
-            if frame.events[event] and frame.scripts.OnEvent then frame.scripts.OnEvent(frame, event, ...) end
+            local registered = frame.events[event]
+            if registered and (registered == true or registered == unit) and frame.scripts.OnEvent then
+                frame.scripts.OnEvent(frame, event, ...)
+            end
         end
         return self
+    end
+
+    ---What pressing the CareButton casts now, with the modifier keys in `mods`; nil when the button
+    ---runs nothing.
+    function client:press(mods)
+        local button = _G.KennelCareButton
+        local text = button.attributes.type == "macro" and button.attributes.macrotext
+        if not text then return nil end
+        assert(button.attributes.useOnKeyDown == false, "the button acts on the key binding's release")
+        local options = assert(text:match("^/cast (.*)$"), "the macro is one /cast line")
+        self.mods = mods or {}
+        local spell = self:evaluate(options)
+        self.mods = {}
+        return spell
+    end
+
+    ---The pet dies; its body stays for now.
+    function client:petDies()
+        self.pet.dead, self.pet.health = true, 0
+        self:updateDrivers()
+        return self:fire("UNIT_HEALTH", "pet")
+    end
+
+    ---No pet unit any more: the dead body is gone, or the pet was dismissed.
+    function client:petGone()
+        self.pet = nil
+        return self:updateDrivers()
+    end
+
+    ---A living pet at full health: summoned or revived.
+    function client:petBack()
+        self.pet = { health = 100, max = 100, dead = false }
+        self:updateDrivers()
+        return self:fire("UNIT_HEALTH", "pet")
+    end
+
+    ---The pet's health changes to `health` (of 100).
+    function client:petHealth(health)
+        self.pet.health = health
+        return self:fire("UNIT_HEALTH", "pet")
+    end
+
+    function client:enterCombat()
+        self.inCombat = true
+        return self:fire("PLAYER_REGEN_DISABLED")
+    end
+
+    function client:leaveCombat()
+        self.inCombat = false
+        return self:fire("PLAYER_REGEN_ENABLED")
+    end
+
+    ---A cast of `spellID` starts or fails; castGUID defaults to "Cast-1".
+    function client:castStarts(spellID, castGUID)
+        return self:fire("UNIT_SPELLCAST_START", "player", castGUID or "Cast-1", spellID)
+    end
+    function client:castFails(spellID, castGUID)
+        return self:fire("UNIT_SPELLCAST_FAILED", "player", castGUID or "Cast-1", spellID)
+    end
+
+    ---The red error text in the middle of the screen.
+    function client:uiError(message)
+        return self:fire("UI_ERROR_MESSAGE", 51, message)
     end
 
     ---Moves the clock on and runs the C_Timer callbacks that came due.

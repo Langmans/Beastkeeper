@@ -5,7 +5,7 @@
 local function sinking(opts)
     opts = opts or {}
     local client = NewClient(opts)
-    client.petBar = nil
+    client.pet = nil
     client:login()
     client.Kennel:ToastSettings().skin = "libsink"
     return client, client.Kennel:GetOptionsTable().args.modules.args.toast.args.libsink

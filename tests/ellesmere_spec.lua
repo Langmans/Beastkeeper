@@ -3,7 +3,7 @@
 ---A logged-in client without a pet, with or without EllesmereUI.
 local function quiet(ellesmere)
     local client = NewClient({ ellesmere = ellesmere })
-    client.petBar = nil
+    client.pet = nil
     return client:login()
 end
 

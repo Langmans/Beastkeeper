@@ -78,13 +78,6 @@ local function Spell(id)
     return name or FALLBACK_NAMES[id], icon
 end
 
----A value the addon may read: not secret (Forever hides some values in combat).
----@param value GameValue
----@return boolean
-local function Readable(value)
-    return not (issecretvalue and issecretvalue(value))
-end
-
 ---Adds an ability that can autocast to `states`, unless its state is unreadable.
 ---@param states table<string, KennelAutocastState>
 ---@param name GameValue
@@ -92,7 +85,7 @@ end
 ---@param enabled GameValue
 ---@param icon (number|string)?
 local function Add(states, name, allowed, enabled, icon)
-    if type(name) == "string" and allowed and Readable(enabled) then
+    if type(name) == "string" and allowed and Kennel.Readable(enabled) then
         states[name] = { on = enabled and true or false, icon = icon }
     end
 end
@@ -157,7 +150,7 @@ end
 function M:Sound()
     local setting = self:Settings().sound
     if setting == "off" then return nil end
-    return setting == "family" and Kennel.PetAggroSound() or { kit = RAID_WARNING }
+    return setting == "family" and Kennel.PetSound("AGGRO") or { kit = RAID_WARNING }
 end
 
 ---The toast for a problem.

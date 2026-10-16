@@ -59,6 +59,33 @@ The module's page has the mode, which of Growl and Cower are watched, the
 combat reminder, the sound, and a button for an example toast. On other
 classes it does nothing.
 
+### Care Button
+
+One key for your pet: **Mend Pet** while it lives, **Revive Pet** when it is
+dead, **Call Pet** when it is not out. The usual macro for this,
+`/cast [mod:shift][@pet,dead] Revive Pet; [@pet,nodead] Mend Pet; Call Pet`,
+has one hole: once a dead pet's body is gone, the game no longer sees a dead
+pet and the macro picks Call Pet. The button remembers that the pet died, in
+combat too and across a relog, and casts Revive Pet until the pet lives again.
+Shift still forces Revive Pet and Ctrl Call Pet.
+
+- Press it with the key binding (Esc > Options > Keybindings > AddOns >
+  Kennel > "Care Button: mend, revive or call pet"), or with the **KennelCare**
+  macro Kennel makes for each hunter the first time. The macro's cast line
+  follows the button (outside combat); lines you add to it stay.
+- It also learns from failed casts: Call Pet failing (or "Your pet is dead")
+  means the pet is dead; Revive Pet failing at once means there is none to
+  revive. In combat the button cannot switch: the toast says to hold Shift,
+  and it switches when combat ends.
+- Toasts when your pet **dies** (and again at the pull while it is still
+  dead), when **combat starts without a pet**, and when its **health drops**
+  to a set line (40% by default, 0 for never). Each kind can have a look of
+  its own on Kennel's page; each goes away once solved. They play your pet's
+  own death sound, wound cry or attack call, the raid warning, or nothing.
+- The module's page has those switches, the sound, buttons to tell the button
+  your pet is dead or alive when it guessed wrong, an example toast and the
+  macro. Switched off, the key and the macro do nothing.
+
 ## Technical
 
 ### Layout
@@ -230,11 +257,19 @@ cannot stop Kennel's toasts. An error in `Hide` only lets the toast go.
   same name is left alone), and `Kennel:CreateMacros(module, true)` makes the
   missing ones again by hand.
 - **Pet** (`Core\Pet.lua`, `Core\Sounds.lua`): `Kennel.SpellInfo(id)` across
-  client generations, `Kennel.PetFamilyID()`, and `Kennel.PetAggroSound()`, the
-  attack call of the pet's family from `Kennel.sounds.AGGRO_PER_FAMILY`.
+  client generations, `Kennel.PetFamilyID()`, `Kennel.PetSound(kind)` (the
+  family's `"AGGRO"` call, `"DEATH"` sound or `"WOUND"` cry, from
+  `Kennel.sounds.<KIND>_PER_FAMILY`), and `Kennel.Readable(value)` for values
+  Forever may hide in combat.
+- **Out of combat** (`Core\Combat.lua`): `Kennel:OutOfCombat(key, fn)` runs
+  `fn` now, or once combat ends (the last one asked per key). For what the
+  client blocks in combat: secure frames, macro edits. It lives on the core
+  because a module's own events are dropped when it is switched off.
 - **Key bindings**: `Bindings.xml` at the top (the client reads only that
   one); a binding calls a global function that runs a `/kennel` command, so a
-  module that is off says so instead of acting.
+  module that is off says so instead of acting. A secure button's binding
+  (`CLICK KennelCareButton:LeftButton`) clicks the button itself; a module
+  that is off takes the button's macro away.
 
 ### Libraries
 

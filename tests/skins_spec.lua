@@ -4,7 +4,7 @@
 ---A logged-in client without a pet, so no module toasts by itself.
 local function quiet()
     local client = NewClient()
-    client.petBar = nil
+    client.pet = nil
     return client:login()
 end
 
@@ -298,7 +298,7 @@ describe("the look choice", function()
                 m.toastTypes = { b = "second", a = "first" }
             end,
         })
-        client2.petBar = nil
+        client2.pet = nil
         client2:login()
         local all = client2.Kennel:GetOptionsTable().args.modules.args.toast.args
         assert.are.equal("Aardvark: first", all["skin:Aardvark:a"].name)

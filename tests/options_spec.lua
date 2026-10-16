@@ -107,6 +107,7 @@ describe("the settings window", function()
             "Kennel > Alpha Title",
             "Kennel > Autocast Check",
             "Kennel > Beta Page",
+            "Kennel > Care Button",
             "Kennel > Profiles",
         }, names)
     end)
@@ -125,14 +126,14 @@ describe("the settings window", function()
             onShow(category.frame)
             shown = shown + 1
         end
-        assert.are.equal(5, shown)
+        assert.are.equal(6, shown)
         assert.are.same({}, client.errors)
     end)
 
     it("can also be drawn by AceConfigDialog in a window of its own", function()
         local client = NewClient({ modules = modules }):login()
         local dialog = LibStub("AceConfigDialog-3.0")
-        for _, path in ipairs({ "modules", "Alpha", "Beta", "AutocastCheck", "profiles" }) do
+        for _, path in ipairs({ "modules", "Alpha", "Beta", "AutocastCheck", "CareButton", "profiles" }) do
             dialog:Open("Kennel", path)
         end
         dialog:Close("Kennel")

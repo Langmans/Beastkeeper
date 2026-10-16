@@ -186,10 +186,9 @@ describe("AutocastCheck", function()
         end)
 
         it("checks a pet summoned or dismissed, not another unit's pet", function()
-            local client = NewClient()
-            client.petBar = nil
-            client:login()
+            local client = NewClient({ noPet = true }):login()
             assert.is_nil(client:toastTitle(), "no pet, nothing wrong")
+            client.pet = { health = 100, max = 100, dead = false }
             client.petBar = { { 2649, false } }
             client.petBook = {}
             client:fire("UNIT_PET", "party1")

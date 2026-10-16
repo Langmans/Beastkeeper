@@ -1,0 +1,8 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- The module object first (CareButton.lua); the button, macro and page add to it. -->
+    <Script file="Locale.lua"/>
+    <Script file="CareButton.lua"/>
+    <Script file="Button.lua"/>
+    <Script file="Macro.lua"/>
+    <Script file="Options.lua"/>
+</Ui>

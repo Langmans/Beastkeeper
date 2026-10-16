@@ -3,6 +3,7 @@
     <Script file="Addon.lua"/>
     <Script file="Sounds.lua"/>
     <Script file="Pet.lua"/>
+    <Script file="Combat.lua"/>
     <Include file="Toast\Toast.xml"/>
     <Script file="Macro.lua"/>
     <Script file="Options.lua"/>
