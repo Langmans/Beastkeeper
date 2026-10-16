@@ -79,6 +79,32 @@ describe("toast skins", function()
     end)
 end)
 
+describe("a skin from NewToastSkin", function()
+    it("has its name, and hides, answers hover and gives its frame through self.frame", function()
+        local client = quiet()
+        local skin = client.Kennel:NewToastSkin("Mine")
+        skin.frame = client.Kennel:NewToastFrame("MineFrame")
+        skin.frame:Show()
+        assert.are.equal("Mine", skin.name)
+        assert.are.equal(skin.frame, skin:Frame())
+        client.mouseOver = true
+        assert.is_true(skin:IsMouseOver())
+        skin:Hide()
+        assert.is_false(skin.frame.shown)
+    end)
+
+    it("registers once it adds Show and Update", function()
+        local client = quiet()
+        local skin = client.Kennel:NewToastSkin("Mine")
+        assert.has_error(function()
+            client.Kennel:RegisterToastSkin("mine", skin)
+        end, "Kennel:RegisterToastSkin(mine): the skin has no Show, Update")
+        skin.Show, skin.Update = function() end, function() end
+        client.Kennel:RegisterToastSkin("mine", skin)
+        assert.are.equal(skin, client.Kennel:ToastSkins().mine)
+    end)
+end)
+
 describe("the skin contract", function()
     local client, Kennel
 

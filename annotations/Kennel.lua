@@ -56,7 +56,7 @@
 ---@field skin string the skin id for every toast
 ---@field skins table<string, string> a skin id per kind of toast ("<module>:<kind>"), where chosen
 
----What draws a toast (Core\Toast.lua). Kennel brings "card" and "splash"; another addon adds its
+---What draws a toast (Core\Toast\). Kennel brings "card" and "splash"; another addon adds its
 ---own with Kennel:RegisterToastSkin(id, skin), to draw in its own style or to hand the toast to
 ---something else. The engine keeps the queue and the clock and calls, for one toast: Show once,
 ---Update every frame until the fade is done, then Hide. Kennel:NewToastFrame gives a frame that
@@ -69,6 +69,11 @@
 ---@field IsMouseOver fun(self: KennelToastSkin): boolean while true, its stay does not count down
 ---@field Frame (fun(self: KennelToastSkin): Frame?)? its frame, when it has one
 
+---A skin from Kennel:NewToastSkin: it draws in self.frame, and Hide, IsMouseOver and Frame are
+---done; it adds Show and Update.
+---@class KennelFrameSkin: KennelToastSkin
+---@field frame Frame? made by its Show, with Kennel:NewToastFrame
+
 ---The card skin's frame, with its parts as fields like a template's parentKeys.
 ---@class KennelCardFrame: Frame
 ---@field Accent Texture the coloured side bar
@@ -78,7 +83,7 @@
 ---@field Hint FontString
 ---@field Timer Texture the bar along the bottom that runs down
 
----@class KennelCardSkin: KennelToastSkin
+---@class KennelCardSkin: KennelFrameSkin
 ---@field frame KennelCardFrame? made on its first toast
 
 ---The splash skin's frame.
@@ -93,7 +98,7 @@
 ---@field Hint FontString
 ---@field Timer Texture
 
----@class KennelSplashSkin: KennelToastSkin
+---@class KennelSplashSkin: KennelFrameSkin
 ---@field frame KennelSplashFrame?
 
 ---The mode in force: solo or dungeon as AutocastCheck picks it, kite or tank as the player chose.

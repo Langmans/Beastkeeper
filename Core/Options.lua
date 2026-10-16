@@ -115,7 +115,7 @@ end
 ---The toast's settings, shared by every module, as a box on Kennel's page below the switches.
 ---@return AceConfig.OptionsTable
 function Kennel:GetToastOptions()
-    local settings = self.db.profile.toast --[[@as KennelToastSettings]]
+    local settings = self:ToastSettings()
     local options = {
         type = "group",
         inline = true,

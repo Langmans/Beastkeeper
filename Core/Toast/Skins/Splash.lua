@@ -19,9 +19,8 @@ local TIMER_WIDTH = 160
 local TITLE_COLOR = { 1, 0.92, 0.78 }
 local HINT_COLOR = { 0.72, 0.74, 0.77 }
 
--- Its methods follow; KennelSplashSkin is in annotations\Kennel.lua.
-local Splash = {} --[[@as KennelSplashSkin]]
-Splash.name = Kennel.L.TOAST_SKIN_SPLASH
+-- Hide, IsMouseOver and Frame come with NewToastSkin; Show and Update follow.
+local Splash = Kennel:NewToastSkin(Kennel.L.TOAST_SKIN_SPLASH) --[[@as KennelSplashSkin]]
 
 ---@param t number from 0 to 1
 ---@return number
@@ -139,20 +138,6 @@ function Splash:Update(intro, fade, left)
     frame.Inner:SetSize(size - 4, size - 4)
     frame.Icon:SetSize(size * ICON_SIZE / DIAMOND, size * ICON_SIZE / DIAMOND)
     frame.Timer:SetWidth(math.max(1, TIMER_WIDTH * left))
-end
-
-function Splash:Hide()
-    (self.frame --[[@as KennelSplashFrame]]):Hide()
-end
-
----@return boolean
-function Splash:IsMouseOver()
-    return (self.frame --[[@as KennelSplashFrame]]):IsMouseOver()
-end
-
----@return Frame?
-function Splash:Frame()
-    return self.frame
 end
 
 Kennel:RegisterToastSkin("splash", Splash)

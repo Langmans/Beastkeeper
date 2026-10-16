@@ -27,7 +27,7 @@ function Kennel:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("KennelDB", {
         profile = {
             modules = switches,
-            -- The toast every module shows (Core\Toast.lua): the skin for every toast, a skin per
+            -- The toast every module shows (Core\Toast\): the skin for every toast, a skin per
             -- kind of toast where chosen; pos is set once it is dragged.
             toast = { duration = 6, scale = 1, skin = "card", skins = {} },
         },

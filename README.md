@@ -71,8 +71,11 @@ Core\Core.xml     the core, in this order:
   Addon.lua       the AceAddon object, KennelDB, the module switches
   Sounds.lua      pet sounds per family (Kennel.sounds.*_PER_FAMILY)
   Pet.lua         spell names and icons, the pet's family and its sound
-  Toast.lua       the toast engine: queue, clock, sound, skin choice
-  Skins\          the card and the splash skin
+  Toast\          the toast (Toast.xml):
+    Skins.lua     the skin register, its contract, which skin draws which kind
+    Frame.lua     what every skin's frame does alike; NewToastFrame, NewToastSkin
+    Engine.lua    queue, clock, sound, the card taking over from a failing skin
+    Skins\        the card and the splash
   Macro.lua       macros a module makes for the player
   Options.lua     the AceConfig options and the pages in the settings window
   Commands.lua    /kennel
@@ -143,7 +146,7 @@ end
 
 ### What the core offers modules
 
-- **Toast** (`Core\Toast.lua`): `Kennel:ShowToast(info)` with a key, kind,
+- **Toast** (`Core\Toast\`): `Kennel:ShowToast(info)` with a key, kind,
   source, title, text, hint, icon, accent colour and sound
   (`KennelToastInfo`). One toast per key is up or waiting; toasts for
   different keys show one after the other. Keys are `"<Module>:<what>"`:
@@ -156,10 +159,10 @@ end
 
 ### Toast skins
 
-The toast is an engine and a skin. The engine (`Core\Toast.lua`) keeps the
-queue, the clock (intro, stay, fade; the stay stands still while the mouse is
-over the toast), the sound and the settings. A skin draws: Kennel brings
-`card` and `splash` (`Core\Skins\`), and another addon can register its own,
+The toast is an engine and a skin. The engine (`Core\Toast\Engine.lua`) keeps
+the queue, the clock (intro, stay, fade; the stay stands still while the mouse
+is over the toast), the sound and the settings. A skin draws: Kennel brings
+`card` and `splash` (`Core\Toast\Skins\`), and another addon can register its own,
 either to draw in its own style (an ElvUI look, say) or as an adapter that
 hands the toast to something else.
 
@@ -170,7 +173,8 @@ A skin is a table with a localized `name` and four methods
 ```lua
 local Kennel = LibStub("AceAddon-3.0"):GetAddon("Kennel", true)
 if Kennel then
-    local skin = { name = "My look" }
+    -- A skin drawing in one frame (self.frame): Hide, IsMouseOver and Frame come with it.
+    local skin = Kennel:NewToastSkin("My look")
     function skin:Show(info, settings)
         -- info: key, type, source, title, text, hint, icon, accent; settings: scale, pos, ...
         self.frame = self.frame or Kennel:NewToastFrame("MyAddonToast") -- drags and closes like Kennel's
@@ -181,11 +185,12 @@ if Kennel then
     function skin:Update(intro, fade, left) -- each 0 to 1
         self.frame:SetAlpha(intro * (1 - fade))
     end
-    function skin:Hide() self.frame:Hide() end
-    function skin:IsMouseOver() return self.frame:IsMouseOver() end
     Kennel:RegisterToastSkin("mylook", skin)
 end
 ```
+
+An adapter that hands toasts to something else (no frame of its own) is a
+plain table with `name`, `Show`, `Update`, `Hide` and `IsMouseOver`.
 
 The player then picks "My look" on Kennel's page. A saved choice whose skin
 is gone (its addon disabled) falls back to the card.

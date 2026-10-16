@@ -1,26 +1,10 @@
 local _, ns = ...
 
--- A toast when the pet's Growl or Cower autocast does not fit what the hunter is doing. What
--- counts as wrong depends on the mode, which says who holds the mobs:
---   - solo:    the pet does. Growl on, so it keeps them; Cower off, so it does not throw that
---              threat away.
---   - dungeon: the tank does. Growl off, or the pet taunts mobs off the tank; Cower on, so the
---              pet's threat stays under the tank's. Picked by itself inside a dungeon or raid
---              instance while in a group; anywhere else it is solo.
---   - kite:    the hunter does, kiting. Like dungeon: Growl off, Cower on. Chosen by hand.
---   - tank:    the pet does, in a group without a tank. Like solo: Growl on, Cower off. Chosen
---              by hand.
--- Growl or Cower in the other state than the mode wants is a problem (growlOn, growlOff,
--- cowerOn, cowerOff). Each problem toasts when it starts; when it is solved, its toast goes away.
--- With the remind setting, everything still wrong toasts again when combat starts.
---
--- The state comes from the pet's spellbook, which holds every ability whether it is on the pet
--- bar or not (Cower often is not), and from the pet bar, which also gives the icon. Ability names
--- come from the client by spell ID, so the check works in any language and at any rank.
---
--- Kite and tank mode are switched by `/kennel autocast kite|tank [on|off]`, by a key binding each
--- (Bindings.xml), and by the macros KennelKite, KennelKiteOff and KennelTank, made once per hunter.
--- On another class the module stays switched on but registers nothing.
+-- A toast when Growl or Cower autocast does not fit the mode (the table is in the README): who
+-- holds the mobs decides, the pet (solo, tank: Growl on) or someone else (dungeon, kite: Cower
+-- on). A problem toasts when it starts and its toast goes away when solved. The pet's spellbook
+-- shows every ability (Cower is often not on the bar); names come from spell IDs, so any language
+-- and rank work. On another class the module registers nothing.
 
 ---@type Kennel
 local Kennel = ns

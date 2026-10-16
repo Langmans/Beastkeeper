@@ -17,9 +17,8 @@ local EDGE = { 0.28, 0.3, 0.33, 1 }
 local PANEL = { 0.06, 0.07, 0.08, 0.94 }
 local HINT_COLOR = { 0.62, 0.64, 0.67 }
 
--- Its methods follow; KennelCardSkin is in annotations\Kennel.lua.
-local Card = {} --[[@as KennelCardSkin]]
-Card.name = Kennel.L.TOAST_SKIN_CARD
+-- Hide, IsMouseOver and Frame come with NewToastSkin; Show and Update follow.
+local Card = Kennel:NewToastSkin(Kennel.L.TOAST_SKIN_CARD) --[[@as KennelCardSkin]]
 
 ---A texture of one colour on `parent`, in `layer`.
 ---@param parent Frame
@@ -106,20 +105,6 @@ function Card:Update(intro, fade, left)
     Kennel:PlaceToast(frame, "TOP", 0, -120, SLIDE * (1 - slide))
     frame:SetAlpha(slide * (1 - fade))
     frame.Timer:SetWidth(math.max(1, (WIDTH - ACCENT_WIDTH) * left))
-end
-
-function Card:Hide()
-    (self.frame --[[@as KennelCardFrame]]):Hide()
-end
-
----@return boolean
-function Card:IsMouseOver()
-    return (self.frame --[[@as KennelCardFrame]]):IsMouseOver()
-end
-
----@return Frame?
-function Card:Frame()
-    return self.frame
 end
 
 Kennel:RegisterToastSkin("card", Card)

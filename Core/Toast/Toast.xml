@@ -1,0 +1,9 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- The register first (the skins register themselves), then the shared frame behaviour, the
+         engine, and the skins Kennel brings. Skins.lua describes how the parts fit together. -->
+    <Script file="Skins.lua"/>
+    <Script file="Frame.lua"/>
+    <Script file="Engine.lua"/>
+    <Script file="Skins\Card.lua"/>
+    <Script file="Skins\Splash.lua"/>
+</Ui>
