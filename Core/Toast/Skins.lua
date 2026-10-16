@@ -14,6 +14,12 @@ Kennel.TOAST_DEFAULT_SKIN = "card"
 Kennel.TOAST_ACCENT = { 1, 0.62, 0.18 }
 Kennel.TOAST_ICON = 134400 -- INV_Misc_QuestionMark
 
+---Kennel's own accent, as a style's accent function.
+---@return number[]
+function Kennel.DefaultToastAccent()
+    return Kennel.TOAST_ACCENT
+end
+
 -- What every skin must have (KennelToastSkin): RegisterToastSkin refuses one without.
 local SKIN_METHODS = { "Show", "Update", "Hide", "IsMouseOver" }
 

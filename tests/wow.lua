@@ -31,6 +31,7 @@ end
 ---@field noSpellBookAPI boolean? no C_SpellBook
 ---@field noPetSpellCount boolean? C_SpellBook without HasPetSpells
 ---@field noMacroConsts boolean? no Constants.MacroConsts (the addon's own limits apply)
+---@field ellesmere boolean|table? EllesmereUI loaded before Kennel (a table: fields to leave out, set to false)
 
 -- The spells the simulated client knows, per locale: id -> { name, icon }.
 local SPELLS = {
@@ -430,6 +431,9 @@ function NewClient(opts)
     function Region:SetTextColor(r, g, b)
         self.textColor = { r, g, b }
     end
+    function Region:SetFont(path, size, flags)
+        self.font = { path, size, flags }
+    end
     function Region:ClearAllPoints()
         self.points = {}
     end
@@ -550,6 +554,37 @@ function NewClient(opts)
     SlashCmdList = {}
     hash_SlashCmdList = {}
     _G[TOC_SAVED] = opts.saved
+
+    -- EllesmereUI, as far as Kennel uses it, when opts.ellesmere says it is loaded. client.eui
+    -- records what was asked of it: the fonts set, the borders made, the shadows primed.
+    EllesmereUI = nil
+    if opts.ellesmere then
+        local eui = { borders = {}, shadows = {} }
+        client.eui = eui
+        EllesmereUI = {
+            ELLESMERE_GREEN = { r = 0.05, g = 0.82, b = 0.62 },
+            GetFontPath = function()
+                return "Fonts\\Expressway.ttf"
+            end,
+            GetFontOutlineFlag = function()
+                return "OUTLINE"
+            end,
+            GetFontUseShadow = function()
+                return true
+            end,
+            PrimeFontShadow = function(fs, use)
+                eui.shadows[#eui.shadows + 1] = { fs, use }
+            end,
+            MakeBorder = function(parent, r, g, b, a)
+                eui.borders[#eui.borders + 1] = { parent, r, g, b, a }
+            end,
+        }
+        if type(opts.ellesmere) == "table" then
+            for key in pairs(opts.ellesmere) do
+                EllesmereUI[key] = nil
+            end
+        end
+    end
 
     -- LibStub keeps its libraries in a global; a fresh client starts without one.
     LibStub = nil

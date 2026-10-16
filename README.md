@@ -21,6 +21,8 @@ modules move in one at a time.
   choose how long it stays, how big it is, and its look: a small **card** near
   the top, or a large **splash** in the middle. Every kind of toast (such as
   Autocast Check's) can have a look of its own; other addons can add looks.
+  With EllesmereUI loaded, both also come in EllesmereUI's look (its font,
+  border and theme colour).
 
 ### Autocast Check
 
@@ -79,6 +81,9 @@ Core\Core.xml     the core, in this order:
   Macro.lua       macros a module makes for the player
   Options.lua     the AceConfig options and the pages in the settings window
   Commands.lua    /kennel
+Integrations\     what Kennel does with other addons, a folder per addon; each
+                  file does nothing unless its addon is loaded (OptionalDeps)
+  EllesmereUI\Toast.lua   the card and the splash in EllesmereUI's look
 Modules\Modules.xml   one Include per module
 Modules\<Name>\   a module: <Name>.xml, Locale.lua, <Name>.lua, Options.lua
 annotations\      editor-only types (not in the .toc)
@@ -191,6 +196,14 @@ end
 
 An adapter that hands toasts to something else (no frame of its own) is a
 plain table with `name`, `Show`, `Update`, `Hide` and `IsMouseOver`.
+
+To restyle the card or the splash rather than draw anew,
+`Kennel:NewCardSkin(name, style)` and `Kennel:NewSplashSkin(name, style)` take
+a `KennelSkinStyle`: the frame's name, a panel colour, an edge colour or a
+`Border(frame)` function, an `accent()` function and a `Font(text, size)`
+function. `Integrations\EllesmereUI\Toast.lua` does exactly that with
+EllesmereUI's font, border, panel and theme colour, registering "EllesmereUI"
+and "EllesmereUI (splash)" only when EllesmereUI is loaded.
 
 The player then picks "My look" on Kennel's page. A saved choice whose skin
 is gone (its addon disabled) falls back to the card.

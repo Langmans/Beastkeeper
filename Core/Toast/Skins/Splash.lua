@@ -1,10 +1,9 @@
 local _, ns = ...
 
--- The splash skin: a toast in the middle of the screen, for things worth a moment. A black panel
--- whose edges fade out; at the top the name of the module it comes from, in the accent colour,
--- over a thin line; below it the icon in a diamond of that colour, which pops in; the title, the
--- text and a grey hint centred under it; and a short bar at the bottom that runs down while it
--- stays. Plain text, no glow.
+-- The splash: a toast in the middle of the screen, for things worth a moment. The module's name
+-- over a thin line, the icon in a diamond that pops in, the title, text and a grey hint centred,
+-- and a short timer bar; plain text, no glow. Kennel's own has a black panel whose edges fade
+-- out; NewSplashSkin makes one in any style (KennelSkinStyle), such as EllesmereUI's.
 
 ---@type Kennel
 local Kennel = ns
@@ -16,11 +15,9 @@ local BG_OPACITY = 0.78
 local BG_LAYERS = 20
 local BG_FADE_FRACTION = 0.14 -- fade band per side, as a fraction of that side
 local TIMER_WIDTH = 160
+local SOURCE_SIZE, TITLE_SIZE, TEXT_SIZE, HINT_SIZE = 10, 16, 12, 11
 local TITLE_COLOR = { 1, 0.92, 0.78 }
 local HINT_COLOR = { 0.72, 0.74, 0.77 }
-
--- Hide, IsMouseOver and Frame come with NewToastSkin; Show and Update follow.
-local Splash = Kennel:NewToastSkin(Kennel.L.TOAST_SKIN_SPLASH) --[[@as KennelSplashSkin]]
 
 ---@param t number from 0 to 1
 ---@return number
@@ -53,26 +50,37 @@ local function Background(frame)
     end
 end
 
----A centred line of text.
+---A centred line of text, in the style's font when it has one.
 ---@param frame Frame
----@param template string
+---@param style KennelSkinStyle
+---@param template string the game's font, without a style font
+---@param size number the size in the style's font
 ---@return FontString
-local function Line(frame, template)
+local function Line(frame, style, template, size)
     local text = frame:CreateFontString(nil, "OVERLAY", template)
+    if style.Font then style.Font(text, size) end
     text:SetWidth(WIDTH - 60)
     text:SetJustifyH("CENTER")
     text:SetWordWrap(true)
     return text
 end
 
----Makes the frame, the first time it shows.
+---Makes the frame, the first time it shows: the style's panel and border, else the fading one.
+---@param style KennelSkinStyle
 ---@return KennelSplashFrame
-local function Build()
-    local frame = Kennel:NewToastFrame("KennelToastSplash") --[[@as KennelSplashFrame]]
+local function Build(style)
+    local frame = Kennel:NewToastFrame(style.frameName) --[[@as KennelSplashFrame]]
     frame:SetSize(WIDTH, HEIGHT)
-    Background(frame)
+    if style.panel then
+        local panel = frame:CreateTexture(nil, "BACKGROUND")
+        panel:SetAllPoints(frame)
+        panel:SetColorTexture(style.panel[1], style.panel[2], style.panel[3], style.panel[4])
+    else
+        Background(frame)
+    end
+    if style.Border then style.Border(frame) end
 
-    frame.Source = Line(frame, "GameFontNormalSmall")
+    frame.Source = Line(frame, style, "GameFontNormalSmall", SOURCE_SIZE)
     frame.Source:SetPoint("TOP", frame, "TOP", 0, -22)
     frame.Divider = frame:CreateTexture(nil, "ARTWORK")
     frame.Divider:SetSize(TIMER_WIDTH, 1)
@@ -91,12 +99,12 @@ local function Build()
     frame.Icon:SetPoint("CENTER", frame.Diamond, "CENTER")
     frame.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 
-    frame.Title = Line(frame, "GameFontNormalLarge")
+    frame.Title = Line(frame, style, "GameFontNormalLarge", TITLE_SIZE)
     frame.Title:SetPoint("TOP", frame.Diamond, "BOTTOM", 0, -16)
     frame.Title:SetTextColor(TITLE_COLOR[1], TITLE_COLOR[2], TITLE_COLOR[3])
-    frame.Text = Line(frame, "GameFontHighlight")
+    frame.Text = Line(frame, style, "GameFontHighlight", TEXT_SIZE)
     frame.Text:SetPoint("TOP", frame.Title, "BOTTOM", 0, -6)
-    frame.Hint = Line(frame, "GameFontHighlightSmall")
+    frame.Hint = Line(frame, style, "GameFontHighlightSmall", HINT_SIZE)
     frame.Hint:SetPoint("TOP", frame.Text, "BOTTOM", 0, -6)
     frame.Hint:SetTextColor(HINT_COLOR[1], HINT_COLOR[2], HINT_COLOR[3])
 
@@ -106,12 +114,13 @@ local function Build()
     return frame
 end
 
+---@param self KennelSplashSkin
 ---@param info KennelToastInfo
 ---@param settings KennelToastSettings
-function Splash:Show(info, settings)
-    self.frame = self.frame or Build()
+local function Show(self, info, settings)
+    self.frame = self.frame or Build(self.style)
     local frame = self.frame
-    local accent = info.accent or Kennel.TOAST_ACCENT
+    local accent = info.accent or self.style.accent()
     frame.Source:SetTextColor(accent[1], accent[2], accent[3])
     frame.Divider:SetColorTexture(accent[1], accent[2], accent[3], 0.6)
     frame.Diamond:SetColorTexture(accent[1], accent[2], accent[3], 1)
@@ -126,10 +135,11 @@ function Splash:Show(info, settings)
     frame:Show()
 end
 
+---@param self KennelSplashSkin
 ---@param intro number
 ---@param fade number
 ---@param left number
-function Splash:Update(intro, fade, left)
+local function Update(self, intro, fade, left)
     local frame = self.frame --[[@as KennelSplashFrame]]
     frame:SetAlpha(intro * (1 - fade))
     -- The diamond grows from 60% and overshoots a little; the icon keeps inside it.
@@ -140,4 +150,20 @@ function Splash:Update(intro, fade, left)
     frame.Timer:SetWidth(math.max(1, TIMER_WIDTH * left))
 end
 
-Kennel:RegisterToastSkin("splash", Splash)
+---A splash skin in `style`; register it with RegisterToastSkin.
+---@param name string shown in the look choice
+---@param style KennelSkinStyle
+---@return KennelSplashSkin
+function Kennel:NewSplashSkin(name, style)
+    local skin = self:NewToastSkin(name) --[[@as KennelSplashSkin]]
+    skin.style, skin.Show, skin.Update = style, Show, Update
+    return skin
+end
+
+Kennel:RegisterToastSkin(
+    "splash",
+    Kennel:NewSplashSkin(
+        Kennel.L.TOAST_SKIN_SPLASH,
+        { frameName = "KennelToastSplash", accent = Kennel.DefaultToastAccent }
+    )
+)

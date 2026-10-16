@@ -83,7 +83,17 @@
 ---@field Hint FontString
 ---@field Timer Texture the bar along the bottom that runs down
 
+---How a card or splash skin looks (Kennel:NewCardSkin, Kennel:NewSplashSkin).
+---@class KennelSkinStyle
+---@field frameName string the frame's global name
+---@field accent fun(): number[] { r, g, b } for a toast that brings no accent
+---@field panel number[]? { r, g, b, a } of the panel; the splash fades its own black one without
+---@field edge number[]? { r, g, b, a } of a 1-pixel edge (card only)
+---@field Border fun(frame: Frame)? draws an edge itself
+---@field Font fun(text: FontString, size: number)? sets a font; the game's fonts without
+
 ---@class KennelCardSkin: KennelFrameSkin
+---@field style KennelSkinStyle
 ---@field frame KennelCardFrame? made on its first toast
 
 ---The splash skin's frame.
@@ -99,6 +109,7 @@
 ---@field Timer Texture
 
 ---@class KennelSplashSkin: KennelFrameSkin
+---@field style KennelSkinStyle
 ---@field frame KennelSplashFrame?
 
 ---The mode in force: solo or dungeon as AutocastCheck picks it, kite or tank as the player chose.

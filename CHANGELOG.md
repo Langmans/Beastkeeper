@@ -10,6 +10,7 @@
   screen, or a large splash in the middle. Both have a timer bar; drag to
   move, right-click to close, hover to keep it up. Duration, size and look on
   Kennel's page, and a look per kind of toast. Other addons can add looks.
+- With EllesmereUI loaded: the card and the splash in EllesmereUI's look.
 - Autocast Check (from Pet Autocast Check): a toast when Growl or Cower
   autocast does not fit solo, dungeon, kite or tank mode; kite and tank mode by
   command, key binding or the KennelKite, KennelKiteOff and KennelTank macros.
