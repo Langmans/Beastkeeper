@@ -370,6 +370,23 @@ describe("AbilityLearned", function()
             assert.is_nil(client:toast())
         end)
 
+        it("have a sound of their own, apart from the learn's", function()
+            local client = ready()
+            local settings = module(client).db.profile
+            settings.pointsSound = "levelup"
+            client:gainPoints(3)
+            assert.are.same({ kit = LEVEL_UP, channel = "Master" }, client.sounds[#client.sounds])
+            client:animate(8)
+            settle(client:learnLine("Claw (Rank 2)"))
+            assert.are.same({ file = CAT_CALL, channel = "Master" }, client.sounds[#client.sounds], "learn: family")
+            client:animate(8)
+            settings.pointsSound = "off"
+            local count = #client.sounds
+            client:gainPoints(1)
+            assert.are.equal("Fluffy gained 1 training points", client:toastTitle())
+            assert.are.equal(count, #client.sounds)
+        end)
+
         it("are not watched with the module off", function()
             local client = ready()
             client.Kennel:SetModuleOn("AbilityLearned", false)
@@ -394,6 +411,9 @@ describe("AbilityLearned", function()
             assert.is_true(args.points.get())
             args.points.set({}, false)
             assert.is_false(settings.points)
+            assert.are.equal("family", args.pointsSound.get())
+            args.pointsSound.set({}, "off")
+            assert.are.equal("off", settings.pointsSound)
         end)
 
         it("shows an example toast, kept out of the history", function()

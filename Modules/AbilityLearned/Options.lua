@@ -28,28 +28,38 @@ local function Setting(key)
     return get, set
 end
 
+---A sound choice for the setting `key`.
+---@param key "sound"|"pointsSound"
+---@param name string
+---@param order number
+---@return table
+local function SoundSelect(key, name, order)
+    local get, set = Setting(key)
+    return {
+        type = "select",
+        name = name,
+        order = order,
+        width = "full",
+        values = {
+            family = L.ABILITYLEARNED_OPTION_SOUND_FAMILY,
+            levelup = L.ABILITYLEARNED_OPTION_SOUND_LEVELUP,
+            off = L.ABILITYLEARNED_OPTION_SOUND_OFF,
+        },
+        sorting = { "family", "levelup", "off" },
+        get = get,
+        set = set,
+    }
+end
+
 ---@return table
 function M:GetOptions()
-    local soundGet, soundSet = Setting("sound")
     local screenshotGet, screenshotSet = Setting("screenshot")
     local hintsGet, hintsSet = Setting("hints")
     local pointsGet, pointsSet = Setting("points")
     return {
         args = {
-            sound = {
-                type = "select",
-                name = L.ABILITYLEARNED_OPTION_SOUND,
-                order = 1,
-                width = "full",
-                values = {
-                    family = L.ABILITYLEARNED_OPTION_SOUND_FAMILY,
-                    levelup = L.ABILITYLEARNED_OPTION_SOUND_LEVELUP,
-                    off = L.ABILITYLEARNED_OPTION_SOUND_OFF,
-                },
-                sorting = { "family", "levelup", "off" },
-                get = soundGet,
-                set = soundSet,
-            },
+            sound = SoundSelect("sound", L.ABILITYLEARNED_OPTION_SOUND, 1),
+            pointsSound = SoundSelect("pointsSound", L.ABILITYLEARNED_OPTION_POINTS_SOUND, 3.6),
             screenshot = {
                 type = "toggle",
                 name = L.ABILITYLEARNED_OPTION_SCREENSHOT,

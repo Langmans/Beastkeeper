@@ -186,6 +186,7 @@
 ---@field screenshot boolean
 ---@field hints boolean say in chat what a summoned pet can teach
 ---@field points boolean toast when the pet gains training points
+---@field pointsSound "family"|"levelup"|"off" that toast's sound
 
 ---AbilityLearned's per-character data, its namespace's char.
 ---@class KennelAbilityLearnedChar
@@ -231,7 +232,7 @@
 ---@field CheckHints fun(self: KennelAbilityLearned)
 ---@field CheckPoints fun(self: KennelAbilityLearned)
 ---@field CheckPet fun(self: KennelAbilityLearned)
----@field Sound fun(self: KennelAbilityLearned, fromPet: boolean): KennelSound?
+---@field Sound fun(self: KennelAbilityLearned, key: "sound"|"pointsSound", fromPet: boolean): KennelSound?
 ---@field ReportTeachable fun(self: KennelAbilityLearned)
 
 ---The sound tables, Kennel.sounds.<KIND>_PER_FAMILY (Core\Sounds.lua).

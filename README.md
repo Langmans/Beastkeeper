@@ -103,9 +103,9 @@ does not.
   look for every toast. Kennel keeps each pet's total, so a pet you summon
   again is told what it gained while it was away; spending points says
   nothing.
-- **Sound**: your pet family's call (the level-up sound for a family without
-  one), the level-up sound, or none. Optionally a **screenshot** of each
-  learn.
+- **Sound**, chosen apart for a learn and for training points: your pet
+  family's call (the level-up sound for a family without one), the level-up
+  sound, or none. Optionally a **screenshot** of each learn.
 - **History**: every learn, per character, with pet, zone and time; on the
   module's page, newest first.
 - **Hints**: when you summon or tame a pet, chat says which of its abilities it

@@ -173,7 +173,7 @@ function M:CheckPoints()
         text = L.ABILITYLEARNED_POINTS_FREE:format(free),
         icon = BEAST_TRAINING_ICON,
         portrait = "pet",
-        sound = self:Sound(true),
+        sound = self:Sound("pointsSound", true),
     })
 end
 

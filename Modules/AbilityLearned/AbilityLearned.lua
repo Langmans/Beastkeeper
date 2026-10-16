@@ -21,7 +21,7 @@ M.description = L.ABILITYLEARNED_DESC
 M.toastTypes = { learned = L.ABILITYLEARNED_TOASTTYPE_LEARNED, points = L.ABILITYLEARNED_TOASTTYPE_POINTS }
 M.toastSkins = { learned = "splash" }
 M.defaults = {
-    profile = { sound = "family", screenshot = false, hints = true, points = true },
+    profile = { sound = "family", screenshot = false, hints = true, points = true, pointsSound = "family" },
     char = { history = {}, known = {}, trainingRead = false, points = {} },
 }
 
@@ -47,12 +47,13 @@ function M:Settings()
     return self.db.profile --[[@as KennelAbilityLearnedSettings]]
 end
 
----The sound for a learn: the teaching pet's call (the level-up sound when its family has none or
----no pet taught it), the level-up sound, or none.
+---The sound a sound setting asks for: the pet's call (the level-up sound when its family has none
+---or it is not about the pet out), the level-up sound, or none.
+---@param key "sound"|"pointsSound" the learn's setting, or the training points'
 ---@param fromPet boolean
 ---@return KennelSound?
-function M:Sound(fromPet)
-    local setting = self:Settings().sound
+function M:Sound(key, fromPet)
+    local setting = self:Settings()[key]
     if setting == "off" then return nil end
     return setting == "family" and fromPet and Kennel.PetSound("AGGRO") or { kit = LEVEL_UP }
 end
@@ -74,7 +75,7 @@ function M:Toast(learn)
         icon = learn.icon,
         portrait = teacher and "pet" or nil,
         screenshot = self:Settings().screenshot,
-        sound = self:Sound(teacher ~= nil),
+        sound = self:Sound("sound", teacher ~= nil),
     }
 end
 

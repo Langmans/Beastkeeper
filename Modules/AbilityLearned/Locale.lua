@@ -49,7 +49,8 @@ L.ABILITYLEARNED_HISTORY_FROM = "from %s"
 L.ABILITYLEARNED_HISTORY_EMPTY = "Nothing learned on this character yet."
 
 -- Settings page.
-L.ABILITYLEARNED_OPTION_SOUND = "Sound"
+L.ABILITYLEARNED_OPTION_SOUND = "Sound when an ability is learned"
+L.ABILITYLEARNED_OPTION_POINTS_SOUND = "Sound when training points are gained"
 L.ABILITYLEARNED_OPTION_SOUND_FAMILY = "The call of the pet's family (level-up when it has none)"
 L.ABILITYLEARNED_OPTION_SOUND_LEVELUP = "The level-up sound"
 L.ABILITYLEARNED_OPTION_SOUND_OFF = "No sound"
