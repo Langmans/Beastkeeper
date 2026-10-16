@@ -99,7 +99,7 @@ What a pet trainer sells, and anything learned while a trainer window is open,
 does not.
 
 - **Training points**: a toast when your pet gains training points, naming
-  why: "Fluffy reached level 16" or "Fluffy is now at Loyalty Level 5
+  why: "Fluffy reached level 16" or "Fluffy now has loyalty level 5
   (Faithful)", with the points gained and how many are free for Beast
   Training; "Fluffy gained 19 training points" when both happened, or while
   it was away. Kennel keeps each pet's points, level and loyalty, so a pet you

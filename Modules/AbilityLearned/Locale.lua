@@ -32,9 +32,10 @@ L.ABILITYLEARNED_POINTS_GAINED = "%s gained %d training |4point:points;"
 -- Toast text under it. %d: the pet's free training points.
 L.ABILITYLEARNED_POINTS_FREE = "%d free to spend at Beast Training."
 -- Toast titles naming why the pet got training points. %s: the pet's name; %d: its new level;
--- second %s: the game's loyalty text, such as "Loyalty Level 5 (Faithful)".
+-- In LOYALTY_UP, %d is its new loyalty level (1 to 6) and the second %s that level's name as the
+-- game words it, such as "Faithful".
 L.ABILITYLEARNED_LEVEL_UP = "%s reached level %d"
-L.ABILITYLEARNED_LOYALTY_UP = "%s is now at %s"
+L.ABILITYLEARNED_LOYALTY_UP = "%s now has loyalty level %d (%s)"
 -- Toast text under those. First %d: the points gained; second: the free ones.
 L.ABILITYLEARNED_POINTS_CAUSED = "+%d training |4point:points;, %d free for Beast Training."
 -- Toast when the pet's loyalty level dropped. %s: the pet's name; in the text, the game's loyalty text.

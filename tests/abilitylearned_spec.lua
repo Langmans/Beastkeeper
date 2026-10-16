@@ -409,7 +409,7 @@ describe("AbilityLearned", function()
 
         it("name a loyalty level-up as their cause", function()
             local toast = ready():loyaltyChange("Loyalty Level 5 (Faithful)", 15):toast()
-            assert.are.equal("Fluffy is now at Loyalty Level 5 (|cff00cca3Faithful|r)", toast.Title.text)
+            assert.are.equal("Fluffy now has loyalty level 5 (|cff00cca3Faithful|r)", toast.Title.text)
             assert.are.equal("+15 training |4point:points;, 58 free for Beast Training.", toast.Text.text)
         end)
 

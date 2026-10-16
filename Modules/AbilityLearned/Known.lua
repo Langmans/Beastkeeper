@@ -162,20 +162,35 @@ local function LoyaltyLevel(text)
     return tonumber(text and text:match("%d+"))
 end
 
----The game's loyalty text with the level's name (in parentheses) coloured along the reputation
----colours, friendly green at loyalty level 1 to exalted teal at 6.
----@param text string
+---The colour code of a loyalty level, along the reputation colours: friendly green at loyalty
+---level 1 to exalted teal at 6.
 ---@param level number
 ---@return string
-local function ColorLoyalty(text, level)
+local function LoyaltyColor(level)
     local t = (math.min(math.max(level, 1), 6) - 1) / 5
     ---@type number[]
     local rgb = {}
     for i = 1, 3 do
         rgb[i] = math.floor((FRIENDLY[i] + (EXALTED[i] - FRIENDLY[i]) * t) * 255 + 0.5)
     end
-    local color = ("|cff%02x%02x%02x"):format(rgb[1], rgb[2], rgb[3])
-    return (text:gsub("%((.-)%)", "(" .. color .. "%1|r)"))
+    return ("|cff%02x%02x%02x"):format(rgb[1], rgb[2], rgb[3])
+end
+
+---The game's loyalty text with the level's name (in parentheses) in its colour.
+---@param text string
+---@param level number
+---@return string
+local function ColorLoyalty(text, level)
+    return (text:gsub("%((.-)%)", "(" .. LoyaltyColor(level) .. "%1|r)"))
+end
+
+---The level's name alone ("Faithful"), in its colour; the whole text when it names none.
+---@param text string
+---@param level number
+---@return string
+local function LoyaltyName(text, level)
+    local name = text:match("%((.-)%)")
+    return name and LoyaltyColor(level) .. name .. "|r" or text
 end
 
 ---A toast about the pet out's growth, of `kind` ("points" or "loyalty").
@@ -236,8 +251,9 @@ function M:CheckGrowth()
         text = L.ABILITYLEARNED_POINTS_FREE:format(free)
     else
         -- loyaltyUp is only true when the loyalty level (and so its text) was read.
+        local newLoyalty = loyalty --[[@as number]]
         title = levelUp and L.ABILITYLEARNED_LEVEL_UP:format(pet, level)
-            or L.ABILITYLEARNED_LOYALTY_UP:format(pet, ColorLoyalty(loyaltyText, loyalty --[[@as number]]))
+            or L.ABILITYLEARNED_LOYALTY_UP:format(pet, newLoyalty, LoyaltyName(loyaltyText, newLoyalty))
         text = L.ABILITYLEARNED_POINTS_CAUSED:format(change, free)
     end
     Kennel:ShowToast(GrowthToast("points", title, text, nil, self:Sound("pointsSound", "AGGRO")))
