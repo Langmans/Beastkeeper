@@ -8,24 +8,18 @@ local Kennel = ns
 local L = Kennel.L
 local M = Kennel:GetModule("CareButton") --[[@as KennelCareButton]]
 
----A getter and setter for one profile setting; the low line checks the health again.
+---Checks the health again after the low line changed.
+local function RecheckHealth()
+    M:CheckHealth()
+end
+
+---A getter and setter for one profile setting (Kennel:Setting); the low line checks the health
+---again.
 ---@param key string
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set
 local function Setting(key)
-    ---@type table<string, string|boolean|number>
-    local settings = M:Settings()
-    ---@return string|boolean|number
-    local function get()
-        return settings[key]
-    end
-    ---@param _ table AceConfig's info about the option
-    ---@param value string|boolean|number
-    local function set(_, value)
-        settings[key] = value
-        if key == "low" and M:IsEnabled() then M:CheckHealth() end
-    end
-    return get, set
+    return Kennel:Setting(M, key, key == "low" and RecheckHealth or nil)
 end
 
 ---Counts the pet as dead or alive by hand; says so in combat, where it cannot.

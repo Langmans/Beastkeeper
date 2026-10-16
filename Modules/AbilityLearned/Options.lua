@@ -9,23 +9,12 @@ local Kennel = ns
 local L = Kennel.L
 local M = Kennel:GetModule("AbilityLearned") --[[@as KennelAbilityLearned]]
 
----A getter and setter for one profile setting.
+---A getter and setter for one profile setting (Kennel:Setting).
 ---@param key string
----@return fun(): string|boolean get
----@return fun(info: table, value: string|boolean) set
+---@return fun(): string|boolean|number get
+---@return fun(info: table, value: string|boolean|number) set
 local function Setting(key)
-    ---@type table<string, string|boolean>
-    local settings = M:Settings()
-    ---@return string|boolean
-    local function get()
-        return settings[key]
-    end
-    ---@param _ table AceConfig's info about the option
-    ---@param value string|boolean
-    local function set(_, value)
-        settings[key] = value
-    end
-    return get, set
+    return Kennel:Setting(M, key)
 end
 
 ---A sound choice for the setting `key`.

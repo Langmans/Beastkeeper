@@ -210,6 +210,8 @@ end
 - **`GetOptions`** returns an AceConfig group. It becomes a page of its own
   under Kennel, greyed out while the module is off. The core sets `type`,
   `disabled`, and `name` when the group has none (the module's `title`).
+  `Kennel:Setting(module, key, changed)` gives an option's `get` and `set` for
+  `module:Settings()[key]`; `changed` runs after a set while the module is on.
 - Every module embeds AceEvent-3.0; anything else it lists in `NewModule`
   and in `embeds.xml` / `.pkgmeta`.
 

@@ -22,6 +22,10 @@
 ---@field toastSkins table<string, string>? the look a kind starts on (a skin id), until the player picks another
 ---@field GetOptions (fun(self: KennelModule): table)? an AceConfig group (args, and name if not title); the core adds type and disabled
 
+---A module whose settings Kennel:Setting reads and writes.
+---@class KennelSettingsModule: KennelModule
+---@field Settings fun(self: KennelSettingsModule): table
+
 ---A module that offers macros (Kennel:OfferMacros, Kennel:CreateMacros).
 ---@class KennelMacroModule: KennelModule
 ---@field Macros fun(self: KennelMacroModule): KennelMacro[]
@@ -134,7 +138,7 @@
 ---@field remind boolean toast what is still wrong when combat starts
 ---@field sound "family"|"warning"|"off"
 
----@class KennelAutocastCheck: KennelMacroModule
+---@class KennelAutocastCheck: KennelMacroModule, KennelSettingsModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field active table<string, KennelToastInfo> the problems the last check found
 ---@field checkPending boolean? a check is on its way (ScheduleCheck)
@@ -154,7 +158,7 @@
 ---@field low number the health percentage for the low toast; 0 is never
 ---@field sound "family"|"warning"|"off"
 
----@class KennelCareButton: KennelMacroModule
+---@class KennelCareButton: KennelMacroModule, KennelSettingsModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field lowShown boolean the low toast was given and health has not been above the line since
 ---@field deadAfterCombat boolean a failed cast in combat showed the pet is dead
@@ -212,7 +216,7 @@
 ---@field zone string?
 ---@field t number GetServerTime()
 
----@class KennelAbilityLearned: KennelModule
+---@class KennelAbilityLearned: KennelSettingsModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field ready boolean the login wait is over
 ---@field atTrainer boolean a trainer window was opened and not closed

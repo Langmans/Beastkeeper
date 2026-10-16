@@ -9,25 +9,17 @@ local Kennel = ns
 local L = Kennel.L
 local M = Kennel:GetModule("AutocastCheck") --[[@as KennelAutocastCheck]]
 
----A getter and setter for one profile setting; a change checks again, since what counts as
----wrong may have changed.
+---Checks again after a change, since what counts as wrong may have changed.
+local function Recheck()
+    M:Check()
+end
+
+---A getter and setter for one profile setting (Kennel:Setting).
 ---@param key string
----@return fun(): string|boolean get
----@return fun(info: table, value: string|boolean) set
+---@return fun(): string|boolean|number get
+---@return fun(info: table, value: string|boolean|number) set
 local function Setting(key)
-    ---@type table<string, string|boolean>
-    local settings = M:Settings()
-    ---@return string|boolean
-    local function get()
-        return settings[key]
-    end
-    ---@param _ table AceConfig's info about the option
-    ---@param value string|boolean
-    local function set(_, value)
-        settings[key] = value
-        if M:IsEnabled() then M:Check() end
-    end
-    return get, set
+    return Kennel:Setting(M, key, Recheck)
 end
 
 ---@return table

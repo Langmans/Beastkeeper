@@ -51,6 +51,30 @@ function Kennel:GetProfileOptions()
     }
 end
 
+---A getter and setter for one of a module's settings (module:Settings()[key]), for an option on
+---its page. `changed`, when given, runs after a set while the module is on, for settings that
+---change what the module shows now.
+---@param module KennelSettingsModule
+---@param key string
+---@param changed fun(module: KennelSettingsModule)?
+---@return fun(): string|boolean|number get
+---@return fun(info: table, value: string|boolean|number) set
+function Kennel:Setting(module, key, changed)
+    ---@type table<string, string|boolean|number>
+    local settings = module:Settings()
+    ---@return string|boolean|number
+    local function get()
+        return settings[key]
+    end
+    ---@param _ table AceConfig's info about the option
+    ---@param value string|boolean|number
+    local function set(_, value)
+        settings[key] = value
+        if changed and module:IsEnabled() then changed(module) end
+    end
+    return get, set
+end
+
 -- What a per-kind skin choice stores for "the same as every toast". It is kept as it is, not as
 -- no entry, so it can override the look a module gives that kind (KennelModule.toastSkins); being
 -- no skin, ToastSkinFor passes it on to the choice for every toast.
