@@ -45,11 +45,13 @@ local function libs()
     if require("tests.libs").fetch() then print("Libs/ fetched from the .pkgmeta externals") end
 end
 
----Totals from coverage/lcov.info, printed per file. Returns the percentage.
+---Totals from coverage/lcov.info, printed per file. On GitHub Actions the same table also goes
+---to the run's summary page (GITHUB_STEP_SUMMARY). Returns the percentage.
 ---@return number
 local function coverageReport()
     local text = sh.read("coverage/lcov.info")
     local hit, total = 0, 0
+    local rows = {}
     print(bold("\nCoverage (lines hit / executable):"))
     for record in text:gmatch("SF:.-end_of_record") do
         local file = record:match("^SF:([^\r\n]+)"):gsub("\\", "/")
@@ -62,10 +64,20 @@ local function coverageReport()
         local color = pct >= 100 and green or pct >= 90 and yellow or red
         local note = #missed > 0 and red("  missed: " .. table.concat(missed, ", ")) or ""
         print(("  %s  %3d/%-3d %s%s"):format(color(("%5.1f%%"):format(pct)), lh, lf, file, note))
+        rows[#rows + 1] = ("| %s | %d/%d | %.1f%% | %s |"):format(file, lh, lf, pct, table.concat(missed, ", "))
         hit, total = hit + lh, total + lf
     end
     local pct = total > 0 and 100 * hit / total or 100
     print(("  %s  %d/%d total"):format((pct >= 100 and green or red)(("%5.1f%%"):format(pct)), hit, total))
+
+    local summary = os.getenv("GITHUB_STEP_SUMMARY")
+    if summary then
+        local file = assert(io.open(summary, "a"))
+        file:write(("## Line coverage: %.1f%% (%d/%d)\n\n"):format(pct, hit, total))
+        file:write("| File | Lines | Coverage | Missed lines |\n|---|---|---|---|\n")
+        file:write(table.concat(rows, "\n"), "\n\n")
+        file:close()
+    end
     return pct
 end
 

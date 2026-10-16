@@ -51,3 +51,11 @@ jobs:
         with:
           report_paths: coverage/junit.xml
           check_name: Tests
+          # A table of every test, passed ones included, on the check and the run's summary;
+          # a failed test shows its error log.
+          include_passed: true
+          detailed_summary: true
+          failed_summary: true
+          failed_summary_logs: true
+          include_time_in_summary: true
+          simplified_summary: true
