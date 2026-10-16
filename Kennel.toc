@@ -1,0 +1,26 @@
+## Interface: 16001
+## Title: Kennel
+## Category: Hunter
+## Notes: Hunter pet tools in one addon. Each module can be turned on or off in the options.
+## Author: Langmans
+## Version: @project-version@
+## SavedVariables: KennelDB
+## OptionalDeps: Ace3, LibStub
+## IconTexture: Interface\Icons\Ability_Hunter_BeastCall
+## X-License: MIT
+
+embeds.xml
+Locales\enUS.lua
+Locales\deDE.lua
+Locales\esES.lua
+Locales\esMX.lua
+Locales\frFR.lua
+Locales\itIT.lua
+Locales\koKR.lua
+Locales\ptBR.lua
+Locales\ruRU.lua
+Locales\zhCN.lua
+Locales\zhTW.lua
+Core\Addon.lua
+Core\Options.lua
+Core\Commands.lua

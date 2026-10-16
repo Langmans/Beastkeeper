@@ -1,0 +1,62 @@
+package-as: Kennel
+
+# Ace3 is fetched at package time and never committed. Its GitHub tags stop in 2010, so each
+# library is pinned to a commit on master. tests/libs.lua reads this block and fetches the same
+# commits into Libs/ for the tests, so tests and release always run the same Ace3.
+externals:
+  Libs/LibStub:
+    url: https://github.com/WoWUIDev/Ace3.git
+    commit: 40f4cc1356ae7fcc0cf71fc0a19dc7d50d6ae6c2
+    path: LibStub
+  Libs/CallbackHandler-1.0:
+    url: https://github.com/WoWUIDev/Ace3.git
+    commit: 40f4cc1356ae7fcc0cf71fc0a19dc7d50d6ae6c2
+    path: CallbackHandler-1.0
+  Libs/AceAddon-3.0:
+    url: https://github.com/WoWUIDev/Ace3.git
+    commit: 40f4cc1356ae7fcc0cf71fc0a19dc7d50d6ae6c2
+    path: AceAddon-3.0
+  Libs/AceEvent-3.0:
+    url: https://github.com/WoWUIDev/Ace3.git
+    commit: 40f4cc1356ae7fcc0cf71fc0a19dc7d50d6ae6c2
+    path: AceEvent-3.0
+  Libs/AceConsole-3.0:
+    url: https://github.com/WoWUIDev/Ace3.git
+    commit: 40f4cc1356ae7fcc0cf71fc0a19dc7d50d6ae6c2
+    path: AceConsole-3.0
+  Libs/AceDB-3.0:
+    url: https://github.com/WoWUIDev/Ace3.git
+    commit: 40f4cc1356ae7fcc0cf71fc0a19dc7d50d6ae6c2
+    path: AceDB-3.0
+  Libs/AceDBOptions-3.0:
+    url: https://github.com/WoWUIDev/Ace3.git
+    commit: 40f4cc1356ae7fcc0cf71fc0a19dc7d50d6ae6c2
+    path: AceDBOptions-3.0
+  Libs/AceLocale-3.0:
+    url: https://github.com/WoWUIDev/Ace3.git
+    commit: 40f4cc1356ae7fcc0cf71fc0a19dc7d50d6ae6c2
+    path: AceLocale-3.0
+  Libs/AceGUI-3.0:
+    url: https://github.com/WoWUIDev/Ace3.git
+    commit: 40f4cc1356ae7fcc0cf71fc0a19dc7d50d6ae6c2
+    path: AceGUI-3.0
+  Libs/AceConfig-3.0:
+    url: https://github.com/WoWUIDev/Ace3.git
+    commit: 40f4cc1356ae7fcc0cf71fc0a19dc7d50d6ae6c2
+    path: AceConfig-3.0
+
+# Release notes come from this file instead of the commit log, so commit
+# bodies and trailers stay out of the CurseForge page.
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
+
+# Files starting with a dot are left out by the packager already.
+ignore:
+  - annotations
+  - coverage
+  - tests
+  - kennel-dev-1.rockspec
+  - stylua.toml
+  - TODO.md
+  - Locales/README.md
