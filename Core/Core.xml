@@ -4,6 +4,7 @@
     <Script file="Sounds.lua"/>
     <Script file="Pet.lua"/>
     <Script file="Combat.lua"/>
+    <Script file="Chat.lua"/>
     <Include file="Toast\Toast.xml"/>
     <Script file="Macro.lua"/>
     <Script file="Options.lua"/>

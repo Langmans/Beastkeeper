@@ -78,6 +78,17 @@ function Kennel.PetFamilyID()
     return tonumber(familyID)
 end
 
+---The active pet's number, the same as C_StableInfo's petNumber: the low 32 bits of its GUID's
+---last field. It stays the same through resummons, relogs, stable swaps and renames, so per-pet
+---settings are kept under it. Nil without a pet or when the client hides the GUID.
+---@return number?
+function Kennel.PetNumber()
+    local guid = UnitGUID("pet")
+    if not guid or not Kennel.Readable(guid) then return nil end
+    local spawnUID = guid:match("^Pet%-.-%-(%x+)$")
+    return spawnUID and tonumber(spawnUID:sub(-8), 16) or nil
+end
+
 ---A sound of the active pet's family, as a toast sound; nil without a pet or for a family without
 ---that sound.
 ---@param kind "AGGRO"|"DEATH"|"WOUND" its attack call, death sound or wound cry

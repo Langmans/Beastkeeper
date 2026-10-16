@@ -46,6 +46,7 @@ end
 ---@field noTrainingAPI boolean? neither
 ---@field noLearnLines boolean? no ERR_LEARN_ABILITY_S / ERR_LEARN_SPELL_S
 ---@field noLoyaltyAPI boolean? no GetPetLoyalty
+---@field oldChatAPI boolean? the global SendChatMessage instead of C_ChatInfo's
 
 -- The spells the simulated client knows, per locale: id -> { name, icon, rank }; the rank is the
 -- client's subtext, "" for a spell without ranks.
@@ -183,6 +184,11 @@ function NewClient(opts)
     function UnitExists(unit)
         if unit == "npc" then return client.trainer ~= nil and client.trainer.npc == true end
         return unit == "player" or (unit == "pet" and client.pet ~= nil)
+    end
+    -- client.petGUID: the pet's GUID, its spawn UID's low 32 bits being the stable's petNumber.
+    client.petGUID = "Pet-0-5251-0-12345-6219-0201A3F27C"
+    function UnitGUID(unit)
+        if unit == "pet" and client.pet then return client.petGUID end
     end
     function UnitCreatureFamily(unit)
         if unit == "pet" and client.pet then return "Cat", client.familyID end
@@ -549,6 +555,11 @@ function NewClient(opts)
     function Region:SetShown(shown)
         self.shown = shown == true
     end
+    -- Keyboard input: only allowed out of combat, as on the client.
+    function Region:SetPropagateKeyboardInput(propagate)
+        assert(not client.inCombat, "SetPropagateKeyboardInput is restricted in combat")
+        self.propagate = propagate
+    end
     function Region:RegisterEvent(event)
         self.events[event] = true
     end
@@ -904,11 +915,18 @@ function NewClient(opts)
     function CombatText_AddMessage(text, _, r, g, b)
         client.combatText[#client.combatText + 1] = { text = text, r = r, g = g, b = b }
     end
+    -- client.chatLocked: the client blocks addon chat right now (in combat and the like).
+    -- opts.oldChatAPI: the global SendChatMessage instead of C_ChatInfo's.
+    local function sendChat(text, kind, _, target)
+        client.chatSent[#client.chatSent + 1] = { text, kind, target }
+    end
     C_ChatInfo = {
-        SendChatMessage = function(text, kind, _, target)
-            client.chatSent[#client.chatSent + 1] = { text, kind, target }
+        SendChatMessage = not opts.oldChatAPI and sendChat or nil,
+        InChatMessagingLockdown = function()
+            return client.chatLocked == true
         end,
     }
+    SendChatMessage = opts.oldChatAPI and sendChat or nil
     -- client.channels: the custom chat channels joined, by number ({ [5] = "Hunters" }).
     -- client.inRaid: in a raid group.
     client.channels = {}
@@ -938,11 +956,15 @@ function NewClient(opts)
     -- MessageQueue, when opts.messageQueue says it is loaded: client.queued records what was
     -- handed to its SendChatMessage.
     MessageQueue = nil
-    client.queued = {}
+    -- client.enqueued: the functions handed to its Enqueue, run by client:runMessageQueue.
+    client.queued, client.enqueued = {}, {}
     if opts.messageQueue then
         MessageQueue = {
             SendChatMessage = function(text, kind, language, target)
                 client.queued[#client.queued + 1] = { text, kind, language, target }
+            end,
+            Enqueue = function(fn)
+                client.enqueued[#client.enqueued + 1] = fn
             end,
         }
     end
@@ -1154,6 +1176,32 @@ function NewClient(opts)
         self.trainer = nil
         ClassTrainerFrame:Hide()
         return self:fire(event or "TRAINER_CLOSED")
+    end
+
+    ---A key press: every shown frame that takes keys gets it.
+    function client:pressKey(key)
+        for _, frame in ipairs(self.frames) do
+            if frame.shown and frame.scripts.OnKeyDown then frame.scripts.OnKeyDown(frame, key or "W") end
+        end
+        return self
+    end
+
+    ---A click in the game world.
+    function client:clickWorld()
+        for _, hook in ipairs(WorldFrame.hooks.OnMouseDown or {}) do
+            hook(WorldFrame, "LeftButton")
+        end
+        return self
+    end
+
+    ---MessageQueue's next hardware event: it runs what was enqueued.
+    function client:runMessageQueue()
+        local queued = self.enqueued
+        self.enqueued = {}
+        for _, fn in ipairs(queued) do
+            fn()
+        end
+        return self
     end
 
     ---Joins or leaves a group.

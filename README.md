@@ -138,8 +138,10 @@ Locales\          AceLocale strings: Locales.xml, enUS.lua as the source,
 Core\Core.xml     the core, in this order:
   Addon.lua       the AceAddon object, KennelDB, the module switches
   Sounds.lua      pet sounds per family (Kennel.sounds.*_PER_FAMILY)
-  Pet.lua         spells (name, icon, rank), the pet's spellbook, family, sound
-                  and training points
+  Pet.lua         spells (name, icon, rank), the pet's spellbook, family, sound,
+                  training points and stable number
+  Combat.lua      what waits for combat to end
+  Chat.lua        chat sent on the player's next key press or click
   Toast\          the toast (Toast.xml):
     Skins.lua     the skin register, its contract, which skin draws which kind
     Frame.lua     what every skin's frame does alike; NewToastFrame, NewToastSkin
@@ -310,6 +312,11 @@ cannot stop Kennel's toasts. An error in `Hide` only lets the toast go.
   family's `"AGGRO"` call, `"DEATH"` sound or `"WOUND"` cry, from
   `Kennel.sounds.<KIND>_PER_FAMILY`), and `Kennel.Readable(value)` for values
   Forever may hide in combat.
+- **Chat on input** (`Core\Chat.lua`): `Kennel:SendOnInput(text, kind)` sends
+  on the player's next key press or click, as WoW: Forever requires for an
+  addon's chat (through MessageQueue when it is loaded). One message waits at
+  a time, for at most ten seconds. `Kennel.PetNumber()` (`Core\Pet.lua`) gives
+  the pet's stable number, for settings kept per pet.
 - **Out of combat** (`Core\Combat.lua`): `Kennel:OutOfCombat(key, fn)` runs
   `fn` now, or once combat ends (the last one asked per key). For what the
   client blocks in combat: secure frames, macro edits. It lives on the core

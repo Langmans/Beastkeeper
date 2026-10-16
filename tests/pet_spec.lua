@@ -62,6 +62,18 @@ describe("the pet helpers", function()
         assert.is_nil(client.Kennel.PetSound("AGGRO"))
     end)
 
+    it("give the pet's number: the low 32 bits of its GUID's last field, the stable's petNumber", function()
+        local client = NewClient()
+        client.petGUID = "Pet-0-5251-0-12345-6219-0201A3F27C"
+        assert.are.equal(0x01A3F27C, client.Kennel.PetNumber())
+        client.petGUID = SECRET
+        assert.is_nil(client.Kennel.PetNumber())
+        client.petGUID = "Creature-0-5251-0-12345-6219-0201A3F27C"
+        assert.is_nil(client.Kennel.PetNumber(), "not a pet GUID")
+        client.pet = nil
+        assert.is_nil(client.Kennel.PetNumber())
+    end)
+
     it("tell a value the client hides from one it shows", function()
         local Kennel = NewClient().Kennel
         assert.is_true(Kennel.Readable(40))
