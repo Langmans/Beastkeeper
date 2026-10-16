@@ -42,34 +42,49 @@ end
 ---@field messageQueue boolean? MessageQueue loaded before Kennel
 ---@field noPet boolean? no pet unit at the start
 ---@field inCombat boolean? in combat from the start
+---@field oldTrainingAPI boolean? GetPetTrainingPoints instead of C_PetInfo's
+---@field noTrainingAPI boolean? neither
+---@field noLearnLines boolean? no ERR_LEARN_ABILITY_S / ERR_LEARN_SPELL_S
 
--- The spells the simulated client knows, per locale: id -> { name, icon }.
+-- The spells the simulated client knows, per locale: id -> { name, icon, rank }; the rank is the
+-- client's subtext, "" for a spell without ranks.
 local SPELLS = {
     enUS = {
-        [2649] = { "Growl", 132270 },
-        [14916] = { "Growl", 132270 }, -- a higher rank: same name
-        [1742] = { "Cower", 132118 },
-        [17253] = { "Bite", 132278 },
-        [16828] = { "Claw", 132140 },
-        [4187] = { "Great Stamina", 136112 },
-        [20736] = { "Distracting Shot", 135736 },
-        [136] = { "Mend Pet", 132179 },
-        [982] = { "Revive Pet", 132163 },
-        [883] = { "Call Pet", 132161 },
+        [2649] = { "Growl", 132270, "" },
+        [14916] = { "Growl", 132270, "" }, -- a higher rank: same name
+        [1742] = { "Cower", 132118, "Rank 1" },
+        [17253] = { "Bite", 132278, "Rank 1" },
+        [16827] = { "Claw", 132140, "Rank 1" },
+        [16828] = { "Claw", 132140, "Rank 2" },
+        [16829] = { "Claw", 132140, "Rank 3" },
+        [7371] = { "Charge", 132183, "Rank 1" },
+        [4187] = { "Great Stamina", 136112, "Rank 1" },
+        [20736] = { "Distracting Shot", 135736, "" },
+        [136] = { "Mend Pet", 132179, "" },
+        [982] = { "Revive Pet", 132163, "" },
+        [883] = { "Call Pet", 132161, "" },
     },
     deDE = {
-        [136] = { "Tier heilen", 132179 },
-        [982] = { "Tier wiederbeleben", 132163 },
-        [883] = { "Tier rufen", 132161 },
-        [2649] = { "Knurren", 132270 },
-        [14916] = { "Knurren", 132270 },
-        [1742] = { "Ducken", 132118 },
-        [17253] = { "Biss", 132278 },
-        [20736] = { "Ablenkender Schuss", 135736 },
+        [136] = { "Tier heilen", 132179, "" },
+        [982] = { "Tier wiederbeleben", 132163, "" },
+        [883] = { "Tier rufen", 132161, "" },
+        [2649] = { "Knurren", 132270, "" },
+        [14916] = { "Knurren", 132270, "" },
+        [1742] = { "Ducken", 132118, "Rang 1" },
+        [17253] = { "Biss", 132278, "Rang 1" },
+        [16827] = { "Klaue", 132140, "Rang 1" },
+        [16828] = { "Klaue", 132140, "Rang 2" },
+        [20736] = { "Ablenkender Schuss", 135736, "" },
     },
 }
 
-GROWL, COWER = 2649, 1742
+-- The client's "learned" chat lines, per locale.
+local LEARN_LINES = {
+    enUS = { "You have learned a new ability: %s.", "You have learned a new spell: %s." },
+    deDE = { "Ihr habt eine neue Fähigkeit erlernt: %s.", "Ihr habt einen neuen Zauber erlernt: %s." },
+}
+
+GROWL, COWER, CLAW, CLAW_2, CLAW_3 = 2649, 1742, 16827, 16828, 16829
 
 ---@param opts TestClientOptions?
 function NewClient(opts)
@@ -165,6 +180,7 @@ function NewClient(opts)
     -- the group and the instance type ("party", "raid", "pvp", "arena", or "none" outside).
     client.familyID, client.inGroup, client.instance = 2, false, "none"
     function UnitExists(unit)
+        if unit == "npc" then return client.trainer ~= nil and client.trainer.npc == true end
         return unit == "player" or (unit == "pet" and client.pet ~= nil)
     end
     function UnitCreatureFamily(unit)
@@ -213,14 +229,24 @@ function NewClient(opts)
     local function spellIcon(id)
         return spells[id] and spells[id][2]
     end
-    C_Spell, GetSpellInfo = nil, nil
+    local function spellRank(id)
+        return spells[id] and spells[id][3]
+    end
+    C_Spell, GetSpellInfo, GetSpellSubtext = nil, nil, nil
     if opts.oldSpellAPI then
         function GetSpellInfo(id)
             return spellName(id), nil, spellIcon(id)
         end
+        GetSpellSubtext = spellRank
     elseif not opts.noSpellAPI then
-        C_Spell = { GetSpellName = spellName, GetSpellTexture = not opts.noTextureAPI and spellIcon or nil }
+        C_Spell = {
+            GetSpellName = spellName,
+            GetSpellTexture = not opts.noTextureAPI and spellIcon or nil,
+            GetSpellSubtext = spellRank,
+        }
     end
+    local learnLines = not opts.noLearnLines and (LEARN_LINES[locale] or LEARN_LINES.enUS) or {}
+    ERR_LEARN_ABILITY_S, ERR_LEARN_SPELL_S = learnLines[1], learnLines[2]
 
     -- GetPetActionInfo as Forever returns it: name, texture, isToken (1, not true), isActive,
     -- autoCastAllowed, autoCastEnabled, spellID.
@@ -249,10 +275,13 @@ function NewClient(opts)
             HasPetSpells = not opts.noPetSpellCount and function()
                 if client.pet then return #client.petBook, "PET" end
             end or nil,
+            -- A spell has its rank as subName ("" without one) and its ID; a command only a name.
             GetSpellBookItemInfo = function(index, bank)
                 assert(bank == Enum.SpellBookSpellBank.Pet, "pet spellbook bank expected")
-                if client.petBook[index].noInfo then return nil end
-                return { name = (bookEntry(index)) }
+                local entry = client.petBook[index]
+                if entry.noInfo then return nil end
+                local id = not entry.token and entry[1] or nil
+                return { name = (bookEntry(index)), subName = id and spellRank(id), spellID = id }
             end,
             GetSpellBookItemAutoCast = function(index, bank)
                 assert(bank == Enum.SpellBookSpellBank.Pet, "pet spellbook bank expected")
@@ -371,11 +400,50 @@ function NewClient(opts)
         end,
     }
 
-    -- The player, as AceDB reads it for its char/realm/class/faction keys.
+    -- The player, as AceDB reads it for its char/realm/class/faction keys; the pet is client.pet.name.
     function UnitNameUnmodified(unit)
         if unit == "player" then return "Langmans" end
+        if unit == "pet" and client.pet then return client.pet.name or "Fluffy" end
     end
     UnitName = UnitNameUnmodified
+
+    -- What AbilityLearned asks about a learn: the pet's free training points (client.trainingPoints,
+    -- total and used), the zone, the time, the portrait drawn, the screenshots taken.
+    client.trainingPoints, client.zone, client.serverTime, client.screenshots = { 50, 7 }, "Darkshore", 1791374580, 0
+    local function trainingPoints()
+        return client.trainingPoints[1], client.trainingPoints[2]
+    end
+    C_PetInfo, GetPetTrainingPoints = nil, nil
+    if opts.oldTrainingAPI then
+        GetPetTrainingPoints = trainingPoints
+    elseif not opts.noTrainingAPI then
+        C_PetInfo = { GetPetTrainingPoints = trainingPoints }
+    end
+    function GetZoneText()
+        return client.zone
+    end
+    function GetServerTime()
+        return client.serverTime
+    end
+    date = os.date
+    function Screenshot()
+        client.screenshots = client.screenshots + 1
+    end
+    function SetPortraitTexture(texture, unit)
+        texture.portrait = unit
+    end
+
+    -- The trainer window: client.trainer is nil while it is closed, else { npc = boolean, rows }
+    -- with rows { name, kind, spellID } ("header" rows have no spell). Beast Training is the window
+    -- without an NPC; a pet trainer's has one.
+    function GetNumTrainerServices()
+        return client.trainer and #client.trainer.rows or 0
+    end
+    function GetTrainerServiceInfo(index)
+        local row = client.trainer.rows[index]
+        assert(not row.broken, "this row's lookup errors")
+        return row[1], row[2]
+    end
     function UnitClass()
         local classFile = opts.class or "HUNTER"
         return classFile, classFile
@@ -466,6 +534,9 @@ function NewClient(opts)
     end
     function Region:IsShown()
         return self.shown
+    end
+    function Region:SetShown(shown)
+        self.shown = shown == true
     end
     function Region:RegisterEvent(event)
         self.events[event] = true
@@ -704,6 +775,9 @@ function NewClient(opts)
     function Region:CreateAnimation()
         return newRegion()
     end
+    function Region:CreateMaskTexture()
+        return newRegion()
+    end
     -- A button's textures and label, made on first ask, as AceGUI's widgets style them.
     for _, getter in ipairs({
         "GetNormalTexture",
@@ -735,6 +809,18 @@ function NewClient(opts)
                 self.clicks = { ... }
             end
         end
+        -- A tooltip set to a trainer row knows that row's spell.
+        if kind == "GameTooltip" then
+            function frame:SetTrainerService(index)
+                self.row = client.trainer.rows[index]
+            end
+            function frame:GetSpell()
+                if self.row then return self.row[1], self.row[3] end
+            end
+            function frame:Hide()
+                self.shown, self.row = false, nil
+            end
+        end
         client.frames[#client.frames + 1] = frame
         if name then _G[name] = frame end
         for _, suffix in ipairs(name and TEMPLATE_CHILDREN[template] or {}) do
@@ -744,6 +830,8 @@ function NewClient(opts)
     end
     UIParent = newRegion()
     WorldFrame = newRegion()
+    ClassTrainerFrame = newRegion()
+    ClassTrainerFrame.shown = false
     UISpecialFrames = {}
     -- client.printed: every chat line, whether through print or the default chat frame.
     DEFAULT_CHAT_FRAME = newRegion()
@@ -1006,6 +1094,37 @@ function NewClient(opts)
     ---Switches autocast of the ability `id`, as a right-click does: PET_BAR_UPDATE follows.
     function client:autocast(id, on)
         return self:setAutocast(id, on):petBarUpdate()
+    end
+
+    ---The client's "learned" chat line for `what` (a name such as "Claw (Rank 2)", or a link), as
+    ---a system message.
+    function client:learnLine(what)
+        return self:fire("CHAT_MSG_SYSTEM", ERR_LEARN_ABILITY_S:format(what))
+    end
+
+    ---Summons a living pet named `name` with `book` as its spellbook (spell IDs); UNIT_PET follows.
+    function client:summon(name, book)
+        self.pet = { health = 100, max = 100, dead = false, name = name }
+        self.petBook = {}
+        for _, id in ipairs(book) do
+            self.petBook[#self.petBook + 1] = { id }
+        end
+        self:updateDrivers()
+        return self:fire("UNIT_PET", "player")
+    end
+
+    ---Opens the trainer window with `rows`: Beast Training, or a pet trainer's with `npc`.
+    function client:openTrainer(rows, npc)
+        self.trainer = { rows = rows, npc = npc == true }
+        ClassTrainerFrame:Show()
+        return self:fire("TRAINER_SHOW")
+    end
+
+    ---Closes the trainer window; `event` is what the client sends, TRAINER_CLOSED by default.
+    function client:closeTrainer(event)
+        self.trainer = nil
+        ClassTrainerFrame:Hide()
+        return self:fire(event or "TRAINER_CLOSED")
     end
 
     ---Joins or leaves a group.

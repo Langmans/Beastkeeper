@@ -2,4 +2,5 @@
     <!-- One line per module; each module folder loads its own files. -->
     <Include file="AutocastCheck\AutocastCheck.xml"/>
     <Include file="CareButton\CareButton.xml"/>
+    <Include file="AbilityLearned\AbilityLearned.xml"/>
 </Ui>

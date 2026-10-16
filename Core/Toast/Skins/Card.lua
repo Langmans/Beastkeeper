@@ -1,7 +1,7 @@
 local _, ns = ...
 
--- The card: a card near the top of the screen, a coloured bar down its left side, a square icon,
--- a title in that colour, a line of text, a grey hint and a timer bar along the bottom. It slides
+-- The card: a card near the top of the screen, a coloured bar down its left side, a square icon
+-- (with a unit's portrait as a round badge, when the toast brings one), a title in that colour, a line of text, a grey hint and a timer bar along the bottom. It slides
 -- in from a little higher. NewCardSkin makes one in any style (KennelSkinStyle), such as
 -- EllesmereUI's (Integrations\EllesmereUI\).
 
@@ -10,6 +10,7 @@ local Kennel = ns
 
 local WIDTH = 340
 local ICON_SIZE = 40
+local PORTRAIT_SIZE = 18
 local PAD = 12
 local ACCENT_WIDTH = 4
 local SLIDE = 12
@@ -69,6 +70,7 @@ local function Build(style)
     frame.Icon:SetSize(ICON_SIZE, ICON_SIZE)
     frame.Icon:SetPoint("CENTER", iconEdge, "CENTER")
     frame.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    Kennel:AddToastPortrait(frame, frame.Icon, PORTRAIT_SIZE)
 
     frame.Title = Line(frame, style, "GameFontNormal", TITLE_SIZE)
     frame.Title:SetPoint("TOPLEFT", iconEdge, "TOPRIGHT", PAD, -1)
@@ -95,6 +97,7 @@ local function Show(self, info, settings)
     frame.Timer:SetColorTexture(accent[1], accent[2], accent[3], 1)
     frame.Title:SetTextColor(accent[1], accent[2], accent[3])
     frame.Icon:SetTexture(info.icon or Kennel.TOAST_ICON)
+    Kennel:ShowToastPortrait(frame, info.portrait, accent)
     frame.Title:SetText(info.title)
     frame.Text:SetText(info.text or "")
     frame.Hint:SetText(info.hint or "")

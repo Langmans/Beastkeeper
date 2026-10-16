@@ -52,6 +52,37 @@ describe("the toast", function()
         assert.are.equal("", toast.Hint.text)
     end)
 
+    for _, skin in ipairs({ "card", "splash" }) do
+        it("in the " .. skin .. " look, puts a unit's portrait on the icon while that unit exists", function()
+            Kennel.db.profile.toast.skin = skin
+            client.pet = { health = 100, max = 100, dead = false }
+            Kennel:ShowToast(info("a", { portrait = "pet" }))
+            local toast = client:toast()
+            assert.are.equal("pet", toast.Portrait.portrait)
+            assert.is_true(toast.Portrait.shown)
+            Kennel:HideToast()
+            client.pet = nil
+            Kennel:ShowToast(info("b", { portrait = "pet" }))
+            assert.is_false(toast.Portrait.shown, "the pet went away")
+            Kennel:HideToast()
+            Kennel:ShowToast(info("c"))
+            assert.is_false(toast.Portrait.shown, "no portrait asked")
+        end)
+    end
+
+    it("takes one screenshot once it has faded in, when asked to", function()
+        Kennel:ShowToast(info("a", { screenshot = true }))
+        assert.are.equal(0, client.screenshots, "not while it fades in")
+        client:animate(0.5)
+        assert.are.equal(1, client.screenshots)
+        client:animate(3)
+        assert.are.equal(1, client.screenshots, "once")
+        Kennel:HideToast()
+        Kennel:ShowToast(info("b"))
+        client:animate(1)
+        assert.are.equal(1, client.screenshots, "not unasked")
+    end)
+
     it("slides in near the top of the screen and fades in", function()
         Kennel:ShowToast(info("a"))
         local toast = client:toast()

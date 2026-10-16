@@ -86,6 +86,31 @@ Shift still forces Revive Pet and Ctrl Call Pet.
   your pet is dead or alive when it guessed wrong, an example toast and the
   macro. Switched off, the key and the macro do nothing.
 
+### Ability Learned
+
+A toast when your hunter learns a pet ability from a tamed beast (Claw rank 2
+from a Nightstalker, say): the ability and its rank, the pet that taught it
+with its portrait on the icon, and that pet's free training points. It starts
+on the splash look. Only abilities learned in the wild count: Bite, Charge,
+Claw, Cower, Dash, Demoralizing Screech, Dive, Furious Howl, Lightning Breath,
+Prowl, Scorpid Poison, Shell Shield, Thunderstomp, and Forever's Dismember,
+Dust Cloud, Mine!, Pinch, Savage Rend, Sonic Blast, Swipe, Tendon Rip and Web.
+What a pet trainer sells, and anything learned while a trainer window is open,
+does not.
+
+- **Sound**: your pet family's call (the level-up sound for a family without
+  one), the level-up sound, or none. Optionally a **screenshot** of each toast.
+- **History**: every learn, per character, with pet, zone and time; on the
+  module's page, newest first.
+- **Hints**: when you summon or tame a pet, chat says which of its abilities it
+  has at a higher rank than you know ("Fluffy can teach you: Claw (Rank 3).").
+  Kennel knows your ranks from what it saw you learn and from the **Beast
+  Training** window: open that once and the hints are complete.
+- The module's page has the sound, screenshot and hints, an example toast, a
+  simulated learn (the game's own chat line through the detection, kept out of
+  the history), a "What can my pet teach?" button and the history. On other
+  classes it does nothing.
+
 ## Technical
 
 ### Layout
@@ -99,7 +124,8 @@ Locales\          AceLocale strings: Locales.xml, enUS.lua as the source,
 Core\Core.xml     the core, in this order:
   Addon.lua       the AceAddon object, KennelDB, the module switches
   Sounds.lua      pet sounds per family (Kennel.sounds.*_PER_FAMILY)
-  Pet.lua         spell names and icons, the pet's family and its sound
+  Pet.lua         spells (name, icon, rank), the pet's spellbook, family, sound
+                  and training points
   Toast\          the toast (Toast.xml):
     Skins.lua     the skin register, its contract, which skin draws which kind
     Frame.lua     what every skin's frame does alike; NewToastFrame, NewToastSkin
@@ -190,8 +216,11 @@ end
   `Kennel:DropToasts("<Module>:")` all of a module's when it is switched off.
   A module lists its kinds of toast in `toastTypes` (`{ problem = L.X }`) and
   sets `type = "<Module>:problem"` on each toast, so the player can give that
-  kind a look of its own. Duration, size, position and looks are core
-  settings.
+  kind a look of its own; `toastSkins` (`{ problem = "splash" }`) gives a kind
+  the look it starts on. Duration, size, position and looks are core
+  settings. A toast can also bring `portrait` (a unit such as `"pet"`, drawn
+  as a round badge on the icon while the unit exists) and `screenshot = true`
+  (one screenshot once it has faded in).
 
 ### Toast skins
 
@@ -212,11 +241,13 @@ if Kennel then
     -- A skin drawing in one frame (self.frame): Hide, IsMouseOver and Frame come with it.
     local skin = Kennel:NewToastSkin("My look")
     function skin:Show(info, settings)
-        -- info: key, type, source, title, text, hint, icon, accent; settings: scale, pos, ...
+        -- info: key, type, source, title, text, hint, icon, accent, portrait; settings: scale, pos, ...
         self.frame = self.frame or Kennel:NewToastFrame("MyAddonToast") -- drags and closes like Kennel's
         -- fill in self.frame from info
         Kennel:PlaceToast(self.frame, "TOP", 0, -150) -- or where the player dragged the toast
         self.frame:Show()
+        -- For info.portrait: Kennel:AddToastPortrait(frame, icon, size) once when building,
+        -- then Kennel:ShowToastPortrait(frame, info.portrait, accent) here.
     end
     function skin:Update(intro, fade, left) -- each 0 to 1
         self.frame:SetAlpha(intro * (1 - fade))
@@ -256,8 +287,10 @@ cannot stop Kennel's toasts. An error in `Hide` only lets the toast go.
   account-wide when those are full; never in combat; an existing macro of the
   same name is left alone), and `Kennel:CreateMacros(module, true)` makes the
   missing ones again by hand.
-- **Pet** (`Core\Pet.lua`, `Core\Sounds.lua`): `Kennel.SpellInfo(id)` across
-  client generations, `Kennel.PetFamilyID()`, `Kennel.PetSound(kind)` (the
+- **Pet** (`Core\Pet.lua`, `Core\Sounds.lua`): `Kennel.SpellInfo(id)` (name,
+  icon and rank text) across client generations, `Kennel.PetSpells()` (the
+  pet's spellbook by name), `Kennel.PetTrainingPoints()` (free points),
+  `Kennel.PetFamilyID()`, `Kennel.PetSound(kind)` (the
   family's `"AGGRO"` call, `"DEATH"` sound or `"WOUND"` cry, from
   `Kennel.sounds.<KIND>_PER_FAMILY`), and `Kennel.Readable(value)` for values
   Forever may hide in combat.

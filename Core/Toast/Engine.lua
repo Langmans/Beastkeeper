@@ -7,8 +7,9 @@ local _, ns = ...
 ---@type Kennel
 local Kennel = ns
 
--- Seconds.
+-- Seconds. A toast that asks for a screenshot gets it a moment after its intro, fully drawn.
 local INTRO, FADE_OUT = 0.2, 0.35
+local SCREENSHOT_AT = INTRO + 0.2
 
 ---The skin that drew the last toast; for tests and for ToastFrame.
 ---@type KennelToastSkin?
@@ -25,6 +26,8 @@ local queue = {}
 ---its stay); how long it stays before it fades; when the fade began, on the first clock.
 ---@type number, number, number, number?
 local clock, shownFor, stay, fadeStart = 0, 0, 0, nil
+---The toast up wants a screenshot that has not been taken yet.
+local screenshotDue = false
 
 -- The functions that call each other in a circle (Display starts the clock, which ends in
 -- ShowNext, which calls Display) are fields here rather than locals declared ahead.
@@ -89,6 +92,10 @@ end
 ---@param elapsed number seconds since the previous frame
 local function Tick(_, elapsed)
     clock = clock + elapsed
+    if screenshotDue and clock >= SCREENSHOT_AT then
+        screenshotDue = false
+        Screenshot()
+    end
     if not Call("IsMouseOver") then shownFor = shownFor + elapsed end
     if not fadeStart and shownFor >= stay then fadeStart = clock end
     local fade = fadeStart and Progress(clock, fadeStart, FADE_OUT) or 0
@@ -121,6 +128,7 @@ function Engine.Display(info)
     current, currentSkin = info, Kennel:ToastSkins()[Kennel:ToastSkinFor(info.type)]
     lastSkin = currentSkin
     clock, shownFor, fadeStart, stay = 0, 0, nil, settings.duration
+    screenshotDue = info.screenshot == true
     Call("Show", info, settings)
     Play(info.sound)
     -- An instant skin is done once shown (it handed the toast on): the next one follows at once.

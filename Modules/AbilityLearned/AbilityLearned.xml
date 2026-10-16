@@ -1,0 +1,8 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- The module object first (AbilityLearned.lua); detection, what is known and the page add to it. -->
+    <Script file="Locale.lua"/>
+    <Script file="AbilityLearned.lua"/>
+    <Script file="Detect.lua"/>
+    <Script file="Known.lua"/>
+    <Script file="Options.lua"/>
+</Ui>

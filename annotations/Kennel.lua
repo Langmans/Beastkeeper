@@ -19,6 +19,7 @@
 ---@field command string? the word after /kennel that reaches its commands
 ---@field commands table<string, KennelCommand>? by the word after `command`, lowercase
 ---@field toastTypes table<string, string>? the kinds of toast it shows, by kind with a localized name; each can have a look of its own
+---@field toastSkins table<string, string>? the look a kind starts on (a skin id), until the player picks another
 ---@field GetOptions (fun(self: KennelModule): table)? an AceConfig group (args, and name if not title); the core adds type and disabled
 
 ---A module that offers macros (Kennel:OfferMacros, Kennel:CreateMacros).
@@ -47,6 +48,13 @@
 ---@field icon (number|string)? FileDataID or texture path; a question mark without
 ---@field accent number[]? { r, g, b } for the side bar, the title and the timer; amber without
 ---@field sound KennelSound?
+---@field portrait string? a unit ("pet") whose portrait shows as a badge on the icon while it exists
+---@field screenshot boolean? take a screenshot once the toast has faded in
+
+---A skin frame with a portrait badge (Kennel:AddToastPortrait).
+---@class KennelPortraitFrame: Frame
+---@field Portrait Texture
+---@field PortraitRing Texture
 
 ---The toast's saved settings, profile.toast.
 ---@class KennelToastSettings
@@ -78,7 +86,7 @@
 ---@field frame Frame? made by its Show, with Kennel:NewToastFrame
 
 ---The card skin's frame, with its parts as fields like a template's parentKeys.
----@class KennelCardFrame: Frame
+---@class KennelCardFrame: KennelPortraitFrame
 ---@field Accent Texture the coloured side bar
 ---@field Icon Texture
 ---@field Title FontString
@@ -100,7 +108,7 @@
 ---@field frame KennelCardFrame? made on its first toast
 
 ---The splash skin's frame.
----@class KennelSplashFrame: Frame
+---@class KennelSplashFrame: KennelPortraitFrame
 ---@field Source FontString the module's name at the top
 ---@field Divider Texture the line under it
 ---@field Diamond Texture the accent square turned 45 degrees
@@ -165,6 +173,61 @@
 ---@field SetPetDead fun(self: KennelCareButton, dead: boolean): boolean
 ---@field ApplyButton fun(self: KennelCareButton)
 ---@field UpdateMacro fun(self: KennelCareButton)
+
+---A spell in the active pet's spellbook (Kennel.PetSpells).
+---@class KennelPetSpell
+---@field id number
+---@field rank string? "Rank 2"; nil for a spell without ranks
+---@field icon (number|string)?
+
+---AbilityLearned's saved settings, its namespace's profile.
+---@class KennelAbilityLearnedSettings
+---@field sound "family"|"levelup"|"off"
+---@field screenshot boolean
+---@field hints boolean say in chat what a summoned pet can teach
+
+---AbilityLearned's per-character data, its namespace's char.
+---@class KennelAbilityLearnedChar
+---@field history KennelLearnEntry[] oldest first, the last 200
+---@field known table<string, number> the highest rank known per ability name
+---@field trainingRead boolean Beast Training has been read once
+
+---A learn as AbilityLearned shows it.
+---@class KennelLearn
+---@field name string
+---@field rank string?
+---@field icon (number|string)?
+---@field teacher string? the name of the pet out, when it has the ability
+---@field simulated boolean? from the page's simulation: shown, not kept
+
+---A learn as the history keeps it.
+---@class KennelLearnEntry
+---@field name string
+---@field rank string?
+---@field pet string?
+---@field familyID number?
+---@field zone string?
+---@field t number GetServerTime()
+
+---@class KennelAbilityLearned: KennelModule
+---@field db AceDBObject-3.0 always set: the module has defaults
+---@field ready boolean the login wait is over
+---@field atTrainer boolean a trainer window was opened and not closed
+---@field Settings fun(self: KennelAbilityLearned): KennelAbilityLearnedSettings
+---@field Toast fun(self: KennelAbilityLearned, learn: KennelLearn): KennelToastInfo
+---@field ShowLearn fun(self: KennelAbilityLearned, learn: KennelLearn)
+---@field TrainerOpen fun(self: KennelAbilityLearned): boolean
+---@field IsWildAbility fun(name: string): boolean
+---@field OnChat fun(self: KennelAbilityLearned, line: GameValue): boolean
+---@field SpellLearned fun(self: KennelAbilityLearned, spellID: number)
+---@field Example fun(): string, string, number|string|nil, KennelPetSpell?
+---@field Simulate fun(self: KennelAbilityLearned)
+---@field MarkKnown fun(self: KennelAbilityLearned, name: string, rank: number)
+---@field RecordLearn fun(self: KennelAbilityLearned, entry: KennelLearnEntry)
+---@field HistoryText fun(self: KennelAbilityLearned): string
+---@field ReadBeastTraining fun(self: KennelAbilityLearned)
+---@field CheckHints fun(self: KennelAbilityLearned)
+---@field ReportTeachable fun(self: KennelAbilityLearned)
 
 ---The sound tables, Kennel.sounds.<KIND>_PER_FAMILY (Core\Sounds.lua).
 ---@class KennelSounds

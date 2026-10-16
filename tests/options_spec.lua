@@ -104,6 +104,7 @@ describe("the settings window", function()
         table.sort(names)
         assert.are.same({
             "- > Kennel",
+            "Kennel > Ability Learned",
             "Kennel > Alpha Title",
             "Kennel > Autocast Check",
             "Kennel > Beta Page",
@@ -126,7 +127,7 @@ describe("the settings window", function()
             onShow(category.frame)
             shown = shown + 1
         end
-        assert.are.equal(6, shown)
+        assert.are.equal(7, shown)
         assert.are.same({}, client.errors)
     end)
 

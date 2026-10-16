@@ -19,6 +19,12 @@
 - With MessageQueue loaded: a LibSink output that says toasts in a chat
   channel (say, party, group, a custom channel); say, yell and channels go out
   on your next key press or click, as WoW: Forever requires.
+- Ability Learned (from Pet Ability Learned): a toast, on the splash by
+  default, when your hunter learns a pet ability from a tamed beast, with the
+  pet's portrait and free training points; a history per character; hints on
+  what a summoned pet can still teach, from what Beast Training shows.
+- A kind of toast can start on a look its module picks; the pet's portrait on
+  the icon; an optional screenshot per toast.
 - Autocast Check (from Pet Autocast Check): a toast when Growl or Cower
   autocast does not fit solo, dungeon, kite or tank mode; kite and tank mode by
   command, key binding or the KennelKite, KennelKiteOff and KennelTank macros.

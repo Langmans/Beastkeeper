@@ -191,8 +191,9 @@ describe("AutocastCheck", function()
             client.pet = { health = 100, max = 100, dead = false }
             client.petBar = { { 2649, false } }
             client.petBook = {}
+            local waiting = #client.timers
             client:fire("UNIT_PET", "party1")
-            assert.are.equal(0, #client.timers)
+            assert.are.equal(waiting, #client.timers)
             client:fire("UNIT_PET", "player"):advance(0.2)
             assert.are.equal("Growl is not on autocast", client:toastTitle())
         end)
@@ -207,8 +208,9 @@ describe("AutocastCheck", function()
 
         it("checks once for many pet bar updates at once", function()
             local client = NewClient():login():setAutocast(GROWL, false)
+            local waiting = #client.timers
             client:fire("PET_BAR_UPDATE"):fire("PET_BAR_UPDATE")
-            assert.are.equal(1, #client.timers)
+            assert.are.equal(waiting + 1, #client.timers)
             client:advance(0.2)
             assert.are.equal("Growl is not on autocast", client:toastTitle())
         end)

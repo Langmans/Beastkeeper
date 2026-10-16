@@ -19,18 +19,22 @@ Kennel:SetDefaultModuleLibraries("AceEvent-3.0")
 
 function Kennel:OnInitialize()
     -- A module is on unless it says otherwise; the saved file keeps only switches that differ.
-    ---@type table<string, boolean>
-    local switches = {}
+    -- The same for the look a module gives a kind of toast.
+    ---@type table<string, boolean>, table<string, string>
+    local switches, kindSkins = {}, {}
     for name, module in pairs(self.modules) do
         switches[name] = module.enabledByDefault ~= false
+        for kind, skin in pairs(module.toastSkins or {}) do
+            kindSkins[name .. ":" .. kind] = skin
+        end
     end
     self.db = LibStub("AceDB-3.0"):New("KennelDB", {
         profile = {
             modules = switches,
             -- The toast every module shows (Core\Toast\): the skin for every toast, a skin per
-            -- kind of toast where chosen; pos is set once it is dragged.
-            -- sink: LibSink's output choice (Integrations\LibSink\).
-            toast = { duration = 6, scale = 1, skin = "card", skins = {}, sink = {} },
+            -- kind of toast where chosen or where its module gives one; pos is set once it is
+            -- dragged. sink: LibSink's output choice (Integrations\LibSink\).
+            toast = { duration = 6, scale = 1, skin = "card", skins = kindSkins, sink = {} },
         },
         -- Per character: which modules made their macros already (Core\Macro.lua).
         char = { macrosMade = {} },

@@ -51,7 +51,9 @@ function Kennel:GetProfileOptions()
     }
 end
 
--- What the per-kind skin choices store for "the same as every toast": no entry at all.
+-- What a per-kind skin choice stores for "the same as every toast". It is kept as it is, not as
+-- no entry, so it can override the look a module gives that kind (KennelModule.toastSkins); being
+-- no skin, ToastSkinFor passes it on to the choice for every toast.
 local SAME = "same"
 
 ---The skin choices: a select for every toast, one per kind of toast the modules show (from order
@@ -109,7 +111,7 @@ function Kennel:AddSkinOptions(settings, args)
             ---@param _ table AceConfig's info about the option
             ---@param value string
             set = function(_, value)
-                settings.skins[kind] = value ~= SAME and value or nil
+                settings.skins[kind] = value
             end,
         }
         order = order + 1

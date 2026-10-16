@@ -61,6 +61,44 @@ function Kennel:PlaceToast(frame, point, x, y, lift)
     end
 end
 
+local CIRCLE_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
+
+---A round badge for a unit's portrait (KennelToastInfo.portrait) on the lower right of `icon`, in
+---a ring; it becomes frame.Portrait and frame.PortraitRing, shown by ShowToastPortrait.
+---@param frame Frame the skin's frame
+---@param icon Region what the badge sits on
+---@param size number the portrait's size; the ring is 4 pixels wider
+function Kennel:AddToastPortrait(frame, icon, size)
+    local ring = frame:CreateTexture(nil, "OVERLAY", nil, 6)
+    ring:SetSize(size + 4, size + 4)
+    ring:SetPoint("CENTER", icon, "BOTTOMRIGHT", -2, 2)
+    local portrait = frame:CreateTexture(nil, "OVERLAY", nil, 7)
+    portrait:SetSize(size, size)
+    portrait:SetPoint("CENTER", ring, "CENTER")
+    for _, texture in ipairs({ ring, portrait }) do
+        local mask = frame:CreateMaskTexture()
+        mask:SetAllPoints(texture)
+        mask:SetTexture(CIRCLE_MASK, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+        texture:AddMaskTexture(mask)
+    end
+    frame.PortraitRing, frame.Portrait = ring, portrait
+end
+
+---Shows `unit`'s portrait on the badge, the ring in `accent`, while that unit exists; hides the
+---badge otherwise.
+---@param frame KennelPortraitFrame
+---@param unit string?
+---@param accent number[]
+function Kennel:ShowToastPortrait(frame, unit, accent)
+    local shown = unit ~= nil and UnitExists(unit)
+    if shown then
+        SetPortraitTexture(frame.Portrait, unit --[[@as string]])
+        frame.PortraitRing:SetColorTexture(accent[1], accent[2], accent[3], 1)
+    end
+    frame.Portrait:SetShown(shown)
+    frame.PortraitRing:SetShown(shown)
+end
+
 ---Puts the toast back in its standard spot.
 function Kennel:ResetToastPosition()
     self:ToastSettings().pos = nil

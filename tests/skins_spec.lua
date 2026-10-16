@@ -288,7 +288,39 @@ describe("the look choice", function()
         assert.are.equal("splash", Kennel.db.profile.toast.skins["AutocastCheck:problem"])
         assert.are.equal("splash", kind.get())
         kind.set({}, "same")
-        assert.is_nil(Kennel.db.profile.toast.skins["AutocastCheck:problem"])
+        assert.are.equal("same", kind.get())
+        assert.are.equal("card", Kennel:ToastSkinFor("AutocastCheck:problem"))
+    end)
+
+    it("starts a kind on the look its module gives it, which the player can set back to all", function()
+        local client2 = NewClient({
+            modules = function(K)
+                local m = K:NewModule("Aardvark")
+                m.toastTypes = { big = "big news", small = "small news" }
+                m.toastSkins = { big = "splash" }
+            end,
+        })
+        client2.pet = nil
+        client2:login()
+        local K = client2.Kennel
+        local all = K:GetOptionsTable().args.modules.args.toast.args
+        assert.are.equal("splash", K:ToastSkinFor("Aardvark:big"))
+        assert.are.equal("splash", all["skin:Aardvark:big"].get())
+        assert.are.equal("card", K:ToastSkinFor("Aardvark:small"))
+        all["skin:Aardvark:big"].set({}, "same")
+        assert.are.equal("card", K:ToastSkinFor("Aardvark:big"))
+        client2:logout()
+        local relogged = NewClient({
+            saved = Saved(),
+            modules = function(K2)
+                local m = K2:NewModule("Aardvark")
+                m.toastTypes = { big = "big news" }
+                m.toastSkins = { big = "splash" }
+            end,
+        })
+        relogged.pet = nil
+        relogged:login()
+        assert.are.equal("card", relogged.Kennel:ToastSkinFor("Aardvark:big"), "the choice is kept")
     end)
 
     it("lists the kinds of every module in order", function()

@@ -1,7 +1,8 @@
 local _, ns = ...
 
 -- The splash: a toast in the middle of the screen, for things worth a moment. The module's name
--- over a thin line, the icon in a diamond that pops in, the title, text and a grey hint centred,
+-- over a thin line, the icon in a diamond that pops in (a unit's portrait as a round badge on its
+-- lower right, when the toast brings one), the title, text and a grey hint centred,
 -- and a short timer bar; plain text, no glow. Kennel's own has a black panel whose edges fade
 -- out; NewSplashSkin makes one in any style (KennelSkinStyle), such as EllesmereUI's.
 
@@ -11,6 +12,7 @@ local Kennel = ns
 local WIDTH, HEIGHT = 380, 220
 local DIAMOND = 46
 local ICON_SIZE = 30
+local PORTRAIT_SIZE = 22
 local BG_OPACITY = 0.78
 local BG_LAYERS = 20
 local BG_FADE_FRACTION = 0.14 -- fade band per side, as a fraction of that side
@@ -98,6 +100,7 @@ local function Build(style)
     frame.Icon = frame:CreateTexture(nil, "OVERLAY")
     frame.Icon:SetPoint("CENTER", frame.Diamond, "CENTER")
     frame.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    Kennel:AddToastPortrait(frame, frame.Diamond, PORTRAIT_SIZE)
 
     frame.Title = Line(frame, style, "GameFontNormalLarge", TITLE_SIZE)
     frame.Title:SetPoint("TOP", frame.Diamond, "BOTTOM", 0, -16)
@@ -127,6 +130,7 @@ local function Show(self, info, settings)
     frame.Timer:SetColorTexture(accent[1], accent[2], accent[3], 1)
     frame.Source:SetText(info.source or "")
     frame.Icon:SetTexture(info.icon or Kennel.TOAST_ICON)
+    Kennel:ShowToastPortrait(frame, info.portrait, accent)
     frame.Title:SetText(info.title)
     frame.Text:SetText(info.text or "")
     frame.Hint:SetText(info.hint or "")
