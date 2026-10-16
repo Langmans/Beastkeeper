@@ -81,6 +81,20 @@ local function coverageReport()
     return pct
 end
 
+---busted writes each test's place as classname='tests/x_spec.lua:27'. Report readers take a
+---classname for a dotted class path and cannot find the file in it, so the file and line move
+---to the file and line attributes JUnit readers use for annotations; the classname keeps the
+---spec's name.
+local function fixJunit()
+    if not sh.exists("coverage/junit.xml") then return end
+    local xml = sh.read("coverage/junit.xml"):gsub("classname='([^']-):(%d+)'", function(path, line)
+        path = path:gsub("\\", "/")
+        local name = path:match("([^/]+)%.lua$") or path
+        return ("classname='%s' file='%s' line='%s'"):format(name, path, line)
+    end)
+    sh.write("coverage/junit.xml", xml)
+end
+
 local function test(extra)
     libs()
     sh.mkdir("coverage")
@@ -93,6 +107,7 @@ local function test(extra)
         argv[#argv + 1] = a
     end
     report(sh.run(argv, true), "busted")
+    fixJunit()
     -- Every executable line of Kennel's own files must run in some test. A partial run covers
     -- only part and is not held to it.
     if full and sh.exists("coverage/luacov.stats.out") then
