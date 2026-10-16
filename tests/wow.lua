@@ -32,6 +32,7 @@ end
 ---@field noPetSpellCount boolean? C_SpellBook without HasPetSpells
 ---@field noMacroConsts boolean? no Constants.MacroConsts (the addon's own limits apply)
 ---@field ellesmere boolean|table? EllesmereUI loaded before Kennel (a table: fields to leave out, set to false)
+---@field messageQueue boolean? MessageQueue loaded before Kennel
 
 -- The spells the simulated client knows, per locale: id -> { name, icon }.
 local SPELLS = {
@@ -149,7 +150,9 @@ function NewClient(opts)
     function UnitCreatureFamily(unit)
         if unit == "pet" and client.petBar then return "Cat", client.familyID end
     end
-    function IsInGroup()
+    -- IsInGroup(2) asks about an instance group (client.instanceGroup), as the client does.
+    function IsInGroup(category)
+        if category == 2 then return client.instanceGroup == true end
         return client.inGroup
     end
     function IsInInstance()
@@ -570,10 +573,21 @@ function NewClient(opts)
             client.chatSent[#client.chatSent + 1] = { text, kind, target }
         end,
     }
-    function GetChannelList() end
-    function GetChannelName() end
+    -- client.channels: the custom chat channels joined, by number ({ [5] = "Hunters" }).
+    -- client.inRaid: in a raid group.
+    client.channels = {}
+    function GetChannelList()
+        local list = {}
+        for id, name in pairs(client.channels) do
+            list[#list + 1], list[#list + 2], list[#list + 3] = id, name, false
+        end
+        return unpack(list)
+    end
+    function GetChannelName(id)
+        if client.channels[id] then return id, client.channels[id] end
+    end
     function IsInRaid()
-        return false
+        return client.inRaid == true
     end
     RaidWarningFrame, UIErrorsFrame = newRegion(), newRegion()
     RaidNotice_AddMessage = noop
@@ -585,6 +599,18 @@ function NewClient(opts)
     -- EllesmereUI, as far as Kennel uses it, when opts.ellesmere says it is loaded. client.eui
     -- records what was asked of it: the fonts set, the borders made, the shadows primed.
     EllesmereUI = nil
+    -- MessageQueue, when opts.messageQueue says it is loaded: client.queued records what was
+    -- handed to its SendChatMessage.
+    MessageQueue = nil
+    client.queued = {}
+    if opts.messageQueue then
+        MessageQueue = {
+            SendChatMessage = function(text, kind, language, target)
+                client.queued[#client.queued + 1] = { text, kind, language, target }
+            end,
+        }
+    end
+
     if opts.ellesmere then
         local eui = { borders = {}, shadows = {} }
         client.eui = eui

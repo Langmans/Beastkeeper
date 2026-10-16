@@ -41,6 +41,9 @@ L.TOAST_SKIN_CARD = "Card: small, near the top"
 L.TOAST_SKIN_SPLASH = "Splash: large, in the middle"
 -- The look that sends a toast as one line of text where LibSink sends it (floating combat text, chat, raid warning, ...). "LibSink" is a library's name and stays as it is.
 L.TOAST_SKIN_LIBSINK = "Floating text and more (LibSink)"
+-- An output in LibSink's list (with the MessageQueue addon): say the toast in a chat channel. "MessageQueue" is an addon's name and stays as it is.
+L.SINK_MESSAGEQUEUE = "Chat channel (MessageQueue)"
+L.SINK_MESSAGEQUEUE_DESC = "Says it in a chat channel. Say, yell and channels are sent on your next key press or click, as WoW: Forever requires."
 -- Choice in the select of one kind of toast: use the look chosen for every toast.
 L.TOAST_SKIN_SAME = "Same as all toasts"
 -- Button: shows an example toast.

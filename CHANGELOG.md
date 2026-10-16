@@ -13,6 +13,9 @@
 - With EllesmereUI loaded: the card and the splash in EllesmereUI's look.
 - A look that sends toasts through LibSink: Blizzard's floating text, chat,
   raid warning, MikSBT and the other outputs LibSink knows.
+- With MessageQueue loaded: a LibSink output that says toasts in a chat
+  channel (say, party, group, a custom channel); say, yell and channels go out
+  on your next key press or click, as WoW: Forever requires.
 - Autocast Check (from Pet Autocast Check): a toast when Growl or Cower
   autocast does not fit solo, dungeon, kite or tank mode; kite and tank mode by
   command, key binding or the KennelKite, KennelKiteOff and KennelTank macros.

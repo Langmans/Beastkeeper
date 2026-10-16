@@ -3,4 +3,5 @@
          loaded (they are in the .toc's OptionalDeps) and does nothing otherwise. -->
     <Script file="EllesmereUI\Toast.lua"/>
     <Script file="LibSink\Toast.lua"/>
+    <Script file="MessageQueue\Sink.lua"/>
 </Ui>

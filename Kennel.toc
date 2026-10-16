@@ -5,7 +5,7 @@
 ## Author: Langmans
 ## Version: @project-version@
 ## SavedVariables: KennelDB
-## OptionalDeps: Ace3, LibStub, EllesmereUI
+## OptionalDeps: Ace3, LibStub, EllesmereUI, MessageQueue
 ## IconTexture: Interface\Icons\Ability_Hunter_BeastCall
 ## X-License: MIT
 
