@@ -51,7 +51,7 @@
 - Pet Journal: a page per pet with when and where it was tamed, its level and
   loyalty, the time out together, its deaths, a forecast of the next loyalty
   level and its abilities, stabled pets included, with what each could still
-  teach you.
+  teach you; the short version in the pet's tooltip.
 - Beast Map: with HandyNotes, a pin for every beast your hunter can tame now
   that teaches a pet ability rank you lack, with the ability's icon and a
   tooltip of the ranks it teaches; switches for missing lower ranks, every

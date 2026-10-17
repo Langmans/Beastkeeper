@@ -187,7 +187,8 @@ character: when and where you tamed it (or first had it out with Kennel), its
 level, family and loyalty, how long you were out together and how often it
 died, when its next loyalty level may come (from how long the rises Kennel saw
 took), and the abilities it had the last time it was out, so your stabled
-pets are there too, with the ranks each could still teach you.
+pets are there too, with the ranks each could still teach you. Hover your
+pet or its portrait for the short version in its tooltip.
 
 ### Beast Map
 

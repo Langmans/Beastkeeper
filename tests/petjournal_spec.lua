@@ -100,6 +100,44 @@ describe("Pet Journal", function()
         assert.is_false(says(client, "Can teach you"), "without Ability Learned's ranks")
     end)
 
+    describe("in the pet's tooltip", function()
+        ---The texts of the lines the journal adds to a tooltip of the unit with `guid`.
+        local function tooltip(client, guid, frame)
+            local texts = {}
+            for _, line in ipairs(client:hoverUnit(guid, frame)) do
+                texts[#texts + 1] = line.text
+            end
+            return texts
+        end
+
+        it("adds when it came, the time out, deaths, the forecast and what it could teach", function()
+            local client = NewClient():login():advance(3900)
+            client:petDies():petBack()
+            local when = date("%Y-%m-%d %H:%M", client.serverTime)
+            assert.are.same({
+                "First seen " .. when .. " in Darkshore.",
+                "Out together: 1 h 5 min.",
+                "Died 1 |4time:times;.",
+                "Next loyalty level: not enough seen yet.",
+                "Can teach you: Bite (Rank 1), Claw (Rank 2), Cower (Rank 1).",
+            }, tooltip(client, client.petGUID))
+            assert.are.same({ 0.6, 0.6, 0.6 }, client:hoverUnit(client.petGUID)[1].color)
+        end)
+
+        it("stays out of another pet's, another tooltip, or when switched off", function()
+            local client = NewClient():login():advance(1)
+            assert.are.same({}, tooltip(client, "Pet-0-5250-0-1-3825-0100ABCDEF"), "a pet not in the journal")
+            assert.are.same({}, tooltip(client, "Creature-0-5250-0-12-101-0000ABCDEF"))
+            assert.are.same({}, tooltip(client, SECRET))
+            assert.are.same({}, tooltip(client, client.petGUID, {}))
+            page(client).tooltip.set(nil, false)
+            assert.are.same({}, tooltip(client, client.petGUID))
+            page(client).tooltip.set(nil, true)
+            client.Kennel:SetModuleOn("PetJournal", false)
+            assert.are.same({}, tooltip(client, client.petGUID))
+        end)
+    end)
+
     it("is for hunters only, and keeps nothing while switched off", function()
         local mage = NewClient({ class = "MAGE" }):login():advance(1)
         assert.are.same({}, page(mage).pet.values())

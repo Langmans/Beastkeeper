@@ -9,6 +9,10 @@ local L = LibStub("AceLocale-3.0"):NewLocale("Kennel", "enUS", true)
 L.PETJOURNAL_TITLE = "Pet Journal"
 L.PETJOURNAL_DESC = "A page for every pet your hunter had out: when and where you tamed it, its level and loyalty, how long you were out together, how often it died, when its next loyalty level may come, and the abilities it had."
 
+-- The page: the switch for the pet's tooltip.
+L.PETJOURNAL_OPTION_TOOLTIP = "Show the journal in my pet's tooltip"
+L.PETJOURNAL_OPTION_TOOLTIP_DESC = "Hover your pet or its portrait: when it came, the time out together, its deaths, the next loyalty level and what it could still teach you."
+
 -- The page: the choice of pet. A choice: %s the pet's name, %d its level, second %s its family.
 L.PETJOURNAL_PET = "Pet"
 L.PETJOURNAL_PET_ENTRY = "%s (level %d %s)"

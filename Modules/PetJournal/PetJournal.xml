@@ -2,5 +2,7 @@
     <!-- The module object first (PetJournal.lua); the page adds to it. -->
     <Script file="Locale.lua"/>
     <Script file="PetJournal.lua"/>
+    <Script file="Journal.lua"/>
+    <Script file="Tooltip.lua"/>
     <Script file="Options.lua"/>
 </Ui>

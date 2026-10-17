@@ -203,7 +203,11 @@
 ---@field abilities string[] "Claw (Rank 2)", sorted, as of the last time out
 ---@field ranks table<string, string>? each ability's rank text by name ("" without ranks)
 
----@class KennelPetJournal: KennelModule
+---PetJournal's saved settings, its namespace's profile.
+---@class KennelPetJournalSettings
+---@field tooltip boolean the journal in the pet's tooltip
+
+---@class KennelPetJournal: KennelModule, KennelSettingsModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field current string? the pet out's key
 ---@field outSince number? GetTime() when it came out
@@ -216,6 +220,8 @@
 ---@field Snapshot fun(self: KennelPetJournal)
 ---@field Close fun(self: KennelPetJournal)
 ---@field Open fun(self: KennelPetJournal, key: string)
+---@field Settings fun(self: KennelPetJournal): KennelPetJournalSettings
+---@field JournalLines fun(self: KennelPetJournal, key: string, brief: boolean?): string[]
 ---@field JournalText fun(self: KennelPetJournal, key: string): string
 ---@field Chosen fun(self: KennelPetJournal): string?
 ---@field GetOptions fun(self: KennelPetJournal): table

@@ -109,8 +109,14 @@ end
 ---settings are kept under it. Nil without a pet or when the client hides the GUID.
 ---@return number?
 function Kennel.PetNumber()
-    local guid = UnitGUID("pet")
-    if not guid or not Kennel.Readable(guid) then return nil end
+    return Kennel.PetNumberFromGUID(UnitGUID("pet"))
+end
+
+---A pet's number from its GUID, as PetNumber; nil for another kind of GUID or a hidden one.
+---@param guid GameValue
+---@return number?
+function Kennel.PetNumberFromGUID(guid)
+    if type(guid) ~= "string" or not Kennel.Readable(guid) then return nil end
     local spawnUID = guid:match("^Pet%-.-%-(%x+)$")
     return spawnUID and tonumber(spawnUID:sub(-8), 16) or nil
 end

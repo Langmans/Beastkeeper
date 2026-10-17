@@ -14,7 +14,13 @@ local L = Kennel.L
 local M = Kennel:NewModule("PetJournal")
 M.title = L.PETJOURNAL_TITLE
 M.description = L.PETJOURNAL_DESC
-M.defaults = { char = { pets = {} } }
+M.defaults = { profile = { tooltip = true }, char = { pets = {} } }
+
+---The settings of the profile in use.
+---@return KennelPetJournalSettings
+function M:Settings()
+    return self.db.profile --[[@as KennelPetJournalSettings]]
+end
 
 local TAME_BEAST = 1515
 local BOOK_WAIT = 1 -- seconds for a new pet's spellbook to fill in
