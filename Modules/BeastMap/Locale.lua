@@ -14,6 +14,15 @@ L.BEASTMAP_DESC = "With HandyNotes: a pin on the world map and the minimap for e
 -- The module's page when HandyNotes is not loaded.
 L.BEASTMAP_NO_HANDYNOTES = "Beast Map shows its pins through the HandyNotes addon, which is not loaded."
 
+-- Settings: the pins at all, and the round button in the world map's top-right corner that switches them.
+L.BEASTMAP_OPTION_PINS = "Show the pins"
+L.BEASTMAP_OPTION_PINS_DESC = "On the world map and the minimap. The button on the world map switches this too."
+L.BEASTMAP_OPTION_BUTTON = "Button on the world map"
+L.BEASTMAP_OPTION_BUTTON_DESC = "A round button in the map's top-right corner that shows or hides the pins."
+-- The map button's tooltip, under BEASTMAP_TITLE.
+L.BEASTMAP_PINS_SHOWN = "Pins shown. Click to hide them."
+L.BEASTMAP_PINS_HIDDEN = "Pins hidden. Click to show them."
+
 -- Settings: which beasts get a pin.
 L.BEASTMAP_OPTION_USEFUL = "Only beasts that teach a rank I lack"
 L.BEASTMAP_OPTION_USEFUL_DESC = "Leave out a beast whose ranks you know already, or know a higher rank of. What you know comes from Ability Learned: your learns, and Beast Training once you have opened it."

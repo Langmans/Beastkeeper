@@ -21,7 +21,16 @@ local M = Kennel:NewModule("BeastMap")
 M.title = L.BEASTMAP_TITLE
 M.description = L.BEASTMAP_DESC
 M.toastTypes = { reach = L.BEASTMAP_TOASTTYPE_REACH }
-M.defaults = { profile = { usefulOnly = true, gaps = false, aboveLevel = false, levelToast = true } }
+M.defaults = {
+    profile = {
+        pins = true,
+        mapButton = true,
+        usefulOnly = true,
+        gaps = false,
+        aboveLevel = false,
+        levelToast = true,
+    },
+}
 
 local PLUGIN = "Kennel"
 -- The route library (Libs\LibGoThere-1.0): sends the hunter to a beast.
@@ -186,7 +195,7 @@ local handler = {}
 ---@return function, KennelBeastMapPins, nil
 function handler:GetNodes2(uiMapID)
     -- HandyNotes is loaded: it is the one asking.
-    if not M:IsEnabled() then return NextPin, NO_PINS, nil end
+    if not M:IsEnabled() or not M:Settings().pins then return NextPin, NO_PINS, nil end
     return NextPin, Pins(HandyNotes --[[@as HandyNotesApi]])[uiMapID] or NO_PINS, nil
 end
 
@@ -264,9 +273,10 @@ function handler.OnClick(_, button, down, uiMapID, coord)
     GoThere:Navigate("Kennel", uiMapID, x, y, BeastName(npc))
 end
 
----Forgets the pins' icons and has HandyNotes draw them again.
+---Forgets the pins' icons and has HandyNotes draw them again; shows or hides the map button.
 function M:Refresh()
     wipe(shown)
+    self:UpdateMapButton()
     if not HandyNotes then return end
     HandyNotes:UpdateWorldMapPlugin(PLUGIN)
     HandyNotes:UpdateMinimapPlugin(PLUGIN)
@@ -406,6 +416,7 @@ function M:OnEnable()
             handler,
             { type = "group", name = L.BEASTMAP_TITLE, args = self:GetOptions().args }
         )
+        self:CreateMapButton()
     end
     self.level = nil
     self:RegisterEvent("PLAYER_LEVEL_UP")

@@ -1038,6 +1038,12 @@ function NewClient(opts)
     WorldFrame = newRegion()
     ClassTrainerFrame = newRegion()
     ClassTrainerFrame.shown = false
+    -- The world map; its canvas is what Blizzard anchors the map's corner buttons to.
+    WorldMapFrame = newRegion()
+    local canvas = newRegion()
+    function WorldMapFrame:GetCanvasContainer()
+        return canvas
+    end
 
     -- The game's tooltip over an action button (client:hoverAction): client.tooltipLines holds the
     -- lines added to it. client.actions: slot -> { kind, id } as GetActionInfo gives it.

@@ -172,7 +172,10 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
 - Switches on the module's page, also under HandyNotes' plugins: a missing
   lower rank too (Claw 2 when you know Claw 1, 3 and 4: it suits a young pet
   and costs fewer points), every beast in reach whatever it teaches, beasts
-  above your level. HandyNotes' own plugin switch hides the pins.
+  above your level.
+- **A round button** in the world map's top-right corner shows or hides the
+  pins (greyed while they are off). The button itself can be switched off on
+  the page.
 - **At a level-up**, also without HandyNotes: a toast when the new level
   brings a beast in reach that teaches a rank you lack and no lower beast
   taught ("Now in reach: Charge (Rank 1)", "Cave Boar in Wailing Caverns

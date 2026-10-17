@@ -75,7 +75,68 @@ local function set(client, key, value)
     client.Kennel:GetModule("BeastMap"):GetOptions().args[key].set(nil, value)
 end
 
+---Kennel's button on the world map, if it made one.
+---@param client table
+---@return table?
+local function mapButton(client)
+    for _, frame in ipairs(client.frames) do
+        if frame.parent == WorldMapFrame then return frame end
+    end
+end
+
+---The mouse over the map button: the tooltip's title and lines.
+---@param client table
+---@return string? title
+---@return table[] lines
+local function hoverMapButton(client)
+    client.tooltipLines, GameTooltip.text = {}, nil
+    local button = mapButton(client) --[[@as table]]
+    button:GetScript("OnEnter")(button)
+    return GameTooltip.text, client.tooltipLines
+end
+
 describe("Beast Map", function()
+    describe("its button on the world map", function()
+        it("switches the pins off and on", function()
+            local client = hunter(10)
+            local button = mapButton(client) --[[@as table]]
+            assert.is_true(button:IsShown())
+            local title, lines = hoverMapButton(client)
+            assert.are.equal("Beast Map", title)
+            assert.are.equal("Pins shown. Click to hide them.", lines[1].text)
+            local before = client.mapUpdates.world
+            button:GetScript("OnClick")(button, "LeftButton")
+            assert.are.same({}, client:mapPins(ELWYNN))
+            assert.are.same({}, client:mapPins(ELWYNN, true), "the minimap too")
+            assert.are.equal(before + 1, client.mapUpdates.world)
+            assert.is_false(client.Kennel:GetModule("BeastMap"):Settings().pins)
+            assert.are.equal("Pins hidden. Click to show them.", select(2, hoverMapButton(client))[1].text)
+            button:GetScript("OnClick")(button, "LeftButton")
+            assert.are.equal(3, #client:mapPins(ELWYNN))
+            button:GetScript("OnLeave")(button)
+            assert.is_false(GameTooltip:IsShown())
+        end)
+
+        it("is a setting, also on the page; the pins switch is there too", function()
+            local client = hunter(10)
+            set(client, "mapButton", false)
+            assert.is_false(mapButton(client):IsShown())
+            set(client, "mapButton", true)
+            assert.is_true(mapButton(client):IsShown())
+            set(client, "pins", false)
+            assert.are.same({}, client:mapPins(ELWYNN))
+        end)
+
+        it("is not there without HandyNotes, or while the module is off", function()
+            assert.is_nil(mapButton(hunter(10, { handyNotes = false })))
+            local client = hunter(10)
+            client.Kennel:GetModule("BeastMap"):Disable()
+            assert.is_false(mapButton(client):IsShown())
+            client.Kennel:GetModule("BeastMap"):Enable()
+            assert.is_true(mapButton(client):IsShown())
+        end)
+    end)
+
     it("joins HandyNotes as the Kennel plugin, and stays out without it", function()
         local client = hunter()
         assert.is_not_nil(HandyNotes.plugins.Kennel)

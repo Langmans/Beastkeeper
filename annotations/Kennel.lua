@@ -350,10 +350,14 @@
 ---@field Settings fun(self: KennelBeastMap): KennelBeastMapSettings
 ---@field PlayerLevel fun(self: KennelBeastMap): number
 ---@field Refresh fun(self: KennelBeastMap)
+---@field CreateMapButton fun(self: KennelBeastMap)
+---@field UpdateMapButton fun(self: KennelBeastMap)
 ---@field ToastReach fun(self: KennelBeastMap, level: number)
 ---@field GetOptions fun(self: KennelBeastMap): table
 
 ---@class KennelBeastMapSettings
+---@field pins boolean the pins shown at all (the map button switches this)
+---@field mapButton boolean the button on the world map
 ---@field usefulOnly boolean only beasts that teach a rank the hunter lacks
 ---@field gaps boolean a missing rank below the highest counts as lacking
 ---@field aboveLevel boolean beasts above the hunter's level too

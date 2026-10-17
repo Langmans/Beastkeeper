@@ -2,5 +2,6 @@
     <!-- The module object first (BeastMap.lua); the page adds to it. -->
     <Script file="Locale.lua"/>
     <Script file="BeastMap.lua"/>
+    <Script file="MapButton.lua"/>
     <Script file="Options.lua"/>
 </Ui>
