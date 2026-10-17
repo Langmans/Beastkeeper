@@ -46,6 +46,15 @@ L.BEASTMAP_TOOLTIP_NEW = "new for you"
 L.BEASTMAP_TOOLTIP_GAP = "below your highest, never learned"
 L.BEASTMAP_TOOLTIP_KNOWN = "you know it"
 
+-- Settings: pins for the hunter's other NPCs.
+L.BEASTMAP_OPTION_TRAINERS = "Pet trainers"
+L.BEASTMAP_OPTION_TRAINERS_DESC = "A pin for every pet trainer of your faction, where your pet learns the abilities beasts do not teach."
+L.BEASTMAP_OPTION_STABLES = "Stable masters"
+L.BEASTMAP_OPTION_STABLES_DESC = "A pin for every stable master of your faction."
+-- Their pins' tooltips, under the NPC's name.
+L.BEASTMAP_PET_TRAINER = "Pet Trainer"
+L.BEASTMAP_STABLE_MASTER = "Stable Master"
+
 -- Settings: the rare alarm.
 L.BEASTMAP_OPTION_RARE = "Toast when a rare beast I could learn from is near"
 L.BEASTMAP_OPTION_RARE_DESC = "Once per spawn, when a rare beast that teaches a rank you lack shows on the minimap, as a nameplate, as your target or under the mouse. Follows the choices above (lower ranks, beasts above your level). Works without HandyNotes."

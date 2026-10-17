@@ -66,7 +66,8 @@
   in your game's language once it knows the beast. A button on the world map
   shows or hides the pins. Beasts in a dungeon get a pin at its entrance. A
   beast's tooltip says which ranks it teaches and whether you lack them. A
-  toast when a rare beast that teaches a rank you lack comes in sight.
+  toast when a rare beast that teaches a rank you lack comes in sight. Pins
+  for the pet trainers and stable masters of your faction.
 - Ability Learned keeps every rank you learned, not only the highest.
 - Ability Learned keeps which beast your pet was tamed as with each learn, and
   a button lists the learns from beasts Kennel's beast data does not know as

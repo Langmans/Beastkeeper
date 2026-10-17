@@ -2,7 +2,8 @@
 -- rank. The specs use a small data set of their own instead of the generated Data\Beasts.lua.
 
 local BITE, CHARGE = 17253, 7371
-local ELWYNN, TIRISFAL, BARRENS = 1429, 1420, 1413
+local ELWYNN, TIRISFAL, BARRENS, STORMWIND = 1429, 1420, 1413, 1453
+local TRAINER_ICON, STABLE_ICON = 132162, 132161
 local CLAW_ICON, BITE_ICON, CHARGE_ICON = 132140, 132278, 132183
 
 ---@param Kennel Kennel
@@ -39,6 +40,12 @@ local function SmallData(Kennel)
             [106] = { name = "Late Cat", family = 2, minLevel = 11, maxLevel = 11, pins = { [9999] = { 50, 50 } } },
             -- Teaches Charge like Cave Boar, at the same level, out in the open.
             [107] = { name = "Field Boar", family = 5, minLevel = 12, maxLevel = 12, pins = { [ELWYNN] = { 70, 70 } } },
+        },
+        -- In Stormwind, apart from the beasts' maps. The simulated hunter is Alliance.
+        trainers = {
+            [201] = { name = "Trainer Bob", kind = "trainer", pins = { [STORMWIND] = { 60, 70 } } },
+            [202] = { name = "Stabler Sue", kind = "stable", side = "Alliance", pins = { [STORMWIND] = { 50, 50 } } },
+            [203] = { name = "Horde Stabler", kind = "stable", side = "Horde", pins = { [STORMWIND] = { 40, 40 } } },
         },
     }
 end
@@ -286,6 +293,35 @@ describe("Beast Map", function()
         it("is there without HandyNotes too", function()
             local lines = hunter(10, { handyNotes = false }):hoverUnit(creature(101))
             assert.are.equal("Teaches Claw (Rank 2): new for you", lines[2].text)
+        end)
+    end)
+
+    describe("pet trainers and stable masters", function()
+        it("have a pin each, for the hunter's faction or both", function()
+            local client = hunter(10)
+            assert.are.same({ ["60,70"] = TRAINER_ICON, ["50,50"] = STABLE_ICON }, pins(client, STORMWIND))
+        end)
+
+        it("say what they are in the tooltip, and a click goes there", function()
+            local client = hunter(10)
+            local trainer, stable = client:mapPins(STORMWIND)[1], client:mapPins(STORMWIND)[2]
+            local title, lines = client:hoverPin(STORMWIND, trainer.coord)
+            assert.are.equal("Trainer Bob", title)
+            assert.are.equal("Pet Trainer", lines[1].text)
+            assert.are.equal("Click to go there.", lines[#lines].text)
+            title, lines = client:hoverPin(STORMWIND, stable.coord)
+            assert.are.equal("Stabler Sue", title)
+            assert.are.equal("Stable Master", lines[1].text)
+            client:clickPin(STORMWIND, stable.coord)
+            assert.is_true(client:printedContains("Stabler Sue"))
+        end)
+
+        it("each have a switch", function()
+            local client = hunter(10)
+            set(client, "trainers", false)
+            assert.are.same({ ["50,50"] = STABLE_ICON }, pins(client, STORMWIND))
+            set(client, "stables", false)
+            assert.are.same({}, pins(client, STORMWIND))
         end)
     end)
 

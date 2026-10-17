@@ -492,6 +492,8 @@
 ---@class KennelBeastMapSettings
 ---@field tooltip boolean a beast's tooltip says what it teaches
 ---@field rareToast boolean a toast when a rare beast worth taming comes in sight
+---@field trainers boolean pins for pet trainers
+---@field stables boolean pins for stable masters
 ---@field pins boolean the pins shown at all (the map button switches this)
 ---@field mapButton boolean the button on the world map
 ---@field usefulOnly boolean only beasts that teach a rank the hunter lacks
@@ -508,6 +510,14 @@
 ---@class KennelData
 ---@field petAbilityRanks table<number, KennelPetAbilityRank> by the rank's spell ID
 ---@field beasts table<number, KennelBeast> by NPC ID
+---@field trainers table<number, KennelTrainer>? pet trainers and stable masters by NPC ID (Data\Trainers.lua)
+
+---A hunter pet trainer or a stable master.
+---@class KennelTrainer
+---@field name string in English, from the data
+---@field kind "trainer"|"stable"
+---@field side ("Alliance"|"Horde")? the one faction it serves; both without
+---@field pins table<number, number[]> per uiMapID its spots, flattened x1, y1, x2, y2 in percent
 
 ---One rank of a pet ability learned from beasts in the wild.
 ---@class KennelPetAbilityRank

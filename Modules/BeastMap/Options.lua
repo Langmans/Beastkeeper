@@ -10,7 +10,7 @@ local L = Kennel.L
 local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
 
 ---A toggle for one setting; changing it redraws the pins.
----@param key "pins"|"mapButton"|"usefulOnly"|"gaps"|"aboveLevel"|"levelToast"|"tooltip"|"rareToast"
+---@param key "pins"|"mapButton"|"usefulOnly"|"gaps"|"aboveLevel"|"levelToast"|"tooltip"|"rareToast"|"trainers"|"stables"
 ---@param name string
 ---@param desc string
 ---@param order number
@@ -54,6 +54,8 @@ function M:GetOptions()
             levelToast = Toggle("levelToast", L.BEASTMAP_OPTION_TOAST, L.BEASTMAP_OPTION_TOAST_DESC, 4),
             tooltip = Toggle("tooltip", L.BEASTMAP_OPTION_TOOLTIP, L.BEASTMAP_OPTION_TOOLTIP_DESC, 5),
             rareToast = Toggle("rareToast", L.BEASTMAP_OPTION_RARE, L.BEASTMAP_OPTION_RARE_DESC, 6),
+            trainers = Toggle("trainers", L.BEASTMAP_OPTION_TRAINERS, L.BEASTMAP_OPTION_TRAINERS_DESC, 3.5),
+            stables = Toggle("stables", L.BEASTMAP_OPTION_STABLES, L.BEASTMAP_OPTION_STABLES_DESC, 3.6),
         },
     }
 end

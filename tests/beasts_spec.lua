@@ -74,6 +74,26 @@ describe("the beast data", function()
         assert.is_true(tContains(ranks[BITE].teachers, FOREST_SPIDER))
     end)
 
+    it("has the pet trainers and stable masters, each with a faction it serves and its spots", function()
+        local ns = {}
+        assert(loadfile("Data/Trainers.lua"))("Kennel", ns)
+        local count = { trainer = 0, stable = 0 }
+        for npc, trainer in pairs(ns.data.trainers) do
+            count[trainer.kind] = count[trainer.kind] + 1
+            assert.is_string(trainer.name, npc)
+            assert.is_true(trainer.side == nil or trainer.side == "Alliance" or trainer.side == "Horde", npc)
+            assert.is_nil(beasts[npc], "no trainer is a beast too")
+            for map, flat in pairs(trainer.pins) do
+                assert.is_true(#flat > 0 and #flat % 2 == 0, ("%d on map %d"):format(npc, map))
+                for _, v in ipairs(flat) do
+                    assert.is_true(v >= 0 and v <= 100, ("%d on map %d"):format(npc, map))
+                end
+            end
+        end
+        assert.is_true(count.trainer >= 10, "pet trainers")
+        assert.is_true(count.stable >= 30, "stable masters")
+    end)
+
     it("has the teachers Wowhead's data leaves out, from its comments and from Tamed", function()
         assert.is_true(tContains(ranks[SWIPE].teachers, GRIZZLED_BLACK_BEAR))
         assert.are.equal(BEAR, beasts[GRIZZLED_BLACK_BEAR].family)

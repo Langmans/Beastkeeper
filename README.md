@@ -217,6 +217,8 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
   lower rank too (Claw 2 when you know Claw 1, 3 and 4: it suits a young pet
   and costs fewer points), every beast in reach whatever it teaches, beasts
   above your level.
+- **Pet trainers and stable masters** of your faction get a pin too (Beast
+  Training's and Call Pet's icons), each kind with its own switch.
 - **Rare alarm**, also without HandyNotes: a toast with the raid warning
   sound when a rare beast that teaches a rank you lack comes in sight (on the
   minimap, as a nameplate, your target or under the mouse), once per spawn.

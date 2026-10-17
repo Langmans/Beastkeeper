@@ -13,5 +13,6 @@ embeds.xml
 Locales\Locales.xml
 Core\Core.xml
 Data\Beasts.lua
+Data\Trainers.lua
 Integrations\Integrations.xml
 Modules\Modules.xml

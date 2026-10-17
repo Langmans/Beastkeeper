@@ -34,6 +34,8 @@ M.defaults = {
         levelToast = true,
         tooltip = true,
         rareToast = true,
+        trainers = true,
+        stables = true,
     },
 }
 
@@ -41,6 +43,13 @@ local PLUGIN = "Kennel"
 -- The route library (Libs\LibGoThere-1.0): sends the hunter to a beast.
 local GoThere = LibStub("LibGoThere-1.0") --[[@as LibGoThere]]
 local LACKING, KNOWN = { 0, 1, 0 }, { 0.5, 0.5, 0.5 }
+-- Per kind of trainer (Data\Trainers.lua): its setting, its pin's icon (Beast Training, Call
+-- Pet) and the line under its name.
+---@type table<string, {setting: string, icon: number, label: string}>
+local TRAINER_KINDS = {
+    trainer = { setting = "trainers", icon = 132162, label = L.BEASTMAP_PET_TRAINER },
+    stable = { setting = "stables", icon = 132161, label = L.BEASTMAP_STABLE_MASTER },
+}
 
 ---@return KennelBeastMapSettings
 function M:Settings()
@@ -140,6 +149,20 @@ local function Pins(handyNotes)
             table.insert(inInstance[area], npc)
         end
     end
+    -- Pet trainers and stable masters (Data\Trainers.lua), after the beasts; NPC IDs of their own.
+    local trainers = Data().trainers or {}
+    wipe(npcs)
+    for npc in pairs(trainers) do
+        npcs[#npcs + 1] = npc
+    end
+    table.sort(npcs)
+    for _, npc in ipairs(npcs) do
+        for map, flat in pairs(trainers[npc].pins) do
+            for i = 1, #flat, 2 do
+                AddPin(maps, map, npc, handyNotes:getCoord(flat[i] / 100, flat[i + 1] / 100))
+            end
+        end
+    end
     return maps
 end
 
@@ -175,6 +198,14 @@ local function Lacking(spellID)
     return nil
 end
 
+---A trainer's or stable master's entry, or nil for a beast.
+---@param npc number
+---@return KennelTrainer?
+local function Trainer(npc)
+    local trainers = Data().trainers
+    return trainers and trainers[npc]
+end
+
 ---The hunter's level; PLAYER_LEVEL_UP gives the new one before UnitLevel does.
 ---@return number
 function M:PlayerLevel()
@@ -196,6 +227,14 @@ local function Icon(npc)
     local cached = shown[npc]
     if cached ~= nil then return cached end
     local settings = M:Settings()
+    local trainer = Trainer(npc)
+    -- A trainer: its kind's pin, when that kind is switched on and it serves the hunter's faction.
+    if trainer then
+        local kind = TRAINER_KINDS[trainer.kind]
+        local forUs = not trainer.side or trainer.side == UnitFactionGroup("player")
+        shown[npc] = settings[kind.setting] and forUs and kind.icon or false
+        return shown[npc]
+    end
     local beast = Data().beasts[npc]
     ---@type number?
     local best, wanted
@@ -286,13 +325,16 @@ function M.TeachesOf(npc)
     return Teaches()[npc]
 end
 
----A pin's name: the beast's, or the instance's for a dungeon entrance (a negative ID).
+---A pin's name: the beast's or trainer's (as the client words it once it knows the NPC), or the
+---instance's for a dungeon entrance (a negative ID).
 ---@param id number
 ---@return string
 local function PinName(id)
     if id < 0 then
         return C_Map.GetAreaInfo(-id) --[[@as string]]
     end
+    local trainer = Trainer(id)
+    if trainer then return Kennel.CreatureName(id) or trainer.name end
     return BeastName(id)
 end
 
@@ -328,6 +370,15 @@ function handler.OnEnter(pin, uiMapID, coord)
                 AddRanks(npc)
             end
         end
+    elseif Trainer(id) then
+        GameTooltip:AddLine(
+            TRAINER_KINDS[
+                (Trainer(id) --[[@as KennelTrainer]]).kind
+            ].label,
+            1,
+            1,
+            1
+        )
     else
         GameTooltip:AddLine(LevelText(Data().beasts[id]), 1, 1, 1)
         AddRanks(id)

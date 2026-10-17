@@ -1,7 +1,7 @@
 # Layout
 
 ```
-Kennel.toc        loads embeds.xml, then the folders' xml files and Data\Beasts.lua
+Kennel.toc        loads embeds.xml, then the folders' xml files and Data\
 embeds.xml        Ace3, loaded from Libs\ (not in the repository, see 06-libraries.md)
 Bindings.xml      the key bindings; each clicks a module's secure button
 Locales\          AceLocale strings: Locales.xml, enUS.lua as the source,
@@ -24,6 +24,7 @@ Core\Core.xml     the core, in this order:
   Commands.lua    /kennel
 Data\Beasts.lua   generated: pet ability ranks and the beasts that teach them
                   (Tamed-LICENSE.txt next to it for the part from Tamed)
+Data\Trainers.lua generated: pet trainers and stable masters, with faction and spots
 Integrations\     what Kennel does with other addons, a folder per addon; each
                   file does nothing unless its addon is loaded (OptionalDeps)
   EllesmereUI\Look.lua    the card, the splash, button and holder skins in
