@@ -201,6 +201,7 @@
 ---@field deaths number
 ---@field rises table<number, number> per loyalty level reached while seen, the seconds out then
 ---@field abilities string[] "Claw (Rank 2)", sorted, as of the last time out
+---@field ranks table<string, string>? each ability's rank text by name ("" without ranks)
 
 ---@class KennelPetJournal: KennelModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
@@ -339,6 +340,7 @@
 ---@field Simulate fun(self: KennelAbilityLearned)
 ---@field MarkKnown fun(self: KennelAbilityLearned, name: string, rank: number): boolean
 ---@field HighestRank fun(self: KennelAbilityLearned, name: string): number?
+---@field CanTeach fun(self: KennelAbilityLearned, name: string, rank: string?): boolean
 ---@field HasRank fun(self: KennelAbilityLearned, name: string, rank: number): boolean
 ---@field RecordLearn fun(self: KennelAbilityLearned, entry: KennelLearnEntry)
 ---@field HistoryText fun(self: KennelAbilityLearned): string

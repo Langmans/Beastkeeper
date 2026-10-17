@@ -41,9 +41,25 @@ local function Forecast(key, entry)
     return L.PETJOURNAL_NEXT_IN:format(Duration(left))
 end
 
--- The journal's lines, refilled for each look.
----@type string[]
-local lines = {}
+-- The journal's lines and what the pet could teach, refilled for each look.
+---@type string[], string[]
+local lines, teach = {}, {}
+
+---The line of ranks the pet could still teach this character, from Ability Learned's known ranks;
+---nil when it teaches nothing new or Ability Learned is off.
+---@param entry KennelJournalEntry
+---@return string?
+local function CanTeachLine(entry)
+    local known = Kennel:GetModule("AbilityLearned", true) --[[@as KennelAbilityLearned?]]
+    if not known or not known:IsEnabled() or not entry.ranks then return nil end
+    wipe(teach)
+    for name, rank in pairs(entry.ranks) do
+        if known:CanTeach(name, rank) then teach[#teach + 1] = ("%s (%s)"):format(name, rank) end
+    end
+    if #teach == 0 then return nil end
+    table.sort(teach)
+    return L.PETJOURNAL_TEACH:format(table.concat(teach, ", "))
+end
 
 ---A pet's journal.
 ---@param key string
@@ -68,6 +84,7 @@ function M:JournalText(key)
     if #entry.abilities > 0 then
         lines[#lines + 1] = L.PETJOURNAL_ABILITIES:format(table.concat(entry.abilities, ", "))
     end
+    lines[#lines + 1] = CanTeachLine(entry)
     return table.concat(lines, "\n")
 end
 

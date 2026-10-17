@@ -31,5 +31,7 @@ L.PETJOURNAL_NEXT_NOW = "Next loyalty level any moment now."
 L.PETJOURNAL_NEXT_UNKNOWN = "Next loyalty level: not enough seen yet."
 -- %s: a list like "Bite (Rank 1), Claw (Rank 2)".
 L.PETJOURNAL_ABILITIES = "Abilities: %s."
+-- The ranks of those it could still teach the hunter (above the highest the hunter knows). %s: a list as above.
+L.PETJOURNAL_TEACH = "Can teach you: %s."
 
 -- stylua: ignore end

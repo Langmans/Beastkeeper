@@ -75,6 +75,15 @@ local function RanksKnown(source, ranks)
     Kennel:SendMessage("KENNEL_RANKS_KNOWN", { module = M:GetName(), source = source, ranks = ranks })
 end
 
+---Whether a pet with this ability at this rank could teach it to this character: an ability
+---learned from beasts, at a higher rank than the highest known. Also for the Pet Journal.
+---@param name string
+---@param rank string? the client's rank text, "Rank 3"
+---@return boolean
+function M:CanTeach(name, rank)
+    return M.IsWildAbility(name) and RankNumber(rank) > (Char().known[name] or 0)
+end
+
 ---Whether this character knows an ability at exactly this rank. Ranks are separate spells, so a
 ---lower one can be missing below a higher one (it suits a young pet, or costs fewer points).
 ---@param name string
@@ -196,7 +205,7 @@ local function Teachable()
     local list = {}
     local unsure = false
     for name, spell in pairs(Kennel.PetSpells()) do
-        if M.IsWildAbility(name) and RankNumber(spell.rank) > (known[name] or 0) then
+        if M:CanTeach(name, spell.rank) then
             list[#list + 1] = spell.rank and ("%s (%s)"):format(name, spell.rank) or name
             unsure = unsure or known[name] == nil
         end

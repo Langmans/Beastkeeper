@@ -88,6 +88,18 @@ describe("Pet Journal", function()
         assert.are.equal("", journal(NewClient({ noPet = true }):login()), "no pet had out yet")
     end)
 
+    it("says what a pet could still teach the hunter, also once it is stabled", function()
+        local client = NewClient():login():advance(1)
+        assert.is_true(says(client, "Can teach you: Bite (Rank 1), Claw (Rank 2), Cower (Rank 1)."), journal(client))
+        client:openTrainer({ { "Claw", "used", CLAW_3 } }):closeTrainer()
+        client.petGUID = "Pet-0-5250-0-1-3825-0100ABCDEF"
+        client:summon("Whiskers", { 17253 }):advance(1)
+        page(client).pet.set(nil, tostring(FLUFFY))
+        assert.is_true(says(client, "Can teach you: Bite (Rank 1), Cower (Rank 1)."), journal(client))
+        client.Kennel:SetModuleOn("AbilityLearned", false)
+        assert.is_false(says(client, "Can teach you"), "without Ability Learned's ranks")
+    end)
+
     it("is for hunters only, and keeps nothing while switched off", function()
         local mage = NewClient({ class = "MAGE" }):login():advance(1)
         assert.are.same({}, page(mage).pet.values())

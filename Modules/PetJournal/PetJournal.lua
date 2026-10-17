@@ -65,14 +65,17 @@ function M:Record()
     entry.loyalty, entry.loyaltyName = loyalty, name or entry.loyaltyName
 end
 
----Keeps the pet out's abilities as "Claw (Rank 2)", sorted.
+---Keeps the pet out's abilities as "Claw (Rank 2)", sorted, and each one's rank by name (what it
+---could still teach is worked out when shown: the hunter learns meanwhile).
 function M:Snapshot()
     local entry = self.current and self:Pets()[self.current]
     if not entry or not UnitExists("pet") then return end
     wipe(entry.abilities)
+    entry.ranks = entry.ranks and wipe(entry.ranks) or {}
     for name, spell in pairs(Kennel.PetSpells()) do
-        local rank = spell.rank
-        entry.abilities[#entry.abilities + 1] = rank and rank ~= "" and ("%s (%s)"):format(name, rank) or name
+        local rank = spell.rank or ""
+        entry.abilities[#entry.abilities + 1] = rank ~= "" and ("%s (%s)"):format(name, rank) or name
+        entry.ranks[name] = rank
     end
     table.sort(entry.abilities)
 end
