@@ -177,8 +177,9 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
   teaches it"), several ranks in one toast. It has its own switch.
 - 106 ranks and 423 beasts, from Wowhead's WoW: Forever database and the
   Tamed addon's list (MIT, notice in `Data/Tamed-LICENSE.txt`), kept only
-  where Wowhead has the beast as tameable on Forever. Beast names are in
-  English. Beasts in a dungeon have no pin.
+  where Wowhead has the beast as tameable on Forever. Beast names come from
+  your game, in its language, once it knows the beast; English before that.
+  Beasts in a dungeon have no pin.
 
 ## For developers
 

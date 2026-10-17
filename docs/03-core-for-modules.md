@@ -28,8 +28,10 @@
   pet's spellbook by name), `Kennel.PetTrainingPoints()` (free and total),
   `Kennel.PetFamilyID()`, `Kennel.PetSound(kind)` (the
   family's `"AGGRO"` call, `"DEATH"` sound or `"WOUND"` cry, from
-  `Kennel.sounds.<KIND>_PER_FAMILY`), and `Kennel.Readable(value)` for values
-  Forever may hide in combat.
+  `Kennel.sounds.<KIND>_PER_FAMILY`), `Kennel.CreatureName(npcID)` (a
+  creature's name in the client's language, through a creature link's
+  tooltip; nil until the client has it, kept once it does), and
+  `Kennel.Readable(value)` for values Forever may hide in combat.
 - **Chat on input** (`Core\Chat.lua`): `Kennel:SendOnInput(text, kind)` sends
   on the player's next key press or click, as WoW: Forever requires for an
   addon's chat (through MessageQueue when it is loaded). One message waits at

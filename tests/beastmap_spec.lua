@@ -151,6 +151,20 @@ describe("Beast Map", function()
         end)
     end)
 
+    it("names a beast as the client does, in English while the client has no name yet", function()
+        local client = hunter(10)
+        local low = client:mapPins(ELWYNN)[1]
+        assert.are.equal("Low Cat", (client:hoverPin(ELWYNN, low.coord)))
+        client.creatureNames[101] = "Kleine Katze"
+        assert.are.equal("Kleine Katze", (client:hoverPin(ELWYNN, low.coord)))
+        client:clickPin(ELWYNN, low.coord)
+        assert.is_true(client:printedContains("Kleine Katze"), "the label of the target")
+        client = hunter(11)
+        client.creatureNames[105] = "Höhleneber"
+        client:fire("PLAYER_LEVEL_UP", 12)
+        assert.are.equal("Höhleneber in Wailing Caverns teaches it.", client:toast().Text.text)
+    end)
+
     it("sends the hunter to a beast with a left click on its pin, through LibGoThere", function()
         local client = hunter(10)
         local low = client:mapPins(ELWYNN)[1]

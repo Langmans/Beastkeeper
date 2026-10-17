@@ -203,6 +203,13 @@ local function LevelText(beast)
     return L.BEASTMAP_LEVEL:format(level) .. kind
 end
 
+---A beast's name as the client words it, else as the data has it (English).
+---@param npc number
+---@return string
+local function BeastName(npc)
+    return Kennel.CreatureName(npc) or Data().beasts[npc].name
+end
+
 ---"Claw (Rank 2)" as the client names it; nil when it cannot name the spell.
 ---@param spellID number
 ---@return string?
@@ -223,7 +230,7 @@ function handler.OnEnter(pin, uiMapID, coord)
     local npc = pins[at]
     local beast = Data().beasts[npc]
     GameTooltip:SetOwner(pin, "ANCHOR_RIGHT")
-    GameTooltip:SetText(beast.name)
+    GameTooltip:SetText(BeastName(npc))
     GameTooltip:AddLine(LevelText(beast), 1, 1, 1)
     for _, spellID in ipairs(Teaches()[npc]) do
         local text = RankText(spellID)
@@ -254,7 +261,7 @@ function handler.OnClick(_, button, down, uiMapID, coord)
     ---@type number
     local npc = pins[at]
     local x, y = (HandyNotes --[[@as HandyNotesApi]]):getXY(coord)
-    GoThere:Navigate("Kennel", uiMapID, x, y, Data().beasts[npc].name)
+    GoThere:Navigate("Kennel", uiMapID, x, y, BeastName(npc))
 end
 
 ---Forgets the pins' icons and has HandyNotes draw them again.
@@ -334,7 +341,8 @@ local function Place(npc)
         -- A beast has pins or, in an instance, zones (the data spec checks it).
         where = C_Map.GetAreaInfo((beast.zones --[[@as number[] ]])[1])
     end
-    return where and L.BEASTMAP_REACH_PLACE:format(beast.name, where) or beast.name
+    local name = BeastName(npc)
+    return where and L.BEASTMAP_REACH_PLACE:format(name, where) or name
 end
 
 ---The toast for the ranks a level-up brings in reach, if any.

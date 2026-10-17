@@ -79,6 +79,19 @@ describe("the pet helpers", function()
         assert.is_nil(client.Kennel.PetNumber())
     end)
 
+    it("name a creature as the client does, once the client has it, nil before", function()
+        local client = NewClient()
+        assert.is_nil(client.Kennel.CreatureName(1188), "not cached yet")
+        client.creatureNames[1188] = "Grizzlybär"
+        assert.are.equal("Grizzlybär", client.Kennel.CreatureName(1188))
+        client.creatureNames[1188] = nil
+        assert.are.equal("Grizzlybär", client.Kennel.CreatureName(1188), "kept once known")
+        client.creatureNames[30] = SECRET
+        assert.is_nil(client.Kennel.CreatureName(30), "a hidden value is no name")
+        C_TooltipInfo = nil
+        assert.is_nil(client.Kennel.CreatureName(31))
+    end)
+
     it("tell a value the client hides from one it shows", function()
         local Kennel = NewClient().Kennel
         assert.is_true(Kennel.Readable(40))

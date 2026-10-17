@@ -326,6 +326,18 @@ function NewClient(opts)
     -- GetPetActionInfo as Forever returns it: name, texture, isToken (1, not true), isActive,
     -- autoCastAllowed, autoCastEnabled, spellID.
     NUM_PET_ACTION_SLOTS = 10
+    -- Creature names through C_TooltipInfo.GetHyperlink("unit:Creature-0-0-0-0-<id>-0000000000"):
+    -- client.creatureNames holds the ones the client has cached, by NPC ID; any other comes back
+    -- as a tooltip without lines, as the client gives it while it asks the server.
+    client.creatureNames = {}
+    C_TooltipInfo = {
+        GetHyperlink = function(link)
+            local id = tonumber(link:match("^unit:Creature%-0%-0%-0%-0%-(%d+)%-"))
+            local name = id and client.creatureNames[id]
+            return { lines = name and { { leftText = name } } or {} }
+        end,
+    }
+
     -- The stance icons Blizzard's pet bar defines (Blizzard_ActionBar\Shared\PetActionBar.lua).
     PET_PASSIVE_TEXTURE = "Interface\\Icons\\Ability_Seal"
     GetPetActionInfo = nil

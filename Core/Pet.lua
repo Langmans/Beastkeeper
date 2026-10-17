@@ -17,6 +17,25 @@ local function SpellRank(id)
     return rank ~= "" and rank or nil
 end
 
+-- Creature names the client gave, by NPC ID: they do not change within a session.
+---@type table<number, string>
+local creatureNames = {}
+
+---A creature's name as the client words it, through the tooltip of a creature link; nil while the
+---client does not have it (asking makes the client fetch it, so a later call usually has it).
+---@param npcID number
+---@return string?
+function Kennel.CreatureName(npcID)
+    if creatureNames[npcID] then return creatureNames[npcID] end
+    if not (C_TooltipInfo and C_TooltipInfo.GetHyperlink) then return nil end
+    local ok, data = pcall(C_TooltipInfo.GetHyperlink, ("unit:Creature-0-0-0-0-%d-0000000000"):format(npcID))
+    local line = ok and type(data) == "table" and data.lines and data.lines[1]
+    local name = line and line.leftText
+    if type(name) ~= "string" or not Kennel.Readable(name) or name == "" then return nil end
+    creatureNames[npcID] = name
+    return name
+end
+
 ---Spell name, icon and rank across client generations: C_Spell on newer clients, GetSpellInfo on
 ---older ones. All nil when the client knows neither.
 ---@param id number
