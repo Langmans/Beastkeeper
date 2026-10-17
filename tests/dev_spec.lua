@@ -62,6 +62,16 @@ describe("development screenshots", function()
         assert.are.equal(3, client.screenshots)
     end)
 
+    it("know a chat line by its plain text: colours and links have hex digits and IDs", function()
+        local client = shooting()
+        client.Kennel:Print(
+            "|cffabd473Elia|r feeds |cnGREEN_FONT_COLOR:Kaldor|r |cffffffff|Hitem:4544::::|h[Meat]|h|r x2"
+        )
+        local shots = client.Kennel:GetModule("DevScreenshots").db.global.shots
+        assert.is_true(shots["chat: Elia feeds Kaldor [Meat] x#"])
+        assert.is_true(client:printedContains("|cff888888[Kennel dev] chat: Elia feeds Kaldor [Meat] x#|r"))
+    end)
+
     it("take none while switched off, and are not there in a release", function()
         local client = NewClient({ dev = true }):login()
         client.Kennel:ShowToast({ key = "Test:one", title = "One" })

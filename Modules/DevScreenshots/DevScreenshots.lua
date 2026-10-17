@@ -51,11 +51,25 @@ local function TakeScreenshot()
     Screenshot()
 end
 
+---A chat line as its kind: the text without colours, links and textures (their escapes hold hex
+---digits and IDs), every number as "#".
+---@param line string
+---@return string
+local function Kind(line)
+    local plain = line:gsub("|c%x%x%x%x%x%x%x%x", "")
+        :gsub("|cn[^:]*:", "")
+        :gsub("|r", "")
+        :gsub("|H.-|h(.-)|h", "%1")
+        :gsub("|T.-|t", "")
+        :gsub("|A.-|a", "")
+    return (plain:gsub("%d+", "#"))
+end
+
 ---@param _ string the message
 ---@param event KennelPrintEvent
 function M:KENNEL_PRINT(_, event)
     if GetTime() - lastShot < SHOT_GAP then return end
-    if not Shoot("chat: " .. event.line:gsub("%d+", "#")) then return end
+    if not Shoot("chat: " .. Kind(event.line)) then return end
     lastShot = GetTime()
     C_Timer.After(SHOT_DELAY, TakeScreenshot)
 end
