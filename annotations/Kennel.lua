@@ -346,6 +346,30 @@
 ---@field DEATH_PER_FAMILY table<number, number>
 ---@field WOUND_PER_FAMILY table<number, number>
 
+---Generated game data (Data\*.lua).
+---@class KennelData
+---@field petAbilityRanks table<number, KennelPetAbilityRank> by the rank's spell ID
+---@field beasts table<number, KennelBeast> by NPC ID
+
+---One rank of a pet ability learned from beasts in the wild.
+---@class KennelPetAbilityRank
+---@field ability number the spell ID of the ability's rank 1
+---@field rank number
+---@field level number the pet level it needs
+---@field families number[] the pet families (CreatureFamily IDs) that can learn it
+---@field teachers number[] NPC IDs of the tameable beasts that teach it
+
+---A tameable beast that teaches a pet ability rank.
+---@class KennelBeast
+---@field name string English, as Wowhead names it
+---@field family number CreatureFamily ID
+---@field minLevel number
+---@field maxLevel number
+---@field elite true?
+---@field rare true?
+---@field pins table<number, number[]>? per uiMapID, pin positions as x1, y1, x2, y2, ... (percent)
+---@field zones number[]? AreaTable IDs, for a beast Wowhead has no map of (in an instance)
+
 ---Any value the game hands over, before the addon checks its type.
 ---@alias GameValue string|number|boolean|table|nil
 
@@ -356,3 +380,4 @@
 ---@field modules table<string, KennelModule> AceAddon's own module table, by name
 ---@field optionsCategoryID string|number the settings page, for Settings.OpenToCategory
 ---@field PROFILE_OPTIONS string[] the keys of AceDBOptions' own Profiles entries, see Core\Options.lua
+---@field data KennelData
