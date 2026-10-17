@@ -18,7 +18,8 @@
   a low health marker beside the pet frame that works while the game hides
   the pet's health; the button on screen too, showing what a click casts.
 - With EllesmereUI loaded: the card and the splash in EllesmereUI's look;
-  with ElvUI loaded, in ElvUI's.
+  with ElvUI loaded, in ElvUI's. A look that shows toasts as the game's raid
+  warning.
 - A look that sends toasts through LibSink: Blizzard's floating text, chat,
   raid warning, MikSBT and the other outputs LibSink knows.
 - With MessageQueue loaded: a LibSink output that says toasts in a chat

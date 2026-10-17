@@ -88,6 +88,7 @@ end
 ---@field noTextureAPI boolean? C_Spell without GetSpellTexture
 ---@field noPetBarAPI boolean? no GetPetActionInfo
 ---@field noCurveAPI boolean? no C_CurveUtil and UnitHealthPercent
+---@field oldRaidWarning boolean? RaidNotice_AddMessage instead of Forever's RaidWarningFrame:AddMessage
 ---@field noSpellBookAPI boolean? no C_SpellBook
 ---@field noPetSpellCount boolean? C_SpellBook without HasPetSpells
 ---@field noMacroConsts boolean? no Constants.MacroConsts (the addon's own limits apply)
@@ -1183,6 +1184,24 @@ function NewClient(opts)
     ClassTrainerFrame = newRegion()
     ClassTrainerFrame.shown = false
     PetFrame = newRegion()
+    -- The raid warning: client.raidWarnings records each message as { text, color }. Forever's
+    -- frame takes it through its AddMessage; opts.oldRaidWarning: the older global instead.
+    client.raidWarnings = {}
+    RaidWarningFrame = newRegion()
+    local function warn(text, color)
+        client.raidWarnings[#client.raidWarnings + 1] = { text = text, color = { color.r, color.g, color.b } }
+    end
+    RaidNotice_AddMessage = nil
+    if opts.oldRaidWarning then
+        function RaidNotice_AddMessage(frame, text, color)
+            assert(frame == RaidWarningFrame)
+            warn(text, color)
+        end
+    else
+        function RaidWarningFrame:AddMessage(text, color)
+            warn(text, color)
+        end
+    end
     -- The world map; its canvas is what Blizzard anchors the map's corner buttons to.
     WorldMapFrame = newRegion()
     local canvas = newRegion()
@@ -1294,8 +1313,7 @@ function NewClient(opts)
     function IsInRaid()
         return client.inRaid == true
     end
-    RaidWarningFrame, UIErrorsFrame = newRegion(), newRegion()
-    RaidNotice_AddMessage = noop
+    UIErrorsFrame = newRegion()
 
     SlashCmdList = {}
     hash_SlashCmdList = {}

@@ -79,6 +79,47 @@ describe("toast skins", function()
     end)
 end)
 
+describe("the raid warning look", function()
+    ---A quiet client showing toasts as raid warnings.
+    local function warning(opts)
+        local client = NewClient(opts)
+        client.pet = nil
+        client:login()
+        client.Kennel:ToastSettings().skin = "raidwarning"
+        return client
+    end
+
+    it("puts the toast in the middle of the screen as one line, in its accent colour", function()
+        local client = warning()
+        client.Kennel:ShowToast({
+            key = "a:x",
+            title = "Pet died",
+            text = "Revive it.",
+            icon = 132163,
+            accent = { 1, 0, 0 },
+        })
+        assert.are.same({
+            { text = "|T132163:0|t Pet died: Revive it.", color = { 1, 0, 0 } },
+        }, client.raidWarnings)
+        assert.are.equal("Raid warning: big text in the middle", client.Kennel:ToastSkins().raidwarning.name)
+    end)
+
+    it("hands one toast after another straight on, with Kennel's accent and no icon when none", function()
+        local client = warning()
+        client.Kennel:ShowToast({ key = "a:x", title = "One" })
+        client.Kennel:ShowToast({ key = "a:y", title = "Two", text = "more" })
+        assert.are.equal(2, #client.raidWarnings)
+        assert.are.same({ text = "One", color = { 1, 0.62, 0.18 } }, client.raidWarnings[1])
+        assert.are.equal("Two: more", client.raidWarnings[2].text)
+    end)
+
+    it("uses the older global on a client that has it", function()
+        local client = warning({ oldRaidWarning = true })
+        client.Kennel:ShowToast({ key = "a:x", title = "One" })
+        assert.are.equal("One", client.raidWarnings[1].text)
+    end)
+end)
+
 describe("a skin from NewToastSkin", function()
     it("has its name, and hides, answers hover and gives its frame through self.frame", function()
         local client = quiet()
@@ -273,6 +314,7 @@ describe("the look choice", function()
             card = "Card: small, near the top",
             splash = "Splash: large, in the middle",
             libsink = "Floating text and more (LibSink)",
+            raidwarning = "Raid warning: big text in the middle",
         }, args.skin.values)
         assert.are.equal("card", args.skin.get())
         args.skin.set({}, "splash")

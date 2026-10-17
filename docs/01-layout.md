@@ -17,7 +17,7 @@ Core\Core.xml     the core, in this order:
     Skins.lua     the skin register, its contract, which skin draws which kind
     Frame.lua     what every skin's frame does alike; NewToastFrame, NewToastSkin
     Engine.lua    queue, clock, sound, the card taking over from a failing skin
-    Skins\        the card and the splash
+    Skins\        the card, the splash and the raid warning
   Buttons.lua     button and holder skins: register, choice, Kennel's own
   Macro.lua       macros a module makes for the player
   Options.lua     the AceConfig options and the pages in the settings window

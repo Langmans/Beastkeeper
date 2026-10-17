@@ -6,4 +6,5 @@
     <Script file="Engine.lua"/>
     <Script file="Skins\Card.lua"/>
     <Script file="Skins\Splash.lua"/>
+    <Script file="Skins\RaidWarning.lua"/>
 </Ui>

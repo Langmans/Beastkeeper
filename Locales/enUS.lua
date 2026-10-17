@@ -39,6 +39,8 @@ L.TOAST_SKIN_DESC = "How toasts look. Below it, each kind of toast can have a lo
 -- The looks Kennel brings: a small card near the top, or a large splash in the middle.
 L.TOAST_SKIN_CARD = "Card: small, near the top"
 L.TOAST_SKIN_SPLASH = "Splash: large, in the middle"
+-- The look that shows a toast as the game's raid warning: one line of big text in the middle.
+L.TOAST_SKIN_RAIDWARNING = "Raid warning: big text in the middle"
 -- The look that sends a toast as one line of text where LibSink sends it (floating combat text, chat, raid warning, ...). "LibSink" is a library's name and stays as it is.
 L.TOAST_SKIN_LIBSINK = "Floating text and more (LibSink)"
 -- An output in LibSink's list (with the MessageQueue addon): say the toast in a chat channel. "MessageQueue" is an addon's name and stays as it is.

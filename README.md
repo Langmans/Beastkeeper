@@ -29,7 +29,8 @@ modules move in one at a time.
   the top, or a large **splash** in the middle. Every kind of toast (such as
   Autocast Check's) can have a look of its own; other addons can add looks.
   With EllesmereUI or ElvUI loaded, both also come in that UI's look (its
-  font, border and theme colour).
+  font, border and theme colour). Or as the game's raid warning: one line of
+  big text in the middle of the screen.
 
 ### Autocast Check
 
