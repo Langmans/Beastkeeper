@@ -95,6 +95,19 @@ local function fixJunit()
     sh.write("coverage/junit.xml", xml)
 end
 
+---The browsable coverage report, coverage/index.html: every file with its lines marked hit or
+---missed. luacov's HTML reporter finds its stylesheet and scripts through LuaRocks' loader, which a
+---local setup may lack; then there is no report, which fails nothing (CI has the loader and
+---uploads the report).
+local function htmlReport()
+    local _, ok = sh.capture({ tool("luacov"), "-c", "tests/luacov-html.lua", "-r", "html" })
+    if ok then
+        print("Coverage report: coverage/index.html")
+    else
+        print(yellow("No HTML coverage report: luacov's HTML reporter cannot find its files here"))
+    end
+end
+
 local function test(extra)
     libs()
     sh.mkdir("coverage")
@@ -114,6 +127,7 @@ local function test(extra)
         sh.run({ tool("luacov"), "-r", "lcov" })
         local pct = coverageReport()
         report(pct >= 100, ("line coverage %.1f%%, must be 100%%"):format(pct))
+        htmlReport()
     end
 end
 

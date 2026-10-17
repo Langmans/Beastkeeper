@@ -4,7 +4,8 @@
 # StyLua from its own action (installed only; tests/check.lua runs it), WoW Lua LS from its GitHub
 # release, pinned and checked against the release's checksum. tests/check.lua then fetches Ace3
 # into Libs/ and runs everything; under CI a missing WoW Lua LS fails instead of being skipped.
-# The JUnit report shows failed tests on the run and on pull requests.
+# The JUnit report shows failed tests on the run and on pull requests; the coverage reports (HTML,
+# lcov) and the JUnit file are the run's "coverage" artifact.
 name: CI
 
 on:
@@ -59,3 +60,15 @@ jobs:
           failed_summary_logs: true
           include_time_in_summary: true
           simplified_summary: true
+      # The reports to download from the run: index.html (every file, its lines marked hit or
+      # missed), lcov.info for an editor's coverage gutter, junit.xml.
+      - name: Upload the reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: |
+            coverage/*.html
+            coverage/lcov.info
+            coverage/junit.xml
+          if-no-files-found: warn

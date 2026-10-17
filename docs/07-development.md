@@ -36,7 +36,10 @@ after `.lua\bin\activate.ps1`):
   `tests/*_spec.lua` files with busted, then prints line coverage of
   Kennel's own files (not `Libs\`). Extra arguments go to busted, such as
   `test --filter=options`. `coverage/lcov.info` is written for editor
-  plugins and `coverage/junit.xml` for CI.
+  plugins and `coverage/junit.xml` for CI, and `coverage/index.html`, every
+  file with its lines marked hit or missed, where luacov's HTML reporter can
+  find its files through LuaRocks' loader (in CI; a local setup without it
+  skips the HTML). Each CI run has them as its "coverage" artifact.
 - `lua tests/check.lua lint` runs the StyLua format check, then WoW Lua LS
   diagnostics.
 - `lua tests/check.lua format` formats all Lua with StyLua.
