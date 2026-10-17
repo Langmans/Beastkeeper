@@ -25,7 +25,8 @@ Data\Beasts.lua   generated: pet ability ranks and the beasts that teach them
                   (Tamed-LICENSE.txt next to it for the part from Tamed)
 Integrations\     what Kennel does with other addons, a folder per addon; each
                   file does nothing unless its addon is loaded (OptionalDeps)
-  EllesmereUI\Toast.lua   the card and the splash in EllesmereUI's look
+  EllesmereUI\Look.lua    the card, the splash and Kennel's buttons
+                          (Kennel.buttonLook) in EllesmereUI's look
   LibSink\Toast.lua       a look that hands toasts to LibSink's outputs
   MessageQueue\Sink.lua   a LibSink output that says toasts in a chat channel
                           through MessageQueue (Forever sends say, yell and

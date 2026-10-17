@@ -13,7 +13,11 @@
 ---@field GetFontOutlineFlag fun(addonKey: string?): string
 ---@field GetFontUseShadow fun(addonKey: string?): boolean
 ---@field PrimeFontShadow (fun(text: FontString, useShadow: boolean))?
----@field MakeBorder (fun(parent: Frame, r: number, g: number, b: number, a: number): table)?
+---@field MakeBorder (fun(parent: Frame, r: number, g: number, b: number, a: number): EllesmereUIBorder)?
+
+---A border MakeBorder drew.
+---@class EllesmereUIBorder
+---@field SetColor fun(self: EllesmereUIBorder, r: number, g: number, b: number, a: number?)
 
 ---EllesmereUI's global table; nil when it is not loaded.
 ---@type EllesmereUIApi?

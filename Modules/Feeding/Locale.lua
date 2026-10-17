@@ -28,7 +28,7 @@ L.FEEDING_FOOD = "%s x%d"
 L.FEEDING_WELL_FED = " (makes you Well Fed: last)"
 -- Instead of the food lines. %s: the pet's name.
 L.FEEDING_NO_FOOD = "Nothing in your bags that %s eats."
-L.FEEDING_CLICK = "Click to feed the first. Shift-drag to move."
+L.FEEDING_CLICK = "Click to feed the first, right-click to choose. Shift-drag to move."
 
 -- Toast titles. %s: the pet's name.
 L.FEEDING_TOAST_CONTENT = "%s is content"

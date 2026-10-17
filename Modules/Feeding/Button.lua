@@ -18,8 +18,7 @@ local HAPPINESS = {
     { name = L.FEEDING_CONTENT, color = { 1, 1, 0 } },
     { name = L.FEEDING_HAPPY, color = { 0, 1, 0 } },
 }
-local BITE_COLORS = { [35] = { 0, 1, 0 }, [17] = { 1, 1, 0 }, [8] = { 1, 0.5, 0 } }
-local WELL_FED_COLOR, HINT_COLOR = { 0.6, 0.6, 0.6 }, { 0.5, 0.5, 0.5 }
+local HINT_COLOR = { 0.5, 0.5, 0.5 }
 local SIZE = 36
 
 local button = CreateFrame("Button", "KennelFeedButton", UIParent, "SecureActionButtonTemplate")
@@ -29,22 +28,44 @@ button:RegisterForClicks("AnyUp")
 button:RegisterForDrag("LeftButton")
 button:SetMovable(true)
 button:Hide()
-local border = button:CreateTexture(nil, "BACKGROUND")
-border:SetPoint("TOPLEFT", -2, 2)
-border:SetPoint("BOTTOMRIGHT", 2, -2)
-border:SetColorTexture(1, 1, 1, 1)
 local icon = button:CreateTexture(nil, "ARTWORK")
 icon:SetAllPoints()
 button:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
 
----Puts the button where the profile keeps it, or beside the pet frame.
+---Kennel's own border: a frame of colour behind the icon.
+---@param frame Frame
+---@return fun(r: number, g: number, b: number)
+local function OwnBorder(frame)
+    local border = frame:CreateTexture(nil, "BACKGROUND")
+    border:SetPoint("TOPLEFT", -2, 2)
+    border:SetPoint("BOTTOMRIGHT", 2, -2)
+    border:SetColorTexture(1, 1, 1, 1)
+    return function(r, g, b)
+        border:SetVertexColor(r, g, b)
+    end
+end
+
+-- Another UI's look when one is loaded (Integrations\), else Kennel's own.
+local look = Kennel.buttonLook
+local SetBorderColor = (look and look.Border or OwnBorder)(button)
+if look and look.cropIcons then icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) end
+
+M.button = button
+-- A right-click runs the module's own handler: a secure button calls a function field named
+-- after an action type it does not know, outside the secure path.
+button.foodlist = function()
+    M:ToggleFoodList()
+end
+
+---Puts the button where the profile keeps it, or beside the pet frame: EllesmereUI's when it
+---draws its own.
 function M:PlaceButton()
     local at = self:Settings().position
     button:ClearAllPoints()
     if at then
         button:SetPoint(at[1], UIParent, at[2], at[3], at[4])
     else
-        button:SetPoint("LEFT", PetFrame, "RIGHT", 4, 0)
+        button:SetPoint("LEFT", _G.EllesmereUIUnitFrames_Pet or PetFrame, "RIGHT", 4, 0)
     end
 end
 
@@ -53,20 +74,23 @@ end
 function M:ApplyButton()
     Kennel:OutOfCombat("Feeding:button", function()
         local _, class = UnitClass("player")
-        local first = self:IsEnabled() and class == "HUNTER" and self:Foods()[1]
+        local active = self:IsEnabled() and class == "HUNTER"
+        local first = active and self:Foods()[1]
+        button:SetAttribute("type2", active and "foodlist" or nil)
         if first then
             button:SetAttribute("type", "macro")
-            button:SetAttribute("macrotext", ("/cast %s\n/use %d %d"):format(M.FeedPetName(), first.bag, first.slot))
+            button:SetAttribute("macrotext", M.FeedMacro(first))
         else
             button:SetAttribute("type", nil)
             button:SetAttribute("macrotext", nil)
         end
+        self:PlaceButton()
         local _, feedIcon = Kennel.SpellInfo(M.FEED_PET)
         icon:SetTexture(first and C_Item.GetItemIconByID(first.itemID) or feedIcon)
         local watching = self:IsEnabled() and class == "HUNTER" and UnitExists("pet")
         local happiness = watching and M.Happiness() or 3
-        local look = HAPPINESS[happiness]
-        border:SetVertexColor(look.color[1], look.color[2], look.color[3])
+        local mood = HAPPINESS[happiness]
+        SetBorderColor(mood.color[1], mood.color[2], mood.color[3])
         button:SetShown(happiness < 3)
     end)
 end
@@ -82,8 +106,7 @@ local function OnEnter(self)
     local foods = M:Foods()
     for _, food in ipairs(foods) do
         local text = L.FEEDING_FOOD:format(M.FoodName(food), food.count)
-        local color = food.wellFed and WELL_FED_COLOR or BITE_COLORS[food.bite]
-        GameTooltip:AddLine(food.wellFed and text .. L.FEEDING_WELL_FED or text, color[1], color[2], color[3])
+        GameTooltip:AddLine(food.wellFed and text .. L.FEEDING_WELL_FED or text, M.FoodColor(food))
     end
     if #foods == 0 then GameTooltip:AddLine(L.FEEDING_NO_FOOD:format(pet), 1, 1, 1) end
     GameTooltip:AddLine(L.FEEDING_CLICK, HINT_COLOR[1], HINT_COLOR[2], HINT_COLOR[3])

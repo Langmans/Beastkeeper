@@ -40,8 +40,9 @@
   KennelAutocast macro that sets it right.
 - Feeding: a button beside the pet frame while the pet is not happy, feeding
   the food that keeps it happy cheapest (Well Fed food last), the order in
-  its tooltip; toasts when the pet becomes content or unhappy and when the
-  last food it eats is gone.
+  its tooltip, a list to pick another food on a right-click, EllesmereUI's
+  look with EllesmereUI; toasts when the pet becomes content or unhappy and
+  when the last food it eats is gone.
 - Beast Map: with HandyNotes, a pin for every beast your hunter can tame now
   that teaches a pet ability rank you lack, with the ability's icon and a
   tooltip of the ranks it teaches; switches for missing lower ranks, every

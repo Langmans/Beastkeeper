@@ -66,7 +66,7 @@ describe("Feeding", function()
             assert.are.same({ 0, 1, 0 }, lines[2].color, "full happiness: green")
             assert.are.same({ 1, 1, 0 }, lines[4].color, "half: yellow")
             assert.are.same({ 1, 0.5, 0 }, lines[5].color, "little: orange")
-            assert.are.equal("Click to feed the first. Shift-drag to move.", lines[#lines].text)
+            assert.are.equal("Click to feed the first, right-click to choose. Shift-drag to move.", lines[#lines].text)
             _G.KennelFeedButton:GetScript("OnLeave")(_G.KennelFeedButton)
             assert.is_false(GameTooltip:IsShown())
         end)
@@ -159,6 +159,66 @@ describe("Feeding", function()
             assert.is_not_nil(_G.KennelFeedButton.attributes.macrotext)
             NewClient({ class = "MAGE" }):login():stock(MUTTON, 1)
             assert.is_nil(_G.KennelFeedButton.attributes.macrotext)
+        end)
+    end)
+
+    describe("the list on a right-click", function()
+        ---A right-click on the feed button: the secure button calls the module's own handler.
+        local function rightClick()
+            local button = _G.KennelFeedButton
+            assert.are.equal("foodlist", button.attributes.type2)
+            rawget(button, "foodlist")(button, nil, "RightButton")
+        end
+
+        ---A click on one row of the list, as the client runs its scripts.
+        local function choose(index)
+            local choice = _G["KennelFeedChoice" .. index]
+            for _, hook in ipairs(choice.hooks.OnClick) do
+                hook(choice, "LeftButton", false)
+            end
+        end
+
+        it("shows every food to pick from; a row feeds that food and closes the list", function()
+            stocked()
+            rightClick()
+            assert.is_true(_G.KennelFeedList:IsShown())
+            local rows = {}
+            for i = 1, 5 do
+                local choice = _G["KennelFeedChoice" .. i]
+                assert.is_true(choice:IsShown())
+                rows[i] = choice.label.text .. " = " .. choice.attributes.macrotext
+            end
+            assert.are.same({
+                "Mutton Chop x5 = /cast Feed Pet\n/use 0 5",
+                "Mystery Meat x3 = /cast Feed Pet\n/use 0 4",
+                "Haunch of Meat x2 = /cast Feed Pet\n/use 0 3",
+                "Tough Jerky x6 = /cast Feed Pet\n/use 0 2",
+                "Spiced Wolf Meat x2 = /cast Feed Pet\n/use 0 6",
+            }, rows)
+            choose(3)
+            assert.is_false(_G.KennelFeedList:IsShown())
+        end)
+
+        it("hides the rows it no longer needs", function()
+            local client = stocked()
+            rightClick()
+            rightClick()
+            assert.is_false(_G.KennelFeedList:IsShown(), "a second right-click closes it")
+            client:eat(HAUNCH):eat(HAUNCH)
+            rightClick()
+            assert.is_true(_G.KennelFeedChoice4:IsShown())
+            assert.is_false(_G.KennelFeedChoice5:IsShown())
+        end)
+
+        it("closes with Escape, and does not open in combat or without food", function()
+            local client = stocked()
+            assert.is_true(tContains(UISpecialFrames, "KennelFeedList"))
+            client:enterCombat()
+            rightClick()
+            assert.is_false(_G.KennelFeedList:IsShown())
+            NewClient():login()
+            rightClick()
+            assert.is_false(_G.KennelFeedList:IsShown())
         end)
     end)
 

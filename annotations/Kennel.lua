@@ -158,10 +158,26 @@
 ---@field bite number happiness a bite gives the pet out: 35, 17 or 8
 ---@field wellFed boolean it also makes the hunter Well Fed: fed last
 
+---Another UI's look for Kennel's buttons (Kennel.buttonLook), set by an integration.
+---@class KennelButtonLook
+---@field Border fun(frame: Frame): fun(r: number, g: number, b: number) draws a border; gives its recolour
+---@field Font fun(text: FontString, size: number)
+---@field cropIcons boolean? trim the icons' edges, as the UI's own buttons do
+
+---A row of Feeding's food list: a secure button that feeds one food.
+---@class KennelFoodRow: Button
+---@field icon Texture
+---@field label FontString
+
 ---@class KennelFeeding: KennelSettingsModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field happiness number? the pet's happiness at the last check; nil for a new pet
+---@field button Button the feed button (KennelFeedButton)
 ---@field FEED_PET number
+---@field FeedMacro fun(food: KennelFood): string
+---@field FoodColor fun(food: KennelFood): number, number, number
+---@field ToggleFoodList fun(self: KennelFeeding)
+---@field CloseFoodList fun(self: KennelFeeding)
 ---@field Settings fun(self: KennelFeeding): KennelFeedingSettings
 ---@field FeedPetName fun(): string
 ---@field FoodName fun(food: KennelFood): string
@@ -432,6 +448,7 @@
 ---The addon object, which is also the files' namespace (`local _, ns = ...`).
 ---@class Kennel: AceAddon, AceConsole-3.0, AceEvent-3.0
 ---@field L table<string, string> the AceLocale strings
+---@field buttonLook KennelButtonLook? another UI's look for Kennel's buttons (Integrations\)
 ---@field db AceDBObject-3.0 KennelDB; profile.modules[name] holds each module's switch
 ---@field modules table<string, KennelModule> AceAddon's own module table, by name
 ---@field optionsCategoryID string|number the settings page, for Settings.OpenToCategory

@@ -44,7 +44,7 @@ To restyle the card or the splash rather than draw anew,
 `Kennel:NewCardSkin(name, style)` and `Kennel:NewSplashSkin(name, style)` take
 a `KennelSkinStyle`: the frame's name, a panel colour, an edge colour or a
 `Border(frame)` function, an `accent()` function and a `Font(text, size)`
-function. `Integrations\EllesmereUI\Toast.lua` does exactly that with
+function. `Integrations\EllesmereUI\Look.lua` does exactly that with
 EllesmereUI's font, border, panel and theme colour, registering "EllesmereUI"
 and "EllesmereUI (splash)" only when EllesmereUI is loaded.
 

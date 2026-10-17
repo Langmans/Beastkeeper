@@ -3,5 +3,6 @@
     <Script file="Locale.lua"/>
     <Script file="Feeding.lua"/>
     <Script file="Button.lua"/>
+    <Script file="FoodList.lua"/>
     <Script file="Options.lua"/>
 </Ui>

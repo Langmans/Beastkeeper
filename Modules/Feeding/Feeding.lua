@@ -141,6 +141,25 @@ function M.FoodName(food)
     return C_Item.GetItemInfo(food.itemID) or ("item:" .. food.itemID)
 end
 
+---The macro that feeds a food: Feed Pet, then its bag slot as the item it waits for.
+---@param food KennelFood
+---@return string
+function M.FeedMacro(food)
+    return ("/cast %s\n/use %d %d"):format(M.FeedPetName(), food.bag, food.slot)
+end
+
+-- A food's colour by the happiness a bite gives; Well Fed food grey.
+local BITE_COLORS = { [35] = { 0, 1, 0 }, [17] = { 1, 1, 0 }, [8] = { 1, 0.5, 0 } }
+local WELL_FED_COLOR = { 0.6, 0.6, 0.6 }
+
+---A food's colour in the tooltip and the list.
+---@param food KennelFood
+---@return number r, number g, number b
+function M.FoodColor(food)
+    local color = food.wellFed and WELL_FED_COLOR or BITE_COLORS[food.bite]
+    return color[1], color[2], color[3]
+end
+
 ---The pet's happiness (1 to 3), or nil without a pet or an answer.
 ---@return number?
 local function Happiness()
@@ -194,6 +213,7 @@ end
 function M:Update()
     local had = #foods > 0
     self:Scan()
+    self:CloseFoodList()
     self:ApplyButton()
     if #foods > 0 then
         Kennel:DropToast("Feeding:nofood")
@@ -245,7 +265,6 @@ function M:OnEnable()
     end
     self.happiness = nil
     wipe(foods)
-    self:PlaceButton()
     self:Update()
 end
 
@@ -253,5 +272,6 @@ end
 function M:OnDisable()
     Kennel:DropToasts("Feeding:")
     wipe(foods)
+    self:CloseFoodList()
     self:ApplyButton()
 end

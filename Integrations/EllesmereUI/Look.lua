@@ -1,8 +1,9 @@
 local _, ns = ...
 
--- The card and the splash in EllesmereUI's look: its global font, outline and shadow, its 1-pixel
--- border on a dark panel, and its theme colour as the accent. Registered only when EllesmereUI is
--- loaded; it is in Kennel's OptionalDeps, so it loads first.
+-- The card, the splash and Kennel's buttons in EllesmereUI's look: its global font, outline and
+-- shadow, its 1-pixel border on a dark panel, and its theme colour as the accent. Only when
+-- EllesmereUI is loaded; it is in Kennel's OptionalDeps, so it loads first, and this file loads
+-- before the modules, which read Kennel.buttonLook when they make their buttons.
 
 local EUI = EllesmereUI
 if type(EUI) ~= "table" then return end
@@ -37,6 +38,26 @@ end
 local function Style(frameName)
     return { frameName = frameName, panel = { 0.06, 0.06, 0.08, 0.85 }, Border = Border, accent = Accent, Font = Font }
 end
+
+local MakeBorder = EUI.MakeBorder
+
+---A recolourable border, as Kennel's buttons take it.
+---@param frame Frame
+---@return fun(r: number, g: number, b: number)
+local function ButtonBorder(frame)
+    local border = (
+        MakeBorder --[[@as fun(parent: Frame, r: number, g: number, b: number, a: number): EllesmereUIBorder]]
+    )(frame, 0, 0, 0, 1)
+    ---@param r number
+    ---@param g number
+    ---@param b number
+    local function SetColor(r, g, b)
+        border:SetColor(r, g, b, 1)
+    end
+    return SetColor
+end
+
+if MakeBorder then Kennel.buttonLook = { Border = ButtonBorder, Font = Font, cropIcons = true } end
 
 Kennel:RegisterToastSkin("ellesmere", Kennel:NewCardSkin("EllesmereUI", Style("KennelToastEllesmere")))
 Kennel:RegisterToastSkin(

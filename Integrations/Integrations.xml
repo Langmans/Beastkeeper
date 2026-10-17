@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- What Kennel does with other addons, one folder per addon. Each file checks that its addon is
          loaded (they are in the .toc's OptionalDeps) and does nothing otherwise. -->
-    <Script file="EllesmereUI\Toast.lua"/>
+    <Script file="EllesmereUI\Look.lua"/>
     <Script file="LibSink\Toast.lua"/>
     <Script file="MessageQueue\Sink.lua"/>
 </Ui>

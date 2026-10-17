@@ -772,6 +772,12 @@ function NewClient(opts)
         return tbl
     end
     table.wipe = wipe
+    function tContains(tbl, value)
+        for _, v in ipairs(tbl) do
+            if v == value then return true end
+        end
+        return false
+    end
     function tostringall(...)
         local out = pack(...)
         for i = 1, out.n do
@@ -1225,7 +1231,7 @@ function NewClient(opts)
 
     -- EllesmereUI, as far as Kennel uses it, when opts.ellesmere says it is loaded. client.eui
     -- records what was asked of it: the fonts set, the borders made, the shadows primed.
-    EllesmereUI = nil
+    EllesmereUI, EllesmereUIUnitFrames_Pet = nil, nil
     -- MessageQueue, when opts.messageQueue says it is loaded: client.queued records what was
     -- handed to its SendChatMessage.
     MessageQueue = nil
@@ -1287,9 +1293,17 @@ function NewClient(opts)
                 eui.shadows[#eui.shadows + 1] = { fs, use }
             end,
             MakeBorder = function(parent, r, g, b, a)
-                eui.borders[#eui.borders + 1] = { parent, r, g, b, a }
+                local border = { parent, r, g, b, a }
+                eui.borders[#eui.borders + 1] = border
+                return {
+                    SetColor = function(_, cr, cg, cb, ca)
+                        border[2], border[3], border[4], border[5] = cr, cg, cb, ca or 1
+                    end,
+                }
             end,
         }
+        -- Its unit frames draw the pet frame under their own name.
+        EllesmereUIUnitFrames_Pet = newRegion()
         if type(opts.ellesmere) == "table" then
             for key in pairs(opts.ellesmere) do
                 EllesmereUI[key] = nil

@@ -7,6 +7,18 @@ local function quiet(ellesmere)
     return client:login()
 end
 
+---The borders EllesmereUI made around `frame`, as { frame, r, g, b, a }.
+---@param client table
+---@param frame table
+---@return table[]
+local function bordersOf(client, frame)
+    local found = {}
+    for _, border in ipairs(client.eui.borders) do
+        if border[1] == frame then found[#found + 1] = border end
+    end
+    return found
+end
+
 describe("the EllesmereUI skin", function()
     it("is not there without EllesmereUI", function()
         assert.is_nil(quiet().Kennel:ToastSkins().ellesmere)
@@ -44,11 +56,10 @@ describe("the EllesmereUI skin", function()
 
         it("has EllesmereUI's border and dark panel", function()
             show({ key = "a", title = "t" })
-            assert.are.same({ frame, 0, 0, 0, 1 }, client.eui.borders[1])
-            assert.are.equal(1, #client.eui.borders, "made once")
+            assert.are.same({ { frame, 0, 0, 0, 1 } }, bordersOf(client, frame), "made once")
             client.Kennel:HideToast()
             show({ key = "b", title = "t" })
-            assert.are.equal(1, #client.eui.borders)
+            assert.are.equal(1, #bordersOf(client, frame))
         end)
 
         it("takes EllesmereUI's accent when the toast brings none", function()
@@ -89,7 +100,7 @@ describe("the EllesmereUI skin", function()
             for _, line in ipairs({ frame.Source, frame.Title, frame.Text, frame.Hint }) do
                 assert.are.equal("Fonts\\Expressway.ttf", line.font[1])
             end
-            assert.are.same({ frame, 0, 0, 0, 1 }, client.eui.borders[1])
+            assert.are.same({ { frame, 0, 0, 0, 1 } }, bordersOf(client, frame))
             assert.are.same({ 0.05, 0.82, 0.62, 1 }, frame.Diamond.color)
             assert.are.equal("Title", client:toastTitle())
         end)
@@ -101,7 +112,25 @@ describe("the EllesmereUI skin", function()
         client.Kennel:ShowToast({ key = "a", title = "t" })
         assert.are.equal("KennelToastSplash", client:toast().name)
         assert.is_nil(client:toast().Title.font)
-        assert.are.same({}, client.eui.borders)
+        assert.are.same({}, bordersOf(client, client:toast()))
+    end)
+
+    describe("Feeding's button and food list", function()
+        it("have EllesmereUI's border, the button's coloured by happiness, beside its pet frame", function()
+            local client = NewClient({ ellesmere = true }):login():stock(12037, 2):setHappiness(2)
+            local button = _G.KennelFeedButton
+            assert.are.same({ { button, 1, 1, 0, 1 } }, bordersOf(client, button), "content: yellow")
+            assert.are.equal(EllesmereUIUnitFrames_Pet, select(2, button:GetPoint()))
+            rawget(button, "foodlist")(button)
+            assert.are.equal(1, #bordersOf(client, _G.KennelFeedList))
+            assert.are.equal("Fonts\\Expressway.ttf", _G.KennelFeedChoice1.label.font[1])
+        end)
+
+        it("keep Kennel's own look without EllesmereUI's border helper", function()
+            local client = NewClient({ ellesmere = { MakeBorder = false } }):login():setHappiness(2)
+            assert.are.same({}, client.eui.borders)
+            assert.is_true(_G.KennelFeedButton:IsShown())
+        end)
     end)
 
     it("still draws with an EllesmereUI that has no border or shadow helper", function()

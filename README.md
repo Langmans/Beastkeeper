@@ -167,8 +167,11 @@ it to feed the next food from your bags.
   then the lowest level, so the better food lasts; then the smallest stack.
   Food that also makes you Well Fed comes last. What your pet eats, the game
   says itself.
+- **Right-click** for a list of all that food: click a row to feed that one
+  instead (bags full: feed what you carry least of).
 - The border shows the happiness: yellow content, red unhappy. Shift-drag to
-  move the button; the page puts it back.
+  move the button; the page puts it back. With EllesmereUI it takes its look
+  and sits beside its pet frame.
 - **Toasts** when your pet becomes content or unhappy, with the food that is
   next, and when the last food it eats leaves your bags. Each has a switch.
 
