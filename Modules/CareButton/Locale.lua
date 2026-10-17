@@ -35,6 +35,9 @@ L.CAREBUTTON_REVIVE_FAILED = "Revive Pet failed, so there is no dead pet: the bu
 -- Chat, after a button on the settings page that cannot work in combat.
 L.CAREBUTTON_IN_COMBAT = "Not in combat; try again when it ends."
 
+-- The tooltip of an action button holding the KennelCare macro: what it does.
+L.CAREBUTTON_MACRO = "Kennel: Mend Pet while your pet lives, Revive Pet when it is dead (also once the body is gone), Call Pet when it is not out. Shift: Revive Pet. Ctrl: Call Pet."
+
 -- Esc > Options > Keybindings > AddOns > Kennel.
 L.CAREBUTTON_BINDING = "Care Button: mend, revive or call pet"
 

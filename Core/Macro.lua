@@ -87,3 +87,35 @@ function Kennel:OfferMacros(module)
     offered[module.moduleName] = module
     if macrosLoaded then self:MakeOfferedMacros() end
 end
+
+-- What Kennel's macros do, in the tooltip of an action button that holds one: the game only shows a
+-- macro's #showtooltip spell there. Only for modules that are on.
+local DESC_COLOR = { 0.5, 0.9, 0.5 }
+
+---The description of the macro called `name`, when a module that is on makes it.
+---@param name string
+---@return string?
+function Kennel:MacroDescription(name)
+    for _, module in pairs(self.modules) do
+        ---@cast module KennelMacroModule
+        if module.Macros and module:IsEnabled() then
+            for _, macro in ipairs(module:Macros()) do
+                if macro.name == name then return macro.desc end
+            end
+        end
+    end
+    return nil
+end
+
+---@param tooltip GameTooltip
+---@param slot number
+local function OnSetAction(tooltip, slot)
+    local kind, id = GetActionInfo(slot)
+    if kind ~= "macro" then return end
+    local name = GetMacroInfo(id)
+    local desc = name and Kennel:MacroDescription(name)
+    if not desc then return end
+    tooltip:AddLine(desc, DESC_COLOR[1], DESC_COLOR[2], DESC_COLOR[3], true)
+    tooltip:Show()
+end
+hooksecurefunc(GameTooltip, "SetAction", OnSetAction)

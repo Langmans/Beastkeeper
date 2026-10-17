@@ -39,6 +39,11 @@ L.AUTOCAST_CHOSE_GROWL = "Growl from now on, until you enter or leave a dungeon 
 L.AUTOCAST_CMD_COWER = "Cower is what fits, until a dungeon group is entered or left (the KennelKite macro)"
 L.AUTOCAST_CMD_GROWL = "Growl is what fits, until a dungeon group is entered or left (the KennelGrowl macro)"
 
+-- The tooltip of an action button holding one of the macros: what it does.
+L.AUTOCAST_MACRO_KITE = "Kennel: puts Cower on and Growl off, then casts Distracting Shot. Holds until you enter or leave a dungeon group."
+L.AUTOCAST_MACRO_GROWL = "Kennel: puts Growl on and Cower off, to stop kiting or when your pet tanks a group. Holds until you enter or leave a dungeon group."
+L.AUTOCAST_MACRO_AUTOCAST = "Kennel: sets Growl and Cower as fits: Cower in a dungeon group, Growl elsewhere, or what you chose with KennelKite or KennelGrowl."
+
 -- Esc > Options > Keybindings > AddOns > Kennel: the key that sets Growl and Cower right.
 L.AUTOCAST_BINDING = "Autocast Check: set Growl and Cower as fits"
 

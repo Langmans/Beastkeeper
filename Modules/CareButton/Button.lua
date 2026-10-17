@@ -43,8 +43,8 @@ local header = CreateFrame("Frame", "KennelCareButtonHeader", UIParent, "SecureH
 ---@return string
 function M:MacroText(petDead)
     local mend, revive, call = M.SpellName(M.MEND_PET), M.SpellName(M.REVIVE_PET), M.SpellName(M.CALL_PET)
-    if petDead then return ("/cast [mod:ctrl] %s; [mod:shift][@pet,dead][nopet] %s; %s"):format(call, revive, mend) end
-    return ("/cast [mod:shift][@pet,dead] %s; [mod:ctrl][nopet] %s; %s"):format(revive, call, mend)
+    if petDead then return ("/use [mod:ctrl] %s; [mod:shift][@pet,dead][nopet] %s; %s"):format(call, revive, mend) end
+    return ("/use [mod:shift][@pet,dead] %s; [mod:ctrl][nopet] %s; %s"):format(revive, call, mend)
 end
 
 ---Whether the button counts the pet as dead.

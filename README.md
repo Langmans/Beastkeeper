@@ -324,11 +324,14 @@ registered skin errors while it draws, the error goes to the error handler
 (BugSack shows it) and the card takes over that toast, so a broken skin
 cannot stop Kennel's toasts. An error in `Hide` only lets the toast go.
 - **Macros** (`Core\Macro.lua`): a module with a `Macros()` method returning
-  `{ name, icon, body }` entries calls `Kennel:OfferMacros(self)` from
+  `{ name, icon, body, desc }` entries calls `Kennel:OfferMacros(self)` from
   `OnEnable`. They are made once per character (per character, or
   account-wide when those are full; never in combat; an existing macro of the
   same name is left alone), and `Kennel:CreateMacros(module, true)` makes the
-  missing ones again by hand.
+  missing ones again by hand. `desc` says what the macro does: it shows under
+  the tooltip of an action button holding the macro, while its module is on.
+  Macro bodies use `/use` rather than `/cast` (the same for a spell, and
+  shorter, leaving the player more of the 255 characters).
 - **Pet** (`Core\Pet.lua`, `Core\Sounds.lua`): `Kennel.SpellInfo(id)` (name,
   icon and rank text) across client generations, `Kennel.PetSpells()` (the
   pet's spellbook by name), `Kennel.PetTrainingPoints()` (free and total),

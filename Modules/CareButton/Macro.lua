@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- The KennelCare macro: `#showtooltip` and the button's own `/cast` line, so it casts what the
+-- The KennelCare macro: `#showtooltip` and the button's own `/use` line, so it casts what the
 -- button casts without going through it. Kennel makes it once per character (Core\Macro.lua). Its
 -- cast line follows the button: macro conditions cannot see a dead pet whose body is gone, so the
 -- line is rewritten whenever `petdead` changes, and when the macros change. Only a macro whose
@@ -17,7 +17,8 @@ local QUESTION_MARK = 134400 -- the icon a macro gets when #showtooltip picks th
 
 ---@return KennelMacro[]
 function M:Macros()
-    return { { name = NAME, icon = QUESTION_MARK, body = TOOLTIP .. "\n" .. self:MacroText(self:PetDead()) } }
+    local body = TOOLTIP .. "\n" .. self:MacroText(self:PetDead())
+    return { { name = NAME, icon = QUESTION_MARK, body = body, desc = Kennel.L.CAREBUTTON_MACRO } }
 end
 
 ---The macro text with its cast line put in step with the button, or nil when its first line is no
@@ -34,9 +35,9 @@ function M:UpdatedBody(body, petDead)
     if not lines[1]:lower():find("^#showtooltip") then return nil end
     lines[1] = TOOLTIP
     for i = 2, #lines do
-        if lines[i] == self:MacroText(false) or lines[i] == self:MacroText(true) then
-            lines[i] = self:MacroText(petDead)
-        end
+        -- The same line with /cast does the same, so it counts as its own too.
+        local line = lines[i]:gsub("^/cast ", "/use ")
+        if line == self:MacroText(false) or line == self:MacroText(true) then lines[i] = self:MacroText(petDead) end
     end
     return table.concat(lines, "\n")
 end

@@ -2,8 +2,9 @@
 -- what failed casts teach it, and the KennelCare macro that follows it.
 
 local MEND, REVIVE, CALL = 136, 982, 883
-local ALIVE_CAST = "/cast [mod:shift][@pet,dead] Revive Pet; [mod:ctrl][nopet] Call Pet; Mend Pet"
-local DEAD_CAST = "/cast [mod:ctrl] Call Pet; [mod:shift][@pet,dead][nopet] Revive Pet; Mend Pet"
+-- /use rather than /cast: it casts a spell just the same, and leaves more of the 255 characters.
+local ALIVE_CAST = "/use [mod:shift][@pet,dead] Revive Pet; [mod:ctrl][nopet] Call Pet; Mend Pet"
+local DEAD_CAST = "/use [mod:ctrl] Call Pet; [mod:shift][@pet,dead][nopet] Revive Pet; Mend Pet"
 local ALIVE = "#showtooltip\n" .. ALIVE_CAST
 local DEAD = "#showtooltip\n" .. DEAD_CAST
 
@@ -355,6 +356,13 @@ describe("CareButton", function()
             client:macro("KennelCare").body = ALIVE
             client:fire("UPDATE_MACROS")
             assert.are.equal(DEAD, client:macroBody("KennelCare"))
+        end)
+
+        it("takes an older /cast line for its own and writes it with /use", function()
+            local client = NewClient({ noPet = true }):login()
+            client:macro("KennelCare").body = "#showtooltip\n" .. ALIVE_CAST:gsub("^/use", "/cast")
+            client:fire("UPDATE_MACROS")
+            assert.are.equal(ALIVE, client:macroBody("KennelCare"))
         end)
 
         it("keeps the player's own lines and only rewrites its cast line", function()

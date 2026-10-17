@@ -6,6 +6,8 @@
   module, a page per module with options, and profiles.
 - `/kennel` opens the settings page; `/kennel help` lists the module
   commands.
+- Kennel's macros say what they do in the tooltip of the action button they
+  are on.
 - A toast for every module, in two looks: a small card near the top of the
   screen, or a large splash in the middle. Both have a timer bar; drag to
   move, right-click to close, hover to keep it up. Duration, size and look on

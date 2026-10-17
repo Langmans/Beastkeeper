@@ -35,6 +35,7 @@
 ---@field name string at most 16 characters
 ---@field icon number|string FileDataID or texture path
 ---@field body string the macro text
+---@field desc string? what it does, shown in the tooltip of an action button that holds it
 
 ---A toast sound: a sound file, or a sound kit.
 ---@class KennelSound

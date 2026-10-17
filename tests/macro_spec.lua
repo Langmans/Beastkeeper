@@ -23,7 +23,7 @@ describe("module macros", function()
             name = "KennelKite",
             icon = 134400,
             body = "#showtooltip Distracting Shot\n/kennel autocast cower\n/petautocaston Cower\n"
-                .. "/petautocastoff Growl\n/cast Distracting Shot",
+                .. "/petautocastoff Growl\n/use Distracting Shot",
         }, client:macro("KennelKite"))
         assert.are.same({
             name = "KennelGrowl",
@@ -43,10 +43,10 @@ describe("module macros", function()
 
     it("use the client's spell names, or English ones and a question mark without them", function()
         local german = NewClient({ locale = "deDE" }):login()
-        assert.truthy(german:macro("KennelKite").body:find("/cast Ablenkender Schuss", 1, true))
+        assert.truthy(german:macro("KennelKite").body:find("/use Ablenkender Schuss", 1, true))
         assert.truthy(german:macro("KennelGrowl").body:find("/petautocaston Knurren\n/petautocastoff Ducken", 1, true))
         local bare = NewClient({ noSpellAPI = true }):login()
-        assert.truthy(bare:macro("KennelKite").body:find("/cast Distracting Shot", 1, true))
+        assert.truthy(bare:macro("KennelKite").body:find("/use Distracting Shot", 1, true))
         assert.are.equal(134400, bare:macro("KennelGrowl").icon)
     end)
 
@@ -115,6 +115,32 @@ describe("module macros", function()
         client.Kennel:GetOptionsTable().args.AutocastCheck.args.macros.func()
         assert.are.equal(0, #client.charMacros)
         assert.is_true(client:printedContains("Macros cannot be made in combat"))
+    end)
+
+    it("say what they do in the tooltip of the action button they are on", function()
+        local client = NewClient({}, { CareButton = true }):login()
+        local lines = client:hoverAction(1, "KennelKite")
+        assert.are.equal(1, #lines)
+        assert.are.equal(
+            "Kennel: puts Cower on and Growl off, then casts Distracting Shot. Holds until you enter or "
+                .. "leave a dungeon group.",
+            lines[1].text
+        )
+        assert.is_true(lines[1].wrap)
+        assert.truthy(client:hoverAction(2, "KennelGrowl")[1].text:find("puts Growl on and Cower off", 1, true))
+        assert.truthy(client:hoverAction(3, "KennelAutocast")[1].text:find("sets Growl and Cower as fits", 1, true))
+        assert.truthy(client:hoverAction(4, "KennelCare")[1].text:find("Mend Pet while your pet lives", 1, true))
+    end)
+
+    it("leave other actions' tooltips alone, and those of a module switched off", function()
+        local client = NewClient():login()
+        client.charMacros[#client.charMacros + 1] = { name = "Mine", icon = 1, body = "/dance" }
+        assert.are.same({}, client:hoverAction(1, "Mine"))
+        client.actions[2] = { "spell", 136 }
+        assert.are.same({}, client:hoverAction(2))
+        assert.are.same({}, client:hoverAction(3))
+        client.Kennel:SetModuleOn("AutocastCheck", false)
+        assert.are.same({}, client:hoverAction(4, "KennelKite"))
     end)
 
     it("are not made on another class", function()

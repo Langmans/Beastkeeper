@@ -324,15 +324,26 @@ end
 function M:Macros()
     local shot = Spell(DISTRACTING_SHOT)
     local _, growlIcon = Spell(GROWL)
-    local kite = { "#showtooltip " .. shot, "/kennel autocast cower", M.AutocastLines("cower"), "/cast " .. shot }
+    local kite = { "#showtooltip " .. shot, "/kennel autocast cower", M.AutocastLines("cower"), "/use " .. shot }
     return {
-        { name = "KennelKite", icon = QUESTION_MARK, body = table.concat(kite, "\n") },
+        {
+            name = "KennelKite",
+            icon = QUESTION_MARK,
+            body = table.concat(kite, "\n"),
+            desc = L.AUTOCAST_MACRO_KITE,
+        },
         {
             name = "KennelGrowl",
             icon = growlIcon or QUESTION_MARK,
             body = "/kennel autocast growl\n" .. M.AutocastLines("growl"),
+            desc = L.AUTOCAST_MACRO_GROWL,
         },
-        { name = "KennelAutocast", icon = BEAST_TRAINING_ICON, body = "/click KennelAutocastButton" },
+        {
+            name = "KennelAutocast",
+            icon = BEAST_TRAINING_ICON,
+            body = "/click KennelAutocastButton",
+            desc = L.AUTOCAST_MACRO_AUTOCAST,
+        },
     }
 end
 

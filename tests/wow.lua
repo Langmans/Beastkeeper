@@ -945,6 +945,19 @@ function NewClient(opts)
     WorldFrame = newRegion()
     ClassTrainerFrame = newRegion()
     ClassTrainerFrame.shown = false
+
+    -- The game's tooltip over an action button (client:hoverAction): client.tooltipLines holds the
+    -- lines added to it. client.actions: slot -> { kind, id } as GetActionInfo gives it.
+    client.actions, client.tooltipLines = {}, {}
+    GameTooltip = newRegion()
+    function GameTooltip:SetAction() end
+    function GameTooltip:AddLine(text, r, g, b, wrap)
+        client.tooltipLines[#client.tooltipLines + 1] = { text = text, color = { r, g, b }, wrap = wrap }
+    end
+    function GetActionInfo(slot)
+        local action = client.actions[slot]
+        if action then return action[1], action[2] end
+    end
     UISpecialFrames = {}
     -- client.printed: every chat line, whether through print or the default chat frame.
     DEFAULT_CHAT_FRAME = newRegion()
@@ -1122,7 +1135,7 @@ function NewClient(opts)
         local text = button.attributes.type == "macro" and button.attributes.macrotext
         if not text then return nil end
         assert(button.attributes.useOnKeyDown == false, "the button acts on the key binding's release")
-        local options = assert(text:match("^/cast (.*)$"), "the macro is one /cast line")
+        local options = assert(text:match("^/use (.*)$"), "the macro is one /use line")
         self.mods = mods or {}
         local spell = self:evaluate(options)
         self.mods = {}
@@ -1270,6 +1283,15 @@ function NewClient(opts)
         self.trainer = nil
         ClassTrainerFrame:Hide()
         return self:fire(event or "TRAINER_CLOSED")
+    end
+
+    ---The mouse over action button `slot`, which holds the macro called `macro` (or the action
+    ---already in client.actions); gives the lines added to the game's tooltip.
+    function client:hoverAction(slot, macro)
+        if macro then self.actions[slot] = { "macro", GetMacroIndexByName(macro) } end
+        self.tooltipLines = {}
+        GameTooltip:SetAction(slot)
+        return self.tooltipLines
     end
 
     ---The bag slot holding itemID, added (empty) if there is none.
