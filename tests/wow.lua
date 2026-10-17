@@ -48,6 +48,7 @@ end
 ---@field noLoyaltyAPI boolean? no GetPetLoyalty
 ---@field oldChatAPI boolean? the global SendChatMessage instead of C_ChatInfo's
 ---@field noStableInfo boolean? no C_StableInfo
+---@field dev boolean? a development copy: Core\Dev.lua's screenshots on
 
 -- The spells the simulated client knows, per locale: id -> { name, icon, rank }; the rank is the
 -- client's subtext, "" for a spell without ranks.
@@ -1085,6 +1086,9 @@ function NewClient(opts)
         chunk("Kennel", ns)
     end
     client.Kennel = ns
+    -- The files load as a copy straight from the repository, where Core\Dev.lua is on; the specs
+    -- run as a release would unless they ask for development (opts.dev).
+    ns.dev = opts.dev == true
     if opts.modules then opts.modules(ns) end
 
     ---Delivers an event to every frame registered for it.

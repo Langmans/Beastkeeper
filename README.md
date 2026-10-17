@@ -369,6 +369,13 @@ installed Ace3 loads first and LibStub keeps the newest copy of each library.
 
 ### Development
 
+**Screenshots while testing in game** (`Core\Dev.lua`): in a copy straight
+from the repository, Kennel's page has a box "Screenshots for development".
+Ticked, every toast (once faded in) and every Kennel chat line (at most one
+every two seconds) gets a screenshot in the game's `Screenshots` folder, after
+a grey `[Kennel dev] ...` chat line saying what it was for. The code sits in a
+`--@debug@` block, which the packager comments out of every release.
+
 The tests run on Lua 5.1, the version WoW runs, with
 [busted](https://lunarmodules.github.io/busted/) and
 [luacov](https://lunarmodules.github.io/luacov/). The tool versions are
