@@ -215,6 +215,7 @@
 ---@field nopet boolean toast when combat starts without a pet
 ---@field passive boolean toast when combat starts with the pet on Passive
 ---@field low number the health percentage for the low toast; 0 is never
+---@field marker boolean the low health marker beside the pet frame
 ---@field sound "family"|"warning"|"off"
 
 ---@class KennelCareButton: KennelMacroModule, KennelSettingsModule
@@ -230,6 +231,7 @@
 ---@field SpellName fun(id: number): string
 ---@field Toast fun(self: KennelCareButton, kind: "dead"|"nopet"|"low"|"passive", reason: string?, percent: number?): KennelToastInfo
 ---@field CheckHealth fun(self: KennelCareButton)
+---@field UpdateMarker fun(self: KennelCareButton)
 ---@field OnPetState fun(self: KennelCareButton, state: string)
 ---@field MacroText fun(self: KennelCareButton, petDead: boolean): string
 ---@field PetDead fun(self: KennelCareButton): boolean

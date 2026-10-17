@@ -3,7 +3,8 @@ local _, ns = ...
 -- One key for the pet (Button.lua) and the toasts around it:
 --   - dead:  the pet died, or a failed cast showed it is dead; again at the pull while it still is;
 --   - nopet: combat starts without a pet that is known to be dead;
---   - low:   the pet's health drops to the set line; again only after it was back above it;
+--   - low:   the pet's health drops to the set line; again only after it was back above it. While
+--     the client hides the health this cannot be decided; the marker (Marker.lua) shows it then;
 --   - passive: combat starts with the pet on Passive, which will not attack; it goes when the
 --     stance changes. The stance is read from the pet bar, never a hidden value.
 -- Each goes away once solved. Failed casts teach the button what its state driver cannot see:
@@ -25,7 +26,7 @@ M.toastTypes = {
     passive = L.CAREBUTTON_TOASTTYPE_PASSIVE,
 }
 M.defaults = {
-    profile = { died = true, nopet = true, passive = true, low = 40, sound = "family" },
+    profile = { died = true, nopet = true, passive = true, low = 40, marker = true, sound = "family" },
     char = { petDead = false },
 }
 
@@ -111,8 +112,9 @@ local function OnPassive()
     return false
 end
 
----Toasts or takes away the low toast, from the pet's health.
+---Toasts or takes away the low toast, from the pet's health; the marker follows it too.
 function M:CheckHealth()
+    self:UpdateMarker()
     local line = self:Settings().low
     if line == 0 or not UnitExists("pet") or UnitIsDead("pet") then
         self.lowShown = false
@@ -251,4 +253,5 @@ end
 function M:OnDisable()
     Kennel:DropToasts("CareButton:")
     self:ApplyButton()
+    self:UpdateMarker()
 end

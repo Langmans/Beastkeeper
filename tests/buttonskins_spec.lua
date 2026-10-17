@@ -9,21 +9,33 @@ local function content(opts)
     return NewClient(opts):login():stock(12037, 2):setHappiness(2)
 end
 
----A skin that records what it was asked, with this priority.
+---A skin that records, per module, the button it styled and the colour last given its border.
 ---@param priority number
----@param calls table
+---@param calls table<string, {button: table, icon: table, color: number[]?}>
 ---@return KennelButtonSkin
 local function recording(priority, calls)
     return {
         name = "Recording",
         priority = priority,
         Style = function(button, parts)
-            calls[#calls + 1] = { button, parts.icon, parts.group }
+            local call = { button = button, icon = parts.icon }
+            calls[parts.group] = call
             return function(r, g, b)
-                calls.color = { r, g, b }
+                call.color = { r, g, b }
             end
         end,
     }
+end
+
+---Whether one of the errors reported says `text`.
+---@param client table
+---@param text string
+---@return boolean
+local function reported(client, text)
+    for _, err in ipairs(client.errors) do
+        if err:find(text, 1, true) then return true end
+    end
+    return false
 end
 
 describe("button skins", function()
@@ -53,8 +65,10 @@ describe("button skins", function()
         client.Kennel:RegisterButtonSkin("mine", recording(100, calls))
         client:login():stock(12037, 2):setHappiness(2)
         assert.are.equal("mine", client.Kennel:ButtonSkinFor())
-        assert.are.same({ _G.KennelFeedButton, calls[1][2], "Feeding" }, calls[1])
-        assert.are.same({ 1, 1, 0 }, calls.color, "content: yellow")
+        assert.are.equal(_G.KennelFeedButton, calls.Feeding.button)
+        assert.are.same({ 1, 1, 0 }, calls.Feeding.color, "content: yellow")
+        assert.are.equal(_G.KennelLowHealthMarker, calls.CareButton.button)
+        assert.are.same({ 1, 0, 0 }, calls.CareButton.color, "the low health marker: red")
         local args = client.Kennel:GetOptionsTable().args.modules.args.buttons.args
         args.skin.set(nil, "kennel")
         assert.are.equal("kennel", client.Kennel:ButtonSkinFor())
@@ -84,10 +98,10 @@ describe("button skins", function()
             Font = function() end,
         })
         client:login():stock(12037, 2):setHappiness(2)
-        assert.truthy(client.errors[1]:find("broken Style", 1, true))
+        assert.is_true(reported(client, "broken Style"))
         assert.is_true(_G.KennelFeedButton:IsShown())
         rawget(_G.KennelFeedButton, "foodlist")(_G.KennelFeedButton)
-        assert.truthy(client.errors[2]:find("broken holder", 1, true))
+        assert.is_true(reported(client, "broken holder"))
         assert.is_true(_G.KennelFeedList:IsShown())
     end)
 

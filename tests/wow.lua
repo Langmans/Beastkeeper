@@ -9,6 +9,13 @@ SECRET = setmetatable({}, {
         return "<secret>"
     end,
 })
+-- A hidden number that still carries its value (in .secret) for the frame it is handed to, as
+-- UnitHealthPercent's result while health is hidden: no arithmetic or comparison works on it.
+SECRET_NUMBER = {
+    __tostring = function()
+        return "<secret number>"
+    end,
+}
 
 ---A file's source as the client gets it: from a release, where the packager comments out every line
 ---between `--@debug@` and `--@end-debug@`, unless `dev` (a copy straight from the repository).
@@ -80,6 +87,7 @@ end
 ---@field noSpellAPI boolean? neither C_Spell nor GetSpellInfo
 ---@field noTextureAPI boolean? C_Spell without GetSpellTexture
 ---@field noPetBarAPI boolean? no GetPetActionInfo
+---@field noCurveAPI boolean? no C_CurveUtil and UnitHealthPercent
 ---@field noSpellBookAPI boolean? no C_SpellBook
 ---@field noPetSpellCount boolean? C_SpellBook without HasPetSpells
 ---@field noMacroConsts boolean? no Constants.MacroConsts (the addon's own limits apply)
@@ -283,6 +291,42 @@ function NewClient(opts)
         if unit ~= "pet" or not client.pet then return 0 end
         return client.pet.max
     end
+    -- Curves (C_CurveUtil) and UnitHealthPercent with one, as on Forever; neither with
+    -- opts.noCurveAPI. Only the Step type is simulated: a point's value holds until the next.
+    -- While health is hidden the result is a SECRET_NUMBER.
+    C_CurveUtil, UnitHealthPercent = nil, nil
+    if not opts.noCurveAPI then
+        C_CurveUtil = {
+            CreateCurve = function()
+                local curve = { points = {} }
+                function curve:SetType(kind)
+                    self.kind = kind
+                end
+                function curve:AddPoint(x, y)
+                    self.points[#self.points + 1] = { x, y }
+                    table.sort(self.points, function(a, b)
+                        return a[1] < b[1]
+                    end)
+                end
+                function curve:Evaluate(x)
+                    assert(self.kind == Enum.LuaCurveType.Step, "only Step curves are simulated")
+                    local y = self.points[1][2]
+                    for _, point in ipairs(self.points) do
+                        if x >= point[1] then y = point[2] end
+                    end
+                    return y
+                end
+                return curve
+            end,
+        }
+        function UnitHealthPercent(unit, _, curve)
+            if unit ~= "pet" or not client.pet then return 0 end
+            local fraction = client.pet.health / client.pet.max
+            local result = curve and curve:Evaluate(fraction) or fraction
+            if client.healthSecret then return setmetatable({ secret = result }, SECRET_NUMBER) end
+            return result
+        end
+    end
     -- client.mounted: on a mount, where Call Pet fails for that reason.
     function IsMounted()
         return client.mounted == true
@@ -298,6 +342,7 @@ function NewClient(opts)
     -- client.secret: a value the client hides from addons (in combat, on Forever).
     -- client.secret: one more value the client hides, besides SECRET (as the autocast state may be).
     function issecretvalue(value)
+        if type(value) == "table" and getmetatable(value) == SECRET_NUMBER then return true end
         return value == SECRET or (value ~= nil and value == client.secret)
     end
     function canaccessvalue(value)
@@ -378,7 +423,10 @@ function NewClient(opts)
         if entry.token then return entry.token, nil, nil end
         return spellName(entry[1]), entry[2] ~= nil, entry[2] == true
     end
-    Enum = { SpellBookSpellBank = { Player = 0, Pet = 1 } }
+    Enum = {
+        SpellBookSpellBank = { Player = 0, Pet = 1 },
+        LuaCurveType = { Linear = 0, Step = 1, Cosine = 2, Cubic = 3 },
+    }
     C_SpellBook = nil
     if not opts.noSpellBookAPI then
         C_SpellBook = {

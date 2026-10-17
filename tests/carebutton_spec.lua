@@ -259,6 +259,67 @@ describe("CareButton", function()
         end)
     end)
 
+    describe("the low health marker", function()
+        ---The marker's alpha as the client would draw it: a hidden one still carries its value.
+        local function alpha()
+            local value = _G.KennelLowHealthMarker.alpha
+            return type(value) == "table" and value.secret or value
+        end
+
+        it("lights up beside the pet frame below the low line", function()
+            local client = NewClient():login()
+            local marker = _G.KennelLowHealthMarker
+            assert.is_true(marker:IsShown())
+            assert.are.same({ "RIGHT", PetFrame, "LEFT", -4, 0 }, { marker:GetPoint() })
+            client:petHealth(60)
+            assert.are.equal(0, alpha())
+            client:petHealth(30)
+            assert.are.equal(1, alpha())
+        end)
+
+        it("works while the pet's health is hidden, without reading it", function()
+            local client = NewClient():login()
+            client.healthSecret = true
+            client:petHealth(20)
+            assert.is_true(issecretvalue(_G.KennelLowHealthMarker.alpha), "handed on as the client gave it")
+            assert.are.equal(1, alpha())
+            client:petHealth(80)
+            assert.are.equal(0, alpha())
+        end)
+
+        it("follows the low line, and is gone at 0%", function()
+            local client = NewClient():login()
+            local args = client.Kennel:GetOptionsTable().args.CareButton.args
+            args.low.set({}, 25)
+            client:petHealth(30)
+            assert.are.equal(0, alpha())
+            client:petHealth(20)
+            assert.are.equal(1, alpha())
+            args.low.set({}, 0)
+            assert.is_false(_G.KennelLowHealthMarker:IsShown())
+        end)
+
+        it("is gone without a living pet, or with its switch or the module off", function()
+            local client = NewClient():login()
+            local marker = _G.KennelLowHealthMarker
+            client:petDies()
+            assert.is_false(marker:IsShown())
+            client:petBack()
+            assert.is_true(marker:IsShown())
+            local args = client.Kennel:GetOptionsTable().args.CareButton.args
+            args.marker.set({}, false)
+            assert.is_false(marker:IsShown())
+            args.marker.set({}, true)
+            client.Kennel:SetModuleOn("CareButton", false)
+            assert.is_false(marker:IsShown())
+        end)
+
+        it("stays away on a client without curves", function()
+            NewClient({ noCurveAPI = true }):login():petHealth(10)
+            assert.is_false(_G.KennelLowHealthMarker:IsShown())
+        end)
+    end)
+
     describe("learning from failed casts", function()
         it("takes a failed Call Pet without a pet for a dead pet", function()
             local client = NewClient({ noPet = true }):login()

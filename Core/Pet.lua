@@ -115,6 +115,12 @@ function Kennel.PetNumber()
     return spawnUID and tonumber(spawnUID:sub(-8), 16) or nil
 end
 
+---The frame that shows the pet: EllesmereUI's when it draws its own unit frames, else the game's.
+---@return Frame
+function Kennel.PetFrame()
+    return _G.EllesmereUIUnitFrames_Pet or PetFrame
+end
+
 ---The NPC ID the active pet was tamed as: its GUID's sixth field
 ---(Pet-0-server-instance-zone-npcID-spawnUID). Nil without a pet or when the client hides the GUID.
 ---@return number?

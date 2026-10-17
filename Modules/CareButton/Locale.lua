@@ -52,6 +52,8 @@ L.CAREBUTTON_OPTION_NOPET = "Toast when combat starts without a pet"
 L.CAREBUTTON_OPTION_PASSIVE = "Toast when combat starts with my pet on Passive"
 -- Slider: the pet health in percent at which the low toast shows; 0 switches it off.
 L.CAREBUTTON_OPTION_LOW = "Toast at this pet health (0: never)"
+L.CAREBUTTON_OPTION_MARKER = "Mark low health beside the pet frame"
+L.CAREBUTTON_OPTION_MARKER_DESC = "Mend Pet's icon lights up left of your pet's portrait while its health is below the line above. WoW: Forever may hide your pet's health in combat, so the toast cannot tell then; the marker still can."
 L.CAREBUTTON_OPTION_SOUND = "Sound"
 L.CAREBUTTON_OPTION_SOUND_FAMILY = "Your pet's own: death sound, wound cry, attack call (raid warning when it has none)"
 L.CAREBUTTON_OPTION_SOUND_WARNING = "The raid warning"

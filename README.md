@@ -87,6 +87,10 @@ Shift still forces Revive Pet and Ctrl Call Pet.
   its **health drops** to a set line (40% by default, 0 for never). Each kind can have a look of
   its own on Kennel's page; each goes away once solved. They play your pet's
   own death sound, wound cry or attack call, the raid warning, or nothing.
+- **Low health marker**: Mend Pet's icon lights up left of your pet's
+  portrait while its health is below that line. WoW: Forever may hide your
+  pet's health from addons in combat, so the toast cannot tell then; the
+  marker lets the game itself decide, and still shows it.
 - The module's page has those switches, the sound, buttons to tell the button
   your pet is dead or alive when it guessed wrong, an example toast and the
   macro. Switched off, the key and the macro do nothing.

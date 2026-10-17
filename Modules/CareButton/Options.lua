@@ -8,7 +8,7 @@ local Kennel = ns
 local L = Kennel.L
 local M = Kennel:GetModule("CareButton") --[[@as KennelCareButton]]
 
----Checks the health again after the low line changed.
+---Checks the health again after the low line or the marker's switch changed.
 local function RecheckHealth()
     M:CheckHealth()
 end
@@ -19,7 +19,7 @@ end
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set
 local function Setting(key)
-    return Kennel:Setting(M, key, key == "low" and RecheckHealth or nil)
+    return Kennel:Setting(M, key, (key == "low" or key == "marker") and RecheckHealth or nil)
 end
 
 ---Counts the pet as dead or alive by hand; says so in combat, where it cannot.
@@ -34,6 +34,7 @@ function M:GetOptions()
     local nopetGet, nopetSet = Setting("nopet")
     local passiveGet, passiveSet = Setting("passive")
     local lowGet, lowSet = Setting("low")
+    local markerGet, markerSet = Setting("marker")
     local soundGet, soundSet = Setting("sound")
     return {
         args = {
@@ -71,6 +72,15 @@ function M:GetOptions()
                 step = 1,
                 get = lowGet,
                 set = lowSet,
+            },
+            marker = {
+                type = "toggle",
+                name = L.CAREBUTTON_OPTION_MARKER,
+                desc = L.CAREBUTTON_OPTION_MARKER_DESC,
+                order = 3.5,
+                width = "full",
+                get = markerGet,
+                set = markerSet,
             },
             sound = {
                 type = "select",

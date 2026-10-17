@@ -44,15 +44,14 @@ button.foodlist = function()
     M:ToggleFoodList()
 end
 
----Puts the button where the profile keeps it, or beside the pet frame: EllesmereUI's when it
----draws its own.
+---Puts the button where the profile keeps it, or beside the pet frame (Kennel.PetFrame).
 function M:PlaceButton()
     local at = self:Settings().position
     button:ClearAllPoints()
     if at then
         button:SetPoint(at[1], UIParent, at[2], at[3], at[4])
     else
-        button:SetPoint("LEFT", _G.EllesmereUIUnitFrames_Pet or PetFrame, "RIGHT", 4, 0)
+        button:SetPoint("LEFT", Kennel.PetFrame(), "RIGHT", 4, 0)
     end
 end
 
