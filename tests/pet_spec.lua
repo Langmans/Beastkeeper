@@ -57,6 +57,10 @@ describe("the pet helpers", function()
         client.familyID = 25 -- a hyena: a wound cry and a call, no death sound
         assert.are.same({ file = 552336 }, client.Kennel.PetSound("WOUND"))
         assert.is_nil(client.Kennel.PetSound("DEATH"))
+        client.familyID = 40 -- a fox, new in WoW: Forever
+        assert.are.same({ file = 3593144 }, client.Kennel.PetSound("AGGRO"))
+        assert.are.same({ file = 3593200 }, client.Kennel.PetSound("DEATH"))
+        assert.are.same({ file = 3593220 }, client.Kennel.PetSound("WOUND"))
         client.familyID = 6 -- a crocolisk: none of them
         assert.is_nil(client.Kennel.PetSound("AGGRO"))
         client.pet = nil

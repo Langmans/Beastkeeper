@@ -28,6 +28,7 @@ Kennel.sounds.AGGRO_PER_FAMILY = {
     [25] = 552339, -- Hyena: sound/creature/hyena/hyenaaggroa.ogg
     [26] = 557977, -- Bird of Prey: sound/creature/owl/owlaggro.ogg
     [27] = 559967, -- Wind Serpent: sound/creature/serpent/serpentaggro.ogg
+    [40] = 3593144, -- Fox: sound/creature/fox2/mon_fox2_aggro_00_157872.ogg
 }
 
 -- The sound a pet makes when it dies. Hyena (25) has only later files, and Crocolisk, Scorpid and
@@ -47,6 +48,7 @@ Kennel.sounds.DEATH_PER_FAMILY = {
     [21] = 559874, -- Turtle: sound/creature/seaturtle/seaturtledeatha.ogg
     [26] = 557976, -- Bird of Prey: sound/creature/owl/owldeath.ogg
     [27] = 559971, -- Wind Serpent: sound/creature/serpent/serpentdeath.ogg
+    [40] = 3593200, -- Fox: sound/creature/fox2/mon_fox2_death_00_157876.ogg
 }
 
 -- The cry of a pet critically wounded. Crocolisk, Scorpid and Bat have none of their own.
@@ -66,4 +68,5 @@ Kennel.sounds.WOUND_PER_FAMILY = {
     [25] = 552336, -- Hyena: sound/creature/hyena/hyenawoundcrit.ogg
     [26] = 557975, -- Bird of Prey: sound/creature/owl/owlwoundcrit.ogg
     [27] = 559974, -- Wind Serpent: sound/creature/serpent/serpentwoundcrit.ogg
+    [40] = 3593220, -- Fox: sound/creature/fox2/mon_fox2_woundcritical_00_157879.ogg
 }
