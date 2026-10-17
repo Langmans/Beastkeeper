@@ -1,8 +1,10 @@
 package-as: Kennel
 
-# Ace3 is fetched at package time and never committed. Its GitHub tags stop in 2010, so each
-# library is pinned to a commit on master. tests/libs.lua reads this block and fetches the same
-# commits into Libs/ for the tests, so tests and release always run the same Ace3.
+# Ace3 is fetched at package time and never committed, pinned to a commit on master of its GitHub
+# mirror: the latest release (Release-r1403, 2026-08-12) lacks AceDB's WoW: Forever fixes of
+# September (character keys, profile names). Back to a release tag once one has them
+# (docs/06-libraries.md). tests/libs.lua reads this block and fetches the same commits into Libs/
+# for the tests, so tests and release always run the same Ace3.
 externals:
   Libs/LibStub:
     url: https://github.com/WoWUIDev/Ace3.git
