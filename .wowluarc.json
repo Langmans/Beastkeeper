@@ -5,11 +5,7 @@
     "globals": {
         "write": [
             "KennelDB",
-            "BINDING_HEADER_KENNEL",
-            "BINDING_NAME_KENNEL_AUTOCAST_KITE",
-            "BINDING_NAME_KENNEL_AUTOCAST_TANK",
-            "Kennel_AutocastKite",
-            "Kennel_AutocastTank"
+            "BINDING_HEADER_KENNEL"
         ]
     },
     "diagnostics": {

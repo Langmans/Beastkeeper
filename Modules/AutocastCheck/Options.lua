@@ -1,7 +1,7 @@
 local _, ns = ...
 
--- AutocastCheck's page in the settings window (Kennel > Autocast Check): the mode, which abilities
--- are watched, the combat reminder, the sound, an example toast and the macros. Kennel's core
+-- AutocastCheck's page in the settings window (Kennel > Autocast Check): which abilities are
+-- watched, the combat reminder, the sound, an example toast and the macros. Kennel's core
 -- builds the page from GetOptions and greys it out while the module is off.
 
 ---@type Kennel
@@ -24,28 +24,12 @@ end
 
 ---@return table
 function M:GetOptions()
-    local modeGet, modeSet = Setting("mode")
     local growlGet, growlSet = Setting("growl")
     local cowerGet, cowerSet = Setting("cower")
     local remindGet, remindSet = Setting("remind")
     local soundGet, soundSet = Setting("sound")
     return {
         args = {
-            mode = {
-                type = "select",
-                name = L.AUTOCAST_OPTION_MODE,
-                order = 1,
-                width = "full",
-                values = {
-                    auto = L.AUTOCAST_OPTION_MODE_AUTO,
-                    kite = L.AUTOCAST_OPTION_MODE_KITE,
-                    tank = L.AUTOCAST_OPTION_MODE_TANK,
-                },
-                sorting = { "auto", "kite", "tank" },
-                get = modeGet,
-                set = modeSet,
-            },
-            modeNote = { type = "description", name = L.AUTOCAST_OPTION_MODE_NOTE, order = 2 },
             growl = {
                 type = "toggle",
                 name = L.AUTOCAST_OPTION_GROWL,

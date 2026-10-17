@@ -127,12 +127,8 @@
 ---@field style KennelSkinStyle
 ---@field frame KennelSplashFrame?
 
----The mode in force: solo or dungeon as AutocastCheck picks it, kite or tank as the player chose.
----@alias KennelAutocastMode "solo"|"dungeon"|"kite"|"tank"
-
 ---AutocastCheck's saved settings, its namespace's profile.
 ---@class KennelAutocastSettings
----@field mode "auto"|"kite"|"tank" auto lets the module pick solo or dungeon
 ---@field growl boolean watch Growl
 ---@field cower boolean watch Cower
 ---@field remind boolean toast what is still wrong when combat starts
@@ -142,9 +138,17 @@
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field active table<string, KennelToastInfo> the problems the last check found
 ---@field checkPending boolean? a check is on its way (ScheduleCheck)
+---@field choice ("growl"|"cower")? what the player chose (KennelKite, KennelGrowl)
+---@field choiceInDungeon boolean? whether the player was in a dungeon group then
+---@field SPELLS table<"growl"|"cower", number>
+---@field Spell fun(id: number): string, (number|string)?
 ---@field Settings fun(self: KennelAutocastCheck): KennelAutocastSettings used by Options.lua too
 ---@field Check fun(self: KennelAutocastCheck, remindAll: boolean?) used by Options.lua too
 ---@field TestToast fun(self: KennelAutocastCheck) used by Options.lua too
+---@field Wanted fun(self: KennelAutocastCheck): "growl"|"cower", "solo"|"dungeon"|"chosen"
+---@field Choose fun(self: KennelAutocastCheck, ability: "growl"|"cower")
+---@field AutocastLines fun(on: "growl"|"cower"): string
+---@field ApplyButton fun(self: KennelAutocastCheck)
 
 ---An ability that can autocast, as AutocastCheck reads it from the pet.
 ---@class KennelAutocastState

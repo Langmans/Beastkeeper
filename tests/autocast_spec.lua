@@ -1,14 +1,16 @@
--- AutocastCheck: the modes, what counts as wrong in each, when it toasts and when the toast goes
--- away, its commands, settings and key bindings. The simulated pet starts as solo wants it:
--- Growl on, Cower off.
+-- AutocastCheck: Growl or Cower, which one fits (a dungeon group wants Cower, elsewhere Growl,
+-- unless the player chose), when it toasts and when the toast goes away, the button that sets it
+-- right, its commands, macros, settings and key binding. The simulated pet starts as solo wants
+-- it: Growl on, Cower off.
 
-local HINT_OFF = "Right-click it on the pet bar or in your pet's spellbook to turn autocast off."
-local HINT_ON = "Right-click it on the pet bar or in your pet's spellbook to turn autocast on."
+local HINT = "Press your KennelAutocast macro."
 
 ---A saved file with these AutocastCheck settings in the Default profile.
 local function savedWith(settings)
     return { namespaces = { AutocastCheck = { profiles = { Default = settings } } } }
 end
+local SOLO_TEXT = "Growl on, Cower off."
+local DUNGEON_TEXT = "Growl off, Cower on."
 
 ---@param client table
 local function module(client)
@@ -23,25 +25,37 @@ local function inDungeon(opts)
 end
 
 describe("AutocastCheck", function()
-    describe("the mode", function()
-        it("is solo, or dungeon in a dungeon or raid group, or kite or tank when chosen", function()
+    describe("which one fits", function()
+        it("is Cower in a dungeon or raid group, Growl anywhere else", function()
             local client = NewClient():login()
             local M = module(client)
-            assert.are.equal("solo", M:Mode())
+            assert.are.equal("growl", (M:Wanted()))
             client.inGroup = true
-            assert.are.equal("solo", M:Mode(), "a group outside")
+            assert.are.equal("growl", (M:Wanted()), "a group outside")
             client.instance = "party"
-            assert.are.equal("dungeon", M:Mode())
+            assert.are.equal("cower", (M:Wanted()))
             client.inGroup = false
-            assert.are.equal("solo", M:Mode(), "alone in a dungeon")
-            for kind, mode in pairs({ raid = "dungeon", pvp = "solo", arena = "solo" }) do
+            assert.are.equal("growl", (M:Wanted()), "alone in a dungeon")
+            for kind, wanted in pairs({ raid = "cower", pvp = "growl", arena = "growl" }) do
                 client.inGroup, client.instance = true, kind
-                assert.are.equal(mode, M:Mode(), kind)
+                assert.are.equal(wanted, (M:Wanted()), kind)
             end
-            client:slash("autocast kite")
-            assert.are.equal("kite", M:Mode())
-            client:slash("autocast tank")
-            assert.are.equal("tank", M:Mode())
+        end)
+
+        it("is the player's choice until a dungeon group is entered or left", function()
+            local client = NewClient():login()
+            local M = module(client)
+            client:slash("autocast cower")
+            assert.are.same({ "cower", "chosen" }, { M:Wanted() }, "kiting solo")
+            client:group(true)
+            assert.are.same({ "cower", "chosen" }, { M:Wanted() }, "a group outside is no dungeon group")
+            client.instance = "party"
+            client:fire("PLAYER_ENTERING_WORLD"):advance(0.2)
+            assert.are.same({ "cower", "dungeon" }, { M:Wanted() }, "entering one ends the choice")
+            client:slash("autocast growl")
+            assert.are.same({ "growl", "chosen" }, { M:Wanted() }, "the pet tanks for the group")
+            client:group(false)
+            assert.are.same({ "growl", "solo" }, { M:Wanted() }, "leaving the group ends it too")
         end)
     end)
 
@@ -54,13 +68,19 @@ describe("AutocastCheck", function()
             local client = NewClient():login():autocast(GROWL, false)
             local toast = client:toast()
             assert.are.equal("Growl is not on autocast", client:toastTitle())
-            assert.are.equal("Solo your pet holds the mobs: Growl on, Cower off.", toast.Text.text)
-            assert.are.equal(HINT_ON, toast.Hint.text)
+            assert.are.equal("Solo your pet holds the mobs: " .. SOLO_TEXT, toast.Text.text)
+            assert.are.equal(HINT, toast.Hint.text)
             client:autocast(GROWL, true):animate(1)
             assert.is_false(toast.shown)
             client:autocast(COWER, true)
             assert.are.equal("Cower is on autocast", client:toastTitle())
-            assert.are.equal(HINT_OFF, toast.Hint.text)
+        end)
+
+        it("names the button's key in the hint when it has one", function()
+            local client = NewClient()
+            client.bindings["CLICK KennelAutocastButton:LeftButton"] = "G"
+            client:login():autocast(GROWL, false)
+            assert.are.equal("Press <G>.", client:toast().Hint.text)
         end)
     end)
 
@@ -70,7 +90,7 @@ describe("AutocastCheck", function()
             local toast = client:toast()
             assert.are.equal("Growl is on autocast", client:toastTitle())
             assert.are.equal(132270, toast.Icon.texture)
-            assert.are.equal("In a dungeon group the tank holds the mobs: Growl off, Cower on.", toast.Text.text)
+            assert.are.equal("In a dungeon group the tank holds the mobs: " .. DUNGEON_TEXT, toast.Text.text)
             client:animate(8)
             assert.are.equal("Cower is not on autocast", client:toastTitle())
             assert.are.equal(132118, toast.Icon.texture, "Cower is only in the book; the icon comes from the spell")
@@ -95,23 +115,22 @@ describe("AutocastCheck", function()
         end)
     end)
 
-    it("kite mode wants Growl off and Cower on, anywhere", function()
-        local client = NewClient({ saved = savedWith({ mode = "kite" }) }):login()
+    it("chosen Cower (kiting) wants Growl off and Cower on, solo too", function()
+        local client = NewClient():login():slash("autocast cower")
         assert.are.equal("Growl is on autocast", client:toastTitle())
-        assert.are.equal(
-            "Kite mode: the mob is on you, not on your pet: Growl off, Cower on.",
-            client:toast().Text.text
-        )
+        local text = client:toast().Text.text
+        assert.are.equal("You chose Cower: the mob is on you, not on your pet. " .. DUNGEON_TEXT, text)
         client:autocast(GROWL, false):autocast(COWER, true):animate(1)
         assert.is_false(client:toast().shown)
     end)
 
-    it("tank mode wants Growl on and Cower off, in a dungeon group too", function()
-        local client = inDungeon({ saved = savedWith({ mode = "tank" }) }):group(true)
-        assert.is_nil(client:toastTitle())
+    it("chosen Growl (the pet tanks) wants Growl on and Cower off, in a dungeon group too", function()
+        local client = inDungeon():group(true)
+        client:slash("autocast growl"):animate(1)
+        assert.is_nil(client:toastTitle(), "the dungeon's toasts are gone")
         client:autocast(COWER, true)
         assert.are.equal("Cower is on autocast", client:toastTitle())
-        assert.are.equal("Tank mode: your pet tanks for the group: Growl on, Cower off.", client:toast().Text.text)
+        assert.are.equal("You chose Growl: your pet holds the mobs. " .. SOLO_TEXT, client:toast().Text.text)
     end)
 
     describe("reading the pet", function()
@@ -279,64 +298,70 @@ describe("AutocastCheck", function()
     end)
 
     describe("the commands", function()
-        it("switch kite mode on and off, and say so only when it changes", function()
+        it("choose Growl or Cower, and say so only when it changes", function()
             local client = NewClient():login()
-            local M = module(client)
-            client:slash("autocast kite on")
-            assert.are.equal("kite", M.db.profile.mode)
-            assert.is_true(client:printedContains("Kite mode on: Growl off, Cower on."))
+            client:slash("autocast cower")
+            assert.is_true(client:printedContains("Cower from now on, until you enter or leave a dungeon group."))
+            assert.are.equal("Growl is on autocast", client:toastTitle(), "checked again at once")
             client.printed = {}
-            client:slash("autocast kite on")
+            client:slash("autocast COWER")
             assert.are.same({}, client.printed, "pressed again: nothing to say")
-            client:slash("autocast kite off")
-            assert.are.equal("auto", M.db.profile.mode)
-            assert.is_true(client:printedContains("Kite mode off"))
-        end)
-
-        it("toggle without a word, and tank replaces kite", function()
-            local client = NewClient():login()
-            local M = module(client)
-            client:slash("autocast tank")
-            assert.are.equal("tank", M.db.profile.mode)
-            client:slash("autocast kite")
-            assert.are.equal("kite", M.db.profile.mode)
-            client:slash("autocast kite")
-            assert.are.equal("auto", M.db.profile.mode)
-            client:slash("autocast tank off")
-            assert.are.equal("auto", M.db.profile.mode, "already off")
-        end)
-
-        it("check again at once: kite mode makes Growl on wrong", function()
-            local client = NewClient():login()
-            client:slash("autocast kite on")
-            assert.are.equal("Growl is on autocast", client:toastTitle())
+            client:slash("autocast growl")
+            assert.is_true(client:printedContains("Growl from now on, until you enter or leave a dungeon group."))
         end)
 
         it("are listed in /kennel help", function()
             local client = NewClient():login():slash("help")
-            assert.is_true(client:printedContains("/kennel autocast kite - kite mode on, off"))
-            assert.is_true(client:printedContains("/kennel autocast tank - tank mode on, off"))
+            assert.is_true(client:printedContains("/kennel autocast growl - "))
+            assert.is_true(client:printedContains("/kennel autocast cower - "))
+        end)
+
+        it("say the module is off instead of choosing", function()
+            local client = NewClient():login()
+            client.Kennel:SetModuleOn("AutocastCheck", false)
+            client:slash("autocast cower")
+            assert.is_true(client:printedContains("Autocast Check is off."))
         end)
     end)
 
-    describe("the key bindings", function()
-        it("are named, and switch kite and tank mode through /kennel", function()
+    describe("the button", function()
+        local GROWL_LINES = "/petautocaston Growl\n/petautocastoff Cower"
+        local COWER_LINES = "/petautocaston Cower\n/petautocastoff Growl"
+
+        it("sets autocast to what fits now, with a key binding of its own", function()
             local client = NewClient():login()
-            assert.are.equal("Kennel", BINDING_HEADER_KENNEL)
-            assert.are.equal("Autocast Check: toggle kite mode", BINDING_NAME_KENNEL_AUTOCAST_KITE)
-            assert.are.equal("Autocast Check: toggle tank mode", BINDING_NAME_KENNEL_AUTOCAST_TANK)
-            Kennel_AutocastKite()
-            assert.are.equal("kite", module(client).db.profile.mode)
-            Kennel_AutocastTank()
-            assert.are.equal("tank", module(client).db.profile.mode)
+            local button = _G.KennelAutocastButton
+            assert.are.equal("macro", button.attributes.type)
+            assert.are.equal(GROWL_LINES, button.attributes.macrotext)
+            local binding = _G["BINDING_NAME_CLICK KennelAutocastButton:LeftButton"]
+            assert.are.equal("Autocast Check: set Growl and Cower as fits", binding)
+            client.instance = "party"
+            client:group(true)
+            assert.are.equal(COWER_LINES, button.attributes.macrotext)
+            client:slash("autocast growl")
+            assert.are.equal(GROWL_LINES, button.attributes.macrotext)
         end)
 
-        it("say the module is off instead of switching", function()
+        it("is in the client's language", function()
+            NewClient({ locale = "deDE" }):login()
+            local lines = _G.KennelAutocastButton.attributes.macrotext
+            assert.are.equal("/petautocaston Knurren\n/petautocastoff Ducken", lines)
+        end)
+
+        it("changes after combat, when it cannot before", function()
+            local client = NewClient():login():enterCombat()
+            client:slash("autocast cower")
+            assert.are.equal(GROWL_LINES, _G.KennelAutocastButton.attributes.macrotext)
+            client:leaveCombat()
+            assert.are.equal(COWER_LINES, _G.KennelAutocastButton.attributes.macrotext)
+        end)
+
+        it("does nothing while the module is off", function()
             local client = NewClient():login()
             client.Kennel:SetModuleOn("AutocastCheck", false)
-            Kennel_AutocastKite()
-            assert.are.equal("auto", module(client).db.profile.mode)
-            assert.is_true(client:printedContains("Autocast Check is off."))
+            assert.is_nil(_G.KennelAutocastButton.attributes.macrotext)
+            client.Kennel:SetModuleOn("AutocastCheck", true)
+            assert.are.equal(GROWL_LINES, _G.KennelAutocastButton.attributes.macrotext)
         end)
     end)
 
@@ -357,30 +382,29 @@ describe("AutocastCheck", function()
                 args[key].set({}, value)
                 assert.are.equal(value, args[key].get(), key)
             end
-            args.growl.set({}, true)
-            args.mode.set({}, "kite")
-            assert.are.equal("kite", args.mode.get())
-            assert.are.equal("Growl is on autocast", client:toastTitle())
+            client:autocast(COWER, true)
+            assert.is_nil(client:toastTitle(), "Cower is not watched")
+            args.cower.set({}, true)
+            assert.are.equal("Cower is on autocast", client:toastTitle(), "checked again at once")
         end)
 
         it("only stores a setting while the module is off", function()
             client.Kennel:SetModuleOn("AutocastCheck", false)
-            args.mode.set({}, "kite")
-            assert.are.equal("kite", module(client).db.profile.mode)
+            client:setAutocast(GROWL, false)
+            args.growl.set({}, false)
+            args.growl.set({}, true)
+            assert.is_true(module(client).db.profile.growl)
             assert.is_nil(client:toastTitle())
         end)
 
-        it("shows an example toast for the chosen mode, beside a real one", function()
-            for mode, title in pairs({
-                auto = "Growl is on autocast",
-                kite = "Cower is not on autocast",
-                tank = "Growl is not on autocast",
-            }) do
-                client.Kennel:HideToast()
-                module(client).db.profile.mode = mode
-                args.test.func()
-                assert.are.equal(title, client:toastTitle(), mode)
-            end
+        it("shows an example toast for what fits now, beside a real one", function()
+            args.test.func()
+            assert.are.equal("Growl is not on autocast", client:toastTitle())
+            client.Kennel:HideToast()
+            client:slash("autocast cower")
+            client.Kennel:HideToast()
+            args.test.func()
+            assert.are.equal("Cower is not on autocast", client:toastTitle())
         end)
     end)
 end)

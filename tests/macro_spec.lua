@@ -1,8 +1,8 @@
 -- The macros a module makes: once per character, per character or account-wide, never in combat.
--- AutocastCheck's three serve as the example; CareButton, with a macro of its own, is switched off
+-- AutocastCheck's three (KennelKite, KennelGrowl, KennelAutocast) serve as the example; CareButton, with a macro of its own, is switched off
 -- here so the counts and the order are AutocastCheck's alone.
 
-local NAMES = { "KennelKite", "KennelKiteOff", "KennelTank" }
+local NAMES = { "KennelKite", "KennelGrowl", "KennelAutocast" }
 
 ---A client with only AutocastCheck making macros; `modules` adds module switches.
 local function NewClient(opts, modules)
@@ -22,18 +22,21 @@ describe("module macros", function()
         assert.are.same({
             name = "KennelKite",
             icon = 134400,
-            body = "#showtooltip Distracting Shot\n/kennel autocast kite on\n/cast Distracting Shot",
+            body = "#showtooltip Distracting Shot\n/kennel autocast cower\n/petautocaston Cower\n"
+                .. "/petautocastoff Growl\n/cast Distracting Shot",
         }, client:macro("KennelKite"))
-        assert.are.same(
-            { name = "KennelKiteOff", icon = 132118, body = "/kennel autocast kite off" },
-            client:macro("KennelKiteOff")
-        )
-        assert.are.same(
-            { name = "KennelTank", icon = 132270, body = "/kennel autocast tank" },
-            client:macro("KennelTank")
-        )
+        assert.are.same({
+            name = "KennelGrowl",
+            icon = 132270,
+            body = "/kennel autocast growl\n/petautocaston Growl\n/petautocastoff Cower",
+        }, client:macro("KennelGrowl"))
+        assert.are.same({
+            name = "KennelAutocast",
+            icon = "Interface\\Icons\\Ability_Hunter_BeastTraining",
+            body = "/click KennelAutocastButton",
+        }, client:macro("KennelAutocast"))
         assert.is_true(
-            client:printedContains("Made the macros KennelKite, KennelKiteOff, KennelTank for this character")
+            client:printedContains("Made the macros KennelKite, KennelGrowl, KennelAutocast for this character")
         )
         assert.is_true(client.Kennel.db.char.macrosMade.AutocastCheck)
     end)
@@ -41,9 +44,10 @@ describe("module macros", function()
     it("use the client's spell names, or English ones and a question mark without them", function()
         local german = NewClient({ locale = "deDE" }):login()
         assert.truthy(german:macro("KennelKite").body:find("/cast Ablenkender Schuss", 1, true))
+        assert.truthy(german:macro("KennelGrowl").body:find("/petautocaston Knurren\n/petautocastoff Ducken", 1, true))
         local bare = NewClient({ noSpellAPI = true }):login()
         assert.truthy(bare:macro("KennelKite").body:find("/cast Distracting Shot", 1, true))
-        assert.are.equal(134400, bare:macro("KennelTank").icon)
+        assert.are.equal(134400, bare:macro("KennelGrowl").icon)
     end)
 
     it("are made once: deleted afterwards, they stay gone", function()
@@ -55,9 +59,9 @@ describe("module macros", function()
 
     it("leave a macro of the same name alone", function()
         local client = NewClient()
-        client.charMacros[1] = { name = "KennelTank", icon = 1, body = "mine" }
+        client.charMacros[1] = { name = "KennelGrowl", icon = 1, body = "mine" }
         client:login()
-        assert.are.equal("mine", client:macro("KennelTank").body)
+        assert.are.equal("mine", client:macro("KennelGrowl").body)
         assert.are.equal(3, #client.charMacros)
     end)
 
@@ -73,7 +77,7 @@ describe("module macros", function()
         assert.is_table(client.macros[120])
         assert.are.equal("KennelKite", client.macros[120].name)
         assert.is_true(client:printedContains("Made KennelKite among the account-wide macros"))
-        assert.is_true(client:printedContains("No room for KennelKiteOff, KennelTank"))
+        assert.is_true(client:printedContains("No room for KennelGrowl, KennelAutocast"))
     end)
 
     it("wait for the end of combat", function()

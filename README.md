@@ -26,38 +26,35 @@ modules move in one at a time.
 
 ### Autocast Check
 
-A toast when your pet's Growl or Cower autocast does not fit what you are
-doing:
+Growl or Cower on autocast, as fits what you are doing:
 
-| Mode | Growl | Cower | When |
-| --- | --- | --- | --- |
-| **Solo** | on | off | by itself, anywhere but a dungeon group |
-| **Dungeon** | off | on | by itself, in a dungeon or raid instance while in a group |
-| **Kite** | off | on | chosen by you: the mob is on you, not on your pet |
-| **Tank** | on | off | chosen by you: your pet tanks for a group without a tank |
+| When | Growl | Cower |
+| --- | --- | --- |
+| In a dungeon or raid group: the tank holds the mobs | off | on |
+| Anywhere else: your pet holds the mobs | on | off |
+| You pressed **KennelKite** (kiting: the mob is on you) | off | on |
+| You pressed **KennelGrowl** (stop kiting, or your pet tanks the group) | on | off |
 
-A toast shows when something stops fitting (you zone into a dungeon with Growl
-on, summon a pet with Cower on, switch to kite mode) and goes away by itself
-once you fix it. When combat starts, whatever is still wrong toasts again.
-Growl and Cower are seen whether they are on the pet bar or only in the pet's
-spellbook. It plays your pet's call (the raid warning for a pet without one),
-or nothing.
+Your choice holds until you enter or leave a dungeon group. A toast shows when
+something stops fitting (you zone into a dungeon with Growl on, summon a pet
+with Cower on) and goes away by itself once it fits again. When combat starts,
+whatever is still wrong toasts again. Growl and Cower are seen whether they are
+on the pet bar or only in the pet's spellbook. It plays your pet's call (the
+raid warning for a pet without one), or nothing.
 
-Kite and tank mode are switched by
+The game lets only a macro or a button you press change autocast, so:
 
-- `/kennel autocast kite [on|off]` and `/kennel autocast tank [on|off]`
-  (without a word they toggle; pressed again with `on` they say nothing, so
-  they fit a macro you press over and over);
-- a key binding each, under Esc > Options > Keybindings > AddOns > Kennel;
-- three macros Kennel makes for each hunter the first time, in the macro
-  window (`/macro`): **KennelKite** casts Distracting Shot and switches kite
-  mode on, **KennelKiteOff** switches it off, **KennelTank** switches tank
-  mode. Deleted ones stay gone; **Make the macros** on the module's page makes
-  them again.
+- **One key sets it right**: Esc > Options > Keybindings > AddOns > Kennel >
+  "Autocast Check: set Growl and Cower as fits", or the **KennelAutocast**
+  macro. The toast says which to press.
+- **KennelKite** puts Cower on and Growl off, and casts Distracting Shot.
+- **KennelGrowl** puts Growl on and Cower off.
 
-The module's page has the mode, which of Growl and Cower are watched, the
-combat reminder, the sound, and a button for an example toast. On other
-classes it does nothing.
+Kennel makes the three macros for each hunter the first time (`/macro`).
+Deleted ones stay gone; **Make the macros** on the module's page makes them
+again. The page also has which of Growl and Cower are watched, the combat
+reminder, the sound, and a button for an example toast. On other classes it
+does nothing.
 
 ### Care Button
 
@@ -157,7 +154,7 @@ A random `/emote` every time you feed your pet, the way Feed-O-Matic did in
 ```
 Kennel.toc        loads embeds.xml, then the three folders' xml files
 embeds.xml        Ace3, loaded from Libs\ (not in the repository, see below)
-Bindings.xml      the key bindings; each runs a /kennel command
+Bindings.xml      the key bindings; each clicks a module's secure button
 Locales\          AceLocale strings: Locales.xml, enUS.lua as the source,
                   the other languages filled in by the packager (README.md there)
 Core\Core.xml     the core, in this order:
@@ -349,10 +346,9 @@ cannot stop Kennel's toasts. An error in `Hide` only lets the toast go.
   client blocks in combat: secure frames, macro edits. It lives on the core
   because a module's own events are dropped when it is switched off.
 - **Key bindings**: `Bindings.xml` at the top (the client reads only that
-  one); a binding calls a global function that runs a `/kennel` command, so a
-  module that is off says so instead of acting. A secure button's binding
-  (`CLICK KennelCareButton:LeftButton`) clicks the button itself; a module
-  that is off takes the button's macro away.
+  one). A binding clicks a module's secure button itself
+  (`CLICK KennelCareButton:LeftButton`); a module that is off takes the
+  button's macro away, so the key does nothing.
 
 ### Libraries
 

@@ -30,6 +30,8 @@
 - Feed Emotes (from Feed Pet Emotes, which it replaces): a random /emote
   every time you feed your pet, with your own lines, conditions and the pet's
   sex per pet. Off until switched on.
-- Autocast Check (from Pet Autocast Check): a toast when Growl or Cower
-  autocast does not fit solo, dungeon, kite or tank mode; kite and tank mode by
-  command, key binding or the KennelKite, KennelKiteOff and KennelTank macros.
+- Autocast Check (from Pet Autocast Check): Growl or Cower on autocast as
+  fits, Cower in a dungeon group and Growl elsewhere; the KennelKite macro
+  (Cower, Distracting Shot) and KennelGrowl macro choose until a dungeon group
+  is entered or left. A toast when it does not fit, and one key or the
+  KennelAutocast macro that sets it right.

@@ -1,12 +1,6 @@
 <Bindings>
-    <!-- Esc > Options > Keybindings > AddOns > Kennel. The names shown there are set by the modules
-         (Modules\AutocastCheck\AutocastCheck.lua); each binding runs a /kennel command. -->
-    <Binding name="KENNEL_AUTOCAST_KITE" header="KENNEL" category="ADDONS">
-        Kennel_AutocastKite()
-    </Binding>
-    <Binding name="KENNEL_AUTOCAST_TANK" category="ADDONS">
-        Kennel_AutocastTank()
-    </Binding>
-    <!-- CareButton's secure button, clicked by the binding itself (Modules\CareButton\Button.lua). -->
+    <!-- Esc > Options > Keybindings > AddOns > Kennel. Each module's secure button is clicked by its
+         binding itself; the names shown are set by the modules (their Button.lua). -->
+    <Binding name="CLICK KennelAutocastButton:LeftButton" header="KENNEL" category="ADDONS"/>
     <Binding name="CLICK KennelCareButton:LeftButton" category="ADDONS"/>
 </Bindings>
