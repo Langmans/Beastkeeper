@@ -1,6 +1,7 @@
 # Kennel
 
 [![CI](https://github.com/Langmans/Kennel/actions/workflows/ci.yml/badge.svg)](https://github.com/Langmans/Kennel/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Langmans/Kennel?include_prereleases&sort=semver)](https://github.com/Langmans/Kennel/releases)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
 ![WoW: Forever](https://img.shields.io/badge/WoW-Forever%20%2816001%29-c79c6e)
 ![Ace3](https://img.shields.io/badge/Ace3-yes-blue)
