@@ -3,6 +3,7 @@
     <Script file="Locale.lua"/>
     <Script file="CareButton.lua"/>
     <Script file="Button.lua"/>
+    <Script file="OnScreen.lua"/>
     <Script file="Marker.lua"/>
     <Script file="Macro.lua"/>
     <Script file="Options.lua"/>

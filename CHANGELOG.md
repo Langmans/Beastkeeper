@@ -16,7 +16,7 @@
   Mend Pet, Revive Pet and Call Pet that remember a dead pet, also once the
   body is gone; toasts when the pet dies, is missing at the pull or runs low;
   a low health marker beside the pet frame that works while the game hides
-  the pet's health.
+  the pet's health; the button on screen too, showing what a click casts.
 - With EllesmereUI loaded: the card and the splash in EllesmereUI's look;
   with ElvUI loaded, in ElvUI's.
 - A look that sends toasts through LibSink: Blizzard's floating text, chat,

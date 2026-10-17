@@ -259,6 +259,88 @@ describe("CareButton", function()
         end)
     end)
 
+    describe("on screen", function()
+        local MEND_ICON, REVIVE_ICON, CALL_ICON = 132179, 132163, 132161
+
+        ---The mouse over the button: the tooltip's title and its lines' texts.
+        local function hover(client)
+            local button = _G.KennelCareButton
+            client.tooltipLines, GameTooltip.text = {}, nil
+            button:GetScript("OnEnter")(button)
+            local texts = {}
+            for _, line in ipairs(client.tooltipLines) do
+                texts[#texts + 1] = line.text
+            end
+            return GameTooltip.text, texts
+        end
+
+        it("shows the spell it casts now, with a border to match, below the pet frame", function()
+            local client = NewClient()
+            local colors = {}
+            client.Kennel:RegisterButtonSkin("record", {
+                name = "Record",
+                priority = 100,
+                Style = function(button)
+                    return function(r, g, b)
+                        colors[button] = { r, g, b }
+                    end
+                end,
+            })
+            client:login()
+            local button = _G.KennelCareButton
+            assert.is_true(button:IsShown())
+            assert.are.same({ "TOPLEFT", PetFrame, "BOTTOMLEFT", 0, -4 }, { button:GetPoint() })
+            assert.are.equal(MEND_ICON, button.icon.texture)
+            assert.are.same({ 0, 1, 0 }, colors[button])
+            client:petDies()
+            assert.are.equal(REVIVE_ICON, button.icon.texture)
+            assert.are.same({ 1, 0, 0 }, colors[button])
+            client:petGone()
+            assert.are.equal(REVIVE_ICON, button.icon.texture, "the body gone: still dead")
+            client:petBack()
+            assert.are.equal(MEND_ICON, button.icon.texture)
+            NewClient({ noPet = true }):login()
+            assert.are.equal(CALL_ICON, _G.KennelCareButton.icon.texture)
+        end)
+
+        it("names the spell and the modifiers in its tooltip", function()
+            local title, lines = hover(NewClient():login())
+            assert.are.equal("Care Button", title)
+            assert.are.same({ "Mend Pet", "Shift: Revive Pet. Ctrl: Call Pet. Shift-drag to move." }, lines)
+            _G.KennelCareButton:GetScript("OnLeave")(_G.KennelCareButton)
+            assert.is_false(GameTooltip:IsShown())
+        end)
+
+        it("moves with Shift held, keeps its place, and goes back from the page", function()
+            local client = NewClient():login()
+            local button = _G.KennelCareButton
+            button:GetScript("OnDragStart")(button)
+            assert.is_falsy(button.moving)
+            client.mods.shift = true
+            button:GetScript("OnDragStart")(button)
+            button:GetScript("OnDragStop")(button)
+            client:logout()
+            client = NewClient({ saved = Saved() }):login()
+            assert.are.same({ "TOPLEFT", UIParent, "BOTTOMLEFT", 300, 700 }, { _G.KennelCareButton:GetPoint() })
+            client.Kennel:GetOptionsTable().args.CareButton.args.resetPosition.func()
+            assert.are.same({ "TOPLEFT", PetFrame, "BOTTOMLEFT", 0, -4 }, { _G.KennelCareButton:GetPoint() })
+        end)
+
+        it("hides with its switch or the module off, after combat", function()
+            local client = NewClient():login()
+            local args = client.Kennel:GetOptionsTable().args.CareButton.args
+            client:enterCombat()
+            args.visible.set({}, false)
+            assert.is_true(_G.KennelCareButton:IsShown(), "a secure button stays in combat")
+            client:leaveCombat()
+            assert.is_false(_G.KennelCareButton:IsShown())
+            args.visible.set({}, true)
+            assert.is_true(_G.KennelCareButton:IsShown())
+            client.Kennel:SetModuleOn("CareButton", false)
+            assert.is_false(_G.KennelCareButton:IsShown())
+        end)
+    end)
+
     describe("the low health marker", function()
         ---The marker's alpha as the client would draw it: a hidden one still carries its value.
         local function alpha()

@@ -260,6 +260,8 @@
 ---@field passive boolean toast when combat starts with the pet on Passive
 ---@field low number the health percentage for the low toast; 0 is never
 ---@field marker boolean the low health marker beside the pet frame
+---@field visible boolean the button shown on screen
+---@field position [string, string, number, number]? its point, UIParent's point, x, y; nil below the pet frame
 ---@field sound "family"|"warning"|"off"
 
 ---@class KennelCareButton: KennelMacroModule, KennelSettingsModule
@@ -276,6 +278,11 @@
 ---@field Toast fun(self: KennelCareButton, kind: "dead"|"nopet"|"low"|"passive", reason: string?, percent: number?): KennelToastInfo
 ---@field CheckHealth fun(self: KennelCareButton)
 ---@field UpdateMarker fun(self: KennelCareButton)
+---@field button Button the secure button (KennelCareButton)
+---@field NextCast fun(self: KennelCareButton): number
+---@field UpdateLook fun(self: KennelCareButton)
+---@field PlaceButton fun(self: KennelCareButton)
+---@field ShowOnScreen fun(self: KennelCareButton)
 ---@field OnPetState fun(self: KennelCareButton, state: string)
 ---@field MacroText fun(self: KennelCareButton, petDead: boolean): string
 ---@field PetDead fun(self: KennelCareButton): boolean

@@ -26,7 +26,7 @@ M.toastTypes = {
     passive = L.CAREBUTTON_TOASTTYPE_PASSIVE,
 }
 M.defaults = {
-    profile = { died = true, nopet = true, passive = true, low = 40, marker = true, sound = "family" },
+    profile = { died = true, nopet = true, passive = true, low = 40, marker = true, visible = true, sound = "family" },
     char = { petDead = false },
 }
 
@@ -135,6 +135,7 @@ end
 ---The button's state driver reported "dead", "alive" or "none".
 ---@param state string
 function M:OnPetState(state)
+    self:UpdateLook()
     if state == "dead" then
         self:CheckHealth()
         if self:Settings().died then Kennel:ShowToast(self:Toast("dead")) end

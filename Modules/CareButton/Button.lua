@@ -36,6 +36,8 @@ local RUN_APPLY = [[ self:RunAttribute("apply") ]]
 
 local button = CreateFrame("Button", "KennelCareButton", UIParent, "SecureActionButtonTemplate")
 local header = CreateFrame("Frame", "KennelCareButtonHeader", UIParent, "SecureHandlerStateTemplate")
+-- For its look on screen (OnScreen.lua).
+M.button = button
 
 ---The macro the button runs. Without a remembered death: Revive Pet on a dead pet still there, Call
 ---Pet without a pet, Mend Pet otherwise. With one: Revive Pet whenever there is no living pet.
@@ -60,6 +62,7 @@ local function OnHeaderAttribute(_, name, value)
     if name == "petdead" then
         M.db.char.petDead = value == true
         M:UpdateMacro()
+        M:UpdateLook()
     elseif name == "state-pet" and type(value) == "string" then
         M:OnPetState(value)
     end
@@ -97,6 +100,7 @@ function M:ApplyButton()
         else
             Teardown()
         end
+        self:ShowOnScreen()
     end)
 end
 

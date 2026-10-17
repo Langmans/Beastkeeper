@@ -13,13 +13,22 @@ local function RecheckHealth()
     M:CheckHealth()
 end
 
----A getter and setter for one profile setting (Kennel:Setting); the low line checks the health
----again.
+---Shows or hides the button on screen after its switch changed; after combat when in it.
+local function Reapply()
+    M:ApplyButton()
+end
+
+-- What changing a setting sets off: the low line and the marker check the health again, the
+-- on-screen switch shows or hides the button.
+---@type table<string, fun()>
+local CHANGED = { low = RecheckHealth, marker = RecheckHealth, visible = Reapply }
+
+---A getter and setter for one profile setting (Kennel:Setting), with what its change sets off.
 ---@param key string
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set
 local function Setting(key)
-    return Kennel:Setting(M, key, (key == "low" or key == "marker") and RecheckHealth or nil)
+    return Kennel:Setting(M, key, CHANGED[key])
 end
 
 ---Counts the pet as dead or alive by hand; says so in combat, where it cannot.
@@ -35,6 +44,7 @@ function M:GetOptions()
     local passiveGet, passiveSet = Setting("passive")
     local lowGet, lowSet = Setting("low")
     local markerGet, markerSet = Setting("marker")
+    local visibleGet, visibleSet = Setting("visible")
     local soundGet, soundSet = Setting("sound")
     return {
         args = {
@@ -72,6 +82,24 @@ function M:GetOptions()
                 step = 1,
                 get = lowGet,
                 set = lowSet,
+            },
+            visible = {
+                type = "toggle",
+                name = L.CAREBUTTON_OPTION_VISIBLE,
+                desc = L.CAREBUTTON_OPTION_VISIBLE_DESC,
+                order = 0.5,
+                width = "full",
+                get = visibleGet,
+                set = visibleSet,
+            },
+            resetPosition = {
+                type = "execute",
+                name = L.CAREBUTTON_OPTION_RESET,
+                order = 0.6,
+                func = function()
+                    M:Settings().position = nil
+                    M:PlaceButton()
+                end,
             },
             marker = {
                 type = "toggle",

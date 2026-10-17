@@ -74,8 +74,11 @@ combat too and across a relog, and casts Revive Pet until the pet lives again.
 Shift still forces Revive Pet and Ctrl Call Pet.
 
 - Press it with the key binding (Esc > Options > Keybindings > AddOns >
-  Kennel > "Care Button: mend, revive or call pet"), or with the **KennelCare**
-  macro Kennel makes for each hunter the first time. The macro's cast line
+  Kennel > "Care Button: mend, revive or call pet"), with the **KennelCare**
+  macro Kennel makes for each hunter the first time, or click it **on
+  screen**: below your pet's portrait, showing what a click casts now (green
+  Mend Pet, red Revive Pet, yellow Call Pet), in your button skin's look.
+  Shift-drag to move it; the page hides it or puts it back. The macro's cast line
   follows the button (outside combat); lines you add to it stay.
 - It also learns from failed casts: Call Pet failing (or "Your pet is dead")
   means the pet is dead; Revive Pet failing at once means there is none to

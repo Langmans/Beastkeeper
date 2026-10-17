@@ -51,6 +51,11 @@ L.CAREBUTTON_OPTION_DIED_DESC = "Also when a failed Call Pet shows that it is de
 L.CAREBUTTON_OPTION_NOPET = "Toast when combat starts without a pet"
 L.CAREBUTTON_OPTION_PASSIVE = "Toast when combat starts with my pet on Passive"
 -- Slider: the pet health in percent at which the low toast shows; 0 switches it off.
+L.CAREBUTTON_OPTION_VISIBLE = "Show the button on screen"
+L.CAREBUTTON_OPTION_VISIBLE_DESC = "Below your pet's portrait, with the icon of what a click casts now: Mend Pet, Revive Pet or Call Pet. Shift-drag to move it. The key binding works either way."
+L.CAREBUTTON_OPTION_RESET = "Put the button back below the pet"
+-- The on-screen button's tooltip, under the spell a click casts. First %s: Revive Pet; second: Call Pet, as the game names them.
+L.CAREBUTTON_ONSCREEN_HINT = "Shift: %s. Ctrl: %s. Shift-drag to move."
 L.CAREBUTTON_OPTION_LOW = "Toast at this pet health (0: never)"
 L.CAREBUTTON_OPTION_MARKER = "Mark low health beside the pet frame"
 L.CAREBUTTON_OPTION_MARKER_DESC = "Mend Pet's icon lights up left of your pet's portrait while its health is below the line above. WoW: Forever may hide your pet's health in combat, so the toast cannot tell then; the marker still can."
