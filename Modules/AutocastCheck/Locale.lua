@@ -31,6 +31,10 @@ L.AUTOCAST_REASON_CHOSEN_GROWL = "You chose Growl: your pet holds the mobs. Grow
 L.AUTOCAST_HINT_KEY = "Press %s."
 L.AUTOCAST_HINT_MACRO = "Press your KennelAutocast macro."
 
+-- Chat, after the KennelAutocast macro or its key. First %s: the ability put on autocast (Growl
+-- or Cower, the client's name); second: the one put off.
+L.AUTOCAST_SET = "Autocast: %s on, %s off."
+
 -- Chat, after the KennelKite or KennelGrowl macro chose.
 L.AUTOCAST_CHOSE_COWER = "Cower from now on, until you enter or leave a dungeon group."
 L.AUTOCAST_CHOSE_GROWL = "Growl from now on, until you enter or leave a dungeon group."

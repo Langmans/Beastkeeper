@@ -399,8 +399,10 @@ function NewClient(opts)
     function GetNumMacros()
         return #client.macros, #client.charMacros
     end
+    -- An icon given as a file path leaves the macro without one on WoW: Forever: a file ID only.
     function CreateMacro(name, icon, body, perCharacter)
         assert(not client.inCombat, "macros are not made in combat")
+        assert(type(icon) == "number", "a macro icon is a file ID")
         local list = perCharacter and client.charMacros or client.macros
         assert(#list < (perCharacter and MAX_CHARACTER or MAX_ACCOUNT), "no free macro slot")
         list[#list + 1] = { name = name, icon = icon, body = body }

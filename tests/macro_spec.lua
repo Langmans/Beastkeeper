@@ -32,7 +32,7 @@ describe("module macros", function()
         }, client:macro("KennelGrowl"))
         assert.are.same({
             name = "KennelAutocast",
-            icon = "Interface\\Icons\\Ability_Hunter_BeastTraining",
+            icon = 132162, -- Ability_Hunter_BeastTraining
             body = "/click KennelAutocastButton",
         }, client:macro("KennelAutocast"))
         assert.is_true(

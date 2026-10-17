@@ -116,7 +116,7 @@ describe("AutocastCheck", function()
     end)
 
     it("chosen Cower (kiting) wants Growl off and Cower on, solo too", function()
-        local client = NewClient():login():slash("autocast cower")
+        local client = NewClient():login():slash("autocast cower"):advance(1)
         assert.are.equal("Growl is on autocast", client:toastTitle())
         local text = client:toast().Text.text
         assert.are.equal("You chose Cower: the mob is on you, not on your pet. " .. DUNGEON_TEXT, text)
@@ -126,7 +126,7 @@ describe("AutocastCheck", function()
 
     it("chosen Growl (the pet tanks) wants Growl on and Cower off, in a dungeon group too", function()
         local client = inDungeon():group(true)
-        client:slash("autocast growl"):animate(1)
+        client:slash("autocast growl"):advance(1):animate(1)
         assert.is_nil(client:toastTitle(), "the dungeon's toasts are gone")
         client:autocast(COWER, true)
         assert.are.equal("Cower is on autocast", client:toastTitle())
@@ -302,12 +302,24 @@ describe("AutocastCheck", function()
             local client = NewClient():login()
             client:slash("autocast cower")
             assert.is_true(client:printedContains("Cower from now on, until you enter or leave a dungeon group."))
-            assert.are.equal("Growl is on autocast", client:toastTitle(), "checked again at once")
+            assert.is_nil(client:toastTitle(), "the macro's next lines set autocast: not checked at once")
+            client:advance(1)
+            assert.are.equal("Growl is on autocast", client:toastTitle(), "checked a second later")
             client.printed = {}
             client:slash("autocast COWER")
             assert.are.same({}, client.printed, "pressed again: nothing to say")
             client:slash("autocast growl")
             assert.is_true(client:printedContains("Growl from now on, until you enter or leave a dungeon group."))
+        end)
+
+        it("toast nothing when the macro sets autocast right after, as KennelKite and KennelGrowl do", function()
+            local client = NewClient():login():slash("autocast cower")
+            client:advance(0.1):setAutocast(GROWL, false):setAutocast(COWER, true)
+            client:advance(0.3):petBarUpdate():advance(1)
+            assert.is_nil(client:toastTitle())
+            client:slash("autocast growl"):advance(0.4)
+            client:setAutocast(GROWL, true):setAutocast(COWER, false):petBarUpdate():advance(1)
+            assert.is_nil(client:toastTitle())
         end)
 
         it("are listed in /kennel help", function()
@@ -340,6 +352,19 @@ describe("AutocastCheck", function()
             assert.are.equal(COWER_LINES, button.attributes.macrotext)
             client:slash("autocast growl")
             assert.are.equal(GROWL_LINES, button.attributes.macrotext)
+        end)
+
+        it("says in chat what it set, once per press (the key's release)", function()
+            local client = NewClient():login()
+            local button = _G.KennelAutocastButton
+            client.printed = {}
+            for _, down in ipairs({ true, false }) do
+                for _, hook in ipairs(button.hooks.OnClick) do
+                    hook(button, "LeftButton", down)
+                end
+            end
+            assert.are.equal(1, #client.printed)
+            assert.is_true(client:printedContains("Autocast: Growl on, Cower off."))
         end)
 
         it("is in the client's language", function()

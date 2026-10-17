@@ -41,10 +41,14 @@ M.SPELLS = { growl = GROWL, cower = COWER }
 local FALLBACK_NAMES = { [GROWL] = "Growl", [COWER] = "Cower", [DISTRACTING_SHOT] = "Distracting Shot" }
 local RAID_WARNING = 8959 -- SOUNDKIT.RAID_WARNING
 local QUESTION_MARK = 134400 -- the icon a macro gets when #showtooltip picks the spell's own
-local BEAST_TRAINING_ICON = "Interface\\Icons\\Ability_Hunter_BeastTraining"
+-- Ability_Hunter_BeastTraining: a macro takes a file ID; given a path it has no icon.
+local BEAST_TRAINING_ICON = 132162
 -- The pet bar sends several updates for one change (a summon fills every slot); one check a
 -- moment later covers them all.
 local CHECK_DELAY = 0.2
+-- After a choice the macro's next lines set autocast, and the pet bar shows it only once the
+-- server answers: the check waits that long.
+local CHOICE_DELAY = 1
 
 -- The toast's text saying why: by what decided, and for a choice by what was chosen.
 ---@type table<string, string>
@@ -153,14 +157,15 @@ function M:Wanted()
 end
 
 ---The player chose an ability (the KennelKite or KennelGrowl macro, through /kennel); says so
----when it changes what fits, and checks again.
+---when it changes what fits, and checks again once the macro's own autocast lines have landed.
 ---@param ability "growl"|"cower"
 function M:Choose(ability)
     local wanted, why = self:Wanted()
     if why == "chosen" and wanted == ability then return end
     self.choice, self.choiceInDungeon = ability, InDungeonGroup()
     M:Print(ability == "growl" and L.AUTOCAST_CHOSE_GROWL or L.AUTOCAST_CHOSE_COWER)
-    self:Check()
+    self:ApplyButton()
+    self:CheckAfter(CHOICE_DELAY)
 end
 
 ---How to set it right: the button's key binding, or the macro.
@@ -259,11 +264,17 @@ local function RunScheduledCheck()
     if M:IsEnabled() then M:Check() end
 end
 
----Checks once, a moment from now, however often it is asked in the meantime.
-function M:ScheduleCheck()
+---Checks once, `delay` seconds from now, however often it is asked in the meantime.
+---@param delay number
+function M:CheckAfter(delay)
     if self.checkPending then return end
     self.checkPending = true
-    C_Timer.After(CHECK_DELAY, RunScheduledCheck)
+    C_Timer.After(delay, RunScheduledCheck)
+end
+
+---Checks once, a moment from now: the handler of the events that may change what fits.
+function M:ScheduleCheck()
+    self:CheckAfter(CHECK_DELAY)
 end
 
 ---A pet summoned, tamed or dismissed.
