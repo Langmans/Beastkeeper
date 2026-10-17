@@ -32,23 +32,10 @@ local icon = button:CreateTexture(nil, "ARTWORK")
 icon:SetAllPoints()
 button:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
 
----Kennel's own border: a frame of colour behind the icon.
----@param frame Frame
----@return fun(r: number, g: number, b: number)
-local function OwnBorder(frame)
-    local border = frame:CreateTexture(nil, "BACKGROUND")
-    border:SetPoint("TOPLEFT", -2, 2)
-    border:SetPoint("BOTTOMRIGHT", 2, -2)
-    border:SetColorTexture(1, 1, 1, 1)
-    return function(r, g, b)
-        border:SetVertexColor(r, g, b)
-    end
-end
-
--- Another UI's look when one is loaded (Integrations\), else Kennel's own.
-local look = Kennel.buttonLook
-local SetBorderColor = (look and look.Border or OwnBorder)(button)
-if look and look.cropIcons then icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) end
+-- Styled by the chosen button skin (Core\Buttons.lua) the first time it is given its look, when
+-- the settings are there; that gives how to colour the border.
+---@type fun(r: number, g: number, b: number)?
+local SetBorderColor
 
 M.button = button
 -- A right-click runs the module's own handler: a secure button calls a function field named
@@ -90,6 +77,7 @@ function M:ApplyButton()
         local watching = self:IsEnabled() and class == "HUNTER" and UnitExists("pet")
         local happiness = watching and M.Happiness() or 3
         local mood = HAPPINESS[happiness]
+        SetBorderColor = SetBorderColor or Kennel:StyleButton(button, { icon = icon, group = "Feeding" })
         SetBorderColor(mood.color[1], mood.color[2], mood.color[3])
         button:SetShown(happiness < 3)
     end)

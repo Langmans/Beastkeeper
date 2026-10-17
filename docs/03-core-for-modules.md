@@ -14,6 +14,9 @@
   as a round badge on the icon while the unit exists) and `screenshot = true`
   (one screenshot once it has faded in). How it is drawn:
   [05-toast-skins.md](05-toast-skins.md).
+- **Buttons**: `Kennel:StyleButton` and `Kennel:StyleButtonHolder` give a
+  button or a list the chosen skin's look; see
+  [09-button-skins.md](09-button-skins.md).
 - **Macros** (`Core\Macro.lua`): a module with a `Macros()` method returning
   `{ name, icon, body, desc }` entries calls `Kennel:OfferMacros(self)` from
   `OnEnable`. They are made once per character (per character, or

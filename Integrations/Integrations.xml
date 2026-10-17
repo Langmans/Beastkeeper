@@ -2,6 +2,8 @@
     <!-- What Kennel does with other addons, one folder per addon. Each file checks that its addon is
          loaded (they are in the .toc's OptionalDeps) and does nothing otherwise. -->
     <Script file="EllesmereUI\Look.lua"/>
+    <Script file="ElvUI\Look.lua"/>
+    <Script file="Masque\Button.lua"/>
     <Script file="LibSink\Toast.lua"/>
     <Script file="MessageQueue\Sink.lua"/>
 </Ui>

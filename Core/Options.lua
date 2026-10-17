@@ -215,11 +215,58 @@ function Kennel:GetToastOptions()
     return options
 end
 
+---A select between "auto" and the registered skins of one kind, stored under `key`.
+---@param key "skin"|"holder"
+---@param name string
+---@param register table<string, KennelButtonSkin|KennelButtonHolderSkin>
+---@param order number
+---@return table
+local function ButtonSkinSelect(key, name, register, order)
+    return {
+        type = "select",
+        name = name,
+        order = order,
+        values = function()
+            ---@type table<string, string>
+            local names = { auto = L.BUTTONS_AUTO }
+            for id, skin in pairs(register) do
+                names[id] = skin.name
+            end
+            return names
+        end,
+        get = function()
+            return Kennel:ButtonSettings()[key]
+        end,
+        ---@param _ table AceConfig's info about the option
+        ---@param value string
+        set = function(_, value)
+            Kennel:ButtonSettings()[key] = value
+        end,
+    }
+end
+
+---The look of Kennel's buttons, as a box on Kennel's page below the toast's.
+---@return AceConfig.OptionsTable
+function Kennel:GetButtonOptions()
+    return {
+        type = "group",
+        inline = true,
+        name = L.BUTTONS,
+        order = 110,
+        args = {
+            desc = { type = "description", name = L.BUTTONS_DESC, order = 0 },
+            skin = ButtonSkinSelect("skin", L.BUTTONS_SKIN, self:ButtonSkins(), 1),
+            holder = ButtonSkinSelect("holder", L.BUTTONS_HOLDER, self:ButtonHolderSkins(), 2),
+        },
+    }
+end
+
 ---@return AceConfig.OptionsTable
 function Kennel:GetOptionsTable()
     local switches = {
         intro = { type = "description", name = L.MODULES_DESC, order = 0 },
         toast = self:GetToastOptions(),
+        buttons = self:GetButtonOptions(),
     }
     local options = {
         type = "group",

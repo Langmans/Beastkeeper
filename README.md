@@ -170,8 +170,9 @@ it to feed the next food from your bags.
 - **Right-click** for a list of all that food: click a row to feed that one
   instead (bags full: feed what you carry least of).
 - The border shows the happiness: yellow content, red unhappy. Shift-drag to
-  move the button; the page puts it back. With EllesmereUI it takes its look
-  and sits beside its pet frame.
+  move the button; the page puts it back. It takes the look of Masque, ElvUI
+  or EllesmereUI when one is loaded (choose under Buttons on Kennel's page),
+  and sits beside EllesmereUI's pet frame.
 - **Toasts** when your pet becomes content or unhappy, with the food that is
   next, and when the last food it eats leaves your bags. Each has a switch.
 
@@ -227,6 +228,8 @@ How Kennel is built, how to add to it, and how other addons can hook into it:
    tests, lint, coverage, and screenshots while testing in game.
 8. [CI and releases](https://github.com/Langmans/Kennel/blob/main/docs/08-ci-and-releases.md):
    the workflows, the packager, and playing the repository's copy.
+9. [Button skins](https://github.com/Langmans/Kennel/blob/main/docs/09-button-skins.md):
+   Kennel's buttons and lists in your own look; Masque, ElvUI, EllesmereUI.
 
 ## License
 

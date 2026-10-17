@@ -17,13 +17,10 @@ local list = CreateFrame("Frame", "KennelFeedList", UIParent)
 list:SetWidth(WIDTH)
 list:SetFrameStrata("DIALOG")
 list:Hide()
-local background = list:CreateTexture(nil, "BACKGROUND")
-background:SetAllPoints()
-background:SetColorTexture(0.05, 0.05, 0.05, 0.9)
 table.insert(UISpecialFrames, "KennelFeedList")
--- Another UI's look when one is loaded (Integrations\): its border and font.
-local look = Kennel.buttonLook
-if look then look.Border(list) end
+-- The chosen holder skin (Core\Buttons.lua), applied the first time the list opens.
+---@type KennelButtonHolderSkin?
+local skin
 
 ---@type KennelFoodRow[]
 local rows = {}
@@ -47,10 +44,9 @@ local function Row(index)
     row.icon:SetPoint("LEFT", 2, 0)
     row.label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     row.label:SetPoint("LEFT", row.icon, "RIGHT", 6, 0)
-    if look then
-        look.Font(row.label, 12)
-        if look.cropIcons then row.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) end
-    end
+    local look = skin --[[@as KennelButtonHolderSkin]]
+    look.Font(row.label, 12)
+    if look.CropIcon then look.CropIcon(row.icon) end
     row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
     row:HookScript("OnClick", Close)
     rows[index] = row
@@ -63,6 +59,7 @@ function M:ToggleFoodList()
     if list:IsShown() then return Close() end
     local foods = self:Foods()
     if InCombatLockdown() or #foods == 0 then return end
+    skin = skin or Kennel:StyleButtonHolder(list)
     for index, food in ipairs(foods) do
         local row = Row(index)
         row:SetAttribute("macrotext", M.FeedMacro(food))

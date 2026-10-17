@@ -18,6 +18,7 @@ Core\Core.xml     the core, in this order:
     Frame.lua     what every skin's frame does alike; NewToastFrame, NewToastSkin
     Engine.lua    queue, clock, sound, the card taking over from a failing skin
     Skins\        the card and the splash
+  Buttons.lua     button and holder skins: register, choice, Kennel's own
   Macro.lua       macros a module makes for the player
   Options.lua     the AceConfig options and the pages in the settings window
   Commands.lua    /kennel
@@ -25,8 +26,10 @@ Data\Beasts.lua   generated: pet ability ranks and the beasts that teach them
                   (Tamed-LICENSE.txt next to it for the part from Tamed)
 Integrations\     what Kennel does with other addons, a folder per addon; each
                   file does nothing unless its addon is loaded (OptionalDeps)
-  EllesmereUI\Look.lua    the card, the splash and Kennel's buttons
-                          (Kennel.buttonLook) in EllesmereUI's look
+  EllesmereUI\Look.lua    the card, the splash, button and holder skins in
+                          EllesmereUI's look
+  ElvUI\Look.lua          button and holder skins in ElvUI's look
+  Masque\Button.lua       a button skin putting Kennel's buttons in Masque
   LibSink\Toast.lua       a look that hands toasts to LibSink's outputs
   MessageQueue\Sink.lua   a LibSink output that says toasts in a chat channel
                           through MessageQueue (Forever sends say, yell and

@@ -46,6 +46,13 @@ L.SINK_MESSAGEQUEUE = "Chat channel (MessageQueue)"
 L.SINK_MESSAGEQUEUE_DESC = "Says it in a chat channel. Say, yell and channels are sent on your next key press or click, as WoW: Forever requires."
 -- Choice in the select of one kind of toast: use the look chosen for every toast.
 L.TOAST_SKIN_SAME = "Same as all toasts"
+-- Settings window, Kennel's page: the look of Kennel's buttons (the feed button) and of the
+-- lists that hold buttons (its food list). Choices: "Automatic" and skin names such as "Masque".
+L.BUTTONS = "Buttons"
+L.BUTTONS_DESC = "The look of Kennel's buttons, such as the feed button, and of its lists. Automatic takes Masque, ElvUI or EllesmereUI when one is loaded. Takes effect after /reload."
+L.BUTTONS_SKIN = "Button look"
+L.BUTTONS_HOLDER = "List look"
+L.BUTTONS_AUTO = "Automatic"
 -- Button: shows an example toast.
 L.TOAST_TEST = "Show an example"
 -- The example toast: its title and text.

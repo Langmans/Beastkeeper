@@ -61,6 +61,8 @@ function Kennel:OnInitialize()
             -- kind of toast where chosen or where its module gives one; pos is set once it is
             -- dragged. sink: LibSink's output choice (Integrations\LibSink\).
             toast = { duration = 6, scale = 1, skin = "card", skins = kindSkins, sink = {} },
+            -- The look of Kennel's buttons and their holders (Core\Buttons.lua): a skin id or "auto".
+            buttons = { skin = "auto", holder = "auto" },
         },
         -- Per character: which modules made their macros already (Core\Macro.lua).
         char = { macrosMade = {} },

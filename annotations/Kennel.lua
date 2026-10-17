@@ -158,11 +158,29 @@
 ---@field bite number happiness a bite gives the pet out: 35, 17 or 8
 ---@field wellFed boolean it also makes the hunter Well Fed: fed last
 
----Another UI's look for Kennel's buttons (Kennel.buttonLook), set by an integration.
----@class KennelButtonLook
----@field Border fun(frame: Frame): fun(r: number, g: number, b: number) draws a border; gives its recolour
----@field Font fun(text: FontString, size: number)
----@field cropIcons boolean? trim the icons' edges, as the UI's own buttons do
+---What a button skin is handed besides the button.
+---@class KennelButtonParts
+---@field icon Texture the button's icon
+---@field group string the module the button belongs to, such as "Feeding" (Masque's group)
+
+---The look of one of Kennel's buttons (Core\Buttons.lua, docs\09-button-skins.md).
+---@class KennelButtonSkin
+---@field name string shown in the choice on Kennel's page
+---@field priority number? "auto" takes the highest; Kennel's own is 0
+---@field Style fun(button: Button, parts: KennelButtonParts): (fun(r: number, g: number, b: number))? styles it once; gives how to colour its border, or nil when it has none to colour
+
+---The look of what holds Kennel's buttons, and of the text and icons in its rows.
+---@class KennelButtonHolderSkin
+---@field name string
+---@field priority number?
+---@field Style fun(frame: Frame) styles the panel once
+---@field Font fun(text: FontString, size: number) a row's text
+---@field CropIcon (fun(icon: Texture))? a row's icon, as the UI trims its own
+
+---The button skin choices in the profile.
+---@class KennelButtonSettings
+---@field skin string a button skin id, or "auto"
+---@field holder string a holder skin id, or "auto"
 
 ---A row of Feeding's food list: a secure button that feeds one food.
 ---@class KennelFoodRow: Button
@@ -448,7 +466,6 @@
 ---The addon object, which is also the files' namespace (`local _, ns = ...`).
 ---@class Kennel: AceAddon, AceConsole-3.0, AceEvent-3.0
 ---@field L table<string, string> the AceLocale strings
----@field buttonLook KennelButtonLook? another UI's look for Kennel's buttons (Integrations\)
 ---@field db AceDBObject-3.0 KennelDB; profile.modules[name] holds each module's switch
 ---@field modules table<string, KennelModule> AceAddon's own module table, by name
 ---@field optionsCategoryID string|number the settings page, for Settings.OpenToCategory

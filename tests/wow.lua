@@ -84,6 +84,8 @@ end
 ---@field noPetSpellCount boolean? C_SpellBook without HasPetSpells
 ---@field noMacroConsts boolean? no Constants.MacroConsts (the addon's own limits apply)
 ---@field ellesmere boolean|table? EllesmereUI loaded before Kennel (a table: fields to leave out, set to false)
+---@field elvui boolean? ElvUI loaded before Kennel
+---@field masque boolean? Masque loaded before Kennel
 ---@field messageQueue boolean? MessageQueue loaded before Kennel
 ---@field handyNotes boolean? HandyNotes loaded before Kennel
 ---@field noPet boolean? no pet unit at the start
@@ -897,6 +899,9 @@ function NewClient(opts)
     function Region:SetFont(path, size, flags)
         self.font = { path, size, flags }
     end
+    function Region:SetVertexColor(r, g, b)
+        self.vertexColor = { r, g, b }
+    end
     function Region:ClearAllPoints()
         self.points = {}
     end
@@ -1311,11 +1316,51 @@ function NewClient(opts)
         end
     end
 
+    -- ElvUI, when opts.elvui says it is loaded: its engine in ElvUI[1], and the methods its
+    -- Toolkit adds to every frame, recording what was asked of them.
+    ElvUI = nil
+    if opts.elvui then
+        ElvUI = { { media = { normFont = "Fonts\\PTSansNarrow.ttf" } } }
+        function Region:SetTemplate(template)
+            self.template = template or "Default"
+        end
+        function Region:SetBackdropBorderColor(r, g, b)
+            self.backdropBorderColor = { r, g, b }
+        end
+        function Region:StyleButton()
+            self.styled = true
+        end
+        function Region:FontTemplate()
+            self.fontTemplate = true
+        end
+        function Region:SetTexCoords()
+            self.texCoordsSet = true
+        end
+    end
+
+    -- Masque, when opts.masque says it is loaded: a LibStub library whose groups record the
+    -- buttons added to them (client.masque.groups["<addon>/<group>"]).
+    client.masque = { groups = {} }
+    local function AddMasque()
+        local MSQ = LibStub:NewLibrary("Masque", 1)
+        function MSQ:Group(addon, name)
+            local key = addon .. "/" .. name
+            local list = client.masque.groups[key] or {}
+            client.masque.groups[key] = list
+            return {
+                AddButton = function(_, button, regions)
+                    list[#list + 1] = { button = button, regions = regions }
+                end,
+            }
+        end
+    end
+
     -- LibStub keeps its libraries in a global; a fresh client starts without one.
     LibStub = nil
     local ns = {}
     for _, file in ipairs(TOC_FILES) do
         Chunk(file, opts.dev == true)("Kennel", ns)
+        if opts.masque and file:find("LibStub.lua", 1, true) then AddMasque() end
     end
     client.Kennel = ns
     if opts.modules then opts.modules(ns) end

@@ -3,7 +3,7 @@ local _, ns = ...
 -- The card, the splash and Kennel's buttons in EllesmereUI's look: its global font, outline and
 -- shadow, its 1-pixel border on a dark panel, and its theme colour as the accent. Only when
 -- EllesmereUI is loaded; it is in Kennel's OptionalDeps, so it loads first, and this file loads
--- before the modules, which read Kennel.buttonLook when they make their buttons.
+-- before the modules, so its button skins are there when they style their buttons.
 
 local EUI = EllesmereUI
 if type(EUI) ~= "table" then return end
@@ -41,13 +41,21 @@ end
 
 local MakeBorder = EUI.MakeBorder
 
----A recolourable border, as Kennel's buttons take it.
----@param frame Frame
+---Trims an icon's edges, as EllesmereUI's action buttons do.
+---@param icon Texture
+local function CropIcon(icon)
+    icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+end
+
+---A button: its 1-pixel border, to colour, and a trimmed icon.
+---@param button Button
+---@param parts KennelButtonParts
 ---@return fun(r: number, g: number, b: number)
-local function ButtonBorder(frame)
+local function StyleButton(button, parts)
+    CropIcon(parts.icon)
     local border = (
         MakeBorder --[[@as fun(parent: Frame, r: number, g: number, b: number, a: number): EllesmereUIBorder]]
-    )(frame, 0, 0, 0, 1)
+    )(button, 0, 0, 0, 1)
     ---@param r number
     ---@param g number
     ---@param b number
@@ -57,7 +65,23 @@ local function ButtonBorder(frame)
     return SetColor
 end
 
-if MakeBorder then Kennel.buttonLook = { Border = ButtonBorder, Font = Font, cropIcons = true } end
+---A list of buttons: the dark panel with the border.
+---@param frame Frame
+local function StyleHolder(frame)
+    local panel = frame:CreateTexture(nil, "BACKGROUND")
+    panel:SetAllPoints()
+    panel:SetColorTexture(0.06, 0.06, 0.08, 0.85)
+    Border(frame)
+end
+
+-- Between ElvUI (20) and Kennel's own (0): a player with both chose ElvUI's buttons on purpose.
+if MakeBorder then
+    Kennel:RegisterButtonSkin("ellesmere", { name = "EllesmereUI", priority = 10, Style = StyleButton })
+    Kennel:RegisterButtonHolderSkin(
+        "ellesmere",
+        { name = "EllesmereUI", priority = 10, Style = StyleHolder, Font = Font, CropIcon = CropIcon }
+    )
+end
 
 Kennel:RegisterToastSkin("ellesmere", Kennel:NewCardSkin("EllesmereUI", Style("KennelToastEllesmere")))
 Kennel:RegisterToastSkin(
