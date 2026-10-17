@@ -113,6 +113,14 @@ M.Lines.frFR = {
                 "On n'électrocute pas la main qui nourrit !",
                 "Aspiré d'un coup !",
             },
+            -- Written for Kennel: Fox is new in WoW: Forever.
+            [F.FOX] = {
+                "Rusé comme un renard !",
+                "Pas une miette pour les poules.",
+                "Un petit pas de danse autour de la gamelle, puis hop !",
+                "Volé dans les règles de l'art.",
+                "Le plus malin de la tablée.",
+            },
             [F.BAT] = {
                 "Gentille petite chauve-souris !",
                 "Au moins, ce n'est pas du sang.",

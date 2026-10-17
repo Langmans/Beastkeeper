@@ -31,7 +31,8 @@
   the icon; an optional screenshot per toast.
 - Feed Emotes (from Feed Pet Emotes, which it replaces): a random /emote
   every time you feed your pet, with your own lines, conditions and the pet's
-  sex per pet. Off until switched on.
+  sex per pet. Off until switched on. Lines for Forever's foxes in all six
+  languages.
 - Autocast Check (from Pet Autocast Check): Growl or Cower on autocast as
   fits, Cower in a dungeon group and Growl elsewhere; the KennelKite macro
   (Cower, Distracting Shot) and KennelGrowl macro choose until a dungeon group

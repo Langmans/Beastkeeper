@@ -109,6 +109,14 @@ M.Lines.esES = {
                 "¡No electrocutes la mano que te da de comer!",
                 "¡Sorbido de un trago!",
             },
+            -- Written for Kennel: Fox is new in WoW: Forever.
+            [F.FOX] = {
+                "¡Zorro astuto!",
+                "Ni una miga para las gallinas.",
+                "Un bailecito alrededor del plato, y al ataque.",
+                "Robado limpiamente.",
+                "El más listo de la mesa.",
+            },
             [F.BAT] = { "¡Buen murcielaguito!", "Al menos no es sangre.", "Come bien, pequeño volador nocturno." },
             [F.CRAB] = { "¡Chas, chas!", "¿También come de lado?", "¡Pinza, pinza, y fuera!" },
             [F.GORILLA] = {

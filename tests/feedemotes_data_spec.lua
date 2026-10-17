@@ -25,15 +25,9 @@ local FOREVER_FAMILIES = {
     "FOX",
 }
 
--- Families a language has no lines for yet (its pets get the lines for every pet): Fox came with
--- WoW: Forever, after the Feed-O-Matic and FeedPetEmotes translations.
-local FAMILY_GAPS = {
-    esES = { FOX = true },
-    esMX = { FOX = true },
-    frFR = { FOX = true },
-    koKR = { FOX = true },
-    ruRU = { FOX = true },
-}
+-- Families a language has no lines for yet (its pets get the lines for every pet). None now.
+---@type table<string, table<string, true>>
+local FAMILY_GAPS = {}
 
 -- Food sold by vendors on Forever, classified by name.
 local VENDOR_FOOD = {
