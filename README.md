@@ -1,5 +1,11 @@
 # Kennel
 
+[![CI](https://github.com/Langmans/Kennel/actions/workflows/ci.yml/badge.svg)](https://github.com/Langmans/Kennel/actions/workflows/ci.yml)
+![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
+![WoW: Forever](https://img.shields.io/badge/WoW-Forever%20%2816001%29-c79c6e)
+![Ace3](https://img.shields.io/badge/Ace3-yes-blue)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](LICENSE)
+
 Hunter pet tools in one addon. Each tool is a module that can be turned on or
 off on its own, in the game's settings window under **AddOns → Kennel**.
 
