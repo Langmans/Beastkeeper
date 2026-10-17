@@ -28,7 +28,8 @@ Integrations\     what Kennel does with other addons, a folder per addon; each
                   file does nothing unless its addon is loaded (OptionalDeps)
   EllesmereUI\Look.lua    the card, the splash, button and holder skins in
                           EllesmereUI's look
-  ElvUI\Look.lua          button and holder skins in ElvUI's look
+  ElvUI\Look.lua          the card, the splash, button and holder skins in
+                          ElvUI's look
   Masque\Button.lua       a button skin putting Kennel's buttons in Masque
   LibSink\Toast.lua       a look that hands toasts to LibSink's outputs
   MessageQueue\Sink.lua   a LibSink output that says toasts in a chat channel

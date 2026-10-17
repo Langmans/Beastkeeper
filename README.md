@@ -28,8 +28,8 @@ modules move in one at a time.
   choose how long it stays, how big it is, and its look: a small **card** near
   the top, or a large **splash** in the middle. Every kind of toast (such as
   Autocast Check's) can have a look of its own; other addons can add looks.
-  With EllesmereUI loaded, both also come in EllesmereUI's look (its font,
-  border and theme colour).
+  With EllesmereUI or ElvUI loaded, both also come in that UI's look (its
+  font, border and theme colour).
 
 ### Autocast Check
 

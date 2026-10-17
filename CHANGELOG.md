@@ -15,7 +15,8 @@
 - Care Button (from Pet Care Button): one key and the KennelCare macro for
   Mend Pet, Revive Pet and Call Pet that remember a dead pet, also once the
   body is gone; toasts when the pet dies, is missing at the pull or runs low.
-- With EllesmereUI loaded: the card and the splash in EllesmereUI's look.
+- With EllesmereUI loaded: the card and the splash in EllesmereUI's look;
+  with ElvUI loaded, in ElvUI's.
 - A look that sends toasts through LibSink: Blizzard's floating text, chat,
   raid warning, MikSBT and the other outputs LibSink knows.
 - With MessageQueue loaded: a LibSink output that says toasts in a chat

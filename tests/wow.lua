@@ -1320,7 +1320,7 @@ function NewClient(opts)
     -- Toolkit adds to every frame, recording what was asked of them.
     ElvUI = nil
     if opts.elvui then
-        ElvUI = { { media = { normFont = "Fonts\\PTSansNarrow.ttf" } } }
+        ElvUI = { { media = { normFont = "Fonts\\PTSansNarrow.ttf", rgbvaluecolor = { 0.1, 0.7, 1 } } } }
         function Region:SetTemplate(template)
             self.template = template or "Default"
         end
@@ -1330,8 +1330,8 @@ function NewClient(opts)
         function Region:StyleButton()
             self.styled = true
         end
-        function Region:FontTemplate()
-            self.fontTemplate = true
+        function Region:FontTemplate(_, size)
+            self.fontTemplate, self.fontSize = true, size
         end
         function Region:SetTexCoords()
             self.texCoordsSet = true

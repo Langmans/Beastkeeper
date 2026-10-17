@@ -118,6 +118,24 @@ describe("button skins", function()
             assert.is_true(_G.KennelFeedChoice1.icon.texCoordsSet)
         end)
 
+        it("draw the toast in ElvUI's look too: its backdrop, font and value colour", function()
+            local client = NewClient({ elvui = true, noPet = true }):login()
+            for _, id in ipairs({ "elvui", "elvuisplash" }) do
+                client.Kennel:ToastSettings().skin = id
+                client.Kennel:ShowToast({ key = id .. ":a", title = "Title", text = "Text" })
+                local frame = client:toast()
+                assert.are.equal("Transparent", frame.template)
+                assert.is_true(frame.Title.fontTemplate)
+                assert.is_true(frame.Title.fontSize > frame.Text.fontSize, "the title is bigger")
+                assert.are.equal("Title", client:toastTitle())
+                client.Kennel:HideToast()
+            end
+            assert.are.equal("ElvUI", client.Kennel:ToastSkins().elvui.name)
+            client.Kennel:ToastSettings().skin = "elvui"
+            client.Kennel:ShowToast({ key = "b", title = "t" })
+            assert.are.same({ 0.1, 0.7, 1, 1 }, client:toast().Accent.color)
+        end)
+
         it("rank above EllesmereUI, below Masque", function()
             assert.are.equal("elvui", content({ elvui = true, ellesmere = true }).Kennel:ButtonSkinFor())
             assert.are.equal("masque", content({ elvui = true, masque = true }).Kennel:ButtonSkinFor())

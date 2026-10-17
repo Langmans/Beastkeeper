@@ -46,7 +46,8 @@ a `KennelSkinStyle`: the frame's name, a panel colour, an edge colour or a
 `Border(frame)` function, an `accent()` function and a `Font(text, size)`
 function. `Integrations\EllesmereUI\Look.lua` does exactly that with
 EllesmereUI's font, border, panel and theme colour, registering "EllesmereUI"
-and "EllesmereUI (splash)" only when EllesmereUI is loaded.
+and "EllesmereUI (splash)" only when EllesmereUI is loaded;
+`Integrations\ElvUI\Look.lua` the same for ElvUI, its backdrop as the panel.
 
 The player then picks "My look" on Kennel's page. A saved choice whose skin
 is gone (its addon disabled) falls back to the card.
