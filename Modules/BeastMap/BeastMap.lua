@@ -23,7 +23,7 @@ local L = Kennel.L
 local M = Kennel:NewModule("BeastMap")
 M.title = L.BEASTMAP_TITLE
 M.description = L.BEASTMAP_DESC
-M.toastTypes = { reach = L.BEASTMAP_TOASTTYPE_REACH }
+M.toastTypes = { reach = L.BEASTMAP_TOASTTYPE_REACH, rare = L.BEASTMAP_TOASTTYPE_RARE }
 M.defaults = {
     profile = {
         pins = true,
@@ -33,6 +33,7 @@ M.defaults = {
         aboveLevel = false,
         levelToast = true,
         tooltip = true,
+        rareToast = true,
     },
 }
 
@@ -274,8 +275,9 @@ local function RankText(spellID)
     return name and rank and ("%s (%s)"):format(name, rank) or name
 end
 
--- For the unit tooltip (Tooltip.lua): what a beast teaches, and how the hunter stands to a rank.
-M.RankText, M.Lacking = RankText, Lacking
+-- For the unit tooltip (Tooltip.lua) and the rare alarm (Rare.lua): what a beast teaches, how the
+-- hunter stands to a rank, a beast's name and level.
+M.RankText, M.Lacking, M.LevelText, M.BeastName = RankText, Lacking, LevelText, BeastName
 
 ---The rank spells a beast teaches, in order; nil for a beast that teaches none.
 ---@param npc number
@@ -501,6 +503,7 @@ function M:OnEnable()
     self.level = nil
     self:RegisterEvent("PLAYER_LEVEL_UP")
     self:RegisterMessage("KENNEL_RANKS_KNOWN", "Refresh")
+    self:WatchRares()
     self:Refresh()
 end
 

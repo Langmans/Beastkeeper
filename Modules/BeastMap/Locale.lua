@@ -46,8 +46,17 @@ L.BEASTMAP_TOOLTIP_NEW = "new for you"
 L.BEASTMAP_TOOLTIP_GAP = "below your highest, never learned"
 L.BEASTMAP_TOOLTIP_KNOWN = "you know it"
 
+-- Settings: the rare alarm.
+L.BEASTMAP_OPTION_RARE = "Toast when a rare beast I could learn from is near"
+L.BEASTMAP_OPTION_RARE_DESC = "Once per spawn, when a rare beast that teaches a rank you lack shows on the minimap, as a nameplate, as your target or under the mouse. Follows the choices above (lower ranks, beasts above your level). Works without HandyNotes."
+
 -- Settings window, Kennel's page: the kind of toast, for choosing its look. Shown after "Beast Map: ".
 L.BEASTMAP_TOASTTYPE_REACH = "pet ability rank in reach"
+L.BEASTMAP_TOASTTYPE_RARE = "rare beast nearby"
+
+-- Rare alarm toast. Title, %s: the beast's name. Text, a line per rank; %s: the ability with its rank.
+L.BEASTMAP_RARE_TOAST = "Rare beast nearby: %s"
+L.BEASTMAP_RARE_TEACHES = "Teaches %s"
 
 -- Toast title for one rank. %s: the ability with its rank, such as "Claw (Rank 3)".
 L.BEASTMAP_REACH_ONE = "Now in reach: %s"

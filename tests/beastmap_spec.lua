@@ -289,6 +289,95 @@ describe("Beast Map", function()
         end)
     end)
 
+    describe("the rare alarm", function()
+        local RARE_CAT = "Creature-0-5250-0-12-104-0000ABCDEF"
+
+        ---The toasts shown from now on.
+        local function toasts(client)
+            local seen = {}
+            client.Kennel.RegisterMessage(seen, "KENNEL_TOAST", function(_, event)
+                seen[#seen + 1] = event.toast
+            end)
+            return seen
+        end
+
+        ---A nameplate showing the unit with this GUID.
+        local function nameplate(client, guid)
+            client.unitGUIDs.nameplate1 = guid
+            return client:fire("NAME_PLATE_UNIT_ADDED", "nameplate1")
+        end
+
+        it("toasts a rare beast that teaches a rank the hunter lacks, once per spawn", function()
+            local client = hunter(10)
+            local seen = toasts(client)
+            nameplate(client, RARE_CAT)
+            assert.are.equal(1, #seen)
+            local toast = seen[1]
+            assert.are.equal("BeastMap:rare", toast.type)
+            assert.are.equal("Rare beast nearby: Rare Cat", toast.title)
+            assert.are.equal("Teaches Claw (Rank 3)", toast.text)
+            assert.are.equal("Level 10, rare elite", toast.hint)
+            assert.are.equal(CLAW_ICON, toast.icon)
+            nameplate(client, RARE_CAT)
+            client.unitGUIDs.target = RARE_CAT
+            client:fire("PLAYER_TARGET_CHANGED")
+            assert.are.equal(1, #seen, "the same spawn")
+            nameplate(client, "Creature-0-5250-0-12-104-0000FEDCBA")
+            assert.are.equal(2, #seen, "another spawn")
+        end)
+
+        it("sees it as a target, under the mouse, or on the minimap", function()
+            local client = hunter(10)
+            local seen = toasts(client)
+            client.unitGUIDs.target = RARE_CAT
+            client:fire("PLAYER_TARGET_CHANGED")
+            assert.are.equal(1, #seen)
+            client = hunter(10)
+            seen = toasts(client)
+            client.unitGUIDs.mouseover = RARE_CAT
+            client:fire("UPDATE_MOUSEOVER_UNIT")
+            assert.are.equal(1, #seen)
+            client = hunter(10)
+            seen = toasts(client)
+            client.vignettes["Vignette-1"] = { objectGUID = RARE_CAT, name = "Rare Cat" }
+            client:fire("VIGNETTE_MINIMAP_UPDATED", "Vignette-1", true)
+            client:fire("VIGNETTE_MINIMAP_UPDATED", "Vignette-2", true)
+            assert.are.equal(1, #seen)
+        end)
+
+        it(
+            "stays quiet for an ordinary beast, a rank the hunter has, a beast above its level, or switched off",
+            function()
+                local client = hunter(10)
+                local seen = toasts(client)
+                nameplate(client, "Creature-0-5250-0-12-101-0000ABCDEF")
+                nameplate(client, "Player-5250-0ABCDEF0")
+                nameplate(client, SECRET)
+                assert.are.same({}, seen)
+                client = hunter(10)
+                client:openTrainer({ { "Claw", "used", CLAW_3 } }):closeTrainer()
+                seen = toasts(client)
+                nameplate(client, RARE_CAT)
+                assert.are.same({}, seen, "Claw 3 known")
+                client = hunter(9)
+                seen = toasts(client)
+                nameplate(client, RARE_CAT)
+                assert.are.same({}, seen, "level 10, the hunter 9")
+                set(client, "aboveLevel", true)
+                nameplate(client, RARE_CAT)
+                assert.are.equal(1, #seen, "when beasts above the hunter's level count")
+                client = hunter(10)
+                seen = toasts(client)
+                set(client, "rareToast", false)
+                nameplate(client, RARE_CAT)
+                client.Kennel:GetModule("BeastMap"):Disable()
+                set(client, "rareToast", true)
+                nameplate(client, "Creature-0-5250-0-12-104-0000FEDCBA")
+                assert.are.same({}, seen)
+            end
+        )
+    end)
+
     it("sends the hunter to a beast with a left click on its pin, through LibGoThere", function()
         local client = hunter(10)
         local low = client:mapPins(ELWYNN)[1]

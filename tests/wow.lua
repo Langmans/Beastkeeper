@@ -272,9 +272,18 @@ function NewClient(opts)
     -- client.petGUID: the pet's GUID, its spawn UID's low 32 bits being the stable's petNumber
     -- (3069428 here, in client.stable).
     client.petGUID = "Pet-0-5250-0-1-165189-01002ED5F4"
+    -- Other units' GUIDs (target, mouseover, nameplateN): client.unitGUIDs[unit]. The minimap's
+    -- vignettes: client.vignettes[vignetteGUID] = { objectGUID, name }.
+    client.unitGUIDs, client.vignettes = {}, {}
     function UnitGUID(unit)
-        if unit == "pet" and client.pet then return client.petGUID end
+        if unit == "pet" then return client.pet and client.petGUID or nil end
+        return client.unitGUIDs[unit]
     end
+    C_VignetteInfo = {
+        GetVignetteInfo = function(vignetteGUID)
+            return client.vignettes[vignetteGUID]
+        end,
+    }
     function UnitCreatureFamily(unit)
         if unit == "pet" and client.pet then return "Cat", client.familyID end
     end

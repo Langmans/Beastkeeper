@@ -196,6 +196,9 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
   lower rank too (Claw 2 when you know Claw 1, 3 and 4: it suits a young pet
   and costs fewer points), every beast in reach whatever it teaches, beasts
   above your level.
+- **Rare alarm**, also without HandyNotes: a toast with the raid warning
+  sound when a rare beast that teaches a rank you lack comes in sight (on the
+  minimap, as a nameplate, your target or under the mouse), once per spawn.
 - **On a beast's tooltip**, also without HandyNotes: a line per rank it
   teaches, green when you lack it, yellow for a lower rank you never
   learned, grey when you know it.
