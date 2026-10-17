@@ -46,13 +46,18 @@ function M:KENNEL_TOAST(_, event)
     if Shoot("toast " .. (toast.type or toast.key)) then toast.screenshot = true end
 end
 
+---The screenshot itself. C_Timer.After takes only a Lua function, not the client's Screenshot.
+local function TakeScreenshot()
+    Screenshot()
+end
+
 ---@param _ string the message
 ---@param event KennelPrintEvent
 function M:KENNEL_PRINT(_, event)
     if GetTime() - lastShot < SHOT_GAP then return end
     if not Shoot("chat: " .. event.line:gsub("%d+", "#")) then return end
     lastShot = GetTime()
-    C_Timer.After(SHOT_DELAY, Screenshot)
+    C_Timer.After(SHOT_DELAY, TakeScreenshot)
 end
 
 function M:OnEnable()

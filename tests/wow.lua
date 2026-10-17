@@ -468,8 +468,15 @@ function NewClient(opts)
 
     -- client.timers: pending C_Timer callbacks; client:advance runs the ones that come due.
     client.timers = {}
+    -- The client's own functions (client.cFunctions), which C_Timer.After refuses as a callback on
+    -- Forever ("Usage: C_Timer.After(seconds, callback)"): it takes only a Lua function.
+    client.cFunctions = {}
     C_Timer = {
         After = function(seconds, callback)
+            assert(
+                type(callback) == "function" and not client.cFunctions[callback],
+                "Usage: C_Timer.After(seconds, callback)"
+            )
             client.timers[#client.timers + 1] = { at = client.time + seconds, callback = callback }
         end,
     }
@@ -533,6 +540,7 @@ function NewClient(opts)
     function Screenshot()
         client.screenshots = client.screenshots + 1
     end
+    client.cFunctions[Screenshot] = true
     function SetPortraitTexture(texture, unit)
         texture.portrait = unit
     end
