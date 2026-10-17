@@ -21,8 +21,6 @@ local M = Kennel:GetModule("AbilityLearned") --[[@as KennelAbilityLearned]]
 
 local HISTORY_MAX = 200
 local BEAST_TRAINING_ICON = "Interface\\Icons\\Ability_Hunter_BeastTraining"
--- The loyalty name's colour runs from the friendly to the exalted reputation colour.
-local FRIENDLY, EXALTED = { 0, 0.8, 0 }, { 0, 0.8, 0.8 }
 
 -- The list said last for each pet, so summoning it again stays quiet until there is news.
 ---@type table<string, string>
@@ -228,61 +226,7 @@ function M:CheckHints()
     Say(pet, list, unsure)
 end
 
----The pet's loyalty level and its name, as far as the client tells them. WoW: Forever gives the
----name alone ("Faithful", C_PetInfo.GetPetLoyalty), classic clients "Loyalty Level 5 (Faithful)"
----(the global), some a number. Without a number the level comes from the training points, which
----are level × (loyalty − 1), when they divide evenly; else it stays unknown.
----@param total number the training points total
----@param petLevel GameValue
----@return number? loyalty
----@return string? name
-local function ReadLoyalty(total, petLevel)
-    local get = (C_PetInfo and C_PetInfo.GetPetLoyalty) or GetPetLoyalty
-    ---@type GameValue
-    local value = get and get()
-    ---@type number?, string?
-    local loyalty, name
-    if not Kennel.Readable(value) then
-        value = nil
-    elseif type(value) == "number" then
-        loyalty = value
-    elseif type(value) == "string" and value ~= "" then
-        loyalty = tonumber(value:match("%d+"))
-        name = value:match("%((.-)%)") or (not loyalty and value or nil)
-    end
-    if not loyalty and type(petLevel) == "number" and Kennel.Readable(petLevel) and petLevel > 0 then
-        local derived = total / petLevel + 1
-        if derived == math.floor(derived) then loyalty = derived end
-    end
-    return loyalty, name
-end
-
----One colour channel, 0-255, a share `t` of the way from friendly to exalted.
----@param i number 1, 2 or 3: red, green, blue
----@param t number
----@return number
-local function Channel(i, t)
-    return math.floor((FRIENDLY[i] + (EXALTED[i] - FRIENDLY[i]) * t) * 255 + 0.5)
-end
-
----The colour code of a loyalty level, along the reputation colours: friendly green at loyalty
----level 1 to exalted teal at 6.
----@param level number
----@return string
-local function LoyaltyColor(level)
-    local t = (math.min(math.max(level, 1), 6) - 1) / 5
-    return ("|cff%02x%02x%02x"):format(Channel(1, t), Channel(2, t), Channel(3, t))
-end
-
----A loyalty level as the toasts show it: "5 (Faithful)" with the name in its colour, or "5" when
----the client gave no name.
----@param loyalty number
----@param name string?
----@return string
-local function LoyaltyLabel(loyalty, name)
-    if not name then return tostring(loyalty) end
-    return ("%d (%s%s|r)"):format(loyalty, LoyaltyColor(loyalty), name)
-end
+local ReadLoyalty, LoyaltyLabel = Kennel.PetLoyalty, Kennel.LoyaltyLabel
 
 ---A toast about the pet out's growth, of `kind` ("points" or "loyalty").
 ---@param kind string
