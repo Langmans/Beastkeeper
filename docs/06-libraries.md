@@ -1,6 +1,6 @@
 # Libraries
 
-Ace3, LibSink-2.0 and LibGoThere-1.0.
+Ace3, LibSink-2.0, LibDataBroker-1.1 and LibGoThere-1.0.
 
 Ace3 is not committed. `.pkgmeta` lists each library as an external, pinned
 to a commit of the Ace3 GitHub mirror. The packager fetches them for a
@@ -20,10 +20,17 @@ with a release tag. `tests/libs.lua` needs no svn client for it: the svn
 server lists each directory as a page of links and serves each file at its own
 address, which curl downloads.
 
+LibDataBroker-1.1 (tekkub's GitHub repository) has no release tags; its
+external is pinned to its last commit. The Data Broker module makes Kennel's
+data object with it.
+
 LibGoThere-1.0 is Kennel's own route library, in a repository of its own
 ([github.com/Langmans/LibGoThere-1.0](https://github.com/Langmans/LibGoThere-1.0)),
 an external pinned to a commit like Ace3. Beast Map sends the hunter to a
 beast through it. To move to a newer version, change the commit in `.pkgmeta`.
+ReagentRecipeVendorTooltips embeds it too: until the library's first release
+every copy has MINOR 1 and LibStub keeps whichever loads first, so both
+addons must pin the same commit.
 
 The `.toc` lists Ace3 and LibStub as `OptionalDeps`, so a separately
 installed Ace3 loads first and LibStub keeps the newest copy of each library.

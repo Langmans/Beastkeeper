@@ -182,6 +182,11 @@
 ---@field skin string a button skin id, or "auto"
 ---@field holder string a holder skin id, or "auto"
 
+---The Data Broker module: Kennel's LibDataBroker-1.1 data source.
+---@class KennelBroker: KennelModule
+---@field object table? the data object ("Kennel"), made for a hunter on the first enable
+---@field Update fun(self: KennelBroker)
+
 ---Where and when a pet came to the journal.
 ---@class KennelJournalFirst
 ---@field t number server time
@@ -532,5 +537,6 @@
 ---@field db AceDBObject-3.0 KennelDB; profile.modules[name] holds each module's switch
 ---@field modules table<string, KennelModule> AceAddon's own module table, by name
 ---@field optionsCategoryID string|number the settings page, for Settings.OpenToCategory
+---@field moduleCategoryIDs table<string, string|number> each module's page, by module name
 ---@field PROFILE_OPTIONS string[] the keys of AceDBOptions' own Profiles entries, see Core\Options.lua
 ---@field data KennelData

@@ -160,12 +160,7 @@ function M.FoodColor(food)
     return color[1], color[2], color[3]
 end
 
----The pet's happiness (1 to 3), or nil without a pet or an answer.
----@return number?
-local function Happiness()
-    local happiness = C_PetInfo.GetPetHappiness and C_PetInfo.GetPetHappiness()
-    if type(happiness) == "number" and Kennel.Readable(happiness) then return happiness end
-end
+local Happiness = Kennel.PetHappiness
 M.Happiness = Happiness
 
 -- Per toast: its title (%s: the pet's name) and text.

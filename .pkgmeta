@@ -51,6 +51,11 @@ externals:
     url: https://repos.curseforge.com/wow/libsink-2-0/trunk/LibSink-2.0
     tag: v12.1.1
     type: svn
+  # The data broker standard (Titan Panel, ChocolateBar, ElvUI datatexts read it); its last commit,
+  # it has no release tags.
+  Libs/LibDataBroker-1.1:
+    url: https://github.com/tekkub/libdatabroker-1-1.git
+    commit: 1a63ede0248c11aa1ee415187c1f9c9489ce3e02
   # The route library, Kennel's own (github.com/Langmans/LibGoThere-1.0); pinned to a commit.
   Libs/LibGoThere-1.0:
     url: https://github.com/Langmans/LibGoThere-1.0.git

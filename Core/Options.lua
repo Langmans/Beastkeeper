@@ -318,13 +318,20 @@ function Kennel:SetupOptions()
     -- Each page is named as its group is, so a module's own name and AceDBOptions' translated
     -- "Profiles" carry over. Every group here has a string name.
     local args = self:GetOptionsTable().args --[[@as table<string, {name: string}>]]
+    ---@type table<string, string|number>
+    self.moduleCategoryIDs = {}
     for name in pairs(self.modules) do
-        if args[name] then dialog:AddToBlizOptions(addonName, args[name].name, addonName, name) end
+        if args[name] then
+            ---@type table, string|number
+            local _, id = dialog:AddToBlizOptions(addonName, args[name].name, addonName, name)
+            self.moduleCategoryIDs[name] = id
+        end
     end
     dialog:AddToBlizOptions(addonName, args.profiles.name, addonName, "profiles")
 end
 
----Opens the settings window on Kennel's page.
-function Kennel:OpenOptions()
-    Settings.OpenToCategory(self.optionsCategoryID)
+---Opens the settings window on Kennel's page, or on a module's.
+---@param module string? the module's name
+function Kennel:OpenOptions(module)
+    Settings.OpenToCategory(module and self.moduleCategoryIDs[module] or self.optionsCategoryID)
 end

@@ -7,5 +7,6 @@
     <Include file="Feeding\Feeding.xml"/>
     <Include file="BeastMap\BeastMap.xml"/>
     <Include file="PetJournal\PetJournal.xml"/>
+    <Include file="Broker\Broker.xml"/>
     <Include file="DevScreenshots\DevScreenshots.xml"/>
 </Ui>

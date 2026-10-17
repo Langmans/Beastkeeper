@@ -150,6 +150,14 @@ function Kennel.PetLoyalty(total, petLevel)
     return loyalty, name
 end
 
+---The pet's happiness: 1 unhappy, 2 content, 3 happy; nil without a pet, the API, or a readable
+---answer.
+---@return number?
+function Kennel.PetHappiness()
+    local happiness = C_PetInfo.GetPetHappiness and C_PetInfo.GetPetHappiness()
+    if type(happiness) == "number" and Kennel.Readable(happiness) then return happiness end
+end
+
 -- The loyalty name's colour runs from the friendly to the exalted reputation colour.
 local FRIENDLY, EXALTED = { 0, 0.8, 0 }, { 0, 0.8, 0.8 }
 

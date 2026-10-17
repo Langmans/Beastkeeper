@@ -184,6 +184,13 @@ it to feed the next food from your bags.
 - **Toasts** when your pet becomes content or unhappy, with the food that is
   next, and when the last food it eats leaves your bags. Each has a switch.
 
+### Data Broker
+
+Kennel in Titan Panel, ChocolateBar, ElvUI's datatexts or any other data
+broker display: your pet's name, happiness and free training points
+("Fluffy: Happy, 43 TP"); hover for its level, loyalty and the Pet Journal in
+brief; click for Kennel's settings, right-click for the Pet Journal.
+
 ### Pet Journal
 
 A page for every pet your hunter had out (Kennel > Pet Journal), per

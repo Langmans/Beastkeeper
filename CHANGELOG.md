@@ -49,6 +49,9 @@
 - Button skins: Kennel's buttons and lists in the look of Masque, ElvUI or
   EllesmereUI, chosen on Kennel's page (Automatic by default). Other addons
   add theirs with Kennel:RegisterButtonSkin and RegisterButtonHolderSkin.
+- Data Broker: Kennel as a LibDataBroker source (Titan Panel, ChocolateBar,
+  ElvUI datatexts): the pet's name, happiness and free training points, more
+  in its tooltip, the settings on a click.
 - Pet Journal: a page per pet with when and where it was tamed, its level and
   loyalty, the time out together, its deaths, a forecast of the next loyalty
   level and its abilities, stabled pets included, with what each could still
