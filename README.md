@@ -301,7 +301,9 @@ one table of details that may grow but keeps its fields: `KENNEL_TOAST` (a
 toast about to show, still changeable), `KENNEL_PRINT` (a chat line, with
 the module that said it) and `KENNEL_RANKS_KNOWN` (pet ability ranks the
 hunter now knows). Fields, rules and a small example addon:
-[docs/hooking.md](docs/hooking.md). Kennel's own development screenshots
+[docs/hooking.md](docs/hooking.md); the tables' types for a language server
+are in [docs/KennelMessages.lua](docs/KennelMessages.lua), which ships with
+the addon (unlike `annotations/`) and is never loaded in game. Kennel's own development screenshots
 listen the same way. A module prints with `self:Print(...)`, which names it in
 `KENNEL_PRINT`.
 

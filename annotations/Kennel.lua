@@ -38,24 +38,8 @@
 ---@field body string the macro text
 ---@field desc string? what it does, shown in the tooltip of an action button that holds it
 
----A toast sound: a sound file, or a sound kit.
----@class KennelSound
----@field file number? FileDataID for PlaySoundFile
----@field kit number? SoundKit ID for PlaySound
-
----What Kennel:ShowToast shows.
----@class KennelToastInfo
----@field key string one toast per key; "<module>:<what>", so the module can drop its own
----@field type string? "<module>:<kind>", one of the module's toastTypes: picks the skin
----@field source string? who it comes from, such as the module's title (the splash shows it)
----@field title string
----@field text string?
----@field hint string? shown in grey below the text
----@field icon (number|string)? FileDataID or texture path; a question mark without
----@field accent number[]? { r, g, b } for the side bar, the title and the timer; amber without
----@field sound KennelSound?
----@field portrait string? a unit ("pet") whose portrait shows as a badge on the icon while it exists
----@field screenshot boolean? take a screenshot once the toast has faded in
+-- KennelToastInfo, KennelSound and the message tables (KennelToastEvent and the rest) are public:
+-- they are in docs\KennelMessages.lua, which ships with the addon.
 
 ---A skin frame with a portrait badge (Kennel:AddToastPortrait).
 ---@class KennelPortraitFrame: Frame
@@ -355,24 +339,6 @@
 ---@field db AceDBObject-3.0 global.shots: what has a screenshot, by kind
 ---@field KENNEL_TOAST fun(self: KennelDevScreenshots, message: string, event: KennelToastEvent)
 ---@field KENNEL_PRINT fun(self: KennelDevScreenshots, message: string, event: KennelPrintEvent)
-
----The messages Kennel sends (docs\hooking.md): one table each, so fields can be added later.
----@class KennelToastEvent
----@field module string? the part of the toast's key before the colon
----@field toast KennelToastInfo Kennel's own table: a listener may change it
-
----@class KennelPrintEvent
----@field module string? the module that printed it; nil for the core
----@field line string
-
----@class KennelRanksKnownEvent
----@field module string "AbilityLearned"
----@field source "learn"|"training" a learn the module saw, or the Beast Training window
----@field ranks KennelKnownRank[] the ranks that were news
-
----@class KennelKnownRank
----@field name string the ability's name in the client's language
----@field rank number
 
 ---BeastMap: a HandyNotes plugin with a pin for every beast that can teach the hunter a rank.
 ---@class KennelBeastMap: KennelSettingsModule

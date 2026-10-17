@@ -15,6 +15,22 @@ Kennel loads Ace3 itself, so `LibStub("AceEvent-3.0")` is there once Kennel
 has loaded; put `## OptionalDeps: Kennel` in your `.toc` so Kennel loads
 first.
 
+## Types
+
+Each message's table is a data transfer object with a fixed shape.
+[KennelMessages.lua](KennelMessages.lua), next to this file, describes them
+for the Lua language server (LuaLS, or the WoW Lua LS): `KennelToastEvent`,
+`KennelPrintEvent`, `KennelRanksKnownEvent`, and `KennelToastInfo` for the
+toast. It ships with Kennel and is never loaded in game. Point your
+workspace at it, for example in `.luarc.json`:
+
+```json
+{ "workspace.library": ["../Kennel/docs"] }
+```
+
+Then annotate a handler (`---@param event KennelToastEvent`) and the editor
+knows every field.
+
 ## The messages
 
 Every table has `module`: the Kennel module it comes from (its internal name,
@@ -77,6 +93,7 @@ local hook = AceEvent:Embed({})
 KennelHookLog = KennelHookLog or {}
 
 -- Ranks the hunter now knows: keep them, and tell the group about a new learn.
+---@param event KennelRanksKnownEvent
 hook:RegisterMessage("KENNEL_RANKS_KNOWN", function(_, event)
     for _, known in ipairs(event.ranks) do
         table.insert(KennelHookLog, ("%s %s rank %d"):format(date("%Y-%m-%d"), known.name, known.rank))
@@ -87,6 +104,7 @@ hook:RegisterMessage("KENNEL_RANKS_KNOWN", function(_, event)
 end)
 
 -- Every toast passes here before it shows: mark Care Button's dead-pet toast.
+---@param event KennelToastEvent
 hook:RegisterMessage("KENNEL_TOAST", function(_, event)
     if event.toast.type == "CareButton:dead" then
         event.toast.title = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_8:0|t " .. event.toast.title
@@ -94,6 +112,7 @@ hook:RegisterMessage("KENNEL_TOAST", function(_, event)
 end)
 
 -- What Kennel says in chat, by module.
+---@param event KennelPrintEvent
 hook:RegisterMessage("KENNEL_PRINT", function(_, event)
     if event.module == "AutocastCheck" then
         print("Kennel's autocast choice changed: " .. event.line)
