@@ -42,6 +42,8 @@
   tooltip of the ranks it teaches; switches for missing lower ranks, every
   beast in reach and beasts above your level. At a level-up, also without
   HandyNotes, a toast for the ranks a beast of the new level brings in reach.
+  A click on a pin takes you there, through LibGoThere-1.0: Shortest Path
+  Forever, Move Fast, TomTom, the game's map pin or a pin link.
 - Ability Learned keeps every rank you learned, not only the highest.
 - For other addons: AceEvent messages KENNEL_TOAST, KENNEL_PRINT and
   KENNEL_RANKS_KNOWN, each with a table of details (module, toast, line,

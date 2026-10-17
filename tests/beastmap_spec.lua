@@ -133,6 +133,7 @@ describe("Beast Map", function()
         assert.are.same({ 0.5, 0.5, 0.5 }, lines[2].color)
         assert.are.equal("Claw (Rank 2)", lines[3].text)
         assert.are.same({ 0, 1, 0 }, lines[3].color)
+        assert.are.equal("Click to go there.", lines[#lines].text)
         local rare = client:mapPins(TIRISFAL)[1]
         title, lines = client:hoverPin(TIRISFAL, rare.coord)
         assert.are.equal("Rare Cat", title)
@@ -145,6 +146,25 @@ describe("Beast Map", function()
         assert.is_false(GameTooltip:IsShown())
         assert.has_no.errors(function()
             client:hoverPin(ELWYNN, 1)
+        end)
+    end)
+
+    it("sends the hunter to a beast with a left click on its pin, through LibGoThere", function()
+        local client = hunter(10)
+        local low = client:mapPins(ELWYNN)[1]
+        client:clickPin(ELWYNN, low.coord, "RightButton")
+        assert.is_false(client:printedContains("|Hworldmap:"), "a right click does nothing")
+        client:clickPin(ELWYNN, low.coord)
+        -- No route addon and no game waypoint in the simulated client: LibGoThere's pin link.
+        local links = 0
+        for _, line in ipairs(client.printed) do
+            if line:find("|Hworldmap:1429:4000:5000|h", 1, true) and line:find("Low Cat", 1, true) then
+                links = links + 1
+            end
+        end
+        assert.are.equal(1, links, "once, as the button comes up")
+        assert.has_no.errors(function()
+            client:clickPin(ELWYNN, 1)
         end)
     end)
 

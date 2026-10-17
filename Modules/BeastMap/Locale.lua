@@ -42,6 +42,8 @@ L.BEASTMAP_REACH_PLACE = "%s in %s"
 
 -- Pin tooltip, under the beast's name. %s: its level or level range, such as "5-6".
 L.BEASTMAP_LEVEL = "Level %s"
+-- Pin tooltip, last line, in grey.
+L.BEASTMAP_CLICK = "Click to go there."
 -- Added after the level for a rare, elite or rare elite beast.
 L.BEASTMAP_RARE = ", rare"
 L.BEASTMAP_ELITE = ", elite"

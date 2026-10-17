@@ -159,7 +159,9 @@ A random `/emote` every time you feed your pet, the way Feed-O-Matic did in
 With [HandyNotes](https://www.curseforge.com/wow/addons/handynotes): a pin on
 the world map and the minimap for every beast that can teach your hunter a pet
 ability rank, with that ability's icon. Hover a pin for the beast's level
-(rare, elite) and the ranks it teaches, green for the ones you lack.
+(rare, elite) and the ranks it teaches, green for the ones you lack; click it
+to go there, through the route or waypoint addon you have (Shortest Path
+Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
 
 - By default only beasts you can tame now (at most your level) that teach a
   rank above the highest you know. What you know comes from Ability Learned:
@@ -194,7 +196,7 @@ How Kennel is built, how to add to it, and how other addons can hook into it:
 5. [Toast skins](https://github.com/Langmans/Kennel/blob/main/docs/05-toast-skins.md):
    drawing Kennel's toast in your own look.
 6. [Libraries](https://github.com/Langmans/Kennel/blob/main/docs/06-libraries.md):
-   Ace3 and LibSink, pinned through `.pkgmeta`.
+   Ace3, LibSink and LibGoThere, pinned through `.pkgmeta`.
 7. [Development](https://github.com/Langmans/Kennel/blob/main/docs/07-development.md):
    tests, lint, coverage, and screenshots while testing in game.
 8. [CI and releases](https://github.com/Langmans/Kennel/blob/main/docs/08-ci-and-releases.md):

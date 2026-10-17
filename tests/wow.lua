@@ -1068,6 +1068,9 @@ function NewClient(opts)
         IsAddOnLoaded = function()
             return false
         end,
+        DoesAddOnExist = function()
+            return false
+        end,
     }
 
     -- Where LibSink sends: client.combatText (Blizzard's floating text, its default), chat lines
@@ -1403,6 +1406,17 @@ function NewClient(opts)
         local pin = newRegion()
         HandyNotes.plugins.Kennel.OnEnter(pin, uiMapID, coord)
         return GameTooltip.text, self.tooltipLines
+    end
+
+    ---A click on a pin of Kennel's plugin: HandyNotes calls OnClick with the pin as self, once as
+    ---the button goes down and once as it comes up.
+    ---@param uiMapID number
+    ---@param coord number
+    ---@param button string?
+    function client:clickPin(uiMapID, coord, button)
+        local pin = newRegion()
+        HandyNotes.plugins.Kennel.OnClick(pin, button or "LeftButton", true, uiMapID, coord)
+        HandyNotes.plugins.Kennel.OnClick(pin, button or "LeftButton", false, uiMapID, coord)
     end
 
     ---The bag slot holding itemID, added (empty) if there is none.

@@ -24,6 +24,8 @@ M.toastTypes = { reach = L.BEASTMAP_TOASTTYPE_REACH }
 M.defaults = { profile = { usefulOnly = true, gaps = false, aboveLevel = false, levelToast = true } }
 
 local PLUGIN = "Kennel"
+-- The route library (Libs\LibGoThere-1.0): sends the hunter to a beast.
+local GoThere = LibStub("LibGoThere-1.0") --[[@as LibGoThere]]
 local LACKING, KNOWN = { 0, 1, 0 }, { 0.5, 0.5, 0.5 }
 
 ---@return KennelBeastMapSettings
@@ -230,11 +232,29 @@ function handler.OnEnter(pin, uiMapID, coord)
             GameTooltip:AddLine(text, color[1], color[2], color[3])
         end
     end
+    GameTooltip:AddLine(L.BEASTMAP_CLICK, KNOWN[1], KNOWN[2], KNOWN[3])
     GameTooltip:Show()
 end
 
 function handler.OnLeave()
     GameTooltip:Hide()
+end
+
+---A left click (as the button comes up) sends the hunter to the beast, through LibGoThere-1.0:
+---a route, an arrow or the game's waypoint, whichever addon the player has, else a pin link.
+---@param _ Frame the pin
+---@param button string
+---@param down boolean
+---@param uiMapID number
+---@param coord number
+function handler.OnClick(_, button, down, uiMapID, coord)
+    local pins = byMap and byMap[uiMapID]
+    local at = pins and pins.at[coord]
+    if button ~= "LeftButton" or down or not at then return end
+    ---@type number
+    local npc = pins[at]
+    local x, y = (HandyNotes --[[@as HandyNotesApi]]):getXY(coord)
+    GoThere:Navigate("Kennel", uiMapID, x, y, Data().beasts[npc].name)
 end
 
 ---Forgets the pins' icons and has HandyNotes draw them again.

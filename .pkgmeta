@@ -49,6 +49,10 @@ externals:
     url: https://repos.curseforge.com/wow/libsink-2-0/trunk/LibSink-2.0
     tag: v12.1.1
     type: svn
+  # The route library, Kennel's own (github.com/Langmans/LibGoThere-1.0); pinned to a commit.
+  Libs/LibGoThere-1.0:
+    url: https://github.com/Langmans/LibGoThere-1.0.git
+    commit: ebb3698f1d4126b592b9117142fce55ce9f89f18
 
 # Release notes come from this file instead of the commit log, so commit
 # bodies and trailers stay out of the CurseForge page.
