@@ -168,6 +168,10 @@ ability rank, with that ability's icon. Hover a pin for the beast's level
   lower rank too (Claw 2 when you know Claw 1, 3 and 4: it suits a young pet
   and costs fewer points), every beast in reach whatever it teaches, beasts
   above your level. HandyNotes' own plugin switch hides the pins.
+- **At a level-up**, also without HandyNotes: a toast when the new level
+  brings a beast in reach that teaches a rank you lack and no lower beast
+  taught ("Now in reach: Charge (Rank 1)", "Cave Boar in Wailing Caverns
+  teaches it"), several ranks in one toast. It has its own switch.
 - 106 ranks and 423 beasts, from Wowhead's WoW: Forever database and the
   Tamed addon's list (MIT, notice in `Data/Tamed-LICENSE.txt`), kept only
   where Wowhead has the beast as tameable on Forever. Beast names are in

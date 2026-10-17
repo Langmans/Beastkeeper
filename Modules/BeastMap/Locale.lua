@@ -22,6 +22,24 @@ L.BEASTMAP_OPTION_GAPS_DESC = "Count a rank below your highest that you never le
 L.BEASTMAP_OPTION_ABOVE = "Also beasts above my level"
 L.BEASTMAP_OPTION_ABOVE_DESC = "A hunter can only tame a beast up to its own level. Turn this on to see the ones for later too."
 
+-- Settings: the level-up toast.
+L.BEASTMAP_OPTION_TOAST = "Toast at a level-up"
+L.BEASTMAP_OPTION_TOAST_DESC = "When a new level brings a beast in reach that teaches a rank you lack, and no lower beast taught it, say which rank and where. Works without HandyNotes."
+
+-- Settings window, Kennel's page: the kind of toast, for choosing its look. Shown after "Beast Map: ".
+L.BEASTMAP_TOASTTYPE_REACH = "pet ability rank in reach"
+
+-- Toast title for one rank. %s: the ability with its rank, such as "Claw (Rank 3)".
+L.BEASTMAP_REACH_ONE = "Now in reach: %s"
+-- Toast text under it. %s: the beast and its place, BEASTMAP_REACH_PLACE, or the beast alone.
+L.BEASTMAP_REACH_TEACHES = "%s teaches it."
+-- Toast title for several ranks. %d: how many.
+L.BEASTMAP_REACH_MANY = "%d pet ability ranks now in reach"
+-- Toast text, one line per rank. First %s: the ability with its rank; second: the beast and place.
+L.BEASTMAP_REACH_LINE = "%s: %s"
+-- A beast and where it lives. First %s: the beast's name (English); second: the zone or instance.
+L.BEASTMAP_REACH_PLACE = "%s in %s"
+
 -- Pin tooltip, under the beast's name. %s: its level or level range, such as "5-6".
 L.BEASTMAP_LEVEL = "Level %s"
 -- Added after the level for a rare, elite or rare elite beast.

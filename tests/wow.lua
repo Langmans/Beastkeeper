@@ -469,6 +469,18 @@ function NewClient(opts)
     function GetZoneText()
         return client.zone
     end
+    -- Map and area names the client knows: a uiMapID's (C_Map.GetMapInfo) and an AreaTable
+    -- ID's, as an instance has (C_Map.GetAreaInfo). Anything else is unknown (nil).
+    local MAP_NAMES = { [1429] = "Elwynn Forest", [1420] = "Tirisfal Glades" }
+    local AREA_NAMES = { [718] = "Wailing Caverns" }
+    C_Map = {
+        GetMapInfo = function(uiMapID)
+            return MAP_NAMES[uiMapID] and { mapID = uiMapID, name = MAP_NAMES[uiMapID] } or nil
+        end,
+        GetAreaInfo = function(areaID)
+            return AREA_NAMES[areaID]
+        end,
+    }
     function GetServerTime()
         return client.serverTime
     end

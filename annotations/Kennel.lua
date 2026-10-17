@@ -356,12 +356,14 @@
 ---@field Settings fun(self: KennelBeastMap): KennelBeastMapSettings
 ---@field PlayerLevel fun(self: KennelBeastMap): number
 ---@field Refresh fun(self: KennelBeastMap)
+---@field ToastReach fun(self: KennelBeastMap, level: number)
 ---@field GetOptions fun(self: KennelBeastMap): table
 
 ---@class KennelBeastMapSettings
 ---@field usefulOnly boolean only beasts that teach a rank the hunter lacks
 ---@field gaps boolean a missing rank below the highest counts as lacking
 ---@field aboveLevel boolean beasts above the hunter's level too
+---@field levelToast boolean a toast when a level-up brings a teaching beast in reach
 
 ---A map's pins as npc, coord pairs, with the position of each coord's npc.
 ---@class KennelBeastMapPins

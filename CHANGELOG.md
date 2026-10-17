@@ -40,5 +40,6 @@
 - Beast Map: with HandyNotes, a pin for every beast your hunter can tame now
   that teaches a pet ability rank you lack, with the ability's icon and a
   tooltip of the ranks it teaches; switches for missing lower ranks, every
-  beast in reach and beasts above your level.
+  beast in reach and beasts above your level. At a level-up, also without
+  HandyNotes, a toast for the ranks a beast of the new level brings in reach.
 - Ability Learned keeps every rank you learned, not only the highest.

@@ -11,7 +11,7 @@ local function SmallData(Kennel)
         petAbilityRanks = {
             [CLAW] = { ability = CLAW, rank = 1, level = 1, families = { 2 }, teachers = { 101 } },
             [CLAW_2] = { ability = CLAW, rank = 2, level = 8, families = { 2 }, teachers = { 101 } },
-            [CLAW_3] = { ability = CLAW, rank = 3, level = 16, families = { 2 }, teachers = { 102, 104 } },
+            [CLAW_3] = { ability = CLAW, rank = 3, level = 16, families = { 2 }, teachers = { 102, 104, 106 } },
             [BITE] = { ability = BITE, rank = 1, level = 1, families = { 1, 3 }, teachers = { 103 } },
             [CHARGE] = { ability = CHARGE, rank = 1, level = 1, families = { 5 }, teachers = { 105 } },
         },
@@ -35,6 +35,8 @@ local function SmallData(Kennel)
                 pins = { [TIRISFAL] = { 30, 30 } },
             },
             [105] = { name = "Cave Boar", family = 5, minLevel = 12, maxLevel = 12, zones = { 718 } },
+            -- Teaches Claw 3 like Rare Cat, but from level 11: no news at 11.
+            [106] = { name = "Late Cat", family = 2, minLevel = 11, maxLevel = 11, pins = { [9999] = { 50, 50 } } },
         },
     }
 end
@@ -167,5 +169,57 @@ describe("Beast Map", function()
         assert.is_true(client.mapUpdates.world > 0)
         client.Kennel:GetModule("BeastMap"):Enable()
         assert.are.equal(3, #client:mapPins(ELWYNN))
+    end)
+
+    describe("at a level-up", function()
+        ---The hunter reaches `level`; gives the toast's title and text, or nil.
+        ---@param client table
+        ---@param level number
+        local function levelUp(client, level)
+            client:fire("PLAYER_LEVEL_UP", level)
+            local toast = client:toast()
+            if not (toast and toast.shown) then return nil end
+            return client:toastTitle(), toast.Text.text
+        end
+
+        it("toasts the ranks a beast of the new level brings in reach, where to tame it", function()
+            local client = hunter(11)
+            local title, text = levelUp(client, 12)
+            assert.are.equal("Now in reach: Charge (Rank 1)", title)
+            assert.are.equal("Cave Boar in Wailing Caverns teaches it.", text)
+        end)
+
+        it("lists several ranks, each with a beast", function()
+            local client = hunter(4)
+            local title, text = levelUp(client, 5)
+            assert.are.equal("3 pet ability ranks now in reach", title)
+            assert.are.equal(
+                "Claw (Rank 1): Low Cat in Elwynn Forest\nClaw (Rank 2): Low Cat in Elwynn Forest\nBite (Rank 1): Spider in Elwynn Forest",
+                text
+            )
+        end)
+
+        it("leaves out ranks the hunter has, and ranks a lower beast taught already", function()
+            local client = hunter(4)
+            client:openTrainer({ { "Claw", "used", CLAW_2 } }):closeTrainer()
+            assert.are.equal("Now in reach: Bite (Rank 1)", (levelUp(client, 5)))
+            client = hunter(10)
+            assert.is_nil(levelUp(client, 11), "Claw 3 was in reach at 10 already")
+        end)
+
+        it("names an ordinary beast before a rare, and the beast alone when its map has no name", function()
+            local client = hunter(9)
+            client.Kennel.data.beasts[104].minLevel = 11 -- Rare Cat now comes with Late Cat
+            local _, text = levelUp(client, 11)
+            assert.are.equal("Late Cat teaches it.", text)
+        end)
+
+        it("stays quiet when switched off, also without HandyNotes", function()
+            local client = hunter(4)
+            set(client, "levelToast", false)
+            assert.is_nil(levelUp(client, 5))
+            client = hunter(11, { handyNotes = false })
+            assert.are.equal("Now in reach: Charge (Rank 1)", (levelUp(client, 12)))
+        end)
     end)
 end)
