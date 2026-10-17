@@ -157,6 +157,21 @@ A random `/emote` every time you feed your pet, the way Feed-O-Matic did in
   own line, a fallback when none fits, and one list shared by all characters
   if you want. An example button prints an emote only to you.
 
+### Feeding
+
+A button beside your pet's portrait, there while your pet is not happy: click
+it to feed the next food from your bags.
+
+- **The order**, in its tooltip: food that gives the most happiness first
+  (food far below your pet's level gives less, or nothing, and is left out),
+  then the lowest level, so the better food lasts; then the smallest stack.
+  Food that also makes you Well Fed comes last. What your pet eats, the game
+  says itself.
+- The border shows the happiness: yellow content, red unhappy. Shift-drag to
+  move the button; the page puts it back.
+- **Toasts** when your pet becomes content or unhappy, with the food that is
+  next, and when the last food it eats leaves your bags. Each has a switch.
+
 ### Beast Map
 
 With [HandyNotes](https://www.curseforge.com/wow/addons/handynotes): a pin on

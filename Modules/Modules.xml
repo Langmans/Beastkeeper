@@ -4,6 +4,7 @@
     <Include file="CareButton\CareButton.xml"/>
     <Include file="AbilityLearned\AbilityLearned.xml"/>
     <Include file="FeedEmotes\FeedEmotes.xml"/>
+    <Include file="Feeding\Feeding.xml"/>
     <Include file="BeastMap\BeastMap.xml"/>
     <Include file="DevScreenshots\DevScreenshots.xml"/>
 </Ui>

@@ -112,6 +112,7 @@ local SPELLS = {
         [1310617] = { "Trickster's Dance", 132242, "Rank 1" }, -- Fox, new in WoW: Forever
         [4187] = { "Great Stamina", 136112, "Rank 1" },
         [20736] = { "Distracting Shot", 135736, "" },
+        [19705] = { "Well Fed", 136000, "" },
         [136] = { "Mend Pet", 132179, "" },
         [982] = { "Revive Pet", 132163, "" },
         [883] = { "Call Pet", 132161, "" },
@@ -147,7 +148,13 @@ local ITEM_NAMES = {
     [4536] = "Shiny Red Apple",
     [117] = "Tough Jerky",
     [4540] = "Tough Hunk of Bread",
+    [2287] = "Haunch of Meat",
+    [3770] = "Mutton Chop",
+    [2680] = "Spiced Wolf Meat",
 }
+-- Their item levels, and the food that also makes the hunter well fed (its tooltip says so).
+local ITEM_LEVELS = { [117] = 5, [2287] = 15, [3770] = 25, [12037] = 40, [2680] = 10, [4540] = 5 }
+local WELL_FED = { [2680] = true }
 
 ---The chat link the client builds for an item, as C_Item.GetItemInfo's second return.
 function ItemLink(itemID)
@@ -336,6 +343,18 @@ function NewClient(opts)
             local name = id and client.creatureNames[id]
             return { lines = name and { { leftText = name } } or {} }
         end,
+        -- An item's tooltip: its name, and for food that makes the hunter well fed the line
+        -- saying so, worded as the client does.
+        GetItemByID = function(itemID)
+            local lines = { { leftText = ITEM_NAMES[itemID] } }
+            if WELL_FED[itemID] then
+                lines[2] = {
+                    leftText = "Use: Restores 61 health over 18 sec. If you spend at least 10 seconds eating "
+                        .. "you will become well fed and gain 2 Stamina and Spirit for 15 min.",
+                }
+            end
+            return { lines = lines }
+        end,
     }
 
     -- The stance icons Blizzard's pet bar defines (Blizzard_ActionBar\Shared\PetActionBar.lua).
@@ -443,6 +462,9 @@ function NewClient(opts)
     function GetBindingText(key)
         return "<" .. key .. ">"
     end
+    function IsShiftKeyDown()
+        return client.mods.shift == true
+    end
     -- The client's "Your pet is dead" error, under the name the addon checks first.
     ERR_PET_SPELL_DEAD, PETTAME_DEAD = "Your pet is dead.", nil
 
@@ -537,6 +559,16 @@ function NewClient(opts)
     end
     function GetZoneText()
         return client.zone
+    end
+    -- Feeding: what the pet eats (client.petEats, by item ID: meat), its happiness
+    -- (client.happiness: 1 unhappy, 2 content, 3 happy) through C_PetInfo as on Forever.
+    client.petEats = { [117] = true, [2287] = true, [3770] = true, [12037] = true, [2680] = true }
+    client.happiness = 3
+    function C_PetInfo.CanPetEatItem(itemID)
+        return client.petEats[itemID] == true
+    end
+    function C_PetInfo.GetPetHappiness()
+        if client.pet then return client.happiness, 100, 0 end
     end
     -- Map and area names the client knows: a uiMapID's (C_Map.GetMapInfo) and an AreaTable
     -- ID's, as an instance has (C_Map.GetAreaInfo). Anything else is unknown (nil).
@@ -634,7 +666,10 @@ function NewClient(opts)
     end
     C_Item = {
         GetItemInfo = function(itemID)
-            if ITEM_NAMES[itemID] then return ITEM_NAMES[itemID], ItemLink(itemID) end
+            if ITEM_NAMES[itemID] then return ITEM_NAMES[itemID], ItemLink(itemID), 1, ITEM_LEVELS[itemID] end
+        end,
+        GetItemIconByID = function(itemID)
+            return 133000 + itemID
         end,
         GetItemCount = function(itemID)
             local total = 0
@@ -871,8 +906,13 @@ function NewClient(opts)
     function Region:IsMouseOver()
         return client.mouseOver == true
     end
-    -- Dropped somewhere: the client leaves the frame anchored where it was dropped.
+    -- Dragged: the frame follows the mouse; dropped, the client leaves it anchored where it was
+    -- dropped.
+    function Region:StartMoving()
+        self.moving = true
+    end
     function Region:StopMovingOrSizing()
+        self.moving = false
         self.points = { { "TOPLEFT", nil, "BOTTOMLEFT", 300, 700 } }
     end
     local function newRegion(fields)
@@ -1064,6 +1104,7 @@ function NewClient(opts)
     WorldFrame = newRegion()
     ClassTrainerFrame = newRegion()
     ClassTrainerFrame.shown = false
+    PetFrame = newRegion()
     -- The world map; its canvas is what Blizzard anchors the map's corner buttons to.
     WorldMapFrame = newRegion()
     local canvas = newRegion()
@@ -1408,6 +1449,12 @@ function NewClient(opts)
     function client:gainPoints(count)
         self.trainingPoints[1] = self.trainingPoints[1] + count
         return self:fire("UNIT_PET_TRAINING_POINTS", "pet")
+    end
+
+    ---The pet's happiness changes (1 unhappy, 2 content, 3 happy); the client says so.
+    function client:setHappiness(level)
+        self.happiness = level
+        return self:fire("UNIT_HAPPINESS", "pet")
     end
 
     ---The pet levels up, which brings `points` training points (none at loyalty level 1).

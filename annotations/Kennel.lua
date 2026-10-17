@@ -141,6 +141,40 @@
 ---@field on boolean
 ---@field icon (number|string)? from the pet bar; nil for one only in the spellbook
 
+---Feeding's saved settings, its namespace's profile.
+---@class KennelFeedingSettings
+---@field content boolean toast when the pet becomes content
+---@field unhappy boolean toast when the pet becomes unhappy
+---@field noFood boolean toast when the last food the pet eats leaves the bags
+---@field position [string, string, number, number]? the button's point, UIParent's point, x, y; nil beside the pet frame
+
+---A food in the bags the pet eats, as Feeding orders it.
+---@class KennelFood
+---@field bag number
+---@field slot number
+---@field itemID number
+---@field count number
+---@field level number its item level
+---@field bite number happiness a bite gives the pet out: 35, 17 or 8
+---@field wellFed boolean it also makes the hunter Well Fed: fed last
+
+---@class KennelFeeding: KennelSettingsModule
+---@field db AceDBObject-3.0 always set: the module has defaults
+---@field happiness number? the pet's happiness at the last check; nil for a new pet
+---@field FEED_PET number
+---@field Settings fun(self: KennelFeeding): KennelFeedingSettings
+---@field FeedPetName fun(): string
+---@field FoodName fun(food: KennelFood): string
+---@field Happiness fun(): number?
+---@field Scan fun(self: KennelFeeding): KennelFood[]
+---@field Foods fun(self: KennelFeeding): KennelFood[]
+---@field Toast fun(self: KennelFeeding, kind: "content"|"unhappy"|"nofood"): KennelToastInfo
+---@field CheckHappiness fun(self: KennelFeeding)
+---@field Update fun(self: KennelFeeding)
+---@field PlaceButton fun(self: KennelFeeding)
+---@field ApplyButton fun(self: KennelFeeding)
+---@field GetOptions fun(self: KennelFeeding): table
+
 ---CareButton's saved settings, its namespace's profile.
 ---@class KennelCareButtonSettings
 ---@field died boolean toast when the pet dies

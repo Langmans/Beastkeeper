@@ -111,6 +111,7 @@ describe("the settings window", function()
             "Kennel > Beta Page",
             "Kennel > Care Button",
             "Kennel > Feed Emotes",
+            "Kennel > Feeding",
             "Kennel > Profiles",
         }, names)
     end)
@@ -129,7 +130,7 @@ describe("the settings window", function()
             onShow(category.frame)
             shown = shown + 1
         end
-        assert.are.equal(9, shown)
+        assert.are.equal(10, shown)
         assert.are.same({}, client.errors)
     end)
 
