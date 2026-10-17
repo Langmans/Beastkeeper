@@ -5,12 +5,13 @@
 ## Author: Langmans
 ## Version: @project-version@
 ## SavedVariables: KennelDB
-## OptionalDeps: Ace3, LibStub, EllesmereUI, MessageQueue
+## OptionalDeps: Ace3, LibStub, EllesmereUI, MessageQueue, HandyNotes
 ## IconTexture: Interface\Icons\Ability_Hunter_BeastCall
 ## X-License: MIT
 
 embeds.xml
 Locales\Locales.xml
 Core\Core.xml
+Data\Beasts.lua
 Integrations\Integrations.xml
 Modules\Modules.xml

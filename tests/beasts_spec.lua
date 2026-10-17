@@ -1,5 +1,5 @@
--- The generated beast data: pet ability ranks and the beasts that teach them. Not in the .toc yet
--- (no module uses it), so it is loaded here on its own.
+-- The generated beast data: pet ability ranks and the beasts that teach them, loaded here on its
+-- own (the module specs use a small data set instead).
 
 ---@return table<number, KennelPetAbilityRank>, table<number, KennelBeast>
 local function Load()

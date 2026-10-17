@@ -6,3 +6,4 @@ if not L then return end
 --@localization(locale="ruRU", format="lua_additive_table", handle-unlocalized="ignore", namespace="CareButton")@
 --@localization(locale="ruRU", format="lua_additive_table", handle-unlocalized="ignore", namespace="AbilityLearned")@
 --@localization(locale="ruRU", format="lua_additive_table", handle-unlocalized="ignore", namespace="FeedEmotes")@
+--@localization(locale="ruRU", format="lua_additive_table", handle-unlocalized="ignore", namespace="BeastMap")@

@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- What this character has learned, per character (the namespace's char): every learn the module
--- saw (history), the highest rank known per ability (known), from those learns and from the
+-- saw (history), the ranks known per ability (ranks) and the highest (known), from those learns and from the
 -- Beast Training window, and how each pet stood when last seen (pets: training points total,
 -- level, loyalty level). From that, what the pet out can still teach: said in chat when a pet is
 -- summoned or tamed ("Fluffy can teach you: Claw (Rank 3)."), and on the page's button.
@@ -44,12 +44,40 @@ local function RankNumber(rank)
     return tonumber(rank and rank:match("%d+")) or 1
 end
 
----Records that this character knows an ability at a rank; a lower rank never replaces a higher.
+---Records that this character knows an ability at a rank: in the set of its ranks, and as the
+---highest when it is. Returns whether that was news; the caller then sends KENNEL_RANKS_KNOWN,
+---once for a whole Beast Training window.
 ---@param name string
 ---@param rank number
+---@return boolean
 function M:MarkKnown(name, rank)
-    local known = Char().known
-    if rank > (known[name] or 0) then known[name] = rank end
+    local char = Char()
+    local set = char.ranks[name]
+    if not set then
+        set = {}
+        char.ranks[name] = set
+    end
+    if set[rank] then return false end
+    set[rank] = true
+    if rank > (char.known[name] or 0) then char.known[name] = rank end
+    return true
+end
+
+---The highest rank of an ability this character knows, nil for none.
+---@param name string the ability's name in the client's language
+---@return number?
+function M:HighestRank(name)
+    return Char().known[name]
+end
+
+---Whether this character knows an ability at exactly this rank. Ranks are separate spells, so a
+---lower one can be missing below a higher one (it suits a young pet, or costs fewer points).
+---@param name string
+---@param rank number
+---@return boolean
+function M:HasRank(name, rank)
+    local set = Char().ranks[name]
+    return set ~= nil and set[rank] == true
 end
 
 ---Adds a learn to the history, keeping the last HISTORY_MAX, and to what is known.
@@ -60,7 +88,7 @@ function M:RecordLearn(entry)
     while #history > HISTORY_MAX do
         table.remove(history, 1)
     end
-    self:MarkKnown(entry.name, RankNumber(entry.rank))
+    if self:MarkKnown(entry.name, RankNumber(entry.rank)) then Kennel:SendMessage("KENNEL_RANKS_KNOWN") end
 end
 
 ---One history line: "2026-10-07 14:03  Claw (Rank 2), from Fluffy, Darkshore".
@@ -102,17 +130,18 @@ end
 ---Reads the hunter's learned ranks from Beast Training. A row that cannot be read is skipped.
 function M:ReadBeastTraining()
     if UnitExists("npc") then return end
-    local read = 0
+    local read, news = 0, false
     for index = 1, GetNumTrainerServices() do
         local ok, name, kind = pcall(GetTrainerServiceInfo, index)
         local spellID = ok and type(name) == "string" and kind ~= "header" and RowSpellID(index)
         if spellID then
             local _, _, rank = Kennel.SpellInfo(spellID)
-            self:MarkKnown(name, RankNumber(rank))
+            news = self:MarkKnown(name, RankNumber(rank)) or news
             read = read + 1
         end
     end
     if read > 0 then Char().trainingRead = true end
+    if news then Kennel:SendMessage("KENNEL_RANKS_KNOWN") end
 end
 
 ---The wild abilities the pet out has at a higher rank than this character knows, as

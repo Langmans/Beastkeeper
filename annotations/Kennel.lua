@@ -203,6 +203,7 @@
 ---@class KennelAbilityLearnedChar
 ---@field history KennelLearnEntry[] oldest first, the last 200
 ---@field known table<string, number> the highest rank known per ability name
+---@field ranks table<string, table<number, true>> every rank known per ability name
 ---@field trainingRead boolean Beast Training has been read once
 ---@field pets table<string, KennelPetGrowth> how each pet stood when last seen, by pet name
 
@@ -242,7 +243,9 @@
 ---@field SpellLearned fun(self: KennelAbilityLearned, spellID: number)
 ---@field Example fun(): string, string, number|string|nil, KennelPetSpell?
 ---@field Simulate fun(self: KennelAbilityLearned)
----@field MarkKnown fun(self: KennelAbilityLearned, name: string, rank: number)
+---@field MarkKnown fun(self: KennelAbilityLearned, name: string, rank: number): boolean
+---@field HighestRank fun(self: KennelAbilityLearned, name: string): number?
+---@field HasRank fun(self: KennelAbilityLearned, name: string, rank: number): boolean
 ---@field RecordLearn fun(self: KennelAbilityLearned, entry: KennelLearnEntry)
 ---@field HistoryText fun(self: KennelAbilityLearned): string
 ---@field ReadBeastTraining fun(self: KennelAbilityLearned)
@@ -345,6 +348,25 @@
 ---@field AGGRO_PER_FAMILY table<number, number>
 ---@field DEATH_PER_FAMILY table<number, number>
 ---@field WOUND_PER_FAMILY table<number, number>
+
+---BeastMap: a HandyNotes plugin with a pin for every beast that can teach the hunter a rank.
+---@class KennelBeastMap: KennelSettingsModule
+---@field db AceDBObject-3.0
+---@field level number? the level PLAYER_LEVEL_UP gave, until UnitLevel catches up
+---@field Settings fun(self: KennelBeastMap): KennelBeastMapSettings
+---@field PlayerLevel fun(self: KennelBeastMap): number
+---@field Refresh fun(self: KennelBeastMap)
+---@field GetOptions fun(self: KennelBeastMap): table
+
+---@class KennelBeastMapSettings
+---@field usefulOnly boolean only beasts that teach a rank the hunter lacks
+---@field gaps boolean a missing rank below the highest counts as lacking
+---@field aboveLevel boolean beasts above the hunter's level too
+
+---A map's pins as npc, coord pairs, with the position of each coord's npc.
+---@class KennelBeastMapPins
+---@field [integer] number
+---@field at table<number, integer>
 
 ---Generated game data (Data\*.lua).
 ---@class KennelData

@@ -1,0 +1,6 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- The module object first (BeastMap.lua); the page adds to it. -->
+    <Script file="Locale.lua"/>
+    <Script file="BeastMap.lua"/>
+    <Script file="Options.lua"/>
+</Ui>

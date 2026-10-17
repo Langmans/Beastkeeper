@@ -107,6 +107,7 @@ describe("the settings window", function()
             "Kennel > Ability Learned",
             "Kennel > Alpha Title",
             "Kennel > Autocast Check",
+            "Kennel > Beast Map",
             "Kennel > Beta Page",
             "Kennel > Care Button",
             "Kennel > Feed Emotes",
@@ -128,7 +129,7 @@ describe("the settings window", function()
             onShow(category.frame)
             shown = shown + 1
         end
-        assert.are.equal(8, shown)
+        assert.are.equal(9, shown)
         assert.are.same({}, client.errors)
     end)
 

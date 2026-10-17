@@ -40,6 +40,7 @@ end
 ---@field noMacroConsts boolean? no Constants.MacroConsts (the addon's own limits apply)
 ---@field ellesmere boolean|table? EllesmereUI loaded before Kennel (a table: fields to leave out, set to false)
 ---@field messageQueue boolean? MessageQueue loaded before Kennel
+---@field handyNotes boolean? HandyNotes loaded before Kennel
 ---@field noPet boolean? no pet unit at the start
 ---@field inCombat boolean? in combat from the start
 ---@field oldTrainingAPI boolean? GetPetTrainingPoints instead of C_PetInfo's
@@ -451,10 +452,10 @@ function NewClient(opts)
     -- classic "Loyalty Level 4 (Dependable)", Forever's bare name, a number, or SECRET): through
     -- C_PetInfo.GetPetLoyalty as on Forever, the global with opts.oldLoyaltyAPI, neither with
     -- opts.noLoyaltyAPI.
-    client.petLevel, client.loyalty = 15, "Loyalty Level 4 (Dependable)"
+    client.petLevel, client.loyalty, client.playerLevel = 15, "Loyalty Level 4 (Dependable)", 60
     function UnitLevel(unit)
         if unit == "pet" then return client.petLevel end
-        return 60
+        return client.playerLevel
     end
     local function petLoyalty()
         return client.loyalty
@@ -1073,6 +1074,33 @@ function NewClient(opts)
         }
     end
 
+    -- HandyNotes, when opts.handyNotes says it is loaded: its plugin registry and coordinate
+    -- helpers. client.mapUpdates counts the redraws asked of it, world map and minimap apart.
+    HandyNotes = nil
+    client.mapUpdates = { world = 0, minimap = 0 }
+    if opts.handyNotes then
+        HandyNotes = {
+            plugins = {},
+            RegisterPluginDB = function(self, name, handler, options)
+                assert(not self.plugins[name], name .. " is already registered by another plugin.")
+                self.plugins[name] = handler
+                self.pluginOptions = options
+            end,
+            getCoord = function(_, x, y)
+                return math.floor(x * 10000 + 0.5) * 10000 + math.floor(y * 10000 + 0.5)
+            end,
+            getXY = function(_, coord)
+                return math.floor(coord / 10000) / 10000, (coord % 10000) / 10000
+            end,
+            UpdateWorldMapPlugin = function()
+                client.mapUpdates.world = client.mapUpdates.world + 1
+            end,
+            UpdateMinimapPlugin = function()
+                client.mapUpdates.minimap = client.mapUpdates.minimap + 1
+            end,
+        }
+    end
+
     if opts.ellesmere then
         local eui = { borders = {}, shadows = {} }
         client.eui = eui
@@ -1292,6 +1320,36 @@ function NewClient(opts)
         self.tooltipLines = {}
         GameTooltip:SetAction(slot)
         return self.tooltipLines
+    end
+
+    ---The pins Kennel's HandyNotes plugin gives for a map, as HandyNotes reads them: a list of
+    ---{ coord, x, y, icon }, x and y in percent.
+    ---@param uiMapID number
+    ---@param minimap boolean?
+    ---@return table[]
+    function client:mapPins(uiMapID, minimap)
+        local plugin = HandyNotes.plugins.Kennel
+        local pins = {}
+        for coord, _, icon in plugin:GetNodes2(uiMapID, minimap == true) do
+            local x, y = HandyNotes:getXY(coord)
+            pins[#pins + 1] =
+                { coord = coord, x = math.floor(x * 1000 + 0.5) / 10, y = math.floor(y * 1000 + 0.5) / 10, icon = icon }
+        end
+        return pins
+    end
+
+    ---The mouse over a pin of Kennel's plugin: HandyNotes calls OnEnter with the pin as self.
+    ---Gives the tooltip's title and its lines.
+    ---@param uiMapID number
+    ---@param coord number
+    ---@return string? title
+    ---@return table[] lines
+    function client:hoverPin(uiMapID, coord)
+        self.tooltipLines = {}
+        GameTooltip.text = nil
+        local pin = newRegion()
+        HandyNotes.plugins.Kennel.OnEnter(pin, uiMapID, coord)
+        return GameTooltip.text, self.tooltipLines
     end
 
     ---The bag slot holding itemID, added (empty) if there is none.

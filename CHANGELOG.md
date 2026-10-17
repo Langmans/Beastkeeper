@@ -37,3 +37,8 @@
   (Cower, Distracting Shot) and KennelGrowl macro choose until a dungeon group
   is entered or left. A toast when it does not fit, and one key or the
   KennelAutocast macro that sets it right.
+- Beast Map: with HandyNotes, a pin for every beast your hunter can tame now
+  that teaches a pet ability rank you lack, with the ability's icon and a
+  tooltip of the ranks it teaches; switches for missing lower ranks, every
+  beast in reach and beasts above your level.
+- Ability Learned keeps every rank you learned, not only the highest.

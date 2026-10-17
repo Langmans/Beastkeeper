@@ -34,7 +34,7 @@ M.defaults = {
         loyalty = true,
         loyaltySound = "family",
     },
-    char = { history = {}, known = {}, trainingRead = false, pets = {} },
+    char = { history = {}, known = {}, ranks = {}, trainingRead = false, pets = {} },
 }
 
 local LEVEL_UP = 888 -- SOUNDKIT.LEVEL_UP

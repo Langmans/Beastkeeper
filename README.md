@@ -154,6 +154,25 @@ A random `/emote` every time you feed your pet, the way Feed-O-Matic did in
   own line, a fallback when none fits, and one list shared by all characters
   if you want. An example button prints an emote only to you.
 
+### Beast Map
+
+With [HandyNotes](https://www.curseforge.com/wow/addons/handynotes): a pin on
+the world map and the minimap for every beast that can teach your hunter a pet
+ability rank, with that ability's icon. Hover a pin for the beast's level
+(rare, elite) and the ranks it teaches, green for the ones you lack.
+
+- By default only beasts you can tame now (at most your level) that teach a
+  rank above the highest you know. What you know comes from Ability Learned:
+  the learns it saw and the Beast Training window, so open that once.
+- Switches on the module's page, also under HandyNotes' plugins: a missing
+  lower rank too (Claw 2 when you know Claw 1, 3 and 4: it suits a young pet
+  and costs fewer points), every beast in reach whatever it teaches, beasts
+  above your level. HandyNotes' own plugin switch hides the pins.
+- 106 ranks and 423 beasts, from Wowhead's WoW: Forever database and the
+  Tamed addon's list (MIT, notice in `Data/Tamed-LICENSE.txt`), kept only
+  where Wowhead has the beast as tameable on Forever. Beast names are in
+  English. Beasts in a dungeon have no pin.
+
 ## Technical
 
 ### Layout
