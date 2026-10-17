@@ -119,7 +119,9 @@ does not.
   own (its call; its wound cry when loyalty drops; the level-up sound for a
   family without one), the level-up sound, or none. Optionally a **screenshot** of each learn.
 - **History**: every learn, per character, with pet, zone and time; on the
-  module's page, newest first.
+  module's page, newest first. A learn from your pet also keeps the beast it
+  was tamed as, and a button lists the learns whose beast Kennel's beast data
+  does not have as a teacher yet: tell us, and Beast Map shows them too.
 - **Hints**: when you summon or tame a pet, chat says which of its abilities it
   has at a higher rank than you know ("Fluffy can teach you: Claw (Rank 3).").
   Kennel knows your ranks from what it saw you learn and from the **Beast

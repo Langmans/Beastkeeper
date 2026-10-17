@@ -115,6 +115,15 @@ function Kennel.PetNumber()
     return spawnUID and tonumber(spawnUID:sub(-8), 16) or nil
 end
 
+---The NPC ID the active pet was tamed as: its GUID's sixth field
+---(Pet-0-server-instance-zone-npcID-spawnUID). Nil without a pet or when the client hides the GUID.
+---@return number?
+function Kennel.PetNPC()
+    local guid = UnitGUID("pet")
+    if not guid or not Kennel.Readable(guid) then return nil end
+    return tonumber(guid:match("^Pet%-%d+%-%d+%-%d+%-%d+%-(%d+)%-"))
+end
+
 ---A sound of the active pet's family, as a toast sound; nil without a pet or for a family without
 ---that sound.
 ---@param kind "AGGRO"|"DEATH"|"WOUND" its attack call, death sound or wound cry

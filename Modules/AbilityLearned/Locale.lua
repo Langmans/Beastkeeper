@@ -63,6 +63,12 @@ L.ABILITYLEARNED_TEST_RANK = "Rank 2"
 L.ABILITYLEARNED_HISTORY_FROM = "from %s"
 L.ABILITYLEARNED_HISTORY_EMPTY = "Nothing learned on this character yet."
 
+-- Chat, from the "Learns Beast Map does not know" button: one line per learn whose beast is not in
+-- Kennel's beast data as a teacher of that rank. First %s: the ability with its rank; second: the
+-- pet's name; %d: the NPC ID the pet was tamed as; third %s: the zone of the learn.
+L.ABILITYLEARNED_TEACHER_MISSING = "%s: %s, tamed as NPC %d, %s"
+L.ABILITYLEARNED_TEACHERS_ALL = "Every learn from a pet is in Kennel's beast data."
+
 -- Settings page.
 L.ABILITYLEARNED_OPTION_SOUND = "Sound when an ability is learned"
 L.ABILITYLEARNED_OPTION_POINTS_SOUND = "Sound when training points are gained"
@@ -81,6 +87,8 @@ L.ABILITYLEARNED_OPTION_TEST = "Show a toast"
 L.ABILITYLEARNED_OPTION_SIMULATE = "Simulate a learn"
 L.ABILITYLEARNED_OPTION_SIMULATE_DESC = "Feeds the game's learn line for one of your pet's abilities through the detection; not kept in the history."
 L.ABILITYLEARNED_OPTION_CHECK = "What can my pet teach?"
+L.ABILITYLEARNED_OPTION_TEACHERS = "Learns Beast Map does not know"
+L.ABILITYLEARNED_OPTION_TEACHERS_DESC = "Lists in chat the learns from a pet whose beast Kennel's beast data does not have as a teacher of that rank. Tell Kennel's author, and Beast Map can show them too."
 L.ABILITYLEARNED_OPTION_HISTORY = "Learned on this character, newest first"
 
 -- stylua: ignore end

@@ -113,6 +113,15 @@ function M:GetOptions()
                     M:ReportTeachable()
                 end,
             },
+            teachers = {
+                type = "execute",
+                name = L.ABILITYLEARNED_OPTION_TEACHERS,
+                desc = L.ABILITYLEARNED_OPTION_TEACHERS_DESC,
+                order = 6.5,
+                func = function()
+                    M:ReportMissingTeachers()
+                end,
+            },
             historyTitle = { type = "header", name = L.ABILITYLEARNED_OPTION_HISTORY, order = 7 },
             history = {
                 type = "description",

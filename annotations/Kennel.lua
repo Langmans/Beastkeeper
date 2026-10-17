@@ -212,6 +212,7 @@
 ---@field name string
 ---@field rank string?
 ---@field pet string?
+---@field npc number? the NPC ID the pet was tamed as (Kennel.PetNPC)
 ---@field familyID number?
 ---@field zone string?
 ---@field t number GetServerTime()
@@ -234,6 +235,7 @@
 ---@field HasRank fun(self: KennelAbilityLearned, name: string, rank: number): boolean
 ---@field RecordLearn fun(self: KennelAbilityLearned, entry: KennelLearnEntry)
 ---@field HistoryText fun(self: KennelAbilityLearned): string
+---@field ReportMissingTeachers fun(self: KennelAbilityLearned)
 ---@field ReadBeastTraining fun(self: KennelAbilityLearned)
 ---@field CheckHints fun(self: KennelAbilityLearned)
 ---@field CheckGrowth fun(self: KennelAbilityLearned)

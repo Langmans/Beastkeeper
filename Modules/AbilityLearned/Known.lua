@@ -111,6 +111,39 @@ local function HistoryLine(entry)
     return line
 end
 
+---Whether Kennel's beast data (Data\Beasts.lua) has beast `npc` as a teacher of an ability's rank.
+---@param name string the ability's name in the client's language
+---@param rank number
+---@param npc number
+---@return boolean
+local function KnownTeacher(name, rank, npc)
+    local data = Kennel.data --[[@as KennelData]]
+    for _, info in pairs(data.petAbilityRanks) do
+        if info.rank == rank and Kennel.SpellInfo(info.ability) == name then
+            for _, teacher in ipairs(info.teachers) do
+                if teacher == npc then return true end
+            end
+            return false
+        end
+    end
+    return false
+end
+
+---Says in chat which learns from a pet came from a beast the beast data does not have as a teacher
+---of that rank: new teachers for Beast Map.
+function M:ReportMissingTeachers()
+    local any = false
+    for _, entry in ipairs(Char().history) do
+        local rank = RankNumber(entry.rank)
+        if entry.npc and not KnownTeacher(entry.name, rank, entry.npc) then
+            any = true
+            local ability = entry.rank and ("%s (%s)"):format(entry.name, entry.rank) or entry.name
+            M:Print(L.ABILITYLEARNED_TEACHER_MISSING:format(ability, entry.pet or "?", entry.npc, entry.zone or "?"))
+        end
+    end
+    if not any then M:Print(L.ABILITYLEARNED_TEACHERS_ALL) end
+end
+
 ---The history as lines, newest first.
 ---@return string
 function M:HistoryText()

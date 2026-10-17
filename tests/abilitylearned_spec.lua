@@ -194,12 +194,19 @@ describe("AbilityLearned", function()
     end)
 
     describe("the history", function()
-        it("keeps each learn with its pet, family, zone and time, per character", function()
+        it("keeps each learn with its pet, the beast it was tamed as, family, zone and time, per character", function()
             local client = settle(ready():learnLine("Claw (Rank 2)"))
-            assert.are.same(
-                { { name = "Claw", rank = "Rank 2", pet = "Fluffy", familyID = 2, zone = "Darkshore", t = 1791374580 } },
-                module(client).db.char.history
-            )
+            assert.are.same({
+                {
+                    name = "Claw",
+                    rank = "Rank 2",
+                    pet = "Fluffy",
+                    npc = 165189,
+                    familyID = 2,
+                    zone = "Darkshore",
+                    t = 1791374580,
+                },
+            }, module(client).db.char.history)
             client:logout()
             local relogged = NewClient({ saved = Saved() }):login()
             assert.are.equal(1, #module(relogged).db.char.history)
@@ -215,6 +222,27 @@ describe("AbilityLearned", function()
             assert.are.equal(200, #history)
             assert.are.equal("Old 2", history[1].name)
             assert.are.equal("Claw", history[200].name)
+        end)
+
+        it("lists the learns from a beast Kennel's beast data does not have as a teacher", function()
+            local client = ready()
+            local M = module(client)
+            local missing = M:GetOptions().args.teachers
+            missing.func()
+            assert.is_true(client:printedContains("Every learn from a pet is in Kennel's beast data."))
+            M.db.char.history = {
+                -- Greater Fleshripper (154) teaches Claw 2 in the data.
+                { name = "Claw", rank = "Rank 2", pet = "Scraps", npc = 154, zone = "Westfall", t = 1 },
+                { name = "Claw", rank = "Rank 2", pet = "Fluffy", npc = 165189, zone = "Darkshore", t = 2 },
+                { name = "Charge", rank = "Rank 1", zone = "Darkshore", t = 3 },
+                -- A rank the data has no entry for at all.
+                { name = "Claw", rank = "Rank 9", pet = "Scraps", npc = 154, zone = "Westfall", t = 4 },
+            }
+            client.printed = {}
+            missing.func()
+            assert.are.equal(2, #client.printed, client.printed[1])
+            assert.is_true(client:printedContains("Claw (Rank 2): Fluffy, tamed as NPC 165189, Darkshore"))
+            assert.is_true(client:printedContains("Claw (Rank 9): Scraps, tamed as NPC 154, Westfall"))
         end)
 
         it("is a line per learn, newest first, on the module's page", function()

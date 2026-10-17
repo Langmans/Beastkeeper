@@ -47,6 +47,9 @@
   Forever, Move Fast, TomTom, the game's map pin or a pin link. Beast names
   in your game's language once it knows the beast.
 - Ability Learned keeps every rank you learned, not only the highest.
+- Ability Learned keeps which beast your pet was tamed as with each learn, and
+  a button lists the learns from beasts Kennel's beast data does not know as
+  teachers.
 - Care Button: a toast when combat starts with your pet on Passive.
 - For other addons: AceEvent messages KENNEL_TOAST, KENNEL_PRINT and
   KENNEL_RANKS_KNOWN, each with a table of details (module, toast, line,

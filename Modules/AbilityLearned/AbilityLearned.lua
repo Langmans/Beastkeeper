@@ -101,6 +101,7 @@ function M:ShowLearn(learn)
         name = learn.name,
         rank = learn.rank,
         pet = learn.teacher,
+        npc = learn.teacher and Kennel.PetNPC() or nil,
         familyID = learn.teacher and Kennel.PetFamilyID() or nil,
         zone = GetZoneText(),
         t = GetServerTime(),
