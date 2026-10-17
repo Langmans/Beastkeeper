@@ -13,7 +13,7 @@ local function SmallData(Kennel)
             [CLAW_2] = { ability = CLAW, rank = 2, level = 8, families = { 2 }, teachers = { 101 } },
             [CLAW_3] = { ability = CLAW, rank = 3, level = 16, families = { 2 }, teachers = { 102, 104, 106 } },
             [BITE] = { ability = BITE, rank = 1, level = 1, families = { 1, 3 }, teachers = { 103 } },
-            [CHARGE] = { ability = CHARGE, rank = 1, level = 1, families = { 5 }, teachers = { 105 } },
+            [CHARGE] = { ability = CHARGE, rank = 1, level = 1, families = { 5 }, teachers = { 105, 107 } },
         },
         beasts = {
             [101] = { name = "Low Cat", family = 2, minLevel = 5, maxLevel = 6, pins = { [ELWYNN] = { 40, 50 } } },
@@ -37,6 +37,8 @@ local function SmallData(Kennel)
             [105] = { name = "Cave Boar", family = 5, minLevel = 12, maxLevel = 12, zones = { 718 } },
             -- Teaches Claw 3 like Rare Cat, but from level 11: no news at 11.
             [106] = { name = "Late Cat", family = 2, minLevel = 11, maxLevel = 11, pins = { [9999] = { 50, 50 } } },
+            -- Teaches Charge like Cave Boar, at the same level, out in the open.
+            [107] = { name = "Field Boar", family = 5, minLevel = 12, maxLevel = 12, pins = { [ELWYNN] = { 70, 70 } } },
         },
     }
 end
@@ -225,6 +227,27 @@ describe("Beast Map", function()
             assert.are.equal("Now in reach: Bite (Rank 1)", (levelUp(client, 5)))
             client = hunter(10)
             assert.is_nil(levelUp(client, 11), "Claw 3 was in reach at 10 already")
+        end)
+
+        it("names the beast reached first, when a route addon knows the travel times", function()
+            local client = hunter(11)
+            local GoThere = LibStub("LibGoThere-1.0")
+            GoThere:RegisterProvider({
+                id = "test",
+                order = 1,
+                Usable = function()
+                    return true
+                end,
+                Navigate = function()
+                    return true
+                end,
+                TravelTime = function(_, _, _, _, map, x, y)
+                    -- Field Boar's pin, 70/70 on Elwynn Forest; Cave Boar has none.
+                    if map == 1429 and x == 0.7 and y == 0.7 then return 45 end
+                end,
+            })
+            local _, text = levelUp(client, 12)
+            assert.are.equal("Field Boar in Elwynn Forest teaches it.", text)
         end)
 
         it("names an ordinary beast before a rare, and the beast alone when its map has no name", function()

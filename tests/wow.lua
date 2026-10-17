@@ -535,6 +535,18 @@ function NewClient(opts)
         GetAreaInfo = function(areaID)
             return AREA_NAMES[areaID]
         end,
+        -- Where the player stands: the middle of Elwynn Forest.
+        GetBestMapForUnit = function(unit)
+            return unit == "player" and 1429 or nil
+        end,
+        GetPlayerMapPosition = function(map, unit)
+            if unit ~= "player" or map ~= 1429 then return nil end
+            return {
+                GetXY = function()
+                    return 0.5, 0.5
+                end,
+            }
+        end,
     }
     function GetServerTime()
         return client.serverTime

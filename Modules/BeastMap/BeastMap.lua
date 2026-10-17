@@ -265,8 +265,44 @@ function M:Refresh()
     HandyNotes:UpdateMinimapPlugin(PLUGIN)
 end
 
----The beast of exactly `level` that teaches a rank, an ordinary one before a rare; nil when a
----lower beast teaches it already, or none of that level does.
+---A beast's first map by uiMapID; nil for a beast in an instance, which has only zones.
+---@param beast KennelBeast
+---@return number?
+local function FirstMap(beast)
+    ---@type number?
+    local first
+    for map in pairs(beast.pins or {}) do
+        if not first or map < first then first = map end
+    end
+    return first
+end
+
+---Seconds to a beast's first pin, as the player's route addon works it out (LibGoThere); a huge
+---number when there is none to ask, or no route.
+---@param npc number
+---@return number
+local function TravelSeconds(npc)
+    local beast = Data().beasts[npc]
+    local map = FirstMap(beast)
+    if not map then return math.huge end
+    local pin = (beast.pins --[[@as table<number, number[]> ]])[map]
+    return GoThere:TravelTime(map, pin[1] / 100, pin[2] / 100) or math.huge
+end
+
+---Whether beast `npc` is the better one to name than `pick`: an ordinary one before a rare, then
+---the one reached first.
+---@param npc number
+---@param pick number?
+---@return boolean
+local function Better(npc, pick)
+    if not pick then return true end
+    local beasts = Data().beasts
+    if beasts[npc].rare ~= beasts[pick].rare then return not beasts[npc].rare end
+    return TravelSeconds(npc) < TravelSeconds(pick)
+end
+
+---The beast of exactly `level` that teaches a rank, the better one when there are several; nil
+---when a lower beast teaches it already, or none of that level does.
 ---@param rank KennelPetAbilityRank
 ---@param level number
 ---@return number?
@@ -277,7 +313,7 @@ local function NewTeacher(rank, level)
     for _, npc in ipairs(rank.teachers) do
         local beast = beasts[npc]
         if beast.minLevel < level then return nil end
-        if beast.minLevel == level and (not pick or (beasts[pick].rare and not beast.rare)) then pick = npc end
+        if beast.minLevel == level and Better(npc, pick) then pick = npc end
     end
     return pick
 end
@@ -290,13 +326,9 @@ local function Place(npc)
     local beast = Data().beasts[npc]
     ---@type string?
     local where
-    if beast.pins then
-        ---@type number?
-        local first
-        for map in pairs(beast.pins) do
-            if not first or map < first then first = map end
-        end
-        local info = C_Map.GetMapInfo(first --[[@as number]])
+    local first = FirstMap(beast)
+    if first then
+        local info = C_Map.GetMapInfo(first)
         where = info and info.name
     else
         -- A beast has pins or, in an instance, zones (the data spec checks it).
