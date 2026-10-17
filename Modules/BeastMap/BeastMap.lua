@@ -32,6 +32,7 @@ M.defaults = {
         gaps = false,
         aboveLevel = false,
         levelToast = true,
+        tooltip = true,
     },
 }
 
@@ -271,6 +272,16 @@ end
 local function RankText(spellID)
     local name, _, rank = Kennel.SpellInfo(spellID)
     return name and rank and ("%s (%s)"):format(name, rank) or name
+end
+
+-- For the unit tooltip (Tooltip.lua): what a beast teaches, and how the hunter stands to a rank.
+M.RankText, M.Lacking = RankText, Lacking
+
+---The rank spells a beast teaches, in order; nil for a beast that teaches none.
+---@param npc number
+---@return number[]?
+function M.TeachesOf(npc)
+    return Teaches()[npc]
 end
 
 ---A pin's name: the beast's, or the instance's for a dungeon entrance (a negative ID).

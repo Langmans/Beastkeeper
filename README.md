@@ -196,6 +196,9 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
   lower rank too (Claw 2 when you know Claw 1, 3 and 4: it suits a young pet
   and costs fewer points), every beast in reach whatever it teaches, beasts
   above your level.
+- **On a beast's tooltip**, also without HandyNotes: a line per rank it
+  teaches, green when you lack it, yellow for a lower rank you never
+  learned, grey when you know it.
 - **A round button** in the world map's top-right corner shows or hides the
   pins (greyed while they are off). The button itself can be switched off on
   the page.

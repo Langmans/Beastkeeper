@@ -380,6 +380,15 @@ function NewClient(opts)
     -- GetPetActionInfo as Forever returns it: name, texture, isToken (1, not true), isActive,
     -- autoCastAllowed, autoCastEnabled, spellID.
     NUM_PET_ACTION_SLOTS = 10
+    -- The tooltip data hooks (TooltipDataProcessor), kept per tooltip type; client:hoverUnit runs
+    -- the unit ones as the client does after it fills a unit's tooltip.
+    client.tooltipPostCalls = {}
+    TooltipDataProcessor = {
+        AddTooltipPostCall = function(kind, fn)
+            client.tooltipPostCalls[kind] = client.tooltipPostCalls[kind] or {}
+            table.insert(client.tooltipPostCalls[kind], fn)
+        end,
+    }
     -- Creature names through C_TooltipInfo.GetHyperlink("unit:Creature-0-0-0-0-<id>-0000000000"):
     -- client.creatureNames holds the ones the client has cached, by NPC ID; any other comes back
     -- as a tooltip without lines, as the client gives it while it asks the server.
@@ -426,6 +435,7 @@ function NewClient(opts)
     Enum = {
         SpellBookSpellBank = { Player = 0, Pet = 1 },
         LuaCurveType = { Linear = 0, Step = 1, Cosine = 2, Cubic = 3 },
+        TooltipDataType = { Item = 0, Spell = 1, Unit = 2 },
     }
     C_SpellBook = nil
     if not opts.noSpellBookAPI then
@@ -1556,6 +1566,19 @@ function NewClient(opts)
     function client:gainPoints(count)
         self.trainingPoints[1] = self.trainingPoints[1] + count
         return self:fire("UNIT_PET_TRAINING_POINTS", "pet")
+    end
+
+    ---The mouse over a unit with this GUID: the client fills `tooltip` (GameTooltip by default) and
+    ---runs the unit post-calls. Gives the lines added.
+    ---@param guid GameValue
+    ---@param tooltip table?
+    ---@return table[]
+    function client:hoverUnit(guid, tooltip)
+        self.tooltipLines = {}
+        for _, fn in ipairs(self.tooltipPostCalls[Enum.TooltipDataType.Unit] or {}) do
+            fn(tooltip or GameTooltip, { type = Enum.TooltipDataType.Unit, guid = guid })
+        end
+        return self.tooltipLines
     end
 
     ---The pet's happiness changes (1 unhappy, 2 content, 3 happy); the client says so.

@@ -3,5 +3,6 @@
     <Script file="Locale.lua"/>
     <Script file="BeastMap.lua"/>
     <Script file="MapButton.lua"/>
+    <Script file="Tooltip.lua"/>
     <Script file="Options.lua"/>
 </Ui>

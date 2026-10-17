@@ -420,12 +420,16 @@
 ---@field Settings fun(self: KennelBeastMap): KennelBeastMapSettings
 ---@field PlayerLevel fun(self: KennelBeastMap): number
 ---@field Refresh fun(self: KennelBeastMap)
+---@field TeachesOf fun(npc: number): number[]?
+---@field RankText fun(spellID: number): string?
+---@field Lacking fun(spellID: number): "above"|"gap"|nil
 ---@field CreateMapButton fun(self: KennelBeastMap)
 ---@field UpdateMapButton fun(self: KennelBeastMap)
 ---@field ToastReach fun(self: KennelBeastMap, level: number)
 ---@field GetOptions fun(self: KennelBeastMap): table
 
 ---@class KennelBeastMapSettings
+---@field tooltip boolean a beast's tooltip says what it teaches
 ---@field pins boolean the pins shown at all (the map button switches this)
 ---@field mapButton boolean the button on the world map
 ---@field usefulOnly boolean only beasts that teach a rank the hunter lacks

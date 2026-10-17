@@ -121,13 +121,20 @@ function Kennel.PetFrame()
     return _G.EllesmereUIUnitFrames_Pet or PetFrame
 end
 
----The NPC ID the active pet was tamed as: its GUID's sixth field
----(Pet-0-server-instance-zone-npcID-spawnUID). Nil without a pet or when the client hides the GUID.
+---The NPC ID in a GUID of `kind` ("Creature" or "Pet"): its sixth field
+---(Creature-0-server-instance-zone-npcID-spawnUID). Nil for another kind, or a hidden GUID.
+---@param guid GameValue
+---@param kind "Creature"|"Pet"
+---@return number?
+function Kennel.NPCFromGUID(guid, kind)
+    if type(guid) ~= "string" or not Kennel.Readable(guid) then return nil end
+    return tonumber(guid:match("^" .. kind .. "%-%d+%-%d+%-%d+%-%d+%-(%d+)%-"))
+end
+
+---The NPC ID the active pet was tamed as. Nil without a pet or when the client hides the GUID.
 ---@return number?
 function Kennel.PetNPC()
-    local guid = UnitGUID("pet")
-    if not guid or not Kennel.Readable(guid) then return nil end
-    return tonumber(guid:match("^Pet%-%d+%-%d+%-%d+%-%d+%-(%d+)%-"))
+    return Kennel.NPCFromGUID(UnitGUID("pet"), "Pet")
 end
 
 ---A sound of the active pet's family, as a toast sound; nil without a pet or for a family without

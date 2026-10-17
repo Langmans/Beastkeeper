@@ -35,6 +35,17 @@ L.BEASTMAP_OPTION_ABOVE_DESC = "A hunter can only tame a beast up to its own lev
 L.BEASTMAP_OPTION_TOAST = "Toast at a level-up"
 L.BEASTMAP_OPTION_TOAST_DESC = "When a new level brings a beast in reach that teaches a rank you lack, and no lower beast taught it, say which rank and where. Works without HandyNotes."
 
+-- Settings: the lines on a beast's tooltip.
+L.BEASTMAP_OPTION_TOOLTIP = "Say on a beast's tooltip what it teaches"
+L.BEASTMAP_OPTION_TOOLTIP_DESC = "Hover a beast: a line per pet ability rank it teaches, green when you lack it, yellow for a lower rank you never learned, grey when you know it. Works without HandyNotes."
+
+-- A beast's tooltip, a line per rank it teaches. First %s: the ability with its rank, such as
+-- "Claw (Rank 3)"; second: one of the three endings below.
+L.BEASTMAP_TOOLTIP_TEACHES = "Teaches %s: %s"
+L.BEASTMAP_TOOLTIP_NEW = "new for you"
+L.BEASTMAP_TOOLTIP_GAP = "below your highest, never learned"
+L.BEASTMAP_TOOLTIP_KNOWN = "you know it"
+
 -- Settings window, Kennel's page: the kind of toast, for choosing its look. Shown after "Beast Map: ".
 L.BEASTMAP_TOASTTYPE_REACH = "pet ability rank in reach"
 
