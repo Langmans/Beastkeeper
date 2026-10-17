@@ -9,6 +9,9 @@ local _, ns = ...
 -- it teaches a rank the hunter lacks: above the highest it knows, or, when asked, a lower one it
 -- never learned. Settings turn both checks off.
 --
+-- A beast in an instance has no map of its own: its instance gets one pin at the dungeon entrance
+-- the client lists for a map (C_EncounterJournal), standing for every beast inside.
+--
 -- At a level-up, also without HandyNotes, a toast names the ranks the hunter lacks that a beast of
 -- just that level brings in reach, where no lower beast taught them already.
 
@@ -48,6 +51,12 @@ end
 local byMap
 ---@type table<number, number[]>?
 local teaches
+-- Per instance (AreaTable ID), the beasts in it, by NPC ID; filled with byMap. The maps whose
+-- dungeon entrances were looked up.
+---@type table<number, number[]>
+local inInstance = {}
+---@type table<number, true>
+local entrancesRead = {}
 -- The pin's icon per beast, or false for none; emptied when anything it depends on changes.
 ---@type table<number, number|string|false>
 local shown = {}
@@ -89,7 +98,21 @@ local function Teaches()
     return list
 end
 
----Per map, its pins; built once.
+---Adds a pin to a map's pins, unless the spot has one: a second there would make the iterator skip.
+---@param maps table<number, KennelBeastMapPins>
+---@param map number uiMapID
+---@param id number a beast's NPC ID, or minus an instance's AreaTable ID
+---@param coord number
+local function AddPin(maps, map, id, coord)
+    local pins = maps[map] or { at = {} } --[[@as KennelBeastMapPins]]
+    maps[map] = pins
+    if pins.at[coord] then return end
+    pins[#pins + 1] = id
+    pins[#pins + 1] = coord
+    pins.at[coord] = #pins - 1
+end
+
+---Per map, its pins; built once. A beast in an instance waits in `inInstance` for its entrance.
 ---@param handyNotes HandyNotesApi
 ---@return table<number, KennelBeastMapPins>
 local function Pins(handyNotes)
@@ -106,20 +129,33 @@ local function Pins(handyNotes)
     table.sort(npcs)
     for _, npc in ipairs(npcs) do
         for map, flat in pairs(beasts[npc].pins or {}) do
-            local pins = maps[map] or { at = {} } --[[@as KennelBeastMapPins]]
-            maps[map] = pins
             for i = 1, #flat, 2 do
-                local coord = handyNotes:getCoord(flat[i] / 100, flat[i + 1] / 100)
-                -- One pin per spot: a second beast there would make the iterator skip.
-                if not pins.at[coord] then
-                    pins[#pins + 1] = npc
-                    pins[#pins + 1] = coord
-                    pins.at[coord] = #pins - 1
-                end
+                AddPin(maps, map, npc, handyNotes:getCoord(flat[i] / 100, flat[i + 1] / 100))
             end
+        end
+        for _, area in ipairs(beasts[npc].zones or {}) do
+            inInstance[area] = inInstance[area] or {}
+            table.insert(inInstance[area], npc)
         end
     end
     return maps
+end
+
+---Adds a pin at each dungeon entrance on a map whose instance has beasts, the first time the map
+---is asked for. The client names an entrance as the instance's area, so the names are matched.
+---@param handyNotes HandyNotesApi
+---@param uiMapID number
+local function AddEntrances(handyNotes, uiMapID)
+    local maps = Pins(handyNotes)
+    if entrancesRead[uiMapID] or not C_EncounterJournal then return end
+    entrancesRead[uiMapID] = true
+    for _, entrance in ipairs(C_EncounterJournal.GetDungeonEntrancesForMap(uiMapID)) do
+        for area in pairs(inInstance) do
+            if C_Map.GetAreaInfo(area) == entrance.name then
+                AddPin(maps, uiMapID, -area, handyNotes:getCoord(entrance.position:GetXY()))
+            end
+        end
+    end
 end
 
 ---Whether the hunter lacks a rank: above the highest it knows of the ability ("above"), below it
@@ -143,10 +179,18 @@ function M:PlayerLevel()
     return self.level or UnitLevel("player")
 end
 
----The icon of the pin for a beast, or false for no pin.
+---The icon of the pin for a beast, or false for no pin. An instance's pin (a negative ID) has the
+---icon of the first beast in it that gets one.
 ---@param npc number
 ---@return number|string|false
 local function Icon(npc)
+    if npc < 0 then
+        for _, inside in ipairs(inInstance[-npc]) do
+            local icon = Icon(inside)
+            if icon then return icon end
+        end
+        return false
+    end
     local cached = shown[npc]
     if cached ~= nil then return cached end
     local settings = M:Settings()
@@ -196,7 +240,9 @@ local handler = {}
 function handler:GetNodes2(uiMapID)
     -- HandyNotes is loaded: it is the one asking.
     if not M:IsEnabled() or not M:Settings().pins then return NextPin, NO_PINS, nil end
-    return NextPin, Pins(HandyNotes --[[@as HandyNotesApi]])[uiMapID] or NO_PINS, nil
+    local handyNotes = HandyNotes --[[@as HandyNotesApi]]
+    AddEntrances(handyNotes, uiMapID)
+    return NextPin, Pins(handyNotes)[uiMapID] or NO_PINS, nil
 end
 
 ---"Level 5-6", "Level 10, rare elite".
@@ -227,7 +273,30 @@ local function RankText(spellID)
     return name and rank and ("%s (%s)"):format(name, rank) or name
 end
 
----The tooltip: the beast's name, level, and every rank it teaches, green for one the hunter lacks.
+---A pin's name: the beast's, or the instance's for a dungeon entrance (a negative ID).
+---@param id number
+---@return string
+local function PinName(id)
+    if id < 0 then
+        return C_Map.GetAreaInfo(-id) --[[@as string]]
+    end
+    return BeastName(id)
+end
+
+---Every rank a beast teaches, in the tooltip; green for one the hunter lacks.
+---@param npc number
+local function AddRanks(npc)
+    for _, spellID in ipairs(Teaches()[npc]) do
+        local text = RankText(spellID)
+        if text then
+            local color = Lacking(spellID) and LACKING or KNOWN
+            GameTooltip:AddLine(text, color[1], color[2], color[3])
+        end
+    end
+end
+
+---The tooltip: the beast's name, level and ranks; at a dungeon entrance, the instance's name and
+---so for each beast inside that gets a pin.
 ---@param pin Frame
 ---@param uiMapID number
 ---@param coord number
@@ -236,17 +305,19 @@ function handler.OnEnter(pin, uiMapID, coord)
     local at = pins and pins.at[coord]
     if not at then return end
     ---@type number
-    local npc = pins[at]
-    local beast = Data().beasts[npc]
+    local id = pins[at]
     GameTooltip:SetOwner(pin, "ANCHOR_RIGHT")
-    GameTooltip:SetText(BeastName(npc))
-    GameTooltip:AddLine(LevelText(beast), 1, 1, 1)
-    for _, spellID in ipairs(Teaches()[npc]) do
-        local text = RankText(spellID)
-        if text then
-            local color = Lacking(spellID) and LACKING or KNOWN
-            GameTooltip:AddLine(text, color[1], color[2], color[3])
+    GameTooltip:SetText(PinName(id))
+    if id < 0 then
+        for _, npc in ipairs(inInstance[-id]) do
+            if Icon(npc) then
+                GameTooltip:AddLine(L.BEASTMAP_INSIDE:format(BeastName(npc), LevelText(Data().beasts[npc])), 1, 1, 1)
+                AddRanks(npc)
+            end
         end
+    else
+        GameTooltip:AddLine(LevelText(Data().beasts[id]), 1, 1, 1)
+        AddRanks(id)
     end
     GameTooltip:AddLine(L.BEASTMAP_CLICK, KNOWN[1], KNOWN[2], KNOWN[3])
     GameTooltip:Show()
@@ -267,10 +338,8 @@ function handler.OnClick(_, button, down, uiMapID, coord)
     local pins = byMap and byMap[uiMapID]
     local at = pins and pins.at[coord]
     if button ~= "LeftButton" or down or not at then return end
-    ---@type number
-    local npc = pins[at]
     local x, y = (HandyNotes --[[@as HandyNotesApi]]):getXY(coord)
-    GoThere:Navigate("Kennel", uiMapID, x, y, BeastName(npc))
+    GoThere:Navigate("Kennel", uiMapID, x, y, PinName(pins[at]))
 end
 
 ---Forgets the pins' icons and has HandyNotes draw them again; shows or hides the map button.

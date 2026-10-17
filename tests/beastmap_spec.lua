@@ -2,8 +2,8 @@
 -- rank. The specs use a small data set of their own instead of the generated Data\Beasts.lua.
 
 local BITE, CHARGE = 17253, 7371
-local ELWYNN, TIRISFAL = 1429, 1420
-local CLAW_ICON, BITE_ICON = 132140, 132278
+local ELWYNN, TIRISFAL, BARRENS = 1429, 1420, 1413
+local CLAW_ICON, BITE_ICON, CHARGE_ICON = 132140, 132278, 132183
 
 ---@param Kennel Kennel
 local function SmallData(Kennel)
@@ -224,6 +224,25 @@ describe("Beast Map", function()
         client.creatureNames[105] = "Höhleneber"
         client:fire("PLAYER_LEVEL_UP", 12)
         assert.are.equal("Höhleneber in Wailing Caverns teaches it.", client:toast().Text.text)
+    end)
+
+    it("pins the beasts in a dungeon at its entrance, named in the tooltip", function()
+        local client = hunter(11)
+        assert.are.same({}, client:mapPins(BARRENS), "Cave Boar is level 12")
+        client = hunter(12)
+        local pin = client:mapPins(BARRENS)[1]
+        assert.are.equal(1, #client:mapPins(BARRENS), "Razorfen Kraul has no beast in the data")
+        assert.are.same({ 46, 36, CHARGE_ICON }, { pin.x, pin.y, pin.icon })
+        local title, lines = client:hoverPin(BARRENS, pin.coord)
+        assert.are.equal("Wailing Caverns", title)
+        assert.are.equal("Cave Boar: Level 12", lines[1].text)
+        assert.are.same({ 1, 1, 1 }, lines[1].color)
+        assert.are.equal("Charge (Rank 1)", lines[2].text)
+        assert.are.same({ 0, 1, 0 }, lines[2].color)
+        assert.are.equal("Click to go there.", lines[#lines].text)
+        client:clickPin(BARRENS, pin.coord)
+        assert.is_true(client:printedContains("|Hworldmap:1413:4600:3600|h"), "to the entrance")
+        assert.is_true(client:printedContains("Wailing Caverns"))
     end)
 
     it("sends the hunter to a beast with a left click on its pin, through LibGoThere", function()

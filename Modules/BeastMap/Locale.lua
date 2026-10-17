@@ -51,6 +51,9 @@ L.BEASTMAP_REACH_PLACE = "%s in %s"
 
 -- Pin tooltip, under the beast's name. %s: its level or level range, such as "5-6".
 L.BEASTMAP_LEVEL = "Level %s"
+-- Tooltip of a dungeon entrance's pin, under the instance's name: a line per beast inside, its ranks
+-- under it. First %s: the beast's name; second: BEASTMAP_LEVEL with the rare/elite addition.
+L.BEASTMAP_INSIDE = "%s: %s"
 -- Pin tooltip, last line, in grey.
 L.BEASTMAP_CLICK = "Click to go there."
 -- Added after the level for a rare, elite or rare elite beast.

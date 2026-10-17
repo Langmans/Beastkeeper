@@ -46,7 +46,7 @@
   A click on a pin takes you there, through LibGoThere-1.0: Shortest Path
   Forever, Move Fast, TomTom, the game's map pin or a pin link. Beast names
   in your game's language once it knows the beast. A button on the world map
-  shows or hides the pins.
+  shows or hides the pins. Beasts in a dungeon get a pin at its entrance.
 - Ability Learned keeps every rank you learned, not only the highest.
 - Ability Learned keeps which beast your pet was tamed as with each learn, and
   a button lists the learns from beasts Kennel's beast data does not know as

@@ -560,6 +560,30 @@ function NewClient(opts)
             }
         end,
     }
+    -- Dungeon entrances on a map, named as the instance's area: Wailing Caverns and Razorfen
+    -- Kraul in the Barrens (1413).
+    ---@param x number
+    ---@param y number
+    local function Position(x, y)
+        return {
+            x = x,
+            y = y,
+            GetXY = function()
+                return x, y
+            end,
+        }
+    end
+    client.dungeonEntrances = {
+        [1413] = {
+            { areaPoiID = 1, name = "Wailing Caverns", position = Position(0.46, 0.36) },
+            { areaPoiID = 2, name = "Razorfen Kraul", position = Position(0.41, 0.94) },
+        },
+    }
+    C_EncounterJournal = {
+        GetDungeonEntrancesForMap = function(uiMapID)
+            return client.dungeonEntrances[uiMapID] or {}
+        end,
+    }
     function GetServerTime()
         return client.serverTime
     end

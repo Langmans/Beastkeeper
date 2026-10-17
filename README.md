@@ -184,7 +184,8 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
   Tamed addon's list (MIT, notice in `Data/Tamed-LICENSE.txt`), kept only
   where Wowhead has the beast as tameable on Forever. Beast names come from
   your game, in its language, once it knows the beast; English before that.
-  Beasts in a dungeon have no pin.
+  Beasts in a dungeon share one pin at its entrance; hover it for which
+  beasts are inside.
 
 ## For developers
 
