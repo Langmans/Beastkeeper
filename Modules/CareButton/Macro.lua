@@ -21,14 +21,18 @@ function M:Macros()
     return { { name = NAME, icon = QUESTION_MARK, body = body, desc = Kennel.L.CAREBUTTON_MACRO } }
 end
 
+-- The macro's lines while UpdatedBody works on them; kept, since it runs on every macro change and
+-- every death and revive.
+---@type string[]
+local lines = {}
+
 ---The macro text with its cast line put in step with the button, or nil when its first line is no
 ---#showtooltip (left alone).
 ---@param body string
 ---@param petDead boolean
 ---@return string?
 function M:UpdatedBody(body, petDead)
-    ---@type string[]
-    local lines = {}
+    wipe(lines)
     for line in (body .. "\n"):gmatch("(.-)\n") do
         lines[#lines + 1] = line
     end

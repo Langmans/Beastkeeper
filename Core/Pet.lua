@@ -34,25 +34,32 @@ function Kennel.SpellInfo(id)
     return nil, nil, nil
 end
 
+-- What PetSpells found last, and each spell's entry, kept and refilled rather than built anew on
+-- every summon, learn and hint.
+---@type table<string, KennelPetSpell>, table<string, KennelPetSpell>
+local petSpells, spellEntries = {}, {}
+
 ---The spells in the active pet's spellbook by name, each with its ID, rank and icon; empty
 ---without a pet or without C_SpellBook. Pet commands (Attack, Follow) have no spell and are left
----out, as is an entry that cannot be read.
+---out, as is an entry that cannot be read. The same table each time, refilled: read what is
+---needed from it before the next call, and keep no entry.
 ---@return table<string, KennelPetSpell>
 function Kennel.PetSpells()
-    ---@type table<string, KennelPetSpell>
-    local spells = {}
+    wipe(petSpells)
     local book = C_SpellBook
-    if not (book and book.GetSpellBookItemInfo and book.HasPetSpells) then return spells end
+    if not (book and book.GetSpellBookItemInfo and book.HasPetSpells) then return petSpells end
     for index = 1, tonumber((book.HasPetSpells())) or 0 do
         local ok, info = pcall(book.GetSpellBookItemInfo, index, Enum.SpellBookSpellBank.Pet)
         local id = ok and info and info.name and info.spellID
         if id then
             local _, icon, rank = Kennel.SpellInfo(id)
-            local subName = info.subName ~= "" and info.subName or nil
-            spells[info.name] = { id = id, rank = subName or rank, icon = icon }
+            local entry = spellEntries[info.name] or {}
+            spellEntries[info.name] = entry
+            entry.id, entry.rank, entry.icon = id, info.subName ~= "" and info.subName or rank, icon
+            petSpells[info.name] = entry
         end
     end
-    return spells
+    return petSpells
 end
 
 ---The active pet's free training points (total minus used) and its total, from C_PetInfo on

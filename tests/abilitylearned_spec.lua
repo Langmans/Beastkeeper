@@ -55,6 +55,13 @@ describe("AbilityLearned", function()
             assert.are.equal("New pet ability: Claw (Rank 2)", client:toastTitle())
         end)
 
+        it("keeps the spellbook's rank as it was at the learn, whatever reads the book meanwhile", function()
+            local client = ready():learnLine("Claw")
+            client.petBook = { { CLAW_3 } }
+            client.Kennel.PetSpells() -- a hint or another learn reading the book within the window
+            assert.are.equal("New pet ability: Claw (Rank 2)", settle(client):toastTitle())
+        end)
+
         it("without the pet that has it, points to Beast Training and plays the level-up sound", function()
             local client = ready()
             client.pet = nil

@@ -151,14 +151,15 @@ function M:CheckPet()
     self:CheckGrowth()
 end
 
+local function CheckPetLater()
+    M:CheckPet()
+end
+
 -- A pet summoned, tamed or dismissed: its spellbook fills in just after.
 ---@param _ string the event
 ---@param unit string
 function M:UNIT_PET(_, unit)
-    if unit ~= "player" then return end
-    C_Timer.After(HINT_WAIT, function()
-        self:CheckPet()
-    end)
+    if unit == "player" then C_Timer.After(HINT_WAIT, CheckPetLater) end
 end
 
 -- On WoW: Forever this comes for "pet" when the pet's total rises.

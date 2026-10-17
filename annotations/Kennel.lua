@@ -137,7 +137,7 @@
 
 ---@class KennelAutocastCheck: KennelMacroModule, KennelSettingsModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
----@field active table<string, KennelToastInfo> the problems the last check found
+---@field active table<string, true> the problems the last check found, by problem key
 ---@field checkPending boolean? a check is on its way (ScheduleCheck)
 ---@field choice ("growl"|"cower")? what the player chose (KennelKite, KennelGrowl)
 ---@field choiceInDungeon boolean? whether the player was in a dungeon group then

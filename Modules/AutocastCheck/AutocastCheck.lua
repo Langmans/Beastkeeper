@@ -77,23 +77,29 @@ local function Spell(id)
 end
 M.Spell = Spell
 
+-- What the last read found: the pet's abilities that can autocast, by name. A check runs on every
+-- pet bar update, so the table and each ability's entry are kept and refilled, not built anew.
+---@type table<string, KennelAutocastState>, table<string, KennelAutocastState>
+local states, entries = {}, {}
+
 ---Adds an ability that can autocast to `states`, unless its state is unreadable.
----@param states table<string, KennelAutocastState>
 ---@param name GameValue
 ---@param allowed GameValue
 ---@param enabled GameValue
 ---@param icon (number|string)?
-local function Add(states, name, allowed, enabled, icon)
+local function Add(name, allowed, enabled, icon)
     if type(name) == "string" and allowed and Kennel.Readable(enabled) then
-        states[name] = { on = enabled and true or false, icon = icon }
+        local entry = entries[name] or {}
+        entries[name] = entry
+        entry.on, entry.icon = enabled and true or false, icon
+        states[name] = entry
     end
 end
 
----Reads the pet's spellbook into `states`, through C_SpellBook as Forever has it. A client
----without it is left to the pet bar. A command (Attack, Follow) is in the book too, with no
----autocast values; an entry that cannot be read is skipped.
----@param states table<string, KennelAutocastState>
-local function ReadBook(states)
+---Reads the pet's spellbook, through C_SpellBook as Forever has it. A client without it is left
+---to the pet bar. A command (Attack, Follow) is in the book too, with no autocast values; an entry
+---that cannot be read is skipped.
+local function ReadBook()
     local book = C_SpellBook
     if not (book and book.GetSpellBookItemAutoCast and book.GetSpellBookItemInfo and book.HasPetSpells) then return end
     local bank = Enum.SpellBookSpellBank.Pet
@@ -101,30 +107,28 @@ local function ReadBook(states)
     for index = 1, tonumber((book.HasPetSpells())) or 0 do
         local okInfo, info = pcall(book.GetSpellBookItemInfo, index, bank)
         local okCast, allowed, enabled = pcall(book.GetSpellBookItemAutoCast, index, bank)
-        if okInfo and okCast and type(info) == "table" then Add(states, info.name, allowed, enabled) end
+        if okInfo and okCast and type(info) == "table" then Add(info.name, allowed, enabled) end
     end
 end
 
----Reads the pet bar into `states`; it also gives each ability's icon.
----@param states table<string, KennelAutocastState>
-local function ReadBar(states)
+---Reads the pet bar; it also gives each ability's icon.
+local function ReadBar()
     if not GetPetActionInfo then return end
     for slot = 1, NUM_PET_ACTION_SLOTS or 10 do
         local name, texture, isToken, _, allowed, enabled = GetPetActionInfo(slot)
         -- Attack, Follow and the stances are tokens; they never autocast.
-        if not isToken then Add(states, name, allowed, enabled, texture) end
+        if not isToken then Add(name, allowed, enabled, texture) end
     end
 end
 
 ---The pet's abilities that can autocast, by name, with whether autocast is on. Empty without a
----pet.
+---pet. The same table each time, refilled: read it before the next call.
 ---@return table<string, KennelAutocastState>
 function M:PetAutocasts()
-    ---@type table<string, KennelAutocastState>
-    local states = {}
+    wipe(states)
     if not UnitExists("pet") then return states end
-    ReadBook(states)
-    ReadBar(states)
+    ReadBook()
+    ReadBar()
     return states
 end
 
@@ -203,29 +207,33 @@ function M:Reason()
     return REASONS[why == "chosen" and wanted or why]
 end
 
----Adds the problem of one ability to `found`, when it is watched and not as it should be.
----@param found table<string, KennelToastInfo>
----@param states table<string, KennelAutocastState>
+-- The problems the next check fills in: it swaps roles with self.active (the last check's) on every
+-- check. Per problem key, the ability's name and icon for its toast, which is only built when shown.
+---@type table<string, true>, table<string, string>, table<string, (number|string)?>
+local spare, problemName, problemIcon = {}, {}, {}
+
+---Notes the problem of one ability in `found`, when it is watched and not as it should be.
+---@param found table<string, true>
 ---@param ability "growl"|"cower"
 ---@param wanted boolean whether it belongs on autocast
-function M:Compare(found, states, ability, wanted)
+function M:Compare(found, ability, wanted)
     local name = Kennel.SpellInfo(M.SPELLS[ability])
     local state = name and states[name]
     if not state or state.on == wanted then return end
     local key = ability .. (state.on and "On" or "Off")
-    found[key] = self:ProblemToast(key, self:Reason(), name, state.icon)
+    found[key], problemName[key], problemIcon[key] = true, name, state.icon
 end
 
----What is wrong right now, by problem key.
----@return table<string, KennelToastInfo>
-function M:Problems()
-    ---@type table<string, KennelToastInfo>
-    local found = {}
+---What is wrong right now, by problem key, in `found` (emptied first).
+---@param found table<string, true>
+---@return table<string, true>
+function M:Problems(found)
+    wipe(found)
     local settings = self:Settings()
-    local states = self:PetAutocasts()
+    self:PetAutocasts()
     local growlWanted = self:Wanted() == "growl"
-    if settings.growl then self:Compare(found, states, "growl", growlWanted) end
-    if settings.cower then self:Compare(found, states, "cower", not growlWanted) end
+    if settings.growl then self:Compare(found, "growl", growlWanted) end
+    if settings.cower then self:Compare(found, "cower", not growlWanted) end
     return found
 end
 
@@ -234,27 +242,28 @@ end
 ---@param remindAll boolean?
 function M:Check(remindAll)
     self:ApplyButton()
-    local found = self:Problems()
+    local found, active = self:Problems(spare), self.active
     for _, key in ipairs(ORDER) do
-        local info = found[key]
-        if info and (remindAll or not self.active[key]) then
-            Kennel:ShowToast(info)
-        elseif not info and self.active[key] then
+        if found[key] and (remindAll or not active[key]) then
+            Kennel:ShowToast(self:ProblemToast(key, self:Reason(), problemName[key], problemIcon[key]))
+        elseif not found[key] and active[key] then
             Kennel:DropToast(self.moduleName .. ":" .. key)
         end
     end
-    self.active = found
+    self.active, spare = found, active
+end
+
+---The check ScheduleCheck asked for; nothing when switched off in the meantime.
+local function RunScheduledCheck()
+    M.checkPending = false
+    if M:IsEnabled() then M:Check() end
 end
 
 ---Checks once, a moment from now, however often it is asked in the meantime.
 function M:ScheduleCheck()
     if self.checkPending then return end
     self.checkPending = true
-    C_Timer.After(CHECK_DELAY, function()
-        self.checkPending = false
-        -- Switched off in the meantime: nothing to check.
-        if self:IsEnabled() then self:Check() end
-    end)
+    C_Timer.After(CHECK_DELAY, RunScheduledCheck)
 end
 
 ---A pet summoned, tamed or dismissed.
@@ -270,7 +279,7 @@ function M:PLAYER_REGEN_DISABLED()
 end
 
 function M:OnEnable()
-    ---@type table<string, KennelToastInfo>
+    ---@type table<string, true>
     self.active = {}
     local _, class = UnitClass("player")
     if class ~= "HUNTER" then return end

@@ -102,7 +102,9 @@ end
 ---@field name string
 ---@field rank string?
 ---@field icon (number|string)?
----@field petSpell KennelPetSpell? the pet's spell of that name: it taught it
+---@field fromPet boolean the pet out has the ability: it taught it
+---@field petRank string? the rank in the pet's spellbook at the learn
+---@field petIcon (number|string)? its icon there
 ---@field simulated boolean
 
 ---@type KennelPendingLearn?
@@ -120,12 +122,11 @@ local function Flush()
     pending = nil
     if not learn or not M:IsEnabled() then return end
     lastShown[learn.name] = GetTime()
-    local petSpell = learn.petSpell
     M:ShowLearn({
         name = learn.name,
-        rank = learn.rank or (petSpell and petSpell.rank),
-        icon = learn.icon or (petSpell and petSpell.icon),
-        teacher = petSpell and UnitName("pet") or nil,
+        rank = learn.rank or learn.petRank,
+        icon = learn.icon or learn.petIcon,
+        teacher = learn.fromPet and UnitName("pet") or nil,
         simulated = learn.simulated,
     })
 end
@@ -159,11 +160,15 @@ local function Learned(name, rank, spellID)
     end
     if not M.IsWildAbility(name) then return false end
     if pending then Flush() end
+    -- Copied, not kept: PetSpells refills its entries on its next call.
+    local petSpell = Kennel.PetSpells()[name]
     pending = {
         name = name,
         rank = rank or idRank,
         icon = icon,
-        petSpell = Kennel.PetSpells()[name],
+        fromPet = petSpell ~= nil,
+        petRank = petSpell and petSpell.rank,
+        petIcon = petSpell and petSpell.icon,
         simulated = simulating,
     }
     C_Timer.After(MERGE_WINDOW, Flush)

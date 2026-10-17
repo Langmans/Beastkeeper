@@ -92,19 +92,28 @@ end
 -- macro's #showtooltip spell there. Only for modules that are on.
 local DESC_COLOR = { 0.5, 0.9, 0.5 }
 
+-- Each macro's description and the module making it, by macro name; read once from the modules'
+-- Macros() on the first hover, since a tooltip hook runs on every hover.
+---@type table<string, string>?, table<string, KennelMacroModule>
+local descriptions, makers = nil, {}
+
 ---The description of the macro called `name`, when a module that is on makes it.
 ---@param name string
 ---@return string?
 function Kennel:MacroDescription(name)
-    for _, module in pairs(self.modules) do
-        ---@cast module KennelMacroModule
-        if module.Macros and module:IsEnabled() then
-            for _, macro in ipairs(module:Macros()) do
-                if macro.name == name then return macro.desc end
+    if not descriptions then
+        descriptions = {}
+        for _, module in pairs(self.modules) do
+            ---@cast module KennelMacroModule
+            for _, macro in ipairs(module.Macros and module:Macros() or {}) do
+                if macro.desc then
+                    descriptions[macro.name], makers[macro.name] = macro.desc, module
+                end
             end
         end
     end
-    return nil
+    local maker = makers[name]
+    return maker and maker:IsEnabled() and descriptions[name] or nil
 end
 
 ---@param tooltip GameTooltip

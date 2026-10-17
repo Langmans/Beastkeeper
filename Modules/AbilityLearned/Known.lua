@@ -184,18 +184,21 @@ local function ReadLoyalty(total, petLevel)
     return loyalty, name
 end
 
+---One colour channel, 0-255, a share `t` of the way from friendly to exalted.
+---@param i number 1, 2 or 3: red, green, blue
+---@param t number
+---@return number
+local function Channel(i, t)
+    return math.floor((FRIENDLY[i] + (EXALTED[i] - FRIENDLY[i]) * t) * 255 + 0.5)
+end
+
 ---The colour code of a loyalty level, along the reputation colours: friendly green at loyalty
 ---level 1 to exalted teal at 6.
 ---@param level number
 ---@return string
 local function LoyaltyColor(level)
     local t = (math.min(math.max(level, 1), 6) - 1) / 5
-    ---@type number[]
-    local rgb = {}
-    for i = 1, 3 do
-        rgb[i] = math.floor((FRIENDLY[i] + (EXALTED[i] - FRIENDLY[i]) * t) * 255 + 0.5)
-    end
-    return ("|cff%02x%02x%02x"):format(rgb[1], rgb[2], rgb[3])
+    return ("|cff%02x%02x%02x"):format(Channel(1, t), Channel(2, t), Channel(3, t))
 end
 
 ---A loyalty level as the toasts show it: "5 (Faithful)" with the name in its colour, or "5" when
@@ -242,13 +245,18 @@ function M:CheckGrowth()
     local pet, level = UnitName("pet"), UnitLevel("pet")
     local loyalty, loyaltyName = ReadLoyalty(total, level)
     local pets = Char().pets
-    local before = pets[pet]
-    pets[pet] = { total = total, level = level, loyalty = loyalty }
-    if not before then return end
+    local seen = pets[pet]
+    if not seen then
+        pets[pet] = { total = total, level = level, loyalty = loyalty }
+        return
+    end
+    -- The pet's own table is updated in place: this runs on every PET_UI_UPDATE.
+    local beforeTotal, beforeLevel, beforeLoyalty = seen.total, seen.level, seen.loyalty
+    seen.total, seen.level, seen.loyalty = total, level, loyalty
     local settings = self:Settings()
-    local change = total - before.total
-    local loyaltyUp = (loyalty and before.loyalty and loyalty > before.loyalty) == true
-    if loyalty and before.loyalty and loyalty < before.loyalty then
+    local change = total - beforeTotal
+    local loyaltyUp = (loyalty and beforeLoyalty and loyalty > beforeLoyalty) == true
+    if loyalty and beforeLoyalty and loyalty < beforeLoyalty then
         if not settings.loyalty then return end
         local text = L.ABILITYLEARNED_LOYALTY_DROP_TEXT:format(LoyaltyLabel(loyalty, loyaltyName))
         local lost = change < 0 and L.ABILITYLEARNED_POINTS_LOST:format(-change, free) or nil
@@ -257,7 +265,7 @@ function M:CheckGrowth()
         return
     end
     if change <= 0 or not settings.points then return end
-    local levelUp = level > before.level
+    local levelUp = level > beforeLevel
     ---@type string, string
     local title, text
     if levelUp == loyaltyUp then
