@@ -17,6 +17,32 @@ Kennel.L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 -- Every module can register events; anything else it embeds it lists itself.
 Kennel:SetDefaultModuleLibraries("AceEvent-3.0")
 
+local consolePrint = Kennel.Print
+
+---AceConsole's Print, then KENNEL_PRINT ({ module, line }) for whoever listens (docs\hooking.md).
+---@param module string? the module that says it; nil for the core
+---@param ... any
+local function PrintFrom(module, ...)
+    consolePrint(Kennel, ...)
+    Kennel:SendMessage("KENNEL_PRINT", { module = module, line = strjoin(" ", tostringall(...)) })
+end
+
+---A line in chat from the core.
+---@param ... any
+function Kennel:Print(...)
+    PrintFrom(nil, ...)
+end
+
+-- What every module has: Print, naming the module in KENNEL_PRINT.
+Kennel:SetDefaultModulePrototype({
+    ---A line in chat from this module.
+    ---@param self KennelModule
+    ---@param ... any
+    Print = function(self, ...)
+        PrintFrom(self:GetName(), ...)
+    end,
+})
+
 function Kennel:OnInitialize()
     -- A module is on unless it says otherwise; the saved file keeps only switches that differ.
     -- The same for the look a module gives a kind of toast.

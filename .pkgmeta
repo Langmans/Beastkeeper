@@ -63,5 +63,5 @@ ignore:
   - tests
   - kennel-dev-1.rockspec
   - stylua.toml
-  - TODO.md
+  - tasks
   - Locales/README.md

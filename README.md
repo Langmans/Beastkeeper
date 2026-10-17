@@ -294,6 +294,17 @@ end
   as a round badge on the icon while the unit exists) and `screenshot = true`
   (one screenshot once it has faded in).
 
+### Messages for other addons
+
+Kennel sends AceEvent-3.0 messages that any addon can listen to, each with
+one table of details that may grow but keeps its fields: `KENNEL_TOAST` (a
+toast about to show, still changeable), `KENNEL_PRINT` (a chat line, with
+the module that said it) and `KENNEL_RANKS_KNOWN` (pet ability ranks the
+hunter now knows). Fields, rules and a small example addon:
+[docs/hooking.md](docs/hooking.md). Kennel's own development screenshots
+listen the same way. A module prints with `self:Print(...)`, which names it in
+`KENNEL_PRINT`.
+
 ### Toast skins
 
 The toast is an engine and a skin. The engine (`Core\Toast\Engine.lua`) keeps
@@ -402,12 +413,16 @@ installed Ace3 loads first and LibStub keeps the newest copy of each library.
 
 ### Development
 
-**Screenshots while testing in game** (`Core\Dev.lua`): in a copy straight
-from the repository, Kennel's page has a box "Screenshots for development".
-Ticked, every toast (once faded in) and every Kennel chat line (at most one
-every two seconds) gets a screenshot in the game's `Screenshots` folder, after
-a grey `[Kennel dev] ...` chat line saying what it was for. The code sits in a
-`--@debug@` block, which the packager comments out of every release.
+**Screenshots while testing in game** (`Modules\DevScreenshots`): in a copy
+straight from the repository there is a module "Dev Screenshots", off until
+switched on. On, each kind of toast (once faded in) and each Kennel chat line
+(numbers ignored, at most one every two seconds) gets one screenshot in the
+game's `Screenshots` folder, the first time it shows, after a grey `[Kennel
+dev] ...` chat line saying what it was for. What has a screenshot is kept
+across sessions; a button on its page forgets it. It listens to
+`KENNEL_TOAST` and `KENNEL_PRINT` like any addon could. The whole file is a
+`--@debug@` block, which the packager comments out of every release; the specs
+load the files the same way unless a client asks for `dev`.
 
 The tests run on Lua 5.1, the version WoW runs, with
 [busted](https://lunarmodules.github.io/busted/) and

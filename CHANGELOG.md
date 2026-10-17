@@ -43,3 +43,6 @@
   beast in reach and beasts above your level. At a level-up, also without
   HandyNotes, a toast for the ranks a beast of the new level brings in reach.
 - Ability Learned keeps every rank you learned, not only the highest.
+- For other addons: AceEvent messages KENNEL_TOAST, KENNEL_PRINT and
+  KENNEL_RANKS_KNOWN, each with a table of details (module, toast, line,
+  ranks); see docs/hooking.md, with an example addon.

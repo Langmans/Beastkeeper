@@ -45,8 +45,8 @@ local function RankNumber(rank)
 end
 
 ---Records that this character knows an ability at a rank: in the set of its ranks, and as the
----highest when it is. Returns whether that was news; the caller then sends KENNEL_RANKS_KNOWN,
----once for a whole Beast Training window.
+---highest when it is. Returns whether that was news; the caller then tells (RanksKnown), once
+---for a whole Beast Training window.
 ---@param name string
 ---@param rank number
 ---@return boolean
@@ -70,6 +70,13 @@ function M:HighestRank(name)
     return Char().known[name]
 end
 
+---Sends KENNEL_RANKS_KNOWN with the ranks that were news (docs\hooking.md).
+---@param source "learn"|"training"
+---@param ranks KennelKnownRank[]
+local function RanksKnown(source, ranks)
+    Kennel:SendMessage("KENNEL_RANKS_KNOWN", { module = M:GetName(), source = source, ranks = ranks })
+end
+
 ---Whether this character knows an ability at exactly this rank. Ranks are separate spells, so a
 ---lower one can be missing below a higher one (it suits a young pet, or costs fewer points).
 ---@param name string
@@ -88,7 +95,8 @@ function M:RecordLearn(entry)
     while #history > HISTORY_MAX do
         table.remove(history, 1)
     end
-    if self:MarkKnown(entry.name, RankNumber(entry.rank)) then Kennel:SendMessage("KENNEL_RANKS_KNOWN") end
+    local rank = RankNumber(entry.rank)
+    if self:MarkKnown(entry.name, rank) then RanksKnown("learn", { { name = entry.name, rank = rank } }) end
 end
 
 ---One history line: "2026-10-07 14:03  Claw (Rank 2), from Fluffy, Darkshore".
@@ -130,18 +138,21 @@ end
 ---Reads the hunter's learned ranks from Beast Training. A row that cannot be read is skipped.
 function M:ReadBeastTraining()
     if UnitExists("npc") then return end
-    local read, news = 0, false
+    local read = 0
+    ---@type KennelKnownRank[]
+    local news = {}
     for index = 1, GetNumTrainerServices() do
         local ok, name, kind = pcall(GetTrainerServiceInfo, index)
         local spellID = ok and type(name) == "string" and kind ~= "header" and RowSpellID(index)
         if spellID then
-            local _, _, rank = Kennel.SpellInfo(spellID)
-            news = self:MarkKnown(name, RankNumber(rank)) or news
+            local _, _, rankText = Kennel.SpellInfo(spellID)
+            local rank = RankNumber(rankText)
+            if self:MarkKnown(name, rank) then news[#news + 1] = { name = name, rank = rank } end
             read = read + 1
         end
     end
     if read > 0 then Char().trainingRead = true end
-    if news then Kennel:SendMessage("KENNEL_RANKS_KNOWN") end
+    if #news > 0 then RanksKnown("training", news) end
 end
 
 ---The wild abilities the pet out has at a higher rank than this character knows, as
@@ -168,8 +179,8 @@ end
 ---@param list string[]
 ---@param unsure boolean
 local function Say(pet, list, unsure)
-    Kennel:Print(L.ABILITYLEARNED_TEACHES:format(pet, table.concat(list, ", ")))
-    if unsure and not Char().trainingRead then Kennel:Print(L.ABILITYLEARNED_OPEN_TRAINING) end
+    M:Print(L.ABILITYLEARNED_TEACHES:format(pet, table.concat(list, ", ")))
+    if unsure and not Char().trainingRead then M:Print(L.ABILITYLEARNED_OPEN_TRAINING) end
 end
 
 ---After a summon or the login wait: says what the pet out can teach, unless hints are off, it is
@@ -314,13 +325,13 @@ end
 ---The page's button: what the pet out can teach, whenever asked, also when that is nothing.
 function M:ReportTeachable()
     if not UnitExists("pet") then
-        Kennel:Print(L.ABILITYLEARNED_NO_PET)
+        M:Print(L.ABILITYLEARNED_NO_PET)
         return
     end
     local pet = UnitName("pet")
     local list, unsure = Teachable()
     if #list == 0 then
-        Kennel:Print(L.ABILITYLEARNED_NOTHING:format(pet))
+        M:Print(L.ABILITYLEARNED_NOTHING:format(pet))
     else
         Say(pet, list, unsure)
     end

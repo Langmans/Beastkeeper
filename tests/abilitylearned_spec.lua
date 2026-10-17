@@ -320,9 +320,9 @@ describe("AbilityLearned", function()
 
         it("keeps every rank learned, not only the highest, and says when that changed", function()
             local client = ready()
-            local M, changes = module(client), 0
-            client.Kennel.RegisterMessage({}, "KENNEL_RANKS_KNOWN", function()
-                changes = changes + 1
+            local M, heard = module(client), {}
+            client.Kennel.RegisterMessage({}, "KENNEL_RANKS_KNOWN", function(_, event)
+                heard[#heard + 1] = event
             end)
             client:openTrainer({ { "Claw", "used", CLAW }, { "Claw", "used", CLAW_3 } })
             assert.are.same({ Claw = { [1] = true, [3] = true } }, M.db.char.ranks)
@@ -331,14 +331,23 @@ describe("AbilityLearned", function()
             assert.is_false(M:HasRank("Claw", 2))
             assert.is_nil(M:HighestRank("Bite"))
             assert.is_false(M:HasRank("Bite", 1))
-            assert.are.equal(1, changes)
+            assert.are.same({
+                {
+                    module = "AbilityLearned",
+                    source = "training",
+                    ranks = { { name = "Claw", rank = 1 }, { name = "Claw", rank = 3 } },
+                },
+            }, heard)
             client:fire("TRAINER_UPDATE")
-            assert.are.equal(1, changes, "nothing new")
+            assert.are.equal(1, #heard, "nothing new")
             client:closeTrainer()
             settle(client:advance(5):learnLine("Claw (Rank 2)"))
             assert.is_true(M:HasRank("Claw", 2))
             assert.are.equal(3, M:HighestRank("Claw"))
-            assert.are.equal(2, changes)
+            assert.are.same(
+                { module = "AbilityLearned", source = "learn", ranks = { { name = "Claw", rank = 2 } } },
+                heard[2]
+            )
         end)
 
         it("counts a learn already known by its rank", function()

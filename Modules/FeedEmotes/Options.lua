@@ -62,7 +62,7 @@ end
 ---@param ok boolean
 ---@param result string
 local function Report(ok, result)
-    if not ok then Kennel:Print(result) end
+    if not ok then M:Print(result) end
 end
 
 ---The pet's sex choice: from the game, male or female, for the pet out.
@@ -124,7 +124,7 @@ function M:GetOptions()
             order = 3,
             func = function()
                 local text = M:BuildEmote(MYSTERY_MEAT)
-                Kennel:Print(text and EMOTE_COLOR .. UnitName("player") .. " " .. text .. "|r" or L.FEEDEMOTES_NO_PET)
+                M:Print(text and EMOTE_COLOR .. UnitName("player") .. " " .. text .. "|r" or L.FEEDEMOTES_NO_PET)
             end,
         },
         own = { type = "header", name = L.FEEDEMOTES_OPTION_OWN, order = 10 },
@@ -186,7 +186,7 @@ function M:GetOptions()
                 local ok, result = M:AddCustomLine(text, draft)
                 if ok then
                     wipe(draft)
-                    Kennel:Print(L.FEEDEMOTES_ADDED:format(#M:CustomLines(), result))
+                    M:Print(L.FEEDEMOTES_ADDED:format(#M:CustomLines(), result))
                 end
                 Report(ok, result)
             end,

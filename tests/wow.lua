@@ -10,6 +10,51 @@ SECRET = setmetatable({}, {
     end,
 })
 
+---A file's source as the client gets it: from a release, where the packager comments out every line
+---between `--@debug@` and `--@end-debug@`, unless `dev` (a copy straight from the repository).
+---The line count stays, so coverage still points at the right lines.
+---@type table<string, string>
+local packaged = {}
+---@param file string
+---@param dev boolean
+---@return string
+function AsPackaged(file, dev)
+    local key = (dev and "dev:" or "release:") .. file
+    if packaged[key] then return packaged[key] end
+    local handle = assert(io.open(file, "rb"))
+    local source = handle:read("*a")
+    handle:close()
+    if dev or not source:find("--@debug@", 1, true) then
+        packaged[key] = source
+        return source
+    end
+    local lines, inDebug = {}, false
+    for line in (source .. "\n"):gmatch("(.-)\r?\n") do
+        if line:match("^%s*%-%-@end%-debug@") then
+            inDebug = false
+        elseif inDebug then
+            line = "--" .. line
+        elseif line:match("^%s*%-%-@debug@") then
+            inDebug = true
+        end
+        lines[#lines + 1] = line
+    end
+    packaged[key] = table.concat(lines, "\n")
+    return packaged[key]
+end
+
+---Compiled once per run: a file's chunk runs again for every client, each time from the top.
+---@type table<string, function>
+local chunks = {}
+---@param file string
+---@param dev boolean
+---@return function
+function Chunk(file, dev)
+    local key = (dev and "dev:" or "release:") .. file
+    chunks[key] = chunks[key] or assert(loadstring(AsPackaged(file, dev), "@" .. file))
+    return chunks[key]
+end
+
 ---Packs varargs with their count, nils included (Lua 5.1 has no table.pack).
 local function pack(...)
     return { n = select("#", ...), ... }
@@ -50,7 +95,7 @@ end
 ---@field oldLoyaltyAPI boolean? the global GetPetLoyalty instead of C_PetInfo's
 ---@field oldChatAPI boolean? the global SendChatMessage instead of C_ChatInfo's
 ---@field noStableInfo boolean? no C_StableInfo
----@field dev boolean? a development copy: Core\Dev.lua's screenshots on
+---@field dev boolean? a copy straight from the repository: `--@debug@` blocks run (the DevScreenshots module)
 
 -- The spells the simulated client knows, per locale: id -> { name, icon, rank }; the rank is the
 -- client's subtext, "" for a spell without ranks.
@@ -1145,13 +1190,9 @@ function NewClient(opts)
     LibStub = nil
     local ns = {}
     for _, file in ipairs(TOC_FILES) do
-        local chunk = assert(loadfile(file))
-        chunk("Kennel", ns)
+        Chunk(file, opts.dev == true)("Kennel", ns)
     end
     client.Kennel = ns
-    -- The files load as a copy straight from the repository, where Core\Dev.lua is on; the specs
-    -- run as a release would unless they ask for development (opts.dev).
-    ns.dev = opts.dev == true
     if opts.modules then opts.modules(ns) end
 
     ---Delivers an event to every frame registered for it.

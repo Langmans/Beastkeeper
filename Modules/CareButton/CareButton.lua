@@ -189,7 +189,7 @@ function M:UNIT_SPELLCAST_FAILED(_, unit, castGUID, spellID)
         if self.reviveCasts[castGUID] then
             self.reviveCasts[castGUID] = nil
         elseif not UnitExists("pet") and self:PetDead() and self:SetPetDead(false) then
-            Kennel:Print(L.CAREBUTTON_REVIVE_FAILED)
+            M:Print(L.CAREBUTTON_REVIVE_FAILED)
         end
     end
 end

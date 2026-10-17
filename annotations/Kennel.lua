@@ -21,6 +21,7 @@
 ---@field toastTypes table<string, string>? the kinds of toast it shows, by kind with a localized name; each can have a look of its own
 ---@field toastSkins table<string, string>? the look a kind starts on (a skin id), until the player picks another
 ---@field GetOptions (fun(self: KennelModule): table)? an AceConfig group (args, and name if not title); the core adds type and disabled
+---@field Print fun(self: KennelModule, ...: any) a line in chat, sent on as KENNEL_PRINT with the module's name
 
 ---A module whose settings Kennel:Setting reads and writes.
 ---@class KennelSettingsModule: KennelModule
@@ -348,6 +349,30 @@
 ---@field AGGRO_PER_FAMILY table<number, number>
 ---@field DEATH_PER_FAMILY table<number, number>
 ---@field WOUND_PER_FAMILY table<number, number>
+
+---DevScreenshots: screenshots for development, only in a copy from the repository.
+---@class KennelDevScreenshots: KennelModule
+---@field db AceDBObject-3.0 global.shots: what has a screenshot, by kind
+---@field KENNEL_TOAST fun(self: KennelDevScreenshots, message: string, event: KennelToastEvent)
+---@field KENNEL_PRINT fun(self: KennelDevScreenshots, message: string, event: KennelPrintEvent)
+
+---The messages Kennel sends (docs\hooking.md): one table each, so fields can be added later.
+---@class KennelToastEvent
+---@field module string? the part of the toast's key before the colon
+---@field toast KennelToastInfo Kennel's own table: a listener may change it
+
+---@class KennelPrintEvent
+---@field module string? the module that printed it; nil for the core
+---@field line string
+
+---@class KennelRanksKnownEvent
+---@field module string "AbilityLearned"
+---@field source "learn"|"training" a learn the module saw, or the Beast Training window
+---@field ranks KennelKnownRank[] the ranks that were news
+
+---@class KennelKnownRank
+---@field name string the ability's name in the client's language
+---@field rank number
 
 ---BeastMap: a HandyNotes plugin with a pin for every beast that can teach the hunter a rank.
 ---@class KennelBeastMap: KennelSettingsModule

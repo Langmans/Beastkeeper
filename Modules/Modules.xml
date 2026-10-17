@@ -5,4 +5,5 @@
     <Include file="AbilityLearned\AbilityLearned.xml"/>
     <Include file="FeedEmotes\FeedEmotes.xml"/>
     <Include file="BeastMap\BeastMap.xml"/>
+    <Include file="DevScreenshots\DevScreenshots.xml"/>
 </Ui>

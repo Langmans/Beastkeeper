@@ -25,7 +25,7 @@ end
 ---Counts the pet as dead or alive by hand; says so in combat, where it cannot.
 ---@param dead boolean
 local function SetDead(dead)
-    if not M:SetPetDead(dead) then Kennel:Print(L.CAREBUTTON_IN_COMBAT) end
+    if not M:SetPetDead(dead) then M:Print(L.CAREBUTTON_IN_COMBAT) end
 end
 
 ---@return table

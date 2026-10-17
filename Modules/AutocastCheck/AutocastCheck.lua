@@ -159,7 +159,7 @@ function M:Choose(ability)
     local wanted, why = self:Wanted()
     if why == "chosen" and wanted == ability then return end
     self.choice, self.choiceInDungeon = ability, InDungeonGroup()
-    Kennel:Print(ability == "growl" and L.AUTOCAST_CHOSE_GROWL or L.AUTOCAST_CHOSE_COWER)
+    M:Print(ability == "growl" and L.AUTOCAST_CHOSE_GROWL or L.AUTOCAST_CHOSE_COWER)
     self:Check()
 end
 

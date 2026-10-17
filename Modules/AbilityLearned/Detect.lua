@@ -227,14 +227,14 @@ end
 function M:Simulate()
     local format = ERR_LEARN_ABILITY_S or ERR_LEARN_SPELL_S
     if not format then
-        Kennel:Print(L.ABILITYLEARNED_NO_LINE)
+        M:Print(L.ABILITYLEARNED_NO_LINE)
         return
     end
     local name, rank = M.Example()
     local line = format:format(("%s (%s)"):format(name, rank))
-    Kennel:Print(L.ABILITYLEARNED_SIMULATING:format(line))
+    M:Print(L.ABILITYLEARNED_SIMULATING:format(line))
     simulating = true
     local counted = self:OnChat(line)
     simulating = false
-    if not counted then Kennel:Print(L.ABILITYLEARNED_NOT_WILD:format(name)) end
+    if not counted then M:Print(L.ABILITYLEARNED_NOT_WILD:format(name)) end
 end

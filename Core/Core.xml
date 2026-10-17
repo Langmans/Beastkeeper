@@ -9,6 +9,4 @@
     <Script file="Macro.lua"/>
     <Script file="Options.lua"/>
     <Script file="Commands.lua"/>
-    <!-- Last: it wraps ShowToast, Print and GetOptionsTable for development screenshots. -->
-    <Script file="Dev.lua"/>
 </Ui>
