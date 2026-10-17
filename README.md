@@ -125,6 +125,31 @@ does not.
   the history), a "What can my pet teach?" button and the history. On other
   classes it does nothing.
 
+### Feed Emotes
+
+A random `/emote` every time you feed your pet, the way Feed-O-Matic did in
+2008: "Langmans feeds Fluffy some Mystery Meat. Tastes like well-aged gnome."
+**Off until you switch it on**: others in range see the emotes.
+
+- It works with any way of feeding (Feed Pet: Forever's button, a macro, the
+  spellbook and a click on food, dragging food onto the pet) and names the
+  food as a clickable item link.
+- Lines fit the pet and the food: some for every pet, for males or females,
+  for the kind of food and for each of the 17 tameable families; in English
+  and German the opening sentence varies too, and now and then the whole
+  emote is a small scene. English, German, Spanish, French, Korean and
+  Russian lines; other languages get the English ones.
+- The emote goes out on your next key press or click, as WoW: Forever only
+  lets an addon send chat then; with the MessageQueue addon, any input counts.
+- WoW: Forever does not tell a hunter pet's sex: pick it on the module's page
+  (kept per pet, through renames and stable swaps), or tick "Always use the
+  pet's name".
+- Your own lines, on the module's page: placeholders `{pet}`, `{food}` and the
+  language's own (`{he}`, `{boy}`, `{his}` in English), conditions in front
+  (`[cat,fish] Good hunter!`, or the boxes above the new line), a chance of an
+  own line, a fallback when none fits, and one list shared by all characters
+  if you want. An example button prints an emote only to you.
+
 ## Technical
 
 ### Layout
@@ -159,6 +184,8 @@ Integrations\     what Kennel does with other addons, a folder per addon; each
                           channels only on the player's next input)
 Modules\Modules.xml   one Include per module
 Modules\<Name>\   a module: <Name>.xml, Locale.lua, <Name>.lua, Options.lua
+                  (FeedEmotes adds Lines\<locale>.lua: its emote lines with
+                  each language's grammar, kept out of the translation page)
 annotations\      editor-only types (not in the .toc)
 tests\            the specs, the simulated client and the tooling (check.lua)
 .busted, .luacov  test and coverage settings

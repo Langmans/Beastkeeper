@@ -3,7 +3,9 @@
 local function modules(Kennel)
     local autocast = Kennel:NewModule("Autocast")
     autocast.title = "Autocast Check"
-    autocast.command = "autocast"
+    -- Its own word: the real AutocastCheck has "autocast", and which of two matches is found
+    -- would depend on table order.
+    autocast.command = "fake"
     autocast.commands = {
         kite = { desc = "switch kite mode", func = spy.new(function() end) },
         tank = { desc = "switch tank mode", func = spy.new(function() end) },
@@ -32,9 +34,9 @@ describe("/kennel", function()
     it("hands a module command the module and the rest of the line", function()
         local autocast = Kennel:GetModule("Autocast")
         local kite = autocast.commands.kite.func
-        client:slash("autocast kite on")
+        client:slash("fake kite on")
         assert.spy(kite).was.called_with(autocast, "on")
-        client:slash("AUTOCAST KITE")
+        client:slash("FAKE KITE")
         assert.spy(kite).was.called_with(autocast, "")
     end)
 
@@ -44,7 +46,7 @@ describe("/kennel", function()
         assert.is_true(client:printedContains("Off is off."))
     end)
 
-    for _, line in ipairs({ "nope", "autocast", "autocast nope", "bare thing" }) do
+    for _, line in ipairs({ "nope", "fake", "fake nope", "bare thing" }) do
         it("reports an unknown command: " .. line, function()
             client:slash(line)
             assert.is_true(client:printedContains("Unknown command: " .. line))
@@ -55,8 +57,8 @@ describe("/kennel", function()
         client:slash("help")
         local printed = table.concat(client.printed, "\n")
         assert.truthy(printed:find("/kennel - open the options", 1, true))
-        local kite = printed:find("/kennel autocast kite - switch kite mode", 1, true)
-        local tank = printed:find("/kennel autocast tank - switch tank mode", 1, true)
+        local kite = printed:find("/kennel fake kite - switch kite mode", 1, true)
+        local tank = printed:find("/kennel fake tank - switch tank mode", 1, true)
         local go = printed:find("/kennel off go - go", 1, true)
         assert.truthy(kite and tank and go and kite < tank and tank < go, printed)
     end)

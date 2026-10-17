@@ -27,6 +27,9 @@
   behind them, and one when its loyalty drops; a sound choice for each.
 - A kind of toast can start on a look its module picks; the pet's portrait on
   the icon; an optional screenshot per toast.
+- Feed Emotes (from Feed Pet Emotes, which it replaces): a random /emote
+  every time you feed your pet, with your own lines, conditions and the pet's
+  sex per pet. Off until switched on.
 - Autocast Check (from Pet Autocast Check): a toast when Growl or Cower
   autocast does not fit solo, dungeon, kite or tank mode; kite and tank mode by
   command, key binding or the KennelKite, KennelKiteOff and KennelTank macros.

@@ -1,0 +1,17 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- The module object first (FeedEmotes.lua); the data, the lines per language and the rest
+         add to it. -->
+    <Script file="Locale.lua"/>
+    <Script file="FeedEmotes.lua"/>
+    <Script file="Data.lua"/>
+    <Script file="Lines\enUS.lua"/>
+    <Script file="Lines\deDE.lua"/>
+    <Script file="Lines\esES.lua"/>
+    <Script file="Lines\frFR.lua"/>
+    <Script file="Lines\koKR.lua"/>
+    <Script file="Lines\ruRU.lua"/>
+    <Script file="FoodTracker.lua"/>
+    <Script file="CustomLines.lua"/>
+    <Script file="Emote.lua"/>
+    <Script file="Options.lua"/>
+</Ui>

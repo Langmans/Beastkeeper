@@ -5,3 +5,4 @@ if not L then return end
 --@localization(locale="esMX", format="lua_additive_table", handle-unlocalized="ignore", namespace="AutocastCheck")@
 --@localization(locale="esMX", format="lua_additive_table", handle-unlocalized="ignore", namespace="CareButton")@
 --@localization(locale="esMX", format="lua_additive_table", handle-unlocalized="ignore", namespace="AbilityLearned")@
+--@localization(locale="esMX", format="lua_additive_table", handle-unlocalized="ignore", namespace="FeedEmotes")@

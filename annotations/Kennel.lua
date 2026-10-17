@@ -247,6 +247,94 @@
 ---@field Sound fun(self: KennelAbilityLearned, key: "sound"|"pointsSound"|"loyaltySound", petSound: "AGGRO"|"WOUND"|nil): KennelSound?
 ---@field ReportTeachable fun(self: KennelAbilityLearned)
 
+---FeedEmotes' saved settings, its namespace's profile.
+---@class KennelFeedEmotesSettings
+---@field petName boolean always the pet's name, never he/she
+---@field customChance number 0: every fitting line counts the same; else the share of emotes that wants an own line
+---@field customFallback boolean a built-in line when an own one is wanted but none fits
+
+---FeedEmotes' per-character data, its namespace's char.
+---@class KennelFeedEmotesChar
+---@field sharedLines boolean use the account-wide own lines (global.customLines)
+---@field customLines string[] this character's own lines
+---@field petSex table<number, number> pet number -> 2 male or 3 female
+
+---What a pronoun placeholder becomes: by the pet's sex, and with the sex unknown a format with %s
+---for the name or a function of it (the pet's name when there is neither).
+---@class KennelPronoun
+---@field male string
+---@field female string
+---@field unknown (string|fun(name: string): string)?
+
+---The built-in lines of one language (FeedEmotes\Lines\<locale>.lua).
+---@class KennelEmoteLines
+---@field feed string|fun(pet: string, food: string): string the sentence in front: a format of the pet and the food, or a function
+---@field feedNoFood string the same without a known food
+---@field article (fun(name: string): string)? the article for {a}
+---@field pronouns table<string, KennelPronoun>?
+---@field emotes KennelEmoteLists
+
+---@class KennelEmoteLists
+---@field any string[]
+---@field male string[]?
+---@field female string[]?
+---@field openings string[]? sentences in front, in place of feed now and then
+---@field whole string[]? emotes on their own, no sentence in front
+---@field wholeFamily table<number, string[]>? the same per family ID
+---@field food table<string, string[]> per food group (FoodGroups)
+---@field foodType table<string, string[]>? per food type (FoodTypes)
+---@field family table<number, string[]> per family ID
+
+---The conditions of an own line, by tag. An alias, so a function type can return it next to
+---another value (a comma inside table<...> would end the first return).
+---@alias KennelTagSet table<string, true>
+
+---A condition an own line can start with.
+---@class KennelFeedCondition
+---@field tag string what is typed between the brackets
+---@field group "sex"|"foodType"|"family"
+---@field value number|string what the feeding must hold for that group
+
+---What the lines are picked by for one feeding.
+---@class KennelFeedSituation
+---@field sex number?
+---@field foodType string?
+---@field family number?
+
+---@class KennelFeedEmotes: KennelSettingsModule
+---@field db AceDBObject-3.0 always set: the module has defaults
+---@field watching boolean? on a hunter, where there is a pet to feed
+---@field FEED_PET number
+---@field CUSTOM_LINE_MAX number
+---@field Lines table<string, KennelEmoteLines>
+---@field FoodGroups table<number, string>
+---@field FoodTypes table<number, string>
+---@field Family table<string, number>
+---@field ExoticFamily table<number, true>
+---@field Conditions KennelFeedCondition[]
+---@field ConditionByTag table<string, KennelFeedCondition>
+---@field Tracker KennelFoodTracker
+---@field Settings fun(self: KennelFeedEmotes): KennelFeedEmotesSettings
+---@field Char fun(self: KennelFeedEmotes): KennelFeedEmotesChar
+---@field LinesInUse fun(self: KennelFeedEmotes): KennelEmoteLines
+---@field CustomLines fun(self: KennelFeedEmotes): string[]
+---@field PetSex fun(self: KennelFeedEmotes): number?
+---@field ChoosePetSex fun(self: KennelFeedEmotes, sex: number?): boolean
+---@field PrunePetSex fun(self: KennelFeedEmotes)
+---@field Feed fun(self: KennelFeedEmotes, itemID: number?)
+---@field ParseCustomLine fun(line: string): KennelTagSet?, string
+---@field FormatCustomLine fun(tags: table<string, true>, text: string): string
+---@field ConditionsHold fun(tags: table<string, true>, situation: KennelFeedSituation): boolean
+---@field AddCustomLine fun(self: KennelFeedEmotes, text: string?, extraTags: table<string, true>?): boolean, string
+---@field ReplaceCustomLine fun(self: KennelFeedEmotes, index: number, text: string?): boolean, string
+---@field RemoveCustomLine fun(self: KennelFeedEmotes, index: number): string?
+---@field PlaceholderList fun(self: KennelFeedEmotes): string
+---@field LinePools fun(self: KennelFeedEmotes, itemID: number?, foodName: string?): string[], string[]
+---@field EmotePool fun(self: KennelFeedEmotes, itemID: number?, foodName: string?): string[]
+---@field PickLine fun(self: KennelFeedEmotes, itemID: number?, foodName: string?): string?
+---@field FillPlaceholders fun(self: KennelFeedEmotes, line: string, pet: string, food: string?, article: string?): string
+---@field BuildEmote fun(self: KennelFeedEmotes, itemID: number?): string?
+
 ---The sound tables, Kennel.sounds.<KIND>_PER_FAMILY (Core\Sounds.lua).
 ---@class KennelSounds
 ---@field AGGRO_PER_FAMILY table<number, number>

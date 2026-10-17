@@ -45,7 +45,7 @@ function Kennel.PetSpells()
     if not (book and book.GetSpellBookItemInfo and book.HasPetSpells) then return spells end
     for index = 1, tonumber((book.HasPetSpells())) or 0 do
         local ok, info = pcall(book.GetSpellBookItemInfo, index, Enum.SpellBookSpellBank.Pet)
-        local id = ok and info and info.spellID
+        local id = ok and info and info.name and info.spellID
         if id then
             local _, icon, rank = Kennel.SpellInfo(id)
             local subName = info.subName ~= "" and info.subName or nil

@@ -47,6 +47,7 @@ end
 ---@field noLearnLines boolean? no ERR_LEARN_ABILITY_S / ERR_LEARN_SPELL_S
 ---@field noLoyaltyAPI boolean? no GetPetLoyalty
 ---@field oldChatAPI boolean? the global SendChatMessage instead of C_ChatInfo's
+---@field noStableInfo boolean? no C_StableInfo
 
 -- The spells the simulated client knows, per locale: id -> { name, icon, rank }; the rank is the
 -- client's subtext, "" for a spell without ranks.
@@ -87,6 +88,22 @@ local LEARN_LINES = {
 }
 
 GROWL, COWER, CLAW, CLAW_2, CLAW_3 = 2649, 1742, 16827, 16828, 16829
+FEED_PET = 6991
+
+-- Item names the simulated client knows; anything else is uncached (nil).
+local ITEM_NAMES = {
+    [12037] = "Mystery Meat",
+    [4538] = "Snapvine Watermelon",
+    [4608] = "Raw Black Truffle",
+    [4536] = "Shiny Red Apple",
+    [117] = "Tough Jerky",
+    [4540] = "Tough Hunk of Bread",
+}
+
+---The chat link the client builds for an item, as C_Item.GetItemInfo's second return.
+function ItemLink(itemID)
+    return ("|cffffffff|Hitem:%d::::::::60:::::|h[%s]|h|r"):format(itemID, ITEM_NAMES[itemID])
+end
 
 ---@param opts TestClientOptions?
 function NewClient(opts)
@@ -185,8 +202,9 @@ function NewClient(opts)
         if unit == "npc" then return client.trainer ~= nil and client.trainer.npc == true end
         return unit == "player" or (unit == "pet" and client.pet ~= nil)
     end
-    -- client.petGUID: the pet's GUID, its spawn UID's low 32 bits being the stable's petNumber.
-    client.petGUID = "Pet-0-5251-0-12345-6219-0201A3F27C"
+    -- client.petGUID: the pet's GUID, its spawn UID's low 32 bits being the stable's petNumber
+    -- (3069428 here, in client.stable).
+    client.petGUID = "Pet-0-5250-0-1-165189-01002ED5F4"
     function UnitGUID(unit)
         if unit == "pet" and client.pet then return client.petGUID end
     end
@@ -449,6 +467,68 @@ function NewClient(opts)
     function SetPortraitTexture(texture, unit)
         texture.portrait = unit
     end
+
+    -- The pet's sex as UnitSex gives it (client.petSex: 2 male, 3 female, 1 unknown), and the
+    -- hunter's pets by number (client.stable); opts.noStableInfo: a client without C_StableInfo.
+    client.petSex = 2
+    function UnitSex(unit)
+        if unit == "pet" and client.pet then return client.petSex end
+    end
+    client.stable = { active = { 3069428 }, stabled = {} }
+    local function petInfos(numbers)
+        local infos = {}
+        for slot, petNumber in ipairs(numbers) do
+            infos[slot] = { petNumber = petNumber, slotID = slot }
+        end
+        return infos
+    end
+    C_StableInfo = not opts.noStableInfo
+            and {
+                GetActivePetList = function()
+                    return petInfos(client.stable.active)
+                end,
+                GetStabledPetList = function()
+                    return petInfos(client.stable.stabled)
+                end,
+            }
+        or nil
+
+    -- Bag 0 only (client.bag: slot -> { itemID, count }); client.targeting: a spell waits for an
+    -- item target; client.cursorItem: the item held on the cursor.
+    client.bag, client.targeting = {}, false
+    function SpellIsTargeting()
+        return client.targeting
+    end
+    function GetCursorInfo()
+        if client.cursorItem then return "item", client.cursorItem end
+    end
+    C_Item = {
+        GetItemInfo = function(itemID)
+            if ITEM_NAMES[itemID] then return ITEM_NAMES[itemID], ItemLink(itemID) end
+        end,
+        GetItemCount = function(itemID)
+            local total = 0
+            for _, item in ipairs(client.bag) do
+                if item.itemID == itemID then total = total + item.count end
+            end
+            return total
+        end,
+    }
+    C_Container = {
+        UseContainerItem = function() end,
+        GetContainerNumSlots = function(bag)
+            return bag == 0 and #client.bag or 0
+        end,
+        GetContainerItemID = function(bag, slot)
+            local item = bag == 0 and client.bag[slot]
+            return item and item.itemID or nil
+        end,
+        GetContainerItemInfo = function(bag, slot)
+            local item = bag == 0 and client.bag[slot]
+            if item then return { itemID = item.itemID, stackCount = item.count } end
+        end,
+    }
+    NUM_BAG_SLOTS = 4
 
     -- The trainer window: client.trainer is nil while it is closed, else { npc = boolean, rows }
     -- with rows { name, kind, spellID } ("header" rows have no spell). Beast Training is the window
@@ -1176,6 +1256,100 @@ function NewClient(opts)
         self.trainer = nil
         ClassTrainerFrame:Hide()
         return self:fire(event or "TRAINER_CLOSED")
+    end
+
+    ---The bag slot holding itemID, added (empty) if there is none.
+    function client:slotOf(itemID)
+        for slot, item in ipairs(self.bag) do
+            if item.itemID == itemID then return slot end
+        end
+        self.bag[#self.bag + 1] = { itemID = itemID, count = 0 }
+        return #self.bag
+    end
+
+    ---Puts `count` of an item in the bags; the client then reports the change.
+    function client:stock(itemID, count)
+        self.bag[self:slotOf(itemID)].count = count
+        return self:fire("BAG_UPDATE_DELAYED")
+    end
+
+    ---One of an item leaves the bags, as when the pet eats it.
+    function client:eat(itemID)
+        local slot = self:slotOf(itemID)
+        self.bag[slot].count = self.bag[slot].count - 1
+        if self.bag[slot].count <= 0 then table.remove(self.bag, slot) end
+        return self:fire("BAG_UPDATE_DELAYED")
+    end
+
+    ---Picks an item from the bags, as clicking it while Feed Pet waits for its target does.
+    function client:pickItem(itemID, whileTargeting)
+        local slot = self:slotOf(itemID)
+        if self.bag[slot].count == 0 then self.bag[slot].count = 1 end
+        self.targeting = whileTargeting ~= false
+        C_Container.UseContainerItem(0, slot)
+        self.targeting = false
+        return self
+    end
+
+    ---A spell cast by the player succeeds; Feed Pet by default.
+    function client:castSucceeded(spellID, unit)
+        return self:fire("UNIT_SPELLCAST_SUCCEEDED", unit or "player", "Cast-GUID", spellID or FEED_PET)
+    end
+
+    ---A whole Feed Pet: pick the food, then the cast succeeds `delay` seconds later.
+    function client:feed(itemID, delay)
+        self:pickItem(itemID)
+        self.time = self.time + (delay or 0.2)
+        return self:castSucceeded()
+    end
+
+    ---Feed Pet from the spellbook with a click the addon cannot see: the only trace is the food
+    ---leaving the bags, before or after the cast is reported.
+    function client:spellbookFeed(itemID, eatenBeforeCast)
+        self:stock(itemID, 3)
+        self.time = self.time + 0.2
+        if eatenBeforeCast then self:eat(itemID) end
+        self:castSucceeded()
+        if not eatenBeforeCast then
+            self:advance(0.1)
+            self:eat(itemID)
+        end
+        return self
+    end
+
+    ---Picks an item up onto the cursor, as dragging it out of a bag does.
+    function client:pickUp(itemID)
+        self.cursorItem = itemID
+        return self:fire("CURSOR_CHANGED", false, 1, 0, 0)
+    end
+
+    ---Empties the cursor: dropped on the pet, or put back.
+    function client:release()
+        self.cursorItem = nil
+        return self:fire("CURSOR_CHANGED", true, 0, 1, 0)
+    end
+
+    ---Feeding by dragging food onto the pet: pick up, drop, then the cast succeeds.
+    function client:dragFeed(itemID, delay)
+        self:pickUp(itemID)
+        self.time = self.time + 1
+        self:release()
+        self.time = self.time + (delay or 0.1)
+        return self:castSucceeded()
+    end
+
+    ---Lets pending timers run out (a cast with unknown food waits up to a second for the bags),
+    ---then presses a key: the emote waits for one.
+    function client:settle()
+        self:advance(1.1)
+        return self:pressKey()
+    end
+
+    ---The text of the last chat message sent, after settling.
+    function client:lastSent()
+        self:settle()
+        local sent = self.chatSent[#self.chatSent]
+        return sent and sent[1]
     end
 
     ---A key press: every shown frame that takes keys gets it.

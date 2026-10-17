@@ -17,7 +17,8 @@ describe("the pet helpers", function()
 
     it("list the pet's spells by name, with ID, rank and icon; commands and odd entries left out", function()
         local client = NewClient()
-        client.petBook = { { token = "Attack" }, { CLAW_2 }, { GROWL }, { CLAW_3, noInfo = true } }
+        -- 99999: a spell the client cannot name.
+        client.petBook = { { token = "Attack" }, { CLAW_2 }, { GROWL }, { CLAW_3, noInfo = true }, { 99999 } }
         assert.are.same({
             Claw = { id = CLAW_2, rank = "Rank 2", icon = 132140 },
             Growl = { id = GROWL, icon = 132270 },

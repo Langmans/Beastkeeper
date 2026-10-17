@@ -3,4 +3,5 @@
     <Include file="AutocastCheck\AutocastCheck.xml"/>
     <Include file="CareButton\CareButton.xml"/>
     <Include file="AbilityLearned\AbilityLearned.xml"/>
+    <Include file="FeedEmotes\FeedEmotes.xml"/>
 </Ui>
