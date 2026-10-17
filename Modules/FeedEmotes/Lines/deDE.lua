@@ -156,6 +156,11 @@ M.Lines.deDE = {
                 "wirft etwas in den Wind ({food}). {pet} fängt es mit knisternden Blitzen.",
                 "hält etwas hin ({food}). {pet} windet sich um den Arm und nimmt es sanft.",
             },
+            -- Für Kennel geschrieben: der Fuchs ist neu in WoW: Forever.
+            [F.FOX] = {
+                "hält etwas hin ({food}). {pet} tanzt ein kleines Gaunertänzchen und schnappt es sich.",
+                "legt etwas beiseite ({food}) und dreht sich kurz um. {pet} hat es schon vergraben und gräbt es gleich wieder aus.",
+            },
         },
         male = { "Guter Junge!", "Braver Junge!", "Schluss mit Herrn Griesgram!" },
         female = { "Gutes Mädchen!", "Braves Mädchen!", "Schluss mit Frau Griesgram!" },
@@ -374,6 +379,19 @@ M.Lines.deDE = {
                 "Blitzschnell.",
                 "Nach dem Essen bitte nicht um mich wickeln.",
                 "Zisch und funkel.",
+            },
+            -- Für Kennel geschrieben: der Fuchs ist neu in WoW: Forever.
+            [F.FOX] = {
+                "Schlauer Fuchs!",
+                "Was sagt der Fuchs? Mampf.",
+                "Fuchs, du hast das Futter gestohlen!",
+                "Für die Hühner bleibt kein Krümel.",
+                "Der Schlaueste am Tisch.",
+                "Ein zufriedenes Schwanzwedeln.",
+                "Ehrlich geklaut.",
+                "Rotpelz und satt.",
+                "Erst ein Tänzchen um den Napf, dann der Sprung.",
+                "Vom Futter überlistet? Niemals.",
             },
             [F.BAT] = {
                 "Braver kleiner Kreischer!",

@@ -32,15 +32,15 @@ L.ABILITYLEARNED_POINTS_GAINED = "%s gained %d training |4point:points;"
 -- Toast text under it. %d: the pet's free training points.
 L.ABILITYLEARNED_POINTS_FREE = "%d free to spend at Beast Training."
 -- Toast titles naming why the pet got training points. %s: the pet's name; %d: its new level;
--- In LOYALTY_UP, %d is its new loyalty level (1 to 6) and the second %s that level's name as the
--- game words it, such as "Faithful".
+-- In LOYALTY_UP the second %s is the new loyalty level (1 to 6) with its name as the game words it,
+-- such as "5 (Faithful)", or the number alone when the game gives no name.
 L.ABILITYLEARNED_LEVEL_UP = "%s reached level %d"
-L.ABILITYLEARNED_LOYALTY_UP = "%s now has loyalty level %d (%s)"
+L.ABILITYLEARNED_LOYALTY_UP = "%s now has loyalty level %s"
 -- Toast text under those. First %d: the points gained; second: the free ones.
 L.ABILITYLEARNED_POINTS_CAUSED = "+%d training |4point:points;, %d free for Beast Training."
--- Toast when the pet's loyalty level dropped. %s: the pet's name; in the text, the game's loyalty text.
+-- Toast when the pet's loyalty level dropped. %s: the pet's name; in the text, the new level as above ("3 (Submissive)").
 L.ABILITYLEARNED_LOYALTY_DROP = "%s's loyalty dropped"
-L.ABILITYLEARNED_LOYALTY_DROP_TEXT = "Now %s. Keep it happy, or it may run away."
+L.ABILITYLEARNED_LOYALTY_DROP_TEXT = "Now loyalty level %s. Keep it happy, or it may run away."
 -- Its hint: the training points a lower loyalty level costs. First %d: how many; second: the free ones left.
 L.ABILITYLEARNED_POINTS_LOST = "-%d training |4point:points;, %d free."
 

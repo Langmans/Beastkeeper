@@ -92,7 +92,7 @@ M.FoodTypes = {
 -- same on every client language, unlike the family name.
 -- Source: the CreatureFamily DB2 table (wago.tools/db2/CreatureFamily).
 M.Family = {
-    -- The 17 families tameable on Forever (Wowhead, forever/hunter-pets).
+    -- The 18 families tameable on Forever (Wowhead, forever/hunter-pets; Fox is new there).
     WOLF = 1,
     CAT = 2,
     SPIDER = 3,
@@ -110,6 +110,7 @@ M.Family = {
     HYENA = 25,
     BIRD_OF_PREY = 26, -- "Owl" before Forever renamed it
     WIND_SERPENT = 27,
+    FOX = 40,
     -- Wrath exotics, kept from Feed-O-Matic for later Classic flavors.
     CHIMAERA = 38,
     DEVILSAUR = 39,

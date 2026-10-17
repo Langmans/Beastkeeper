@@ -332,6 +332,7 @@ describe("FeedEmotes' page for own lines", function()
         assert.are.same({ male = "Male", female = "Female" }, args.condSex.values)
         assert.are.equal("Mushrooms", args.condFood.values.fungus)
         assert.are.equal("Bird of Prey", args.condFamily.values.bird_of_prey)
+        assert.are.equal("Fox", args.condFamily.values.fox)
         assert.is_nil(args.condFamily.values.chimaera)
     end)
 

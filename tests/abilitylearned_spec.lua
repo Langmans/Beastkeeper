@@ -38,6 +38,13 @@ describe("AbilityLearned", function()
             assert.are.same({ file = CAT_CALL, channel = "Master" }, client.sounds[#client.sounds])
         end)
 
+        it("counts the Fox's Trickster's Dance, new in WoW: Forever", function()
+            local client = ready()
+            client.pet = nil
+            settle(client:learnLine("Trickster's Dance (Rank 1)"))
+            assert.are.equal("New pet ability: Trickster's Dance (Rank 1)", client:toastTitle())
+        end)
+
         it("reads the name from a spell link, and the rank from its spell", function()
             local client = settle(ready():learnLine("|cff71d5ff|Hspell:16828:0|h[Claw]|h|r"))
             assert.are.equal("New pet ability: Claw (Rank 2)", client:toastTitle())
@@ -431,7 +438,7 @@ describe("AbilityLearned", function()
             local toast = client:toast()
             assert.are.equal("Fluffy's loyalty dropped", toast.Title.text)
             assert.are.equal(
-                "Now Loyalty Level 3 (|cff00cc52Submissive|r). Keep it happy, or it may run away.",
+                "Now loyalty level 3 (|cff00cc52Submissive|r). Keep it happy, or it may run away.",
                 toast.Text.text,
                 "the name coloured from friendly green at level 1 to exalted teal at 6"
             )
@@ -456,6 +463,46 @@ describe("AbilityLearned", function()
             local client = ready()
             client.loyalty = "Loyalty Level 3 (Submissive)"
             assert.are.equal("Fluffy's loyalty dropped", client:fire("PET_UI_UPDATE"):toastTitle())
+        end)
+    end)
+
+    describe("loyalty as the client gives it", function()
+        ---A hunter past the login wait whose level-15 pet has `loyalty` and `total` points.
+        local function withLoyalty(loyalty, total, opts)
+            local client = NewClient(opts)
+            client.loyalty, client.trainingPoints = loyalty, { total, 7 }
+            client:login():advance(5)
+            return client
+        end
+
+        it("reads Forever's bare name, the level coming from the points", function()
+            local client = withLoyalty("Dependable", 45) -- 15 × (4 − 1)
+            assert.are.equal(4, module(client).db.char.pets.Fluffy.loyalty)
+            local title = client:loyaltyChange("Faithful", 15):toastTitle()
+            assert.are.equal("Fluffy now has loyalty level 5 (|cff00cca3Faithful|r)", title)
+        end)
+
+        it("reads a bare number, without a name", function()
+            local client = withLoyalty(4, 45)
+            assert.are.equal("Fluffy now has loyalty level 5", client:loyaltyChange(5, 15):toastTitle())
+        end)
+
+        it("reads the classic text through the old global", function()
+            local client = withLoyalty("Loyalty Level 4 (Dependable)", 45, { oldLoyaltyAPI = true })
+            local title = client:loyaltyChange("Loyalty Level 5 (Faithful)", 15):toastTitle()
+            assert.are.equal("Fluffy now has loyalty level 5 (|cff00cca3Faithful|r)", title)
+        end)
+
+        it("leaves loyalty out, without an error, when neither it nor the points tell the level", function()
+            local client = withLoyalty("Dependable", 50) -- 50 is no multiple of 15
+            assert.is_nil(module(client).db.char.pets.Fluffy.loyalty)
+            assert.are.equal("Fluffy reached level 16", client:petLevelUp(4):toastTitle())
+            client = withLoyalty(SECRET, 45)
+            assert.are.equal(4, module(client).db.char.pets.Fluffy.loyalty, "hidden: from the points")
+            client = withLoyalty("Dependable", 45)
+            client.petLevel = 0
+            client:gainPoints(1)
+            assert.are.same({}, client.errors)
         end)
     end)
 

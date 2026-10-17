@@ -259,6 +259,11 @@ M.Lines.enUS = {
                 "throws {a} {food} into the wind. {pet} catches it with a crackle of lightning.",
                 "holds out {a} {food}. {pet} coils around the arm and takes it gently.",
             },
+            -- Written for Kennel: Fox is new in WoW: Forever.
+            [F.FOX] = {
+                "holds out {a} {food}. {pet} does a little trickster's dance, then snatches it.",
+                "turns around for a moment. {pet} has already buried the {food} for later, and is digging it up again.",
+            },
         },
         male = { "Good boy!", "Atta boy!", "No more Mister Grumpy!" },
         female = { "Good girl!", "Atta girl!", "No more Miss Grumpy!" },
@@ -473,6 +478,19 @@ M.Lines.enUS = {
                 "Lightning fast.",
                 "Don't wrap around me after dinner.",
                 "Hiss and sparkle.",
+            },
+            -- Written for Kennel: Fox is new in WoW: Forever.
+            [F.FOX] = {
+                "Sly fox!",
+                "What does the fox say? Nom.",
+                "Quick and brown, and now quite full.",
+                "Not a crumb left for the hens.",
+                "The cleverest one at the table.",
+                "A swish of the tail says thanks.",
+                "Stolen fair and square.",
+                "Foxy and fed.",
+                "A little dance around the bowl, then the pounce.",
+                "Outfoxed by lunch? Never.",
             },
             [F.BAT] = {
                 "Good little screecher!",

@@ -42,6 +42,7 @@ local WILD_ABILITY_IDS = {
     1264494, -- Swipe (bear)
     1265038, -- Tendon Rip (hyena)
     1265843, -- Web (spider)
+    1310617, -- Trickster's Dance (fox, a family new in Forever)
 }
 
 local MERGE_WINDOW = 0.3 -- seconds the reports of one learn may lie apart

@@ -155,11 +155,33 @@ function M:CheckHints()
     Say(pet, list, unsure)
 end
 
----The loyalty level in the game's loyalty text ("Loyalty Level 5 (Faithful)" -> 5), or nil.
----@param text string?
----@return number?
-local function LoyaltyLevel(text)
-    return tonumber(text and text:match("%d+"))
+---The pet's loyalty level and its name, as far as the client tells them. WoW: Forever gives the
+---name alone ("Faithful", C_PetInfo.GetPetLoyalty), classic clients "Loyalty Level 5 (Faithful)"
+---(the global), some a number. Without a number the level comes from the training points, which
+---are level × (loyalty − 1), when they divide evenly; else it stays unknown.
+---@param total number the training points total
+---@param petLevel GameValue
+---@return number? loyalty
+---@return string? name
+local function ReadLoyalty(total, petLevel)
+    local get = (C_PetInfo and C_PetInfo.GetPetLoyalty) or GetPetLoyalty
+    ---@type GameValue
+    local value = get and get()
+    ---@type number?, string?
+    local loyalty, name
+    if not Kennel.Readable(value) then
+        value = nil
+    elseif type(value) == "number" then
+        loyalty = value
+    elseif type(value) == "string" and value ~= "" then
+        loyalty = tonumber(value:match("%d+"))
+        name = value:match("%((.-)%)") or (not loyalty and value or nil)
+    end
+    if not loyalty and type(petLevel) == "number" and Kennel.Readable(petLevel) and petLevel > 0 then
+        local derived = total / petLevel + 1
+        if derived == math.floor(derived) then loyalty = derived end
+    end
+    return loyalty, name
 end
 
 ---The colour code of a loyalty level, along the reputation colours: friendly green at loyalty
@@ -176,21 +198,14 @@ local function LoyaltyColor(level)
     return ("|cff%02x%02x%02x"):format(rgb[1], rgb[2], rgb[3])
 end
 
----The game's loyalty text with the level's name (in parentheses) in its colour.
----@param text string
----@param level number
+---A loyalty level as the toasts show it: "5 (Faithful)" with the name in its colour, or "5" when
+---the client gave no name.
+---@param loyalty number
+---@param name string?
 ---@return string
-local function ColorLoyalty(text, level)
-    return (text:gsub("%((.-)%)", "(" .. LoyaltyColor(level) .. "%1|r)"))
-end
-
----The level's name alone ("Faithful"), in its colour; the whole text when it names none.
----@param text string
----@param level number
----@return string
-local function LoyaltyName(text, level)
-    local name = text:match("%((.-)%)")
-    return name and LoyaltyColor(level) .. name .. "|r" or text
+local function LoyaltyLabel(loyalty, name)
+    if not name then return tostring(loyalty) end
+    return ("%d (%s%s|r)"):format(loyalty, LoyaltyColor(loyalty), name)
 end
 
 ---A toast about the pet out's growth, of `kind` ("points" or "loyalty").
@@ -225,8 +240,7 @@ function M:CheckGrowth()
     local free, total = Kennel.PetTrainingPoints()
     if not total then return end
     local pet, level = UnitName("pet"), UnitLevel("pet")
-    local loyaltyText = GetPetLoyalty and GetPetLoyalty()
-    local loyalty = LoyaltyLevel(loyaltyText)
+    local loyalty, loyaltyName = ReadLoyalty(total, level)
     local pets = Char().pets
     local before = pets[pet]
     pets[pet] = { total = total, level = level, loyalty = loyalty }
@@ -236,7 +250,7 @@ function M:CheckGrowth()
     local loyaltyUp = (loyalty and before.loyalty and loyalty > before.loyalty) == true
     if loyalty and before.loyalty and loyalty < before.loyalty then
         if not settings.loyalty then return end
-        local text = L.ABILITYLEARNED_LOYALTY_DROP_TEXT:format(ColorLoyalty(loyaltyText, loyalty))
+        local text = L.ABILITYLEARNED_LOYALTY_DROP_TEXT:format(LoyaltyLabel(loyalty, loyaltyName))
         local lost = change < 0 and L.ABILITYLEARNED_POINTS_LOST:format(-change, free) or nil
         local sound = self:Sound("loyaltySound", "WOUND")
         Kennel:ShowToast(GrowthToast("loyalty", L.ABILITYLEARNED_LOYALTY_DROP:format(pet), text, lost, sound))
@@ -249,11 +263,12 @@ function M:CheckGrowth()
     if levelUp == loyaltyUp then
         title = L.ABILITYLEARNED_POINTS_GAINED:format(pet, change)
         text = L.ABILITYLEARNED_POINTS_FREE:format(free)
+    elseif levelUp then
+        title = L.ABILITYLEARNED_LEVEL_UP:format(pet, level)
+        text = L.ABILITYLEARNED_POINTS_CAUSED:format(change, free)
     else
-        -- loyaltyUp is only true when the loyalty level (and so its text) was read.
-        local newLoyalty = loyalty --[[@as number]]
-        title = levelUp and L.ABILITYLEARNED_LEVEL_UP:format(pet, level)
-            or L.ABILITYLEARNED_LOYALTY_UP:format(pet, newLoyalty, LoyaltyName(loyaltyText, newLoyalty))
+        -- loyaltyUp is only true when the loyalty level was read.
+        title = L.ABILITYLEARNED_LOYALTY_UP:format(pet, LoyaltyLabel(loyalty --[[@as number]], loyaltyName))
         text = L.ABILITYLEARNED_POINTS_CAUSED:format(change, free)
     end
     Kennel:ShowToast(GrowthToast("points", title, text, nil, self:Sound("pointsSound", "AGGRO")))

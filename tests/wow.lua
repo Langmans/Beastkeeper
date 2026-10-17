@@ -45,7 +45,8 @@ end
 ---@field oldTrainingAPI boolean? GetPetTrainingPoints instead of C_PetInfo's
 ---@field noTrainingAPI boolean? neither
 ---@field noLearnLines boolean? no ERR_LEARN_ABILITY_S / ERR_LEARN_SPELL_S
----@field noLoyaltyAPI boolean? no GetPetLoyalty
+---@field noLoyaltyAPI boolean? neither C_PetInfo.GetPetLoyalty nor the global
+---@field oldLoyaltyAPI boolean? the global GetPetLoyalty instead of C_PetInfo's
 ---@field oldChatAPI boolean? the global SendChatMessage instead of C_ChatInfo's
 ---@field noStableInfo boolean? no C_StableInfo
 ---@field dev boolean? a development copy: Core\Dev.lua's screenshots on
@@ -62,6 +63,7 @@ local SPELLS = {
         [16828] = { "Claw", 132140, "Rank 2" },
         [16829] = { "Claw", 132140, "Rank 3" },
         [7371] = { "Charge", 132183, "Rank 1" },
+        [1310617] = { "Trickster's Dance", 132242, "Rank 1" }, -- Fox, new in WoW: Forever
         [4187] = { "Great Stamina", 136112, "Rank 1" },
         [20736] = { "Distracting Shot", 135736, "" },
         [136] = { "Mend Pet", 132179, "" },
@@ -439,22 +441,30 @@ function NewClient(opts)
     local function trainingPoints()
         return client.trainingPoints[1], client.trainingPoints[2]
     end
-    C_PetInfo, GetPetTrainingPoints = nil, nil
+    C_PetInfo, GetPetTrainingPoints = {}, nil
     if opts.oldTrainingAPI then
         GetPetTrainingPoints = trainingPoints
     elseif not opts.noTrainingAPI then
-        C_PetInfo = { GetPetTrainingPoints = trainingPoints }
+        C_PetInfo.GetPetTrainingPoints = trainingPoints
     end
-    -- The pet's level (client.petLevel) and loyalty, as GetPetLoyalty words it (client.loyalty);
-    -- opts.noLoyaltyAPI: a client without GetPetLoyalty.
+    -- The pet's level (client.petLevel) and loyalty as the client gives it (client.loyalty: a
+    -- classic "Loyalty Level 4 (Dependable)", Forever's bare name, a number, or SECRET): through
+    -- C_PetInfo.GetPetLoyalty as on Forever, the global with opts.oldLoyaltyAPI, neither with
+    -- opts.noLoyaltyAPI.
     client.petLevel, client.loyalty = 15, "Loyalty Level 4 (Dependable)"
     function UnitLevel(unit)
         if unit == "pet" then return client.petLevel end
         return 60
     end
-    GetPetLoyalty = not opts.noLoyaltyAPI and function()
+    local function petLoyalty()
         return client.loyalty
-    end or nil
+    end
+    GetPetLoyalty = nil
+    if opts.oldLoyaltyAPI then
+        GetPetLoyalty = petLoyalty
+    elseif not opts.noLoyaltyAPI then
+        C_PetInfo.GetPetLoyalty = petLoyalty
+    end
     function GetZoneText()
         return client.zone
     end

@@ -75,6 +75,7 @@ L.FEEDEMOTES_COND_BAT = "Bat"
 L.FEEDEMOTES_COND_HYENA = "Hyena"
 L.FEEDEMOTES_COND_BIRD_OF_PREY = "Bird of Prey"
 L.FEEDEMOTES_COND_WIND_SERPENT = "Wind Serpent"
+L.FEEDEMOTES_COND_FOX = "Fox"
 
 -- Chat, after adding or changing a line. %d: its number; %s: the line as saved.
 L.FEEDEMOTES_ADDED = "Line %d added: %s"

@@ -22,6 +22,17 @@ local FOREVER_FAMILIES = {
     "HYENA",
     "BIRD_OF_PREY",
     "WIND_SERPENT",
+    "FOX",
+}
+
+-- Families a language has no lines for yet (its pets get the lines for every pet): Fox came with
+-- WoW: Forever, after the Feed-O-Matic and FeedPetEmotes translations.
+local FAMILY_GAPS = {
+    esES = { FOX = true },
+    esMX = { FOX = true },
+    frFR = { FOX = true },
+    koKR = { FOX = true },
+    ruRU = { FOX = true },
 }
 
 -- Food sold by vendors on Forever, classified by name.
@@ -88,13 +99,19 @@ describe("FeedEmotes' lines", function()
         end
     end)
 
-    it("have at least three lines per family and two per food type in every language", function()
+    it("have at least three lines per family and two per food type in every language, but its gaps", function()
         ---@type string[]
         local short = {}
         for _, code in ipairs(LANGUAGES) do
             local emotes = M.Lines[code].emotes
+            local gaps = FAMILY_GAPS[code] or {}
             for name, id in pairs(M.Family) do
-                if #(emotes.family[id] or {}) < 3 then short[#short + 1] = code .. " " .. name end
+                local count = #(emotes.family[id] or {})
+                if gaps[name] then
+                    if count > 0 then short[#short + 1] = code .. " " .. name .. " is no gap any more" end
+                elseif count < 3 then
+                    short[#short + 1] = code .. " " .. name
+                end
             end
             for _, foodType in ipairs(FOOD_TYPES) do
                 if #((emotes.foodType or {})[foodType] or {}) < 2 then short[#short + 1] = code .. " " .. foodType end
