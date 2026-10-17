@@ -70,7 +70,7 @@ function M:HighestRank(name)
     return Char().known[name]
 end
 
----Sends KENNEL_RANKS_KNOWN with the ranks that were news (docs\hooking.md).
+---Sends KENNEL_RANKS_KNOWN with the ranks that were news (docs\04-hooking.md).
 ---@param source "learn"|"training"
 ---@param ranks KennelKnownRank[]
 local function RanksKnown(source, ranks)

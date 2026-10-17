@@ -1,5 +1,5 @@
 ---@meta
--- Types for the messages Kennel sends (docs\hooking.md), for the Lua language server of an addon
+-- Types for the messages Kennel sends (docs\04-hooking.md), for the Lua language server of an addon
 -- that listens: add Kennel's docs folder to its library (in .luarc.json, "workspace.library":
 -- ["<AddOns>/Kennel/docs"]) and annotate a handler's table, e.g. `---@param event KennelToastEvent`.
 -- Never loaded in game: not in the .toc. Kennel's own code uses the same types.

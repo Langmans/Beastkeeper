@@ -161,7 +161,7 @@ end
 
 ---Shows a toast now, or after the one that is up. A key whose toast is up or waiting gets no
 ---second one. Sends KENNEL_TOAST ({ module, toast }) first, so a listener may still change the
----toast (docs\hooking.md); the module is the part of the key before the colon.
+---toast (docs\04-hooking.md); the module is the part of the key before the colon.
 ---@param info KennelToastInfo
 function Kennel:ShowToast(info)
     if (current and current.key == info.key) or Queued(info.key) then return end

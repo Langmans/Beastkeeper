@@ -1,0 +1,90 @@
+# Development
+
+## Screenshots while testing in game
+
+`Modules\DevScreenshots`: in a copy straight from the repository there is a
+module "Dev Screenshots", off until switched on. On, each kind of toast (once
+faded in) and each Kennel chat line (numbers ignored, at most one every two
+seconds) gets one screenshot in the game's `Screenshots` folder, the first
+time it shows, after a grey `[Kennel dev] ...` chat line saying what it was
+for. What has a screenshot is kept across sessions; a button on its page
+forgets it. It listens to `KENNEL_TOAST` and `KENNEL_PRINT` like any addon
+could ([04-hooking.md](04-hooking.md)). The whole file is a `--@debug@` block,
+which the packager comments out of every release; the specs load the files
+the same way unless a client asks for `dev`.
+
+## Tests
+
+The tests run on Lua 5.1, the version WoW runs, with
+[busted](https://lunarmodules.github.io/busted/) and
+[luacov](https://lunarmodules.github.io/luacov/). The tool versions are
+pinned in `kennel-dev-1.rockspec`.
+
+**Setup on Windows**, once: `tests\setup-lua.ps1` builds Lua 5.1.5 with
+Visual Studio's C compiler (needs the C++ build tools and Python), and puts
+LuaRocks, the test rocks and StyLua next to it, all inside `.lua\`
+(gitignored). Nothing outside the repository changes. On Linux or macOS,
+install Lua 5.1 and LuaRocks, then
+`luarocks install --only-deps kennel-dev-1.rockspec` and StyLua.
+
+Everything runs through `tests/check.lua`, from the repository root
+(`.lua\bin\lua.exe tests\check.lua` on Windows, or `lua tests/check.lua`
+after `.lua\bin\activate.ps1`):
+
+- `lua tests/check.lua` runs lint, then the tests with the coverage check.
+- `lua tests/check.lua test` fetches `Libs\` if needed and runs the
+  `tests/*_spec.lua` files with busted, then prints line coverage of
+  Kennel's own files (not `Libs\`). Extra arguments go to busted, such as
+  `test --filter=options`. `coverage/lcov.info` is written for editor
+  plugins and `coverage/junit.xml` for CI.
+- `lua tests/check.lua lint` runs the StyLua format check, then WoW Lua LS
+  diagnostics.
+- `lua tests/check.lua format` formats all Lua with StyLua.
+
+Both coverages are held at 100%: a full test run fails below 100% line
+coverage (a file no test loads counts as 0%), and lint fails below 100% WoW
+Lua LS type coverage. A partial run (`test --filter=...`) is not held to
+the line coverage.
+
+WoW Lua LS is the binary in the `WOWLUA_LS` environment variable, else the
+newest installed copy of the `tradeskillmaster.wowlua-ls` VS Code extension.
+Without either, lint skips it with a warning, except under CI, where it
+fails. It knows the Ace3 types (`AceModule`, `AceDBObject-3.0`,
+`AceConfig.OptionsTable`, ...). To find a symbol it cannot resolve,
+`wowlua_ls dump-types --with-stubs .` lists every name with its type.
+
+## How the tests work
+
+`tests/helper.lua` reads `Kennel.toc` the way the client does, with every
+`.xml` in it expanded to the files it loads. `NewClient()` (`tests/wow.lua`)
+is a simulated client: it resets the WoW API globals and loads every file in
+that order, the real Ace3 included, into a fresh namespace. Each file is
+compiled once per run and, unless the client asks for `dev`, has its
+`--@debug@` blocks commented out as in a release. A spec creates one client
+per test, so tests never share state:
+
+```lua
+describe("/kennel", function()
+    local client
+    before_each(function()
+        client = NewClient({ modules = function(Kennel) ... end }):login()
+    end)
+
+    it("alone opens the options page", function()
+        client:slash("")
+        assert.are.same({ client.Kennel.optionsCategoryID }, client.opened)
+    end)
+end)
+```
+
+The simulated client keeps what tests read back: frames and their events,
+chat lines, settings pages opened, timers (`client:advance(seconds)`), and
+errors Ace3 reports through `geterrorhandler` (`client.errors`). Any frame
+method it does not define is a no-op, so the Ace3 GUI can draw the options
+pages: the options specs open every page in AceConfigDialog and show every
+settings page, and fail on any error. It also has WoW's own changes to Lua
+5.1 that Ace3 relies on, such as `xpcall` passing its extra arguments on.
+
+busted's spies (`spy.new`, `assert.spy(...).was.called_with(...)`) check
+callbacks. AceAddon only calls handlers that are functions, so a spy goes
+inside the handler rather than in its place (see `tests/core_spec.lua`).

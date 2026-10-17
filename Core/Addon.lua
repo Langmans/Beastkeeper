@@ -19,7 +19,7 @@ Kennel:SetDefaultModuleLibraries("AceEvent-3.0")
 
 local consolePrint = Kennel.Print
 
----AceConsole's Print, then KENNEL_PRINT ({ module, line }) for whoever listens (docs\hooking.md).
+---AceConsole's Print, then KENNEL_PRINT ({ module, line }) for whoever listens (docs\04-hooking.md).
 ---@param module string? the module that says it; nil for the core
 ---@param ... any
 local function PrintFrom(module, ...)

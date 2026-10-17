@@ -3,7 +3,7 @@ local _, ns = ...
 -- The skin register: the contract a skin keeps (KennelToastSkin) and which skin draws which kind
 -- of toast. A look is chosen for every toast and, per kind, the same or its own; a skin that is
 -- not registered (its addon gone) falls back to the card. Frame.lua and Engine.lua are the rest
--- of the toast; the README's "Toast skins" shows how they fit.
+-- of the toast; docs\05-toast-skins.md shows how they fit.
 
 ---@type Kennel
 local Kennel = ns

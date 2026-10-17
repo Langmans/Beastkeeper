@@ -45,5 +45,5 @@
 - Ability Learned keeps every rank you learned, not only the highest.
 - For other addons: AceEvent messages KENNEL_TOAST, KENNEL_PRINT and
   KENNEL_RANKS_KNOWN, each with a table of details (module, toast, line,
-  ranks); see docs/hooking.md, with an example addon, and
+  ranks); see docs/04-hooking.md, with an example addon, and
   docs/KennelMessages.lua for their types.
