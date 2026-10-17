@@ -182,6 +182,43 @@
 ---@field skin string a button skin id, or "auto"
 ---@field holder string a holder skin id, or "auto"
 
+---Where and when a pet came to the journal.
+---@class KennelJournalFirst
+---@field t number server time
+---@field zone string?
+---@field tamed boolean? seen tamed (a Tame Beast cast before it came out)
+---@field npc number? the NPC ID it was tamed as
+
+---One pet's journal (PetJournal), per character.
+---@class KennelJournalEntry
+---@field first KennelJournalFirst
+---@field name string?
+---@field family string? its family, in the client's language
+---@field level number?
+---@field loyalty number?
+---@field loyaltyName string?
+---@field out number seconds out, before the current stretch
+---@field deaths number
+---@field rises table<number, number> per loyalty level reached while seen, the seconds out then
+---@field abilities string[] "Claw (Rank 2)", sorted, as of the last time out
+
+---@class KennelPetJournal: KennelModule
+---@field db AceDBObject-3.0 always set: the module has defaults
+---@field current string? the pet out's key
+---@field outSince number? GetTime() when it came out
+---@field dead boolean? whether the pet out was dead at the last health event
+---@field taming boolean? a Tame Beast cast went through; the next new pet was tamed
+---@field picked string? the pet chosen on the page
+---@field Pets fun(self: KennelPetJournal): table<string, KennelJournalEntry>
+---@field Out fun(self: KennelPetJournal, key: string): number
+---@field Record fun(self: KennelPetJournal)
+---@field Snapshot fun(self: KennelPetJournal)
+---@field Close fun(self: KennelPetJournal)
+---@field Open fun(self: KennelPetJournal, key: string)
+---@field JournalText fun(self: KennelPetJournal, key: string): string
+---@field Chosen fun(self: KennelPetJournal): string?
+---@field GetOptions fun(self: KennelPetJournal): table
+
 ---A row of Feeding's food list: a secure button that feeds one food.
 ---@class KennelFoodRow: Button
 ---@field icon Texture

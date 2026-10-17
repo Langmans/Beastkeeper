@@ -180,6 +180,15 @@ it to feed the next food from your bags.
 - **Toasts** when your pet becomes content or unhappy, with the food that is
   next, and when the last food it eats leaves your bags. Each has a switch.
 
+### Pet Journal
+
+A page for every pet your hunter had out (Kennel > Pet Journal), per
+character: when and where you tamed it (or first had it out with Kennel), its
+level, family and loyalty, how long you were out together and how often it
+died, when its next loyalty level may come (from how long the rises Kennel saw
+took), and the abilities it had the last time it was out, so your stabled
+pets are there too.
+
 ### Beast Map
 
 With [HandyNotes](https://www.curseforge.com/wow/addons/handynotes): a pin on

@@ -1,0 +1,35 @@
+-- PetJournal's English strings: the "PetJournal" namespace on the CurseForge translation page (see
+-- Locales\README.md). Ability names, ranks, families and loyalty names come from the client.
+local L = LibStub("AceLocale-3.0"):NewLocale("Kennel", "enUS", true)
+
+-- One string per line, however long: see Locales\README.md.
+-- stylua: ignore start
+
+-- Settings window: the module's switch and page title, and its tooltip.
+L.PETJOURNAL_TITLE = "Pet Journal"
+L.PETJOURNAL_DESC = "A page for every pet your hunter had out: when and where you tamed it, its level and loyalty, how long you were out together, how often it died, when its next loyalty level may come, and the abilities it had."
+
+-- The page: the choice of pet. A choice: %s the pet's name, %d its level, second %s its family.
+L.PETJOURNAL_PET = "Pet"
+L.PETJOURNAL_PET_ENTRY = "%s (level %d %s)"
+
+-- The journal. %s: a date and time such as "2026-10-17 21:05"; second %s: the zone; %d: the NPC ID it was tamed as.
+L.PETJOURNAL_TAMED = "Tamed %s in %s, as NPC %d."
+-- For a pet Kennel did not see tamed: when it was first out with Kennel loaded.
+L.PETJOURNAL_FIRST = "First seen %s in %s."
+-- %d: its level; first %s: its family (Cat); second %s: its loyalty level, such as "4 (Dependable)".
+L.PETJOURNAL_LEVEL = "Level %d %s, loyalty %s."
+-- %s: a duration, PETJOURNAL_HOURS or PETJOURNAL_MINUTES.
+L.PETJOURNAL_OUT = "Out together: %s."
+L.PETJOURNAL_HOURS = "%d h %d min"
+L.PETJOURNAL_MINUTES = "%d min"
+-- %d: how often. |4time:times; is WoW's own plural (singular:plural).
+L.PETJOURNAL_DIED = "Died %d |4time:times;."
+-- The next loyalty level, from how long the rises it saw took while out. %s: a duration.
+L.PETJOURNAL_NEXT_IN = "Next loyalty level in about %s out."
+L.PETJOURNAL_NEXT_NOW = "Next loyalty level any moment now."
+L.PETJOURNAL_NEXT_UNKNOWN = "Next loyalty level: not enough seen yet."
+-- %s: a list like "Bite (Rank 1), Claw (Rank 2)".
+L.PETJOURNAL_ABILITIES = "Abilities: %s."
+
+-- stylua: ignore end
