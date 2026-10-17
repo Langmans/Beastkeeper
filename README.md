@@ -82,8 +82,9 @@ Shift still forces Revive Pet and Ctrl Call Pet.
   revive. In combat the button cannot switch: the toast says to hold Shift,
   and it switches when combat ends.
 - Toasts when your pet **dies** (and again at the pull while it is still
-  dead), when **combat starts without a pet**, and when its **health drops**
-  to a set line (40% by default, 0 for never). Each kind can have a look of
+  dead), when **combat starts without a pet** or **with your pet on Passive**
+  (it will not attack; the toast goes once you change its stance), and when
+  its **health drops** to a set line (40% by default, 0 for never). Each kind can have a look of
   its own on Kennel's page; each goes away once solved. They play your pet's
   own death sound, wound cry or attack call, the raid warning, or nothing.
 - The module's page has those switches, the sound, buttons to tell the button

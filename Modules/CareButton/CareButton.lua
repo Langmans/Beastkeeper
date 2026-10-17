@@ -3,7 +3,9 @@ local _, ns = ...
 -- One key for the pet (Button.lua) and the toasts around it:
 --   - dead:  the pet died, or a failed cast showed it is dead; again at the pull while it still is;
 --   - nopet: combat starts without a pet that is known to be dead;
---   - low:   the pet's health drops to the set line; again only after it was back above it.
+--   - low:   the pet's health drops to the set line; again only after it was back above it;
+--   - passive: combat starts with the pet on Passive, which will not attack; it goes when the
+--     stance changes. The stance is read from the pet bar, never a hidden value.
 -- Each goes away once solved. Failed casts teach the button what its state driver cannot see:
 -- Call Pet failing (or "Your pet is dead") without a pet means it is dead; Revive Pet failing
 -- before its cast started means there is none to revive.
@@ -20,9 +22,10 @@ M.toastTypes = {
     dead = L.CAREBUTTON_TOASTTYPE_DEAD,
     nopet = L.CAREBUTTON_TOASTTYPE_NOPET,
     low = L.CAREBUTTON_TOASTTYPE_LOW,
+    passive = L.CAREBUTTON_TOASTTYPE_PASSIVE,
 }
 M.defaults = {
-    profile = { died = true, nopet = true, low = 40, sound = "family" },
+    profile = { died = true, nopet = true, passive = true, low = 40, sound = "family" },
     char = { petDead = false },
 }
 
@@ -33,12 +36,15 @@ local FALLBACK_NAMES = { [136] = "Mend Pet", [982] = "Revive Pet", [883] = "Call
 -- The names the client's "Your pet is dead" error may have among the global strings.
 local PET_DEAD_ERRORS = { "ERR_PET_SPELL_DEAD", "PETTAME_DEAD" }
 
--- Per toast: the spell it points to, its title and text, and which of the pet's sounds it plays.
----@type table<string, {spell: number, title: string, reason: string, sound: "AGGRO"|"DEATH"|"WOUND"}>
+-- Per toast: the spell it points to (its icon, and the button that answers it), its title and
+-- text, and which of the pet's sounds it plays. Passive is answered on the pet bar, not by the
+-- button: it has the pet bar's Passive icon and no hint.
+---@type table<string, {spell: number?, title: string, reason: string, sound: "AGGRO"|"DEATH"|"WOUND"}>
 local ALERTS = {
     dead = { spell = 982, title = L.CAREBUTTON_TOAST_DEAD, reason = L.CAREBUTTON_REASON_DEAD, sound = "DEATH" },
     nopet = { spell = 883, title = L.CAREBUTTON_TOAST_NOPET, reason = L.CAREBUTTON_REASON_NOPET, sound = "AGGRO" },
     low = { spell = 136, title = L.CAREBUTTON_TOAST_LOW, reason = L.CAREBUTTON_REASON_LOW, sound = "WOUND" },
+    passive = { title = L.CAREBUTTON_TOAST_PASSIVE, reason = L.CAREBUTTON_REASON_PASSIVE, sound = "AGGRO" },
 }
 
 ---The settings of the profile in use.
@@ -71,23 +77,38 @@ function M:Sound(kind)
 end
 
 ---The toast for `kind`.
----@param kind "dead"|"nopet"|"low"
+---@param kind "dead"|"nopet"|"low"|"passive"
 ---@param reason string? instead of the toast's own text
 ---@param percent number? the pet's health, for low
 ---@return KennelToastInfo
 function M:Toast(kind, reason, percent)
     local alert = ALERTS[kind]
-    local _, icon = Kennel.SpellInfo(alert.spell)
+    ---@type (number|string)?
+    local icon = PET_PASSIVE_TEXTURE
+    if alert.spell then
+        _, icon = Kennel.SpellInfo(alert.spell)
+    end
     return {
         key = "CareButton:" .. kind,
         type = "CareButton:" .. kind,
         source = self.title,
         title = alert.title:format(percent),
         text = reason or alert.reason,
-        hint = PressHint(),
+        hint = alert.spell and PressHint() or nil,
         icon = icon,
         sound = self:Sound(alert.sound),
     }
+end
+
+---Whether the pet is on Passive, from the stance tokens on the pet bar.
+---@return boolean
+local function OnPassive()
+    if not GetPetActionInfo then return false end
+    for slot = 1, NUM_PET_ACTION_SLOTS or 10 do
+        local name, _, isToken, isActive = GetPetActionInfo(slot)
+        if isToken and name == "PET_MODE_PASSIVE" then return isActive == true end
+    end
+    return false
 end
 
 ---Toasts or takes away the low toast, from the pet's health.
@@ -148,10 +169,13 @@ local function IsPetDeadError(message)
     return false
 end
 
--- Combat starts: the moment a missing pet costs something.
+-- Combat starts: the moment a missing pet, or one on Passive, costs something.
 function M:PLAYER_REGEN_DISABLED()
-    if UnitExists("pet") then return end
     local settings = self:Settings()
+    if UnitExists("pet") then
+        if settings.passive and not UnitIsDead("pet") and OnPassive() then Kennel:ShowToast(self:Toast("passive")) end
+        return
+    end
     if self:PetDead() then
         if settings.died then Kennel:ShowToast(self:Toast("dead")) end
     elseif settings.nopet then
@@ -194,6 +218,11 @@ function M:UNIT_SPELLCAST_FAILED(_, unit, castGUID, spellID)
     end
 end
 
+-- The pet bar changed, its stance perhaps: the Passive toast goes once the pet is off Passive.
+function M:PET_BAR_UPDATE()
+    if not OnPassive() then Kennel:DropToast("CareButton:passive") end
+end
+
 ---@param _ string the event
 ---@param unit string
 function M:UNIT_HEALTH(_, unit)
@@ -212,6 +241,7 @@ function M:OnEnable()
     self:RegisterEvent("UNIT_SPELLCAST_FAILED")
     self:RegisterEvent("UNIT_HEALTH")
     self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEALTH")
+    self:RegisterEvent("PET_BAR_UPDATE")
     self:RegisterEvent("UPDATE_MACROS", "UpdateMacro")
     Kennel:OfferMacros(self)
     self:ApplyButton()

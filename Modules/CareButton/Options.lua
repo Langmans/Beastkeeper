@@ -32,6 +32,7 @@ end
 function M:GetOptions()
     local diedGet, diedSet = Setting("died")
     local nopetGet, nopetSet = Setting("nopet")
+    local passiveGet, passiveSet = Setting("passive")
     local lowGet, lowSet = Setting("low")
     local soundGet, soundSet = Setting("sound")
     return {
@@ -52,6 +53,14 @@ function M:GetOptions()
                 width = "full",
                 get = nopetGet,
                 set = nopetSet,
+            },
+            passive = {
+                type = "toggle",
+                name = L.CAREBUTTON_OPTION_PASSIVE,
+                order = 2.5,
+                width = "full",
+                get = passiveGet,
+                set = passiveSet,
             },
             low = {
                 type = "range",

@@ -162,6 +162,32 @@ describe("CareButton", function()
             assert.is_nil(client:login():enterCombat():toastTitle())
         end)
 
+        it("say at the pull that the pet is on Passive, until its stance changes", function()
+            local client = NewClient():login()
+            client.petBar[6] = { token = "PET_MODE_PASSIVE", active = true }
+            client:enterCombat()
+            assert.are.equal("Your pet is on Passive", client:toastTitle())
+            assert.are.equal(
+                "It will not attack: set it to Defensive or Aggressive on the pet bar.",
+                client:toast().Text.text
+            )
+            assert.are.equal("Interface\\Icons\\Ability_Seal", client:toast().Icon.texture)
+            client.petBar[6].active = false
+            client:petBarUpdate():animate(1)
+            assert.is_false(client:toast().shown)
+        end)
+
+        it("say nothing at the pull about a stance that is not Passive, or when switched off", function()
+            local client = NewClient():login()
+            client.petBar[6] = { token = "PET_MODE_PASSIVE", active = false }
+            assert.is_nil(client:enterCombat():toastTitle())
+            client = NewClient({ saved = saved({ passive = false }) }):login()
+            client.petBar[6] = { token = "PET_MODE_PASSIVE", active = true }
+            assert.is_nil(client:enterCombat():toastTitle())
+            client = NewClient({ noPetBarAPI = true }):login()
+            assert.is_nil(client:enterCombat():toastTitle(), "no pet bar to read")
+        end)
+
         it("say once that the pet's health is low, again only after it went back up", function()
             local client = NewClient():login()
             client:petHealth(60)
@@ -217,11 +243,12 @@ describe("CareButton", function()
             assert.are.same({}, client.sounds)
         end)
 
-        it("are three kinds, each with a look of its own", function()
+        it("are four kinds, each with a look of its own", function()
             local kinds = NewClient():login().Kennel:ToastTypes()
             assert.are.equal("Care Button: pet died", kinds["CareButton:dead"])
             assert.are.equal("Care Button: no pet at the pull", kinds["CareButton:nopet"])
             assert.are.equal("Care Button: low health", kinds["CareButton:low"])
+            assert.are.equal("Care Button: pet on Passive at the pull", kinds["CareButton:passive"])
         end)
 
         it("go away when the module is switched off", function()

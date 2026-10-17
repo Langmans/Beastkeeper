@@ -45,6 +45,7 @@
   A click on a pin takes you there, through LibGoThere-1.0: Shortest Path
   Forever, Move Fast, TomTom, the game's map pin or a pin link.
 - Ability Learned keeps every rank you learned, not only the highest.
+- Care Button: a toast when combat starts with your pet on Passive.
 - For other addons: AceEvent messages KENNEL_TOAST, KENNEL_PRINT and
   KENNEL_RANKS_KNOWN, each with a table of details (module, toast, line,
   ranks); see docs/04-hooking.md, with an example addon, and

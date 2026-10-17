@@ -14,15 +14,19 @@ L.CAREBUTTON_DESC = "One key for your pet: Mend Pet while it lives, Revive Pet w
 L.CAREBUTTON_TOASTTYPE_DEAD = "pet died"
 L.CAREBUTTON_TOASTTYPE_NOPET = "no pet at the pull"
 L.CAREBUTTON_TOASTTYPE_LOW = "low health"
+L.CAREBUTTON_TOASTTYPE_PASSIVE = "pet on Passive at the pull"
 
 -- Toast titles. %d: the pet's health in percent.
 L.CAREBUTTON_TOAST_DEAD = "Your pet is dead"
 L.CAREBUTTON_TOAST_NOPET = "You have no pet out"
 L.CAREBUTTON_TOAST_LOW = "Your pet is at %d%% health"
+-- Passive, Defensive and Aggressive: the pet's stances, as the pet bar names them.
+L.CAREBUTTON_TOAST_PASSIVE = "Your pet is on Passive"
 -- Toast text: what the button does now.
 L.CAREBUTTON_REASON_DEAD = "The button casts Revive Pet now, also once the body is gone."
 L.CAREBUTTON_REASON_NOPET = "Combat started without your pet."
 L.CAREBUTTON_REASON_LOW = "The button casts Mend Pet while your pet lives."
+L.CAREBUTTON_REASON_PASSIVE = "It will not attack: set it to Defensive or Aggressive on the pet bar."
 -- Toast text when a failed Call Pet showed the pet is dead; in combat the button cannot change, so Shift forces Revive Pet.
 L.CAREBUTTON_REASON_LEARNED = "Call Pet failed: the button casts Revive Pet now."
 L.CAREBUTTON_REASON_LEARNED_COMBAT = "Call Pet failed. In combat the button cannot switch: hold Shift for Revive Pet."
@@ -45,6 +49,7 @@ L.CAREBUTTON_BINDING = "Care Button: mend, revive or call pet"
 L.CAREBUTTON_OPTION_DIED = "Toast when my pet dies"
 L.CAREBUTTON_OPTION_DIED_DESC = "Also when a failed Call Pet shows that it is dead, and again at the pull."
 L.CAREBUTTON_OPTION_NOPET = "Toast when combat starts without a pet"
+L.CAREBUTTON_OPTION_PASSIVE = "Toast when combat starts with my pet on Passive"
 -- Slider: the pet health in percent at which the low toast shows; 0 switches it off.
 L.CAREBUTTON_OPTION_LOW = "Toast at this pet health (0: never)"
 L.CAREBUTTON_OPTION_SOUND = "Sound"

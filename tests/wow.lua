@@ -230,7 +230,8 @@ function NewClient(opts)
     -- or a dead one whose body is gone). opts.noPet starts without one.
     client.pet = not opts.noPet and { health = 100, max = 100, dead = false } or nil
     -- Its bar and book: client.petBar is the pet bar, one entry per slot, { spellID, autocast } for
-    -- a spell (autocast nil when it cannot autocast) or { token = "PET_ACTION_ATTACK" }.
+    -- a spell (autocast nil when it cannot autocast) or { token = "PET_ACTION_ATTACK" }; a stance
+    -- token has active = true while it is the pet's stance ({ token = "PET_MODE_PASSIVE", active }).
     -- client.petBook is the pet's spellbook, alphabetical like the client's, entries as above,
     -- { token = "Attack" } for a command and { broken = true } for an entry whose lookup errors.
     -- As on Forever: Cower is in the book but not on the bar. The pet starts as solo wants it,
@@ -325,12 +326,14 @@ function NewClient(opts)
     -- GetPetActionInfo as Forever returns it: name, texture, isToken (1, not true), isActive,
     -- autoCastAllowed, autoCastEnabled, spellID.
     NUM_PET_ACTION_SLOTS = 10
+    -- The stance icons Blizzard's pet bar defines (Blizzard_ActionBar\Shared\PetActionBar.lua).
+    PET_PASSIVE_TEXTURE = "Interface\\Icons\\Ability_Seal"
     GetPetActionInfo = nil
     if not opts.noPetBarAPI then
         function GetPetActionInfo(slot)
             local entry = client.pet and client.petBar[slot]
             if not entry then return nil end
-            if entry.token then return entry.token, entry.token .. "_TEXTURE", 1, nil, false, false end
+            if entry.token then return entry.token, entry.token .. "_TEXTURE", 1, entry.active, false, false end
             return spellName(entry[1]), spellIcon(entry[1]), nil, nil, entry[2] ~= nil, entry[2] == true, entry[1]
         end
     end
