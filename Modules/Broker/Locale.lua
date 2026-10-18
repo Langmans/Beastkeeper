@@ -23,4 +23,8 @@ L.BROKER_LOYALTY = "Loyalty %s"
 L.BROKER_POINTS = "%d of %d training points free"
 L.BROKER_CLICK = "Click: Kennel's window. Right-click: settings."
 
+-- The module's page: the switch for the button on the minimap, and its tooltip.
+L.BROKER_OPTION_MINIMAP = "Show a button on the minimap"
+L.BROKER_OPTION_MINIMAP_DESC = "The same as the data broker: hover for your pet, click for Kennel's window, right-click for the settings. Drag it around the minimap."
+
 -- stylua: ignore end

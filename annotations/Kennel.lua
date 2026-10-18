@@ -187,8 +187,11 @@
 
 ---The Data Broker module: Kennel's LibDataBroker-1.1 data source.
 ---@class KennelBroker: KennelModule
+---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field object table? the data object ("Kennel"), made for a hunter on the first enable
 ---@field Update fun(self: KennelBroker)
+---@field ApplyMinimapButton fun(self: KennelBroker)
+---@field GetOptions fun(self: KennelBroker): table
 
 ---Where and when a pet came to the journal.
 ---@class KennelJournalFirst

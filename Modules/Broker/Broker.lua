@@ -14,6 +14,8 @@ local L = Kennel.L
 local M = Kennel:NewModule("Broker")
 M.title = L.BROKER_TITLE
 M.description = L.BROKER_DESC
+-- minimap: LibDBIcon's own table for the minimap button (hide, and minimapPos once dragged).
+M.defaults = { profile = { minimap = { hide = false } } }
 
 local ICON = "Interface\\Icons\\Ability_Hunter_BeastCall"
 local HINT_COLOR = { 0.5, 0.5, 0.5 }
@@ -101,9 +103,53 @@ function M:OnEnable()
     end
     Kennel:Listen(self, "KENNEL_PET_HAPPINESS", Update)
     self:Update()
+    self:ApplyMinimapButton()
 end
 
 function M:OnDisable()
     Kennel:StopListening(self)
     self:Update()
+    self:ApplyMinimapButton()
+end
+
+---The minimap button (LibDBIcon, when loaded) for the data object: shown while the module is on
+---and its switch says so. LibDBIcon keeps the profile's table; a profile change hands it the new.
+function M:ApplyMinimapButton()
+    local icon = LibStub("LibDBIcon-1.0", true)
+    if not icon or not self.object then return end
+    local settings = self.db.profile.minimap --[[@as LibDBIcon.button.DB]]
+    if icon:IsRegistered("Kennel") then
+        icon:Refresh("Kennel", settings)
+    else
+        icon:Register("Kennel", self.object, settings)
+    end
+    if self:IsEnabled() and not settings.hide then
+        icon:Show("Kennel")
+    else
+        icon:Hide("Kennel")
+    end
+end
+
+---@return table
+function M:GetOptions()
+    return {
+        args = {
+            minimap = {
+                type = "toggle",
+                name = L.BROKER_OPTION_MINIMAP,
+                desc = L.BROKER_OPTION_MINIMAP_DESC,
+                width = "full",
+                order = 1,
+                get = function()
+                    return not self.db.profile.minimap.hide
+                end,
+                ---@param _ table AceConfig's info about the option
+                ---@param value boolean
+                set = function(_, value)
+                    self.db.profile.minimap.hide = not value
+                    self:ApplyMinimapButton()
+                end,
+            },
+        },
+    }
 end

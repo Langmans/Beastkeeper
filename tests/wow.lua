@@ -1149,10 +1149,13 @@ function NewClient(opts)
         return self
     end
     function Region:CreateTexture()
-        return newRegion()
+        return newRegion({ parent = self })
     end
     function Region:CreateFontString()
-        return newRegion()
+        return newRegion({ parent = self })
+    end
+    function Region:GetParent()
+        return self.parent
     end
     function Region:CreateAnimationGroup()
         return newRegion()
@@ -1215,6 +1218,9 @@ function NewClient(opts)
     end
     UIParent = newRegion()
     WorldFrame = newRegion()
+    -- LibDBIcon puts its buttons on the minimap and works out their spot from its size.
+    Minimap = newRegion()
+    Minimap:SetSize(140, 140)
     ClassTrainerFrame = newRegion()
     ClassTrainerFrame.shown = false
     PetFrame = newRegion()

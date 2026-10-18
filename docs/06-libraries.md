@@ -1,6 +1,6 @@
 # Libraries
 
-Ace3, LibSink-2.0, LibDataBroker-1.1 and LibGoThere-1.0.
+Ace3, LibSink-2.0, LibDataBroker-1.1, LibDBIcon-1.0 and LibGoThere-1.0.
 
 Ace3 is not committed. `.pkgmeta` lists each library as an external, pinned
 to a commit of the Ace3 GitHub mirror. The packager fetches them for a
@@ -15,8 +15,9 @@ AceDB's WoW: Forever fixes of September (character keys without the
 surname, profile name limits) and AceGUI's ColorPicker fix for Forever, so
 Kennel stays on a commit that has them until a release does.
 
-LibSink-2.0 lives only in CurseForge's svn, so its external is `type: svn`
-with a release tag. `tests/libs.lua` needs no svn client for it: the svn
+LibSink-2.0 and LibDBIcon-1.0 (the Data Broker module's minimap button) live
+only in CurseForge's svn, so their externals are `type: svn` with a release
+tag. `tests/libs.lua` needs no svn client for it: the svn
 server lists each directory as a page of links and serves each file at its own
 address, which curl downloads.
 

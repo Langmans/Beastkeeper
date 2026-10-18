@@ -110,6 +110,7 @@ describe("the settings window", function()
             "Kennel > Beast Map",
             "Kennel > Beta Page",
             "Kennel > Care Button",
+            "Kennel > Data Broker",
             "Kennel > Feed Emotes",
             "Kennel > Feeding",
             "Kennel > Pet Journal",
@@ -131,7 +132,7 @@ describe("the settings window", function()
             onShow(category.frame)
             shown = shown + 1
         end
-        assert.are.equal(11, shown)
+        assert.are.equal(12, shown)
         assert.are.same({}, client.errors)
     end)
 

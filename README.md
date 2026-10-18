@@ -193,7 +193,8 @@ it to feed the next food from your bags.
 Kennel in Titan Panel, ChocolateBar, ElvUI's datatexts or any other data
 broker display: your pet's name, happiness and free training points
 ("Fluffy: Happy, 43 TP"); hover for its level, loyalty and the Pet Journal in
-brief; click for Kennel's window, right-click for the settings.
+brief; click for Kennel's window, right-click for the settings. The same as
+a button on the minimap, which the module's page can hide.
 
 ### Pet Journal
 
