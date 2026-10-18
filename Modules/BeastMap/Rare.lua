@@ -69,6 +69,7 @@ function M:SeeCreature(guid)
         icon = icon,
         sound = { kit = RAID_WARNING },
     })
+    self:SetTameTarget(M.BeastName(npc))
 end
 
 ---@param _ string the event

@@ -55,6 +55,11 @@ L.BEASTMAP_OPTION_STABLES_DESC = "A pin for every stable master of your faction.
 L.BEASTMAP_PET_TRAINER = "Pet Trainer"
 L.BEASTMAP_STABLE_MASTER = "Stable Master"
 
+-- The tame key: its name in Esc > Options > Keybindings, and what it says in chat. %s: the beast's name.
+L.BEASTMAP_TAME_BINDING = "Beast Map: target and mark the beast to tame"
+L.BEASTMAP_TAME_SET = "The tame key now targets %s."
+L.BEASTMAP_TAME_NONE = "No beast to target yet: a rare alarm or a click on a beast's pin on the map sets one."
+
 -- Settings: the rare alarm.
 L.BEASTMAP_OPTION_RARE = "Toast when a rare beast I could learn from is near"
 L.BEASTMAP_OPTION_RARE_DESC = "Once per spawn, when a rare beast that teaches a rank you lack shows on the minimap, as a nameplate, as your target or under the mouse. Follows the choices above (lower ranks, beasts above your level). Works without HandyNotes."

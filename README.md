@@ -217,6 +217,10 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
   lower rank too (Claw 2 when you know Claw 1, 3 and 4: it suits a young pet
   and costs fewer points), every beast in reach whatever it teaches, beasts
   above your level.
+- **The tame key** (Esc > Options > Keybindings > AddOns > Kennel > "Beast
+  Map: target and mark the beast to tame"; on a bar: a macro with
+  `/click KennelTameButton`) targets the beast the rare alarm named, or whose
+  pin you clicked, and puts a skull on it; with Shift it casts Tame Beast.
 - **Pet trainers and stable masters** of your faction get a pin too (Beast
   Training's and Call Pet's icons), each kind with its own switch.
 - **Rare alarm**, also without HandyNotes: a toast with the raid warning

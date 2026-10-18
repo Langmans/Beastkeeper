@@ -1,0 +1,56 @@
+local _, ns = ...
+
+-- The tame key: a secure button behind its own key binding that targets the beast Beast Map
+-- pointed at last (the rare alarm's, or the one whose pin was clicked) and puts a skull on it;
+-- with Shift it casts Tame Beast instead. Only a secure button may target, so its macro text holds
+-- the beast's name, rewritten outside combat. For an action bar: a macro with
+-- /click KennelTameButton.
+
+---@type Kennel
+local Kennel = ns
+local L = Kennel.L
+local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
+
+local TAME_BEAST = 1515
+local SKULL = 8
+
+local button = CreateFrame("Button", "KennelTameButton", UIParent, "SecureActionButtonTemplate")
+button:RegisterForClicks("AnyUp", "AnyDown")
+
+---The button's lines for a beast: Shift tames, else target it by name and mark it.
+---@param name string
+---@return string
+local function MacroText(name)
+    local tame = Kennel.SpellInfo(TAME_BEAST) or "Tame Beast"
+    return ("/cast [mod:shift] %s\n/stopmacro [mod:shift]\n/targetexact %s\n/tm %d"):format(tame, name, SKULL)
+end
+
+---Gives the button its lines for the beast to tame now, or none while there is none or the module
+---is off; after combat when in it.
+function M:ApplyTameButton()
+    Kennel:OutOfCombat("BeastMap:tame", function()
+        local name = self:IsEnabled() and self.tameTarget
+        button:SetAttribute("useOnKeyDown", false)
+        button:SetAttribute("type", name and "macro" or nil)
+        button:SetAttribute("macrotext", name and MacroText(name) or nil)
+    end)
+end
+
+---Makes `name` the beast the tame key goes for, and says so when it changes.
+---@param name string the beast's name as the client words it (else the data's)
+function M:SetTameTarget(name)
+    if not self:IsEnabled() or name == self.tameTarget then return end
+    self.tameTarget = name
+    self:Print(L.BEASTMAP_TAME_SET:format(name))
+    self:ApplyTameButton()
+end
+
+-- A press without a beast does nothing secure; this says how to get one.
+---@param _ Button
+---@param _mouse string
+---@param down boolean
+button:HookScript("OnClick", function(_, _mouse, down)
+    if not down and not M.tameTarget then M:Print(L.BEASTMAP_TAME_NONE) end
+end)
+
+_G["BINDING_NAME_CLICK KennelTameButton:LeftButton"] = L.BEASTMAP_TAME_BINDING

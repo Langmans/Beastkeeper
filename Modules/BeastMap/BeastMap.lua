@@ -402,8 +402,12 @@ function handler.OnClick(_, button, down, uiMapID, coord)
     local pins = byMap and byMap[uiMapID]
     local at = pins and pins.at[coord]
     if button ~= "LeftButton" or down or not at then return end
+    ---@type number
+    local id = pins[at]
     local x, y = (HandyNotes --[[@as HandyNotesApi]]):getXY(coord)
-    GoThere:Navigate("Kennel", uiMapID, x, y, PinName(pins[at]))
+    GoThere:Navigate("Kennel", uiMapID, x, y, PinName(id))
+    -- A beast's pin also makes it the tame key's beast (Tame.lua).
+    if id > 0 and not Trainer(id) then M:SetTameTarget(BeastName(id)) end
 end
 
 ---Forgets the pins' icons and has HandyNotes draw them again; shows or hides the map button.
@@ -555,9 +559,11 @@ function M:OnEnable()
     self:RegisterEvent("PLAYER_LEVEL_UP")
     self:RegisterMessage("KENNEL_RANKS_KNOWN", "Refresh")
     self:WatchRares()
+    self:ApplyTameButton()
     self:Refresh()
 end
 
 function M:OnDisable()
+    self:ApplyTameButton()
     self:Refresh()
 end

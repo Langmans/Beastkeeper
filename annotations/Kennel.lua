@@ -483,6 +483,9 @@
 ---@field LevelText fun(beast: KennelBeast): string
 ---@field BeastName fun(npc: number): string
 ---@field SeeCreature fun(self: KennelBeastMap, guid: GameValue)
+---@field tameTarget string? the beast the tame key goes for
+---@field SetTameTarget fun(self: KennelBeastMap, name: string)
+---@field ApplyTameButton fun(self: KennelBeastMap)
 ---@field WatchRares fun(self: KennelBeastMap)
 ---@field CreateMapButton fun(self: KennelBeastMap)
 ---@field UpdateMapButton fun(self: KennelBeastMap)

@@ -3,4 +3,5 @@
          binding itself; the names shown are set by the modules (their Button.lua). -->
     <Binding name="CLICK KennelAutocastButton:LeftButton" header="KENNEL" category="ADDONS"/>
     <Binding name="CLICK KennelCareButton:LeftButton" category="ADDONS"/>
+    <Binding name="CLICK KennelTameButton:LeftButton" category="ADDONS"/>
 </Bindings>

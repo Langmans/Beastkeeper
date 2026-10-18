@@ -296,6 +296,48 @@ describe("Beast Map", function()
         end)
     end)
 
+    describe("the tame key", function()
+        local TARGET_RARE_CAT = "/cast [mod:shift] Tame Beast\n/stopmacro [mod:shift]\n/targetexact Rare Cat\n/tm 8"
+
+        ---The key's release, as the client runs a key binding's click.
+        local function press(client)
+            local button = _G.KennelTameButton
+            for _, hook in ipairs(button.hooks.OnClick or {}) do
+                hook(button, "LeftButton", false)
+            end
+            return client
+        end
+
+        it("targets and marks the beast the rare alarm named; Shift tames it", function()
+            local client = hunter(10)
+            client.unitGUIDs.nameplate1 = "Creature-0-5250-0-12-104-0000ABCDEF"
+            client:fire("NAME_PLATE_UNIT_ADDED", "nameplate1")
+            assert.are.equal(TARGET_RARE_CAT, _G.KennelTameButton.attributes.macrotext)
+            assert.are.equal("macro", _G.KennelTameButton.attributes.type)
+            assert.is_true(client:printedContains("The tame key now targets Rare Cat."))
+            assert.are.equal(
+                "Beast Map: target and mark the beast to tame",
+                _G["BINDING_NAME_CLICK KennelTameButton:LeftButton"]
+            )
+        end)
+
+        it("takes the beast whose pin was clicked, after combat when in it", function()
+            local client = hunter(10):enterCombat()
+            client:clickPin(TIRISFAL, client:mapPins(TIRISFAL)[1].coord)
+            assert.is_nil(_G.KennelTameButton.attributes.macrotext)
+            client:leaveCombat()
+            assert.are.equal(TARGET_RARE_CAT, _G.KennelTameButton.attributes.macrotext)
+        end)
+
+        it("says how to set a beast when there is none yet, and stays empty while switched off", function()
+            local client = press(hunter(10))
+            assert.is_true(client:printedContains("No beast to target yet"))
+            client.Kennel:GetModule("BeastMap"):Disable()
+            client:clickPin(TIRISFAL, 1)
+            assert.is_nil(_G.KennelTameButton.attributes.macrotext)
+        end)
+    end)
+
     describe("pet trainers and stable masters", function()
         it("have a pin each, for the hunter's faction or both", function()
             local client = hunter(10)
