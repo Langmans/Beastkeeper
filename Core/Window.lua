@@ -10,7 +10,7 @@ local _, ns = ...
 local Kennel = ns
 local L = Kennel.L
 
-local WIDTH, HEIGHT, PAD, TAB_HEIGHT, TAB_WIDTH = 640, 420, 12, 24, 96
+local WIDTH, HEIGHT, PAD, TAB_HEIGHT, TAB_WIDTH = 680, 460, 12, 24, 96
 local CURRENT, OTHER = { 1, 0.82, 0 }, { 0.6, 0.6, 0.6 }
 
 -- The registered tabs, in their order.

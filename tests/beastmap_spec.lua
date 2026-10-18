@@ -472,6 +472,145 @@ describe("Beast Map", function()
         )
     end)
 
+    describe("the Abilities tab", function()
+        ---The tab, opened in Kennel's window.
+        local function tab(client)
+            client.Kennel:OpenWindow("abilities")
+            return client.Kennel.window.panels.abilities
+        end
+
+        ---The shown rows' label texts of a list.
+        local function texts(rows, field)
+            local out = {}
+            for _, row in ipairs(rows) do
+                if row.shown then out[#out + 1] = row[field or "label"].text end
+            end
+            return out
+        end
+
+        ---Clicks a button by its script.
+        local function click(button)
+            button:GetScript("OnClick")(button, "LeftButton")
+        end
+
+        it("lists every ability with how many of its ranks the hunter knows", function()
+            local client = hunter(10)
+            client:openTrainer({ { "Claw", "used", CLAW } }):closeTrainer()
+            local panel = tab(client)
+            assert.are.same({ "Bite  0/1", "Charge  0/1", "Claw  1/3" }, texts(panel.rows))
+            assert.are.equal("Bite", panel.title.text, "the first is chosen")
+        end)
+
+        it("shows every rank: its pet level, known, or the nearest beast that teaches it", function()
+            local client = hunter(10)
+            client:openTrainer({ { "Claw", "used", CLAW } }):closeTrainer()
+            local panel = tab(client)
+            click(panel.rows[3])
+            assert.are.equal("Claw", panel.title.text)
+            assert.are.same({ "Rank 1", "Rank 2", "Rank 3" }, texts(panel.ranks, "rank"))
+            assert.are.same({ "1", "8", "16" }, texts(panel.ranks, "level"))
+            assert.are.same({
+                "Known",
+                "Low Cat in Elwynn Forest",
+                "Rare Cat in Tirisfal Glades, +2 more",
+            }, texts(panel.ranks, "text"), "Rare Cat: the one in reach, before Late Cat and High Cat")
+            assert.is_false(panel.ranks[1].go.shown, "nothing to go to for a known rank")
+            assert.is_true(panel.ranks[3].go.shown)
+        end)
+
+        it("says so when every teacher is above the hunter's level, or no beast teaches the rank", function()
+            local client = hunter(4)
+            local panel = tab(client)
+            click(panel.rows[3])
+            assert.are.equal("Low Cat in Elwynn Forest, above your level", panel.ranks[1].text.text)
+            client.Kennel.data.petAbilityRanks[CLAW_2].teachers = {}
+            client.Kennel:RefreshWindow("abilities")
+            assert.are.equal("No beast teaches it", panel.ranks[2].text.text)
+            assert.is_false(panel.ranks[2].go.shown)
+            local row = panel.ranks[2]
+            GameTooltip.shown = false
+            row:GetScript("OnEnter")(row)
+            assert.is_false(GameTooltip.shown, "no tooltip without teachers")
+        end)
+
+        it("puts the beast reached first on top, with its travel time, when a route addon knows them", function()
+            local client = hunter(70)
+            LibStub("LibGoThere-1.0"):RegisterProvider({
+                id = "test",
+                order = 1,
+                Usable = function()
+                    return true
+                end,
+                Navigate = function()
+                    return true
+                end,
+                TravelTime = function(_, _, _, _, map)
+                    if map == TIRISFAL then return 600 end
+                    if map == ELWYNN then return 125 end
+                end,
+            })
+            local panel = tab(client)
+            click(panel.rows[3])
+            assert.are.equal("High Cat in Elwynn Forest, ~2 min, +2 more", panel.ranks[3].text.text)
+        end)
+
+        it("without travel times puts beasts on the hunter's map first, then the closest in level", function()
+            local client = hunter(70)
+            local panel = tab(client)
+            click(panel.rows[3])
+            assert.are.equal("High Cat in Elwynn Forest, +2 more", panel.ranks[3].text.text)
+            client.Kennel.data.beasts[102].pins = { [TIRISFAL] = { 1, 1 } }
+            client.Kennel:RefreshWindow("abilities")
+            assert.are.equal("High Cat in Tirisfal Glades, +2 more", panel.ranks[3].text.text, "65 is closer to 70")
+        end)
+
+        it("sends the hunter to the beast on a click, and makes it the tame key's", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            click(panel.rows[3])
+            click(panel.ranks[3].go)
+            assert.is_true(client:printedContains("|Hworldmap:1420:3000:3000|h"), "LibGoThere's pin link")
+            assert.is_true(client:printedContains("The tame key now targets Rare Cat."))
+        end)
+
+        it("lists every teacher in the rank's tooltip, in order", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            click(panel.rows[3])
+            client.tooltipLines, GameTooltip.text = {}, nil
+            local row = panel.ranks[3]
+            row:GetScript("OnEnter")(row)
+            local lines = {}
+            for _, line in ipairs(client.tooltipLines) do
+                lines[#lines + 1] = line.text
+            end
+            assert.are.equal("Claw (Rank 3)", GameTooltip.text)
+            assert.are.same({
+                "Rare Cat in Tirisfal Glades: Level 10, rare elite",
+                "Late Cat: Level 11",
+                "High Cat in Elwynn Forest: Level 65-66",
+            }, lines)
+            row:GetScript("OnLeave")(row)
+            assert.is_false(GameTooltip.shown)
+        end)
+
+        it("follows what the hunter learns while it is open", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            client:openTrainer({ { "Bite", "used", BITE } }):closeTrainer()
+            assert.are.equal("Bite  1/1", panel.rows[1].label.text)
+        end)
+
+        it("is a tab only while Beast Map is on", function()
+            local client = hunter(10)
+            tab(client)
+            client.Kennel:GetModule("BeastMap"):Disable()
+            client.Kennel:ToggleWindow()
+            client.Kennel:OpenWindow("abilities")
+            assert.are.equal("pets", client.Kennel.window.current)
+        end)
+    end)
+
     it("sends the hunter to a beast with a left click on its pin, through LibGoThere", function()
         local client = hunter(10)
         local low = client:mapPins(ELWYNN)[1]

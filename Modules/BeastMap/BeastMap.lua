@@ -410,10 +410,12 @@ function handler.OnClick(_, button, down, uiMapID, coord)
     if id > 0 and not Trainer(id) then M:SetTameTarget(BeastName(id)) end
 end
 
----Forgets the pins' icons and has HandyNotes draw them again; shows or hides the map button.
+---Forgets the pins' icons and has HandyNotes draw them again; shows or hides the map button;
+---fills the window's tabs again.
 function M:Refresh()
     wipe(shown)
     self:UpdateMapButton()
+    Kennel:RefreshWindow("abilities")
     if not HandyNotes then return end
     HandyNotes:UpdateWorldMapPlugin(PLUGIN)
     HandyNotes:UpdateMinimapPlugin(PLUGIN)
@@ -441,6 +443,64 @@ local function TravelSeconds(npc)
     if not map then return math.huge end
     local pin = (beast.pins --[[@as table<number, number[]> ]])[map]
     return GoThere:TravelTime(map, pin[1] / 100, pin[2] / 100) or math.huge
+end
+
+---Two teaching beasts in the order the window lists them: the ones the hunter can tame now first.
+---Among those, the one reached first when a route addon gives travel times, else the ones on the
+---hunter's map, then the closest in level; above the hunter's level, the lowest first.
+---@param a number
+---@param b number
+---@return boolean
+local function Closer(a, b)
+    local beasts, level = Data().beasts, M:PlayerLevel()
+    local ba, bb = beasts[a], beasts[b]
+    local inA, inB = ba.minLevel <= level, bb.minLevel <= level
+    if inA ~= inB then return inA end
+    if not inA and ba.minLevel ~= bb.minLevel then return ba.minLevel < bb.minLevel end
+    if GoThere:HasTravelTimes() then
+        local ta, tb = TravelSeconds(a), TravelSeconds(b)
+        if ta ~= tb then return ta < tb end
+    end
+    local here = C_Map.GetBestMapForUnit("player")
+    local hereA, hereB = FirstMap(ba) == here, FirstMap(bb) == here
+    if hereA ~= hereB then return hereA end
+    return math.abs(ba.minLevel - level) < math.abs(bb.minLevel - level)
+end
+
+---A rank's teachers in the window's order (Closer); a new list.
+---@param teachers number[]
+---@return number[]
+function M.Nearest(teachers)
+    ---@type number[]
+    local list = {}
+    for i, npc in ipairs(teachers) do
+        list[i] = npc
+    end
+    table.sort(list, Closer)
+    return list
+end
+
+---Sends the hunter to a beast's first pin through LibGoThere, and makes it the tame key's beast.
+---False for a beast in an instance, which has no pin.
+---@param npc number
+---@return boolean
+function M:GoToBeast(npc)
+    local beast = Data().beasts[npc]
+    local map = FirstMap(beast)
+    if not map then return false end
+    local pin = (beast.pins --[[@as table<number, number[]> ]])[map]
+    GoThere:Navigate("Kennel", map, pin[1] / 100, pin[2] / 100, BeastName(npc))
+    self:SetTameTarget(BeastName(npc))
+    return true
+end
+
+---Seconds to a beast, when a route addon gives travel times; nil otherwise.
+---@param npc number
+---@return number?
+function M.TravelTimeTo(npc)
+    if not GoThere:HasTravelTimes() then return nil end
+    local seconds = TravelSeconds(npc)
+    if seconds ~= math.huge then return seconds end
 end
 
 ---Whether beast `npc` is the better one to name than `pick`: an ordinary one before a rare, then
@@ -491,6 +551,7 @@ local function Place(npc)
     local name = BeastName(npc)
     return where and L.BEASTMAP_REACH_PLACE:format(name, where) or name
 end
+M.Place = Place
 
 ---The toast for the ranks a level-up brings in reach, if any.
 ---@param level number

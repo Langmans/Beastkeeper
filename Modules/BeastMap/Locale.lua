@@ -95,4 +95,20 @@ L.BEASTMAP_RARE = ", rare"
 L.BEASTMAP_ELITE = ", elite"
 L.BEASTMAP_RARE_ELITE = ", rare elite"
 
+-- Kennel's window, the Abilities tab: its name; a row of the list (%s the ability, first %d the
+-- ranks the hunter knows, second the ranks beasts teach); a rank (%d); a rank the hunter knows.
+L.BEASTMAP_TAB_ABILITIES = "Abilities"
+L.BEASTMAP_ABILITY_ROW = "%s  %d/%d"
+L.BEASTMAP_RANK = "Rank %d"
+L.BEASTMAP_KNOWN = "Known"
+-- A rank the hunter lacks that no beast in Kennel's data teaches (Forever's family abilities: the pet may get them itself).
+L.BEASTMAP_NO_TEACHER = "No beast teaches it"
+-- After the nearest beast that teaches a rank (BEASTMAP_REACH_PLACE), comma-separated: the travel
+-- time (%d minutes), that it is above the hunter's level, how many more beasts teach it (%d).
+L.BEASTMAP_TRAVEL = "~%d min"
+L.BEASTMAP_ABOVE = "above your level"
+L.BEASTMAP_MORE = "+%d more"
+-- A rank's tooltip, a line per beast that teaches it. First %s: the beast and its place; second: its level (BEASTMAP_LEVEL).
+L.BEASTMAP_TEACHER_LINE = "%s: %s"
+
 -- stylua: ignore end

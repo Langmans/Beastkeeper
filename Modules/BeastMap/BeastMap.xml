@@ -7,4 +7,5 @@
     <Script file="Rare.lua"/>
     <Script file="Tame.lua"/>
     <Script file="Options.lua"/>
+    <Script file="Abilities.lua"/>
 </Ui>

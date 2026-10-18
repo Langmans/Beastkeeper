@@ -498,6 +498,10 @@
 ---@field tameTarget string? the beast the tame key goes for
 ---@field SetTameTarget fun(self: KennelBeastMap, name: string)
 ---@field OnRareSeen fun(self: KennelBeastMap, message: string, event: KennelRareSeenEvent)
+---@field Place fun(npc: number): string the beast and its zone, "Rare Cat in Tirisfal Glades"
+---@field Nearest fun(teachers: number[]): number[] the window's order, a new list
+---@field TravelTimeTo fun(npc: number): number? seconds, when a route addon gives travel times
+---@field GoToBeast fun(self: KennelBeastMap, npc: number): boolean
 ---@field ApplyTameButton fun(self: KennelBeastMap)
 ---@field WatchRares fun(self: KennelBeastMap)
 ---@field CreateMapButton fun(self: KennelBeastMap)
@@ -592,6 +596,26 @@
 ---@class KennelPetRow: Button
 ---@field label FontString
 ---@field key string? the pet it shows
+
+---The Abilities tab's panel (Modules\BeastMap\Abilities.lua).
+---@class KennelAbilitiesPanel: Frame
+---@field rows KennelAbilityRow[]
+---@field ranks KennelRankRow[]
+---@field title FontString
+---@field chosen number? the ability shown, by its rank 1's spell ID
+
+---@class KennelAbilityRow: Button
+---@field label FontString
+---@field ability number?
+
+---@class KennelRankRow: Button
+---@field rank FontString
+---@field level FontString
+---@field text FontString
+---@field go Button
+---@field spellID number?
+---@field teachers number[]? the beasts that teach it, in the window's order; nil when known
+---@field best number? the first of them
 
 ---@class KennelPetModel: PlayerModel
 ---@field dragX number? the cursor's x while the mouse drags it
