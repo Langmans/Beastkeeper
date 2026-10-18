@@ -8,6 +8,9 @@
   `/kennel help` lists the module commands. The window has a tab per part,
   takes the button skin's look, moves by dragging, and opens from the data
   broker and a key binding too.
+- With OAP Debug installed: Kennel's messages, chat lines, counts, the
+  window's timings and its Lua errors in OAP Debug's window, as much as the
+  "OAP Debug" setting on Kennel's page says.
 - Kennel's macros say what they do in the tooltip of the action button they
   are on.
 - A toast for every module, in two looks: a small card near the top of the

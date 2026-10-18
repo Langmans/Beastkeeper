@@ -24,6 +24,12 @@
   module whose data changed calls `Kennel:RefreshWindow(id)`.
   `Kennel:OpenWindow(id)` and `ToggleWindow(id)` open it; without any tab
   they open the options.
+- **OAP Debug** (`Core\Debug.lua`, the only file that talks to it):
+  `Kennel:Log(kind, msg, ...)` ("error", "warn", "info", "debug"; values fill
+  `{1}`, `{2}`, tables become links), `Kennel:Count(name)` and
+  `Kennel:Time(name, fn, ...)`. Each is one comparison when the level leaves
+  it out, and nothing without OAP Debug. Kennel's own KENNEL_* messages and
+  chat lines go there already; log what a message does not show.
 - **Macros** (`Core\Macro.lua`): a module with a `Macros()` method returning
   `{ name, icon, body, desc }` entries calls `Kennel:OfferMacros(self)` from
   `OnEnable`. They are made once per character (per character, or

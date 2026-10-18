@@ -267,6 +267,7 @@ function Kennel:GetOptionsTable()
         intro = { type = "description", name = L.MODULES_DESC, order = 0 },
         toast = self:GetToastOptions(),
         buttons = self:GetButtonOptions(),
+        debug = self:GetDebugOptions(),
     }
     local options = {
         type = "group",

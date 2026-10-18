@@ -6,6 +6,7 @@
     <Script file="Pet.lua"/>
     <Script file="Combat.lua"/>
     <Script file="Listen.lua"/>
+    <Script file="Debug.lua"/>
     <Script file="Chat.lua"/>
     <Include file="Toast\Toast.xml"/>
     <Script file="Buttons.lua"/>

@@ -65,6 +65,8 @@ function Kennel:OnInitialize()
             buttons = { skin = "auto", holder = "auto" },
             -- Kennel's window (Core\Window.lua): pos is set once it is dragged.
             window = {},
+            -- How much goes to OAP Debug when it is installed (Core\Debug.lua).
+            oapDebug = "metrics",
         },
         -- Per character: which modules made their macros already (Core\Macro.lua).
         char = { macrosMade = {} },
@@ -82,6 +84,7 @@ function Kennel:OnInitialize()
     self:SetupOptions()
     self:SetupCommands()
     self:SetupMacros()
+    self:ApplyDebugLevel()
 end
 
 ---Whether the current profile has this module switched on.
@@ -96,6 +99,7 @@ end
 ---@param on boolean
 function Kennel:SetModuleOn(name, on)
     self.db.profile.modules[name] = on
+    self:Log("info", on and "module {1} on" or "module {1} off", name)
     local module = self.modules[name]
     if on then
         module:Enable()
@@ -104,7 +108,8 @@ function Kennel:SetModuleOn(name, on)
     end
 end
 
----After a profile change: stops every module, then starts the ones the new profile has on.
+---After a profile change: stops every module, then starts the ones the new profile has on; the
+---new profile's OAP Debug level.
 function Kennel:ApplyModuleStates()
     for _, module in pairs(self.modules) do
         module:Disable()
@@ -112,4 +117,5 @@ function Kennel:ApplyModuleStates()
     for name, module in pairs(self.modules) do
         if self:IsModuleOn(name) then module:Enable() end
     end
+    self:ApplyDebugLevel()
 end

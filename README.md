@@ -20,6 +20,10 @@ modules move in one at a time.
   its minimap button, or a key binding (Esc > Options > Keybindings > AddOns
   > Kennel). It takes the look of your button skin (Kennel's own, ElvUI or
   EllesmereUI); drag it to move it.
+- With [OAP Debug](https://www.curseforge.com/wow/addons/oap-debug)
+  installed, Kennel sends it what it does: its messages with their details,
+  its chat lines, counts and timings, and its Lua errors under its own name.
+  How much is the "OAP Debug" setting on Kennel's page.
 - `/kennel config` opens the settings page: a switch per module, and the
   toast's settings. Each module with settings has a page of its own below it.
 - `/kennel help` lists the commands the modules offer. Commands exist for what

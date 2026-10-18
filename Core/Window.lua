@@ -180,7 +180,7 @@ function Kennel:ShowWindowTab(id)
         tab.Create(panel, window.skin)
     end
     panel:Show()
-    tab.Refresh(panel)
+    self:Time("window: " .. id, tab.Refresh, panel)
 end
 
 ---Opens the window on tab `id` (or the one it was on, or the first); the options when no tab shows.
@@ -213,7 +213,7 @@ function Kennel:RefreshWindow(id)
     local window = self.window
     if not window or not window:IsShown() or window.current ~= id then return end
     local tab = Find(id) --[[@as KennelWindowTab]]
-    tab.Refresh(window.panels[id])
+    self:Time("window: " .. id, tab.Refresh, window.panels[id])
 end
 
 -- The key binding's button (Bindings.xml); a macro can /click it too.
