@@ -219,7 +219,6 @@
 ---@field abilities string[] "Claw (Rank 2)", sorted, as of the last time out
 ---@field ranks table<string, string>? each ability's rank text by name ("" without ranks)
 ---@field displayID number? its model, as the stable's lists gave it
----@field specialization string? Ferocity, Cunning or Tenacity, as the stable's lists gave it
 
 ---PetJournal's saved settings, its namespace's profile.
 ---@class KennelPetJournalSettings

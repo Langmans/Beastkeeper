@@ -47,11 +47,11 @@ local function withStable()
             name = "Shadow",
             level = 12,
             familyName = "Wolf",
-            specialization = "Ferocity",
+            specialization = "Default",
             displayID = 903,
             creatureID = 1131,
         },
-        { petNumber = 78, name = "Ash", level = 9, familyName = "Boar", specialization = "" },
+        { petNumber = 78, name = "Ash", level = 9, familyName = "Boar", specialization = "Default" },
     }
     client:fire("PET_STABLE_UPDATE")
     return client
@@ -130,7 +130,7 @@ describe("the Pets tab", function()
         assert.are.same({ "Fluffy, 15 Cat", "Ash, 9 Boar", "Shadow, 12 Wolf" }, rows(panel))
         assert.are.equal("Fluffy", panel.name.text)
         assert.are.equal("Level 15 Cat, loyalty 4 (|cff00cc7aDependable|r).", panel.level.text)
-        assert.are.equal("", panel.spec.text, "the stable never named Fluffy's specialization")
+        assert.are.equal("Ferocity", panel.spec.text, "the cat's, not the client's \"Default\"")
         assert.is_truthy(panel.journal.text:find("Out together: 0 min.", 1, true), panel.journal.text)
         assert.is_nil(panel.journal.text:find("Abilities", 1, true), "abilities have their own line")
         click(panel.rows[3])
@@ -236,8 +236,7 @@ describe("the Pets tab", function()
         assert.are.equal("Wolf", entry.family)
         assert.are.equal(903, entry.displayID)
         assert.are.equal(1131, entry.first.npc)
-        assert.are.equal("Ferocity", entry.specialization)
-        assert.is_nil(client.Kennel:GetModule("PetJournal"):Pets()["78"].specialization, "an empty one is none")
+        assert.is_nil(entry.specialization, 'Forever says "Default" for every pet')
         assert.are.equal(FLUFFY, client.Kennel:GetModule("PetJournal").current)
     end)
 
@@ -270,6 +269,7 @@ describe("the Stable tab", function()
         assert.are.equal("Can teach you 1 |4rank:ranks;", shadow.teach.text)
         assert.are.same({ displayID = 903 }, shadow.model.shownModel)
         assert.are.equal("Nothing new for you", panel.cards[2].teach.text, "Ash has no abilities seen")
+        assert.are.equal("Cunning", panel.cards[2].spec.text, "a boar")
         assert.is_false(panel.cards[4].shown)
     end)
 

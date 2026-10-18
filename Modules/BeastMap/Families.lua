@@ -222,7 +222,7 @@ local function Refresh(panel)
     local familyID = panel.chosen --[[@as number]]
     local info = Kennel.familyInfo[familyID]
     panel.title:SetText(Kennel.FamilyName(familyID) or "?")
-    panel.spec:SetText(info.spec and L["BEASTMAP_SPEC_" .. info.spec:upper()] or "")
+    panel.spec:SetText(Kennel.SpecName(familyID) or "")
     panel.diet:SetText(DietText(info))
     panel.abilities:SetText(AbilitiesText(familyID))
     FillBeasts(panel, familyID)

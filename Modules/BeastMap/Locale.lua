@@ -112,10 +112,6 @@ L.BEASTMAP_MORE = "+%d more"
 -- pets are of it (%s the family, %d the count).
 L.BEASTMAP_TAB_FAMILIES = "Families"
 L.BEASTMAP_FAMILY_ROW = "%s (%d)"
--- A family's specialization.
-L.BEASTMAP_SPEC_FEROCITY = "Ferocity"
-L.BEASTMAP_SPEC_CUNNING = "Cunning"
-L.BEASTMAP_SPEC_TENACITY = "Tenacity"
 -- What a family eats. %s: a list of the food types below.
 L.BEASTMAP_EATS = "Eats: %s"
 L.BEASTMAP_FOOD_MEAT = "Meat"

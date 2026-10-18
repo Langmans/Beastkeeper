@@ -2,7 +2,7 @@ local _, ns = ...
 
 -- The Pets tab of Kennel's window (Core\Window.lua): every pet in the journal on the left, the pet
 -- out first, and a card for the chosen one on the right: its model, name, level and loyalty, its
--- specialization (Ferocity, Cunning, Tenacity) once the stable named it, the journal (Journal.lua)
+-- family's specialization (Ferocity, Cunning, Tenacity: Kennel.SpecName), the journal (Journal.lua)
 -- and its abilities, those it could teach you in green. The model is the pet
 -- out itself; a stabled pet's as the stable showed it (its displayID), else the beast it was
 -- tamed as. Dragging turns it.
@@ -165,7 +165,7 @@ local function Refresh(panel)
     end
     panel.name:SetText(entry.name or "?")
     panel.level:SetText(M.LevelLine(entry))
-    panel.spec:SetText(entry.specialization or "")
+    panel.spec:SetText(Kennel.SpecName(Kennel.FamilyID(entry.family)) or "")
     panel.journal:SetText(table.concat(M:JournalLines(key, true), "\n"))
     panel.abilities:SetText(M.AbilitiesLine(entry, true) or "")
     ShowModel(panel.model, key, entry)

@@ -12,17 +12,25 @@ local M = Kennel:GetModule("PetJournal") --[[@as KennelPetJournal]]
 
 local COLUMNS, ROWS, CARD_HEIGHT, MODEL_SIZE, GAP = 3, 2, 190, 80, 8
 
----A text on a card, in the skin's font.
+---A text on a card, in the skin's font, from `top` down (its offset from the card's top, or below
+---the text `under`); `right` keeps it clear of the model.
 ---@param card Frame
 ---@param skin KennelButtonHolderSkin
+---@param top number|FontString
+---@param right number the gap to the card's right edge
 ---@param template string?
 ---@param size number?
 ---@return FontString
-local function Text(card, skin, template, size)
+local function Text(card, skin, top, right, template, size)
     local text = card:CreateFontString(nil, "OVERLAY", template or "GameFontHighlightSmall")
     text:SetJustifyH("LEFT")
-    text:SetPoint("LEFT", 6, 0)
-    text:SetPoint("RIGHT", -6, 0)
+    if type(top) == "number" then
+        text:SetPoint("TOPLEFT", 6, top)
+        text:SetPoint("TOPRIGHT", -right, top)
+    else
+        text:SetPoint("TOPLEFT", top, "BOTTOMLEFT", 0, -2)
+        text:SetPoint("TOPRIGHT", top, "BOTTOMRIGHT", 0, -2)
+    end
     skin.Font(text, size or 11)
     return text
 end
@@ -42,16 +50,16 @@ local function Create(panel, skin)
         card.model = CreateFrame("PlayerModel", nil, card)
         card.model:SetSize(MODEL_SIZE, MODEL_SIZE)
         card.model:SetPoint("TOPRIGHT", -4, -4)
-        card.name = Text(card, skin, "GameFontNormal", 13)
-        card.name:SetPoint("TOP", 0, -6)
-        card.level = Text(card, skin)
-        card.level:SetPoint("TOP", card.name, "BOTTOM", 0, -2)
-        card.spec = Text(card, skin)
-        card.spec:SetPoint("TOP", card.level, "BOTTOM", 0, -2)
-        card.abilities = Text(card, skin)
-        card.abilities:SetPoint("TOP", 0, -MODEL_SIZE - 10)
-        card.teach = Text(card, skin, "GameFontNormalSmall")
-        card.teach:SetPoint("BOTTOM", 0, 6)
+        local beside = MODEL_SIZE + 10
+        card.name = Text(card, skin, -6, beside, "GameFontNormal", 13)
+        card.level = Text(card, skin, card.name, beside)
+        card.spec = Text(card, skin, card.level, beside)
+        card.abilities = Text(card, skin, -MODEL_SIZE - 10, 6)
+        card.teach = card:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        card.teach:SetJustifyH("LEFT")
+        card.teach:SetPoint("BOTTOMLEFT", 6, 6)
+        card.teach:SetPoint("BOTTOMRIGHT", -6, 6)
+        skin.Font(card.teach, 11)
         card:SetScript("OnClick", function()
             M.picked = card.key
             Kennel:ShowWindowTab("pets")
@@ -73,7 +81,7 @@ local function Refresh(panel)
             local entry = pets[key]
             card.name:SetText(entry.name or "?")
             card.level:SetText(M.LevelLine(entry))
-            card.spec:SetText(entry.specialization or "")
+            card.spec:SetText(Kennel.SpecName(Kennel.FamilyID(entry.family)) or "")
             card.abilities:SetText(M.AbilitiesLine(entry, true) or "")
             local count = M.TeachCount(entry)
             card.teach:SetText(count > 0 and L.PETJOURNAL_TEACHES:format(count) or L.PETJOURNAL_TEACHES_NONE)

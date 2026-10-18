@@ -49,6 +49,16 @@ describe("Pet Journal", function()
         assert.is_true(says(client, "Abilities: Bite (Rank 1)."))
     end)
 
+    it("takes the zone later when the client has none yet at login", function()
+        local client = NewClient()
+        client.zone = ""
+        client:login():advance(1)
+        assert.is_true(says(client, "First seen " .. date("%Y-%m-%d %H:%M", client.serverTime) .. " in ?."))
+        client.zone = "Darkshore"
+        client:fire("PET_UI_UPDATE")
+        assert.is_true(says(client, " in Darkshore."), journal(client))
+    end)
+
     it("keeps a pet tamed this session, which has its creature GUID until relog, then its number", function()
         local client = NewClient({ noPet = true }):login()
         local fresh = "Creature-0-5250-0-1-3825-0000ABCDEF"

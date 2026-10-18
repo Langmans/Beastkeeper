@@ -78,10 +78,19 @@ function M:Out(key)
     return entry.out + now
 end
 
----Notes the pet out's name, family, level and loyalty; a loyalty rise with the time out it took.
+---The zone's name; nil while the client has none (right at login).
+---@return string?
+local function Zone()
+    local zone = GetZoneText()
+    if zone ~= "" then return zone end
+end
+
+---Notes the pet out's name, family, level and loyalty; a loyalty rise with the time out it took;
+---the zone it was first seen in, when that had no name yet.
 function M:Record()
     local entry = self.current and self:Pets()[self.current]
     if not entry or not UnitExists("pet") then return end
+    entry.first.zone = entry.first.zone or Zone()
     entry.name = UnitName("pet") or entry.name
     entry.family = UnitCreatureFamily("pet") or entry.family
     local level = UnitLevel("pet")
@@ -130,7 +139,7 @@ function M:Entry(key, npc)
     local entry = pets[key]
     if not entry then
         entry = {
-            first = { t = GetServerTime(), zone = GetZoneText(), npc = npc or Kennel.PetNPC() },
+            first = { t = GetServerTime(), zone = Zone(), npc = npc or Kennel.PetNPC() },
             out = 0,
             deaths = 0,
             rises = {},
@@ -167,8 +176,7 @@ function M:UNIT_PET(_, unit)
     Kennel:RefreshWindow("pets")
 end
 
----Takes what the stable's lists say of each pet: its name, level, family, specialization and
----loyalty, and the
+---Takes what the stable's lists say of each pet: its name, level, family and loyalty, and the
 ---model it shows (displayID) and the beast it was tamed as, for the window's card. A pet not in
 ---the journal yet gets an entry. Forever's C_StableInfo; other clients have none.
 ---@param list fun(): table[]
@@ -179,8 +187,6 @@ function M:ReadStableList(list)
             local entry = self:Entry(tostring(number), info.creatureID)
             entry.name, entry.level, entry.family = info.name, info.level, info.familyName
             entry.displayID = info.displayID
-            -- Ferocity, Cunning or Tenacity, by family; the client may give an empty one.
-            if info.specialization ~= "" then entry.specialization = info.specialization end
             entry.loyalty, entry.loyaltyName = info.loyaltyLevel or entry.loyalty, info.loyaltyName or entry.loyaltyName
         end
     end

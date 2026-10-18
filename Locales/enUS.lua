@@ -32,6 +32,11 @@ L.DEBUG_NORMAL = "Normal"
 L.DEBUG_METRICS = "Normal + metrics"
 L.DEBUG_DETAILED = "Detailed"
 
+-- A pet family's specialization, as Wowhead sorts the families: on a pet's card and the Families tab.
+L.FAMILY_FEROCITY = "Ferocity"
+L.FAMILY_CUNNING = "Cunning"
+L.FAMILY_TENACITY = "Tenacity"
+
 -- Kennel's window: its title, and the name of its key binding (Esc > Options > Keybindings > AddOns).
 L.WINDOW_TITLE = "Kennel"
 L.WINDOW_BINDING = "Kennel: open or close the window"
