@@ -1,0 +1,4 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Development only: the file is one @debug block, empty in a release. -->
+    <Script file="DevProbe.lua"/>
+</Ui>

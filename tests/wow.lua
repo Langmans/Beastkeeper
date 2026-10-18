@@ -656,6 +656,11 @@ function NewClient(opts)
     function C_PetInfo.GetPetHappiness()
         if client.pet then return client.happiness, 100, 0 end
     end
+    -- The food types the pet out eats, as the client names them (client.petFoodTypes).
+    client.petFoodTypes = { "Meat", "Fish" }
+    function C_PetInfo.GetPetFoodTypes()
+        return client.pet and client.petFoodTypes or {}
+    end
     -- Map and area names the client knows: a uiMapID's (C_Map.GetMapInfo) and an AreaTable
     -- ID's, as an instance has (C_Map.GetAreaInfo). Anything else is unknown (nil).
     local MAP_NAMES = { [1429] = "Elwynn Forest", [1420] = "Tirisfal Glades" }
@@ -746,6 +751,14 @@ function NewClient(opts)
         GetCreatureFamilyInfo = function(familyID)
             local name = client.familyNames[familyID]
             return name and { name = name } or nil
+        end,
+        GetCreatureFamilyIDs = function()
+            local ids = {}
+            for familyID in pairs(client.familyNames) do
+                ids[#ids + 1] = familyID
+            end
+            table.sort(ids)
+            return ids
         end,
     }
     -- The cursor's position (client.cursorX), for a model turned by dragging.

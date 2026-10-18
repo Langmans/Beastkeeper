@@ -13,6 +13,25 @@ could ([04-hooking.md](04-hooking.md)). The whole file is a `--@debug@` block,
 which the packager comments out of every release; the specs load the files
 the same way unless a client asks for `dev`.
 
+## Facts from the client while playing
+
+`Modules\DevProbe`, also a `--@debug@` module, off until switched on, keeps
+in KennelDB (`KennelDB.namespaces.DevProbe.global`) what the API
+documentation does not tell, for reading the SavedVariables back after
+playing:
+
+- `stable`: C_StableInfo's entry of each pet, every field the lists give.
+- `petSpells`: each spell or rank a pet gets, with the rank before, its level
+  and family, and how (`level` right after a level-up, `training` with the
+  trainer window open, else `other`).
+- `foods`: C_PetInfo.GetPetFoodTypes per family; `families`: the client's
+  family names by ID.
+- `lowerRanks`: a rank learned below the highest the hunter knew.
+- `guids`: the pet's GUID at UNIT_PET and LOCALPLAYER_PET_RENAMED.
+
+Each list keeps its last 200; a button on its page empties them. Each finding
+also goes to OAP Debug through `Kennel:Log`.
+
 ## Tests
 
 The tests run on Lua 5.1, the version WoW runs, with
@@ -73,8 +92,8 @@ describe("/kennel", function()
         client = NewClient({ modules = function(Kennel) ... end }):login()
     end)
 
-    it("alone opens the options page", function()
-        client:slash("")
+    it("config opens the options page", function()
+        client:slash("config")
         assert.are.same({ client.Kennel.optionsCategoryID }, client.opened)
     end)
 end)

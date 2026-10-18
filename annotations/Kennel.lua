@@ -565,6 +565,23 @@
 ---@field pins table<number, number[]>? per uiMapID, pin positions as x1, y1, x2, y2, ... (percent)
 ---@field zones number[]? AreaTable IDs, for a beast Wowhead has no map of (in an instance)
 
+---The Dev Probe (Modules\DevProbe, repository copies only).
+---@class KennelDevProbe: KennelModule
+---@field db AceDBObject-3.0
+---@field ReadStable fun(self: KennelDevProbe)
+---@field CompareSpells fun(self: KennelDevProbe)
+---@field OnLearned fun(self: KennelDevProbe, message: string, event: KennelAbilityLearnedEvent)
+---@field GetOptions fun(self: KennelDevProbe): table
+
+---The Dev Probe's findings, its global namespace.
+---@class KennelProbeData
+---@field stable table<string, table> C_StableInfo's entry per pet number
+---@field petSpells table[] { spell, rank, before, level, family, how, t }
+---@field foods table<number, string[]> food types per family ID
+---@field families table<number, string> the client's family names
+---@field lowerRanks table[] { name, rank, highest, t }
+---@field guids table[] { event, guid, name, t }
+
 ---A tab of Kennel's window (Core\Window.lua), added by Kennel:RegisterWindowTab.
 ---@class KennelWindowTab
 ---@field id string

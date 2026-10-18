@@ -9,4 +9,5 @@
     <Include file="PetJournal\PetJournal.xml"/>
     <Include file="Broker\Broker.xml"/>
     <Include file="DevScreenshots\DevScreenshots.xml"/>
+    <Include file="DevProbe\DevProbe.xml"/>
 </Ui>
