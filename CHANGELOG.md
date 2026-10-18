@@ -4,8 +4,10 @@
 
 - The framework: a settings page under AddOns → Kennel with a switch per
   module, a page per module with options, and profiles.
-- `/kennel` opens the settings page; `/kennel help` lists the module
-  commands.
+- `/kennel` opens Kennel's window, `/kennel config` the settings page;
+  `/kennel help` lists the module commands. The window has a tab per part,
+  takes the button skin's look, moves by dragging, and opens from the data
+  broker and a key binding too.
 - Kennel's macros say what they do in the tooltip of the action button they
   are on.
 - A toast for every module, in two looks: a small card near the top of the
@@ -55,7 +57,9 @@
 - Pet Journal: a page per pet with when and where it was tamed, its level and
   loyalty, the time out together, its deaths, a forecast of the next loyalty
   level and its abilities, stabled pets included, with what each could still
-  teach you; the short version in the pet's tooltip.
+  teach you; the short version in the pet's tooltip. In Kennel's window a
+  Pets tab with a card per pet: its model, specialization, journal and
+  abilities. Stabled pets' models and names come from the stable master.
 - Beast Map: with HandyNotes, a pin for every beast your hunter can tame now
   that teaches a pet ability rank you lack, with the ability's icon and a
   tooltip of the ranks it teaches; switches for missing lower ranks, every

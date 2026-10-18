@@ -63,9 +63,39 @@ local function CanTeachLine(entry)
     return L.PETJOURNAL_TEACH:format(table.concat(teach, ", "))
 end
 
+---The line on the pet's level, family and loyalty.
+---@param entry KennelJournalEntry
+---@return string
+function M.LevelLine(entry)
+    local loyalty = entry.loyalty and Kennel.LoyaltyLabel(entry.loyalty, entry.loyaltyName) or "?"
+    return L.PETJOURNAL_LEVEL:format(entry.level or 0, entry.family or "?", loyalty)
+end
+
+local TEACH_COLOR = "|cff40ff40%s|r"
+-- The abilities as shown, refilled for each look.
+---@type string[]
+local shown = {}
+
+---The line of the pet's abilities; with `highlight`, those it could teach this character in green.
+---@param entry KennelJournalEntry
+---@param highlight boolean?
+---@return string? nil without abilities
+function M.AbilitiesLine(entry, highlight)
+    if #entry.abilities == 0 then return nil end
+    local known = highlight and Kennel:GetModule("AbilityLearned", true) --[[@as KennelAbilityLearned?]]
+    if known and not known:IsEnabled() then known = nil end
+    wipe(shown)
+    for _, ability in ipairs(entry.abilities) do
+        local name, rank = ability:match("^(.-) %((.+)%)$")
+        local teaches = known ~= nil and name ~= nil and known:CanTeach(name, rank)
+        shown[#shown + 1] = teaches and TEACH_COLOR:format(ability) or ability
+    end
+    return L.PETJOURNAL_ABILITIES:format(table.concat(shown, ", "))
+end
+
 ---A pet's journal as lines; the same table each time, refilled. Empty for a pet not in it.
 ---@param key string
----@param brief boolean? for a tooltip: without the level and the abilities
+---@param brief boolean? for a tooltip or the window's card: without the level and the abilities
 ---@return string[]
 function M:JournalLines(key, brief)
     wipe(lines)
@@ -79,16 +109,11 @@ function M:JournalLines(key, brief)
     else
         lines[#lines + 1] = L.PETJOURNAL_FIRST:format(when, first.zone or "?")
     end
-    if not brief then
-        local loyalty = entry.loyalty and Kennel.LoyaltyLabel(entry.loyalty, entry.loyaltyName) or "?"
-        lines[#lines + 1] = L.PETJOURNAL_LEVEL:format(entry.level or 0, entry.family or "?", loyalty)
-    end
+    if not brief then lines[#lines + 1] = M.LevelLine(entry) end
     lines[#lines + 1] = L.PETJOURNAL_OUT:format(Duration(self:Out(key)))
     if entry.deaths > 0 then lines[#lines + 1] = L.PETJOURNAL_DIED:format(entry.deaths) end
     lines[#lines + 1] = Forecast(key, entry)
-    if not brief and #entry.abilities > 0 then
-        lines[#lines + 1] = L.PETJOURNAL_ABILITIES:format(table.concat(entry.abilities, ", "))
-    end
+    if not brief then lines[#lines + 1] = M.AbilitiesLine(entry) end
     lines[#lines + 1] = CanTeachLine(entry)
     return lines
 end

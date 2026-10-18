@@ -706,13 +706,28 @@ function NewClient(opts)
     function UnitSex(unit)
         if unit == "pet" and client.pet then return client.petSex end
     end
+    -- A pet in client.stable is its number, or a table of PetInfo fields with its petNumber.
     client.stable = { active = { 3069428 }, stabled = {} }
-    local function petInfos(numbers)
+    local function petInfos(pets)
         local infos = {}
-        for slot, petNumber in ipairs(numbers) do
-            infos[slot] = { petNumber = petNumber, slotID = slot }
+        for slot, pet in ipairs(pets) do
+            local info = { slotID = slot }
+            -- SECRET is a table too: a hidden pet number.
+            if type(pet) == "table" and rawget(pet, "petNumber") then
+                for key, value in pairs(pet) do
+                    info[key] = value
+                end
+            else
+                info.petNumber = pet
+            end
+            infos[slot] = info
         end
         return infos
+    end
+    -- The cursor's position (client.cursorX), for a model turned by dragging.
+    client.cursorX = 0
+    function GetCursorPosition()
+        return client.cursorX, 0
     end
     C_StableInfo = not opts.noStableInfo
             and {
@@ -972,6 +987,25 @@ function NewClient(opts)
     end
     function Region:ClearAllPoints()
         self.points = {}
+    end
+    -- A model frame: shownModel says what it shows ({ unit }, { displayID } or { creature }).
+    function Region:SetUnit(unit)
+        self.shownModel = { unit = unit }
+    end
+    function Region:SetDisplayInfo(displayID)
+        self.shownModel = { displayID = displayID }
+    end
+    function Region:SetCreature(creatureID)
+        self.shownModel = { creature = creatureID }
+    end
+    function Region:ClearModel()
+        self.shownModel = nil
+    end
+    function Region:SetFacing(facing)
+        self.facing = facing
+    end
+    function Region:GetFacing()
+        return self.facing or 0
     end
     function Region:SetPoint(point, relativeTo, relativePoint, x, y)
         self.points = self.points or {}

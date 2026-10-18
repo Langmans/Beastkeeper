@@ -12,13 +12,18 @@ L.MODULES = "Modules"
 -- Settings window: the text above the module switches.
 L.MODULES_DESC = "Turn each part of Kennel on or off. A module that is off does nothing at all."
 -- Chat, after a /kennel command of a module that is switched off. %s: the module's title.
-L.MODULE_OFF = "%s is off. Turn it on in the options: /kennel"
+L.MODULE_OFF = "%s is off. Turn it on in the options: /kennel config"
 -- Chat, after a /kennel line that matches no command. %s: what the player typed after /kennel.
 L.UNKNOWN_COMMAND = "Unknown command: %s"
 -- Chat, /kennel help: the heading above the list of commands.
 L.HELP_HEADER = "Commands:"
--- Chat, /kennel help: the first line of the list. "/kennel" is the command and stays as it is.
-L.HELP_OPTIONS = "/kennel - open the options"
+-- Chat, /kennel help: the first lines of the list. "/kennel" and "config" are typed as they are.
+L.HELP_WINDOW = "/kennel - open or close Kennel's window"
+L.HELP_OPTIONS = "/kennel config - open the options"
+
+-- Kennel's window: its title, and the name of its key binding (Esc > Options > Keybindings > AddOns).
+L.WINDOW_TITLE = "Kennel"
+L.WINDOW_BINDING = "Kennel: open or close the window"
 -- Chat, /kennel help: one line per command. First %s: the module's command word, second %s:
 -- the command (both typed as they are, not translated), third %s: what the command does.
 L.HELP_COMMAND = "/kennel %s %s - %s"

@@ -1,9 +1,9 @@
 local _, ns = ...
 
--- The /kennel slash command. Without arguments it opens the options. Otherwise the first word
--- names a module (its `command`) and the second one of that module's `commands`; the rest of the
--- line goes to that command's func. Commands exist for what a macro needs, the options page is
--- for everything else.
+-- The /kennel slash command. Without arguments it opens or closes Kennel's window (Window.lua),
+-- "config" opens the options. Otherwise the first word names a module (its `command`) and the
+-- second one of that module's `commands`; the rest of the line goes to that command's func.
+-- Commands exist for what a macro needs, the window and the options page for everything else.
 
 ---@type Kennel
 local Kennel = ns
@@ -29,6 +29,8 @@ function Kennel:OnSlash(input)
     ---@type string?, string?, number
     local word, sub, rest = self:GetArgs(input, 2)
     if not word then
+        self:ToggleWindow()
+    elseif word:lower() == "config" then
         self:OpenOptions()
     elseif word:lower() == "help" then
         self:PrintHelp()
@@ -57,6 +59,7 @@ end
 ---Lists every module command, sorted, so the order does not depend on table order.
 function Kennel:PrintHelp()
     self:Print(L.HELP_HEADER)
+    print(L.HELP_WINDOW)
     print(L.HELP_OPTIONS)
     ---@type string[]
     local lines = {}

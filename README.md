@@ -15,10 +15,14 @@ modules move in one at a time.
 
 ## Use
 
-- `/kennel` opens the settings page: a switch per module, and the toast's
-  settings. Each module with settings has a page of its own below it.
+- `/kennel` opens or closes Kennel's window: a tab per part, such as Pets
+  (the Pet Journal). Also from the data broker, or a key binding (Esc >
+  Options > Keybindings > AddOns > Kennel). It takes the look of your button
+  skin (Kennel's own, ElvUI or EllesmereUI); drag it to move it.
+- `/kennel config` opens the settings page: a switch per module, and the
+  toast's settings. Each module with settings has a page of its own below it.
 - `/kennel help` lists the commands the modules offer. Commands exist for what
-  a macro needs; everything else is on the settings page.
+  a macro needs; everything else is in the window or on the settings page.
 - **Profiles** (a page under Kennel): every character uses the `Default`
   profile until you pick another. The module switches are part of the
   profile, so a profile can, for instance, turn a module off on one character
@@ -189,7 +193,7 @@ it to feed the next food from your bags.
 Kennel in Titan Panel, ChocolateBar, ElvUI's datatexts or any other data
 broker display: your pet's name, happiness and free training points
 ("Fluffy: Happy, 43 TP"); hover for its level, loyalty and the Pet Journal in
-brief; click for Kennel's settings, right-click for the Pet Journal.
+brief; click for Kennel's window, right-click for the settings.
 
 ### Pet Journal
 
@@ -200,6 +204,12 @@ died, when its next loyalty level may come (from how long the rises Kennel saw
 took), and the abilities it had the last time it was out, so your stabled
 pets are there too, with the ranks each could still teach you. Hover your
 pet or its portrait for the short version in its tooltip.
+
+In Kennel's window, the Pets tab lists them, the pet out first, with a card
+for each: its model (drag to turn it), level, loyalty, its specialization
+(Ferocity, Cunning or Tenacity), the journal, and its abilities, the ones it
+could still teach you in green. Visit a stable master once: Kennel then
+knows your stabled pets' models and names too.
 
 ### Beast Map
 

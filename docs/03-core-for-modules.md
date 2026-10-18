@@ -17,6 +17,13 @@
 - **Buttons**: `Kennel:StyleButton` and `Kennel:StyleButtonHolder` give a
   button or a list the chosen skin's look; see
   [09-button-skins.md](09-button-skins.md).
+- **Window** (`Core\Window.lua`): `Kennel:RegisterWindowTab({ id, title,
+  order, module, Create, Refresh })` adds a tab to Kennel's window, shown
+  while `module` is on. `Create(panel, skin)` builds the panel once (use the
+  holder skin's `Font`); `Refresh(panel)` fills it each time it shows. A
+  module whose data changed calls `Kennel:RefreshWindow(id)`.
+  `Kennel:OpenWindow(id)` and `ToggleWindow(id)` open it; without any tab
+  they open the options.
 - **Macros** (`Core\Macro.lua`): a module with a `Macros()` method returning
   `{ name, icon, body, desc }` entries calls `Kennel:OfferMacros(self)` from
   `OnEnable`. They are made once per character (per character, or

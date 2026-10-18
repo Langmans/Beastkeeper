@@ -2,8 +2,8 @@ local _, ns = ...
 
 -- Kennel as a LibDataBroker-1.1 data source ("Kennel"), which displays such as Titan Panel,
 -- ChocolateBar and ElvUI's datatexts show: the pet out in its text (name, happiness, free training
--- points), more in its tooltip (level, loyalty, points, the Pet Journal in brief), Kennel's page
--- on a click and the Pet Journal's on a right-click. A data object cannot be taken back, so while
+-- points), more in its tooltip (level, loyalty, points, the Pet Journal in brief), Kennel's window
+-- on a click and the options on a right-click. A data object cannot be taken back, so while
 -- the module is off its text says so. Only for a hunter.
 
 ---@type Kennel
@@ -62,11 +62,15 @@ local function OnTooltipShow(tooltip)
     tooltip:AddLine(L.BROKER_CLICK, HINT_COLOR[1], HINT_COLOR[2], HINT_COLOR[3])
 end
 
----A click opens Kennel's page; a right-click the Pet Journal's.
+---A click opens or closes Kennel's window; a right-click opens the options.
 ---@param _ Frame the display's frame
 ---@param button string
 local function OnClick(_, button)
-    Kennel:OpenOptions(button == "RightButton" and "PetJournal" or nil)
+    if button == "RightButton" then
+        Kennel:OpenOptions()
+    else
+        Kennel:ToggleWindow()
+    end
 end
 
 ---Brings the text up to date.

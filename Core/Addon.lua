@@ -63,6 +63,8 @@ function Kennel:OnInitialize()
             toast = { duration = 6, scale = 1, skin = "card", skins = kindSkins, sink = {} },
             -- The look of Kennel's buttons and their holders (Core\Buttons.lua): a skin id or "auto".
             buttons = { skin = "auto", holder = "auto" },
+            -- Kennel's window (Core\Window.lua): pos is set once it is dragged.
+            window = {},
         },
         -- Per character: which modules made their macros already (Core\Macro.lua).
         char = { macrosMade = {} },

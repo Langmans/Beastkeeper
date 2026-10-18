@@ -5,4 +5,5 @@
     <Script file="Journal.lua"/>
     <Script file="Tooltip.lua"/>
     <Script file="Options.lua"/>
+    <Script file="Window.lua"/>
 </Ui>

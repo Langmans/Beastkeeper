@@ -17,6 +17,12 @@ L.PETJOURNAL_OPTION_TOOLTIP_DESC = "Hover your pet or its portrait: when it came
 L.PETJOURNAL_PET = "Pet"
 L.PETJOURNAL_PET_ENTRY = "%s (level %d %s)"
 
+-- Kennel's window: the tab's name; a pet in its list (%s the name, %d the level, second %s the
+-- family); the card when there is no pet in the journal yet.
+L.PETJOURNAL_TAB = "Pets"
+L.PETJOURNAL_ROW = "%s, %d %s"
+L.PETJOURNAL_NONE = "No pets yet: summon one."
+
 -- The journal. %s: a date and time such as "2026-10-17 21:05"; second %s: the zone; %d: the NPC ID it was tamed as.
 L.PETJOURNAL_TAMED = "Tamed %s in %s, as NPC %d."
 -- For a pet Kennel did not see tamed: when it was first out with Kennel loaded.

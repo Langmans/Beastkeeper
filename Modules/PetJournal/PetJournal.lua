@@ -29,6 +29,7 @@ local EVENTS = {
     "UNIT_LEVEL",
     "UNIT_PET_TRAINING_POINTS",
     "PET_UI_UPDATE",
+    "PET_STABLE_UPDATE",
     "PLAYER_LOGOUT",
 }
 
@@ -97,15 +98,16 @@ function M:Close()
     self.current, self.outSince = nil, nil
 end
 
----A pet's entry, made the first time it is seen (the pet out).
+---A pet's entry, made the first time it is seen: out, or in the stable's lists.
 ---@param key string
+---@param npc number? the NPC ID it was tamed as; the pet out's when nil
 ---@return KennelJournalEntry
-function M:Entry(key)
+function M:Entry(key, npc)
     local pets = self:Pets()
     local entry = pets[key]
     if not entry then
         entry = {
-            first = { t = GetServerTime(), zone = GetZoneText(), npc = Kennel.PetNPC() },
+            first = { t = GetServerTime(), zone = GetZoneText(), npc = npc or Kennel.PetNPC() },
             out = 0,
             deaths = 0,
             rises = {},
@@ -137,6 +139,35 @@ function M:UNIT_PET(_, unit)
     end
     self:Close()
     if key then self:Open(key) end
+    Kennel:RefreshWindow("pets")
+end
+
+---Takes what the stable's lists say of each pet: its name, level, family, specialization and
+---loyalty, and the
+---model it shows (displayID) and the beast it was tamed as, for the window's card. A pet not in
+---the journal yet gets an entry. Forever's C_StableInfo; other clients have none.
+---@param list fun(): table[]
+function M:ReadStableList(list)
+    for _, info in ipairs(list()) do
+        local number = info.petNumber --[[@as GameValue]]
+        if type(number) == "number" and Kennel.Readable(number) and info.name then
+            local entry = self:Entry(tostring(number), info.creatureID)
+            entry.name, entry.level, entry.family = info.name, info.level, info.familyName
+            entry.displayID = info.displayID
+            -- Ferocity, Cunning or Tenacity, by family; the client may give an empty one.
+            if info.specialization ~= "" then entry.specialization = info.specialization end
+            entry.loyalty, entry.loyaltyName = info.loyaltyLevel or entry.loyalty, info.loyaltyName or entry.loyaltyName
+        end
+    end
+end
+
+-- The stable's lists changed (at the stable master): what they say goes into the journal.
+function M:PET_STABLE_UPDATE()
+    local stable = C_StableInfo
+    if not stable then return end
+    self:ReadStableList(stable.GetActivePetList)
+    self:ReadStableList(stable.GetStabledPetList)
+    Kennel:RefreshWindow("pets")
 end
 
 ---@param _ string the event

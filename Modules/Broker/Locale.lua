@@ -21,6 +21,6 @@ L.BROKER_PET = "%s, level %d %s"
 L.BROKER_LOYALTY = "Loyalty %s"
 -- First %d: free training points; second: the pet's total.
 L.BROKER_POINTS = "%d of %d training points free"
-L.BROKER_CLICK = "Click: Kennel's settings. Right-click: Pet Journal."
+L.BROKER_CLICK = "Click: Kennel's window. Right-click: settings."
 
 -- stylua: ignore end

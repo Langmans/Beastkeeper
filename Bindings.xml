@@ -4,4 +4,5 @@
     <Binding name="CLICK KennelAutocastButton:LeftButton" header="KENNEL" category="ADDONS"/>
     <Binding name="CLICK KennelCareButton:LeftButton" category="ADDONS"/>
     <Binding name="CLICK KennelTameButton:LeftButton" category="ADDONS"/>
+    <Binding name="CLICK KennelWindowButton:LeftButton" category="ADDONS"/>
 </Bindings>

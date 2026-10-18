@@ -210,6 +210,8 @@
 ---@field rises table<number, number> per loyalty level reached while seen, the seconds out then
 ---@field abilities string[] "Claw (Rank 2)", sorted, as of the last time out
 ---@field ranks table<string, string>? each ability's rank text by name ("" without ranks)
+---@field displayID number? its model, as the stable's lists gave it
+---@field specialization string? Ferocity, Cunning or Tenacity, as the stable's lists gave it
 
 ---PetJournal's saved settings, its namespace's profile.
 ---@class KennelPetJournalSettings
@@ -221,7 +223,10 @@
 ---@field outSince number? GetTime() when it came out
 ---@field picked string? the pet chosen on the page
 ---@field Pets fun(self: KennelPetJournal): table<string, KennelJournalEntry>
----@field Entry fun(self: KennelPetJournal, key: string): KennelJournalEntry
+---@field Entry fun(self: KennelPetJournal, key: string, npc: number?): KennelJournalEntry
+---@field ReadStableList fun(self: KennelPetJournal, list: fun(): table[])
+---@field LevelLine fun(entry: KennelJournalEntry): string
+---@field AbilitiesLine fun(entry: KennelJournalEntry, highlight: boolean?): string?
 ---@field OnDied fun(self: KennelPetJournal)
 ---@field OnTamed fun(self: KennelPetJournal, message: string, event: KennelPetTamedEvent)
 ---@field Out fun(self: KennelPetJournal, key: string): number
@@ -546,6 +551,48 @@
 ---@field pins table<number, number[]>? per uiMapID, pin positions as x1, y1, x2, y2, ... (percent)
 ---@field zones number[]? AreaTable IDs, for a beast Wowhead has no map of (in an instance)
 
+---A tab of Kennel's window (Core\Window.lua), added by Kennel:RegisterWindowTab.
+---@class KennelWindowTab
+---@field id string
+---@field title string
+---@field order number left to right
+---@field module string? the module that adds it: the tab shows while that module is on
+---@field Create fun(panel: Frame, skin: KennelButtonHolderSkin) builds the panel, once
+---@field Refresh fun(panel: Frame) fills it, each time it shows and on Kennel:RefreshWindow
+
+---Kennel's window frame.
+---@class KennelWindow: Frame
+---@field skin KennelButtonHolderSkin
+---@field title FontString
+---@field current string? the tab showing
+---@field tabs table<string, KennelWindowTabButton>
+---@field panels table<string, Frame>
+
+---Kennel's window's settings (profile.window): where it was dragged to.
+---@class KennelWindowSettings
+---@field pos { point: string, relativePoint: string, x: number, y: number }?
+
+---@class KennelWindowTabButton: Button
+---@field label FontString
+
+---The Pets tab's panel (Modules\PetJournal\Window.lua).
+---@class KennelPetsPanel: Frame
+---@field skin KennelButtonHolderSkin
+---@field rows KennelPetRow[]
+---@field model KennelPetModel
+---@field name FontString
+---@field level FontString
+---@field spec FontString
+---@field journal FontString
+---@field abilities FontString
+
+---@class KennelPetRow: Button
+---@field label FontString
+---@field key string? the pet it shows
+
+---@class KennelPetModel: PlayerModel
+---@field dragX number? the cursor's x while the mouse drags it
+
 ---One of the core's sources (Core\Listen.lua): the game events it watches while its message has a
 ---listener, a method per event of the same name, and Start, which takes stock when it begins.
 ---@class KennelSource
@@ -566,3 +613,4 @@
 ---@field moduleCategoryIDs table<string, string|number> each module's page, by module name
 ---@field PROFILE_OPTIONS string[] the keys of AceDBOptions' own Profiles entries, see Core\Options.lua
 ---@field data KennelData
+---@field window KennelWindow? made the first time it opens
