@@ -230,6 +230,9 @@
 ---@field ReadStableList fun(self: KennelPetJournal, list: fun(): table[])
 ---@field LevelLine fun(entry: KennelJournalEntry): string
 ---@field AbilitiesLine fun(entry: KennelJournalEntry, highlight: boolean?): string?
+---@field TeachCount fun(entry: KennelJournalEntry): number
+---@field PetOrder fun(): string[] the journal's pets, the pet out first, then by name
+---@field ShowModel fun(model: PlayerModel, key: string, entry: KennelJournalEntry)
 ---@field OnDied fun(self: KennelPetJournal)
 ---@field OnTamed fun(self: KennelPetJournal, message: string, event: KennelPetTamedEvent)
 ---@field Out fun(self: KennelPetJournal, key: string): number
@@ -623,6 +626,19 @@
 ---@field teachers number[]? the beasts that teach it, in the window's order; nil when known
 ---@field best number? the first of them
 
+---The Stable tab's panel (Modules\PetJournal\Stable.lua).
+---@class KennelStablePanel: Frame
+---@field cards KennelStableCard[]
+
+---@class KennelStableCard: Button
+---@field key string? the pet it shows
+---@field model PlayerModel
+---@field name FontString
+---@field level FontString
+---@field spec FontString
+---@field abilities FontString
+---@field teach FontString
+
 ---The Families tab's panel (Modules\BeastMap\Families.lua).
 ---@class KennelFamiliesPanel: Frame
 ---@field rows KennelFamilyRow[]
@@ -668,5 +684,6 @@
 ---@field PROFILE_OPTIONS string[] the keys of AceDBOptions' own Profiles entries, see Core\Options.lua
 ---@field data KennelData
 ---@field window KennelWindow? made the first time it opens
+---@field WINDOW_PANEL_WIDTH number a window tab's panel width
 ---@field families table<string, number> CreatureFamily IDs by key: families.cat is 2
 ---@field familyInfo table<number, KennelFamilyInfo> by CreatureFamily ID

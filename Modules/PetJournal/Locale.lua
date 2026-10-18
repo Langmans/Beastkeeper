@@ -22,6 +22,11 @@ L.PETJOURNAL_PET_ENTRY = "%s (level %d %s)"
 L.PETJOURNAL_TAB = "Pets"
 L.PETJOURNAL_ROW = "%s, %d %s"
 L.PETJOURNAL_NONE = "No pets yet: summon one."
+-- Kennel's window, the Stable tab: its name; under a pet's card how many ranks it could still
+-- teach the hunter (%d; |4rank:ranks; is WoW's own plural), or that it has none.
+L.PETJOURNAL_TAB_STABLE = "Stable"
+L.PETJOURNAL_TEACHES = "Can teach you %d |4rank:ranks;"
+L.PETJOURNAL_TEACHES_NONE = "Nothing new for you"
 
 -- The journal. %s: a date and time such as "2026-10-17 21:05"; second %s: the zone; %d: the NPC ID it was tamed as.
 L.PETJOURNAL_TAMED = "Tamed %s in %s, as NPC %d."

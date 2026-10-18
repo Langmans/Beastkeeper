@@ -12,6 +12,8 @@ local L = Kennel.L
 
 local WIDTH, HEIGHT, PAD, TAB_HEIGHT, TAB_WIDTH = 680, 460, 12, 24, 96
 local CURRENT, OTHER = { 1, 0.82, 0 }, { 0.6, 0.6, 0.6 }
+-- A panel's width, for the tabs that lay out by it (a new frame may not have its size yet).
+Kennel.WINDOW_PANEL_WIDTH = WIDTH - 2 * PAD
 
 -- The registered tabs, in their order.
 ---@type KennelWindowTab[]

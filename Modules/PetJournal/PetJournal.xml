@@ -6,4 +6,5 @@
     <Script file="Tooltip.lua"/>
     <Script file="Options.lua"/>
     <Script file="Window.lua"/>
+    <Script file="Stable.lua"/>
 </Ui>

@@ -41,6 +41,8 @@ local function Order()
     table.sort(order, Earlier)
     return order
 end
+-- The Stable tab (Stable.lua) lists the pets in the same order.
+M.PetOrder = Order
 
 ---Shows the pet's model: the pet out, else its stable model, else the beast it was; none without.
 ---@param model PlayerModel
@@ -60,6 +62,7 @@ local function ShowModel(model, key, entry)
     end
     model:Show()
 end
+M.ShowModel = ShowModel
 
 ---Turns the model while the mouse drags it.
 ---@param model KennelPetModel
@@ -88,7 +91,7 @@ end
 local function Text(panel, template, size)
     local text = panel:CreateFontString(nil, "OVERLAY", template)
     text:SetJustifyH("LEFT")
-    text:SetWidth(panel:GetWidth() - LIST_WIDTH - MODEL_SIZE - 30)
+    text:SetWidth(Kennel.WINDOW_PANEL_WIDTH - LIST_WIDTH - MODEL_SIZE - 30)
     panel.skin.Font(text, size)
     return text
 end

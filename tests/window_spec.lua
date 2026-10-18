@@ -247,3 +247,37 @@ describe("the Pets tab", function()
         assert.is_nil(client.Kennel:GetModule("PetJournal"):Pets()[SHADOW])
     end)
 end)
+
+describe("the Stable tab", function()
+    ---The Stable panel, opened.
+    local function stable(client)
+        client.Kennel:OpenWindow("stable")
+        return client.Kennel.window.panels.stable
+    end
+
+    it("shows every pet side by side, the pet out first, with what each could teach you", function()
+        local client = withStable()
+        client.Kennel:GetModule("PetJournal"):Pets()[SHADOW].abilities = { "Bite (Rank 2)", "Dash (Rank 1)" }
+        local panel = stable(client)
+        local fluffy, shadow = panel.cards[1], panel.cards[3]
+        assert.are.equal("Fluffy", fluffy.name.text)
+        assert.are.equal("Level 15 Cat, loyalty 4 (|cff00cc7aDependable|r).", fluffy.level.text)
+        assert.are.equal("Can teach you 3 |4rank:ranks;", fluffy.teach.text, "Bite 1, Claw 2, Cower 1")
+        assert.are.same({ unit = "pet" }, fluffy.model.shownModel)
+        assert.are.equal("Shadow", shadow.name.text)
+        assert.are.equal("Ferocity", shadow.spec.text)
+        assert.are.equal("Abilities: |cff40ff40Bite (Rank 2)|r, Dash (Rank 1).", shadow.abilities.text)
+        assert.are.equal("Can teach you 1 |4rank:ranks;", shadow.teach.text)
+        assert.are.same({ displayID = 903 }, shadow.model.shownModel)
+        assert.are.equal("Nothing new for you", panel.cards[2].teach.text, "Ash has no abilities seen")
+        assert.is_false(panel.cards[4].shown)
+    end)
+
+    it("opens a pet's card in the Pets tab on a click", function()
+        local client = withStable()
+        local card = stable(client).cards[3]
+        click(card)
+        assert.are.equal("pets", client.Kennel.window.current)
+        assert.are.equal("Shadow", pets(client).name.text)
+    end)
+end)

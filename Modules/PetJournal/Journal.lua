@@ -76,21 +76,45 @@ local TEACH_COLOR = "|cff40ff40%s|r"
 ---@type string[]
 local shown = {}
 
+---Ability Learned, while it is on: it knows which ranks the hunter has.
+---@return KennelAbilityLearned?
+local function Known()
+    local known = Kennel:GetModule("AbilityLearned", true) --[[@as KennelAbilityLearned?]]
+    if known and known:IsEnabled() then return known end
+end
+
+---Whether one of the pet's abilities ("Claw (Rank 2)") could teach the hunter a rank.
+---@param known KennelAbilityLearned?
+---@param ability string
+---@return boolean
+local function Teaches(known, ability)
+    local name, rank = ability:match("^(.-) %((.+)%)$")
+    return known ~= nil and name ~= nil and known:CanTeach(name, rank)
+end
+
 ---The line of the pet's abilities; with `highlight`, those it could teach this character in green.
 ---@param entry KennelJournalEntry
 ---@param highlight boolean?
 ---@return string? nil without abilities
 function M.AbilitiesLine(entry, highlight)
     if #entry.abilities == 0 then return nil end
-    local known = highlight and Kennel:GetModule("AbilityLearned", true) --[[@as KennelAbilityLearned?]]
-    if known and not known:IsEnabled() then known = nil end
+    local known = highlight and Known() or nil
     wipe(shown)
     for _, ability in ipairs(entry.abilities) do
-        local name, rank = ability:match("^(.-) %((.+)%)$")
-        local teaches = known ~= nil and name ~= nil and known:CanTeach(name, rank)
-        shown[#shown + 1] = teaches and TEACH_COLOR:format(ability) or ability
+        shown[#shown + 1] = Teaches(known, ability) and TEACH_COLOR:format(ability) or ability
     end
     return L.PETJOURNAL_ABILITIES:format(table.concat(shown, ", "))
+end
+
+---How many of the pet's abilities could teach this character a rank; 0 while Ability Learned is off.
+---@param entry KennelJournalEntry
+---@return number
+function M.TeachCount(entry)
+    local known, count = Known(), 0
+    for _, ability in ipairs(entry.abilities) do
+        if Teaches(known, ability) then count = count + 1 end
+    end
+    return count
 end
 
 ---A pet's journal as lines; the same table each time, refilled. Empty for a pet not in it.
