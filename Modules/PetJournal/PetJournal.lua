@@ -166,6 +166,7 @@ end
 ---@param unit string
 function M:UNIT_PET(_, unit)
     if unit ~= "player" then return end
+    self:ReadStable()
     local key = Key()
     if key == self.current then
         self:Record()
@@ -176,15 +177,22 @@ function M:UNIT_PET(_, unit)
     Kennel:RefreshWindow("pets")
 end
 
+-- The keys of the pets the stable's lists name, refilled on each read.
+---@type table<string, true>
+local stableKeys = {}
+
 ---Takes what the stable's lists say of each pet: its name, level, family and loyalty, and the
----model it shows (displayID) and the beast it was tamed as, for the window's card. A pet not in
----the journal yet gets an entry. Forever's C_StableInfo; other clients have none.
+---model it shows (displayID) and the beast it was tamed as (creatureID). A pet not in the journal
+---yet gets an entry.
 ---@param list fun(): table[]
 function M:ReadStableList(list)
     for _, info in ipairs(list()) do
         local number = info.petNumber --[[@as GameValue]]
         if type(number) == "number" and Kennel.Readable(number) and info.name then
-            local entry = self:Entry(tostring(number), info.creatureID)
+            local key = tostring(number)
+            stableKeys[key] = true
+            local entry = self:Entry(key, info.creatureID)
+            entry.first.npc = info.creatureID or entry.first.npc
             entry.name, entry.level, entry.family = info.name, info.level, info.familyName
             entry.displayID = info.displayID
             entry.loyalty, entry.loyaltyName = info.loyaltyLevel or entry.loyalty, info.loyaltyName or entry.loyaltyName
@@ -192,12 +200,65 @@ function M:ReadStableList(list)
     end
 end
 
--- The stable's lists changed (at the stable master): what they say goes into the journal.
-function M:PET_STABLE_UPDATE()
+---Moves what an entry the stable does not know holds into the stable's entry of the same pet: the
+---time out, deaths, loyalty rises, abilities seen, the earlier first sight and a tame. The
+---stable's NPC ID stays.
+---@param into KennelJournalEntry
+---@param from KennelJournalEntry
+local function Merge(into, from)
+    into.out, into.deaths = into.out + from.out, into.deaths + from.deaths
+    for level, at in pairs(from.rises) do
+        into.rises[level] = into.rises[level] or at
+    end
+    if #into.abilities == 0 then
+        into.abilities, into.ranks = from.abilities, from.ranks
+    end
+    if from.first.t < into.first.t then
+        into.first.t, into.first.zone = from.first.t, from.first.zone or into.first.zone
+    end
+    into.first.tamed = into.first.tamed or from.first.tamed
+end
+
+---The one stable pet with this name and family; nil for none or several.
+---@param pets table<string, KennelJournalEntry>
+---@param entry KennelJournalEntry
+---@return string?
+local function StableTwin(pets, entry)
+    ---@type string?
+    local found
+    for key in pairs(stableKeys) do
+        local other = pets[key]
+        if other.name == entry.name and other.family == entry.family then
+            if found then return nil end
+            found = key
+        end
+    end
+    return found
+end
+
+---Reads the stable's lists (WoW: Forever gives them anywhere), then merges an entry they do not
+---know (kept under the GUID's number, which is not the pet's on Forever) into the stable's entry
+---of the same name and family. A pet tamed this session (a Creature GUID key) waits for Adopt.
+function M:ReadStable()
     local stable = C_StableInfo
     if not stable then return end
+    wipe(stableKeys)
     self:ReadStableList(stable.GetActivePetList)
     self:ReadStableList(stable.GetStabledPetList)
+    local pets = self:Pets()
+    for key, entry in pairs(pets) do
+        local twin = not stableKeys[key] and not key:find("^Creature%-") and StableTwin(pets, entry)
+        if twin then
+            Merge(pets[twin], entry)
+            pets[key] = nil
+            if self.current == key then self.current = twin end
+        end
+    end
+end
+
+-- The stable's lists changed (at the stable master): what they say goes into the journal.
+function M:PET_STABLE_UPDATE()
+    self:ReadStable()
     Kennel:RefreshWindow("pets")
 end
 

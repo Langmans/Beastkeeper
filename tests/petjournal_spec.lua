@@ -49,6 +49,48 @@ describe("Pet Journal", function()
         assert.is_true(says(client, "Abilities: Bite (Rank 1)."))
     end)
 
+    it("merges an entry the stable does not know into the stable's pet of that name and family", function()
+        local client = NewClient()
+        client.petGUID = "Pet-0-4615-1-1-165189-3AA8C65C43"
+        client:login():advance(600)
+        local M = client.Kennel:GetModule("PetJournal")
+        local old = tostring(0xA8C65C43)
+        assert.is_truthy(M:Pets()[old], "kept under the GUID's number at first")
+        client:petDies():petBack()
+        M:Pets()[old].rises[5] = 300
+        M:Pets()[old].first.t = client.serverTime - 3600
+        client.stable.active = {
+            { petNumber = 3069428, name = "Fluffy", familyName = "Cat", level = 15, creatureID = 1984, displayID = 5 },
+        }
+        client:fire("UNIT_PET", "player"):advance(60)
+        local pets = M:Pets()
+        assert.is_nil(pets[old])
+        local entry = pets["3069428"]
+        assert.are.equal(1, entry.deaths)
+        assert.are.equal(1984, entry.first.npc)
+        assert.are.equal(client.serverTime - 3600, entry.first.t, "the earlier first sight")
+        assert.are.equal(300, entry.rises[5])
+        assert.are.equal(5, entry.displayID)
+        assert.are.equal("3069428", M.current)
+        assert.is_true(says(client, "Out together: 11 min."), journal(client))
+    end)
+
+    it("leaves an entry alone that matches no stable pet, or two", function()
+        local client = NewClient()
+        client.petGUID = "Pet-0-4615-1-1-165189-3AA8C65C43"
+        client:login()
+        local M = client.Kennel:GetModule("PetJournal")
+        client.stable.stabled = {
+            { petNumber = 10, name = "Fluffy", familyName = "Cat" },
+            { petNumber = 11, name = "Fluffy", familyName = "Cat" },
+        }
+        client:fire("PET_STABLE_UPDATE")
+        assert.is_truthy(M:Pets()[tostring(0xA8C65C43)])
+        client.stable.stabled = { { petNumber = 12, name = "Fluffy", familyName = "Wolf" } }
+        client:fire("PET_STABLE_UPDATE")
+        assert.is_truthy(M:Pets()[tostring(0xA8C65C43)], "another family")
+    end)
+
     it("takes the zone later when the client has none yet at login", function()
         local client = NewClient()
         client.zone = ""

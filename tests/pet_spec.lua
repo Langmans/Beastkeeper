@@ -67,7 +67,25 @@ describe("the pet helpers", function()
         assert.is_nil(client.Kennel.PetSound("AGGRO"))
     end)
 
-    it("give the pet's number: the low 32 bits of its GUID's last field, the stable's petNumber", function()
+    it("take the pet's number and the beast it was tamed as from the stable's entry of the pet out", function()
+        local client = NewClient()
+        client.petGUID = "Pet-0-4615-1-1-165189-3AA8C65C43"
+        client.stable.active = {
+            { petNumber = 5, name = "Shadow", creatureID = 1131 },
+            { petNumber = 3069428, name = "Fluffy", creatureID = 1984 },
+        }
+        assert.are.equal(3069428, client.Kennel.PetNumber())
+        assert.are.equal(1984, client.Kennel.PetNPC(), "not the GUID's 165189, every pet's")
+        client.stable.active = { { petNumber = 7, name = "Someone else", creatureID = 1 } }
+        assert.are.equal(0xA8C65C43, client.Kennel.PetNumber(), "no entry by its name: the GUID")
+        client.stable.active = {
+            { petNumber = 7, name = "Fluffy", creatureID = 1 },
+            { petNumber = 8, name = "Fluffy", creatureID = 2 },
+        }
+        assert.are.equal(0xA8C65C43, client.Kennel.PetNumber(), "two by its name: which one is unsure")
+    end)
+
+    it("give the pet's number from its GUID without a stable entry for it", function()
         local client = NewClient()
         client.petGUID = "Pet-0-5251-0-12345-6219-0201A3F27C"
         assert.are.equal(0x01A3F27C, client.Kennel.PetNumber())

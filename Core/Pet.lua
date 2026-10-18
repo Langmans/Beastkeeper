@@ -104,11 +104,35 @@ function Kennel.PetFamilyID()
     return tonumber(familyID)
 end
 
----The active pet's number, the same as C_StableInfo's petNumber: the low 32 bits of its GUID's
----last field. It stays the same through resummons, relogs, stable swaps and renames, so per-pet
----settings are kept under it. Nil without a pet or when the client hides the GUID.
+---The stable's entry of the pet out (C_StableInfo's active pets, which WoW: Forever gives away from
+---the stable master too): the one with the pet's name. Nil without a pet, the API, or exactly one
+---entry of that name.
+---@return table?
+function Kennel.PetStableInfo()
+    local getActive = C_StableInfo and C_StableInfo.GetActivePetList
+    if not UnitExists("pet") or not getActive then return nil end
+    local name = UnitName("pet")
+    ---@type table?
+    local found
+    for _, info in ipairs(getActive()) do
+        if info.name == name then
+            if found then return nil end
+            found = info
+        end
+    end
+    return found
+end
+
+---The active pet's number, C_StableInfo's petNumber. It stays the same through resummons, relogs,
+---stable swaps and renames, so per-pet settings are kept under it. On WoW: Forever the pet's GUID
+---does not hold it, so the stable's entry of the pet gives it; the GUID's last field (its low 32
+---bits) only without one. Nil without a pet or when the client hides the GUID.
 ---@return number?
 function Kennel.PetNumber()
+    local info = Kennel.PetStableInfo()
+    if info and type(info.petNumber) == "number" then
+        return info.petNumber --[[@as number]]
+    end
     return Kennel.PetNumberFromGUID(UnitGUID("pet"))
 end
 
@@ -204,11 +228,16 @@ function Kennel.NPCFromGUID(guid, kind)
     return tonumber(guid:match("^" .. kind .. "%-%d+%-%d+%-%d+%-%d+%-(%d+)%-"))
 end
 
----The NPC ID the active pet was tamed as. A pet tamed this session keeps the beast's own Creature
----GUID until the next relog (/reload keeps it too); after that it has a Pet GUID. Nil without a
----pet or when the client hides the GUID.
+---The NPC ID the active pet was tamed as: the stable entry's creatureID. Without one, the GUID's:
+---a pet tamed this session keeps the beast's own Creature GUID until the next relog (/reload keeps
+---it too); a Pet GUID's sixth field is the tamed NPC on some clients, on WoW: Forever every pet's
+---"Hunter Pet" (165189). Nil without a pet or when the client hides the GUID.
 ---@return number?
 function Kennel.PetNPC()
+    local info = Kennel.PetStableInfo()
+    if info and type(info.creatureID) == "number" then
+        return info.creatureID --[[@as number]]
+    end
     local guid = UnitGUID("pet")
     return Kennel.NPCFromGUID(guid, "Pet") or Kennel.NPCFromGUID(guid, "Creature")
 end
