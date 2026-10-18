@@ -575,6 +575,12 @@
 ---@field tabs table<string, KennelWindowTabButton>
 ---@field panels table<string, Frame>
 
+---What Kennel knows of a pet family (Core\Families.lua).
+---@class KennelFamilyInfo
+---@field name string English, when the client gives no name
+---@field spec ("ferocity"|"cunning"|"tenacity")?
+---@field diet string[]? food types: meat, fish, cheese, bread, fungus, fruit, rawFish
+
 ---Kennel's window's settings (profile.window): where it was dragged to.
 ---@class KennelWindowSettings
 ---@field pos { point: string, relativePoint: string, x: number, y: number }?
@@ -617,6 +623,27 @@
 ---@field teachers number[]? the beasts that teach it, in the window's order; nil when known
 ---@field best number? the first of them
 
+---The Families tab's panel (Modules\BeastMap\Families.lua).
+---@class KennelFamiliesPanel: Frame
+---@field rows KennelFamilyRow[]
+---@field beasts KennelFamilyBeastRow[]
+---@field model PlayerModel
+---@field title FontString
+---@field spec FontString
+---@field diet FontString
+---@field abilities FontString
+---@field none FontString
+---@field chosen number? the family shown
+
+---@class KennelFamilyRow: Button
+---@field label FontString
+---@field familyID number?
+
+---@class KennelFamilyBeastRow: Frame
+---@field text FontString
+---@field go Button
+---@field npc number?
+
 ---@class KennelPetModel: PlayerModel
 ---@field dragX number? the cursor's x while the mouse drags it
 
@@ -641,3 +668,5 @@
 ---@field PROFILE_OPTIONS string[] the keys of AceDBOptions' own Profiles entries, see Core\Options.lua
 ---@field data KennelData
 ---@field window KennelWindow? made the first time it opens
+---@field families table<string, number> CreatureFamily IDs by key: families.cat is 2
+---@field familyInfo table<number, KennelFamilyInfo> by CreatureFamily ID

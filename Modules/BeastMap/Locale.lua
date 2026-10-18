@@ -108,6 +108,27 @@ L.BEASTMAP_NO_TEACHER = "No beast teaches it"
 L.BEASTMAP_TRAVEL = "~%d min"
 L.BEASTMAP_ABOVE = "above your level"
 L.BEASTMAP_MORE = "+%d more"
+-- Kennel's window, the Families tab: its name; a family in the list with how many of the hunter's
+-- pets are of it (%s the family, %d the count).
+L.BEASTMAP_TAB_FAMILIES = "Families"
+L.BEASTMAP_FAMILY_ROW = "%s (%d)"
+-- A family's specialization.
+L.BEASTMAP_SPEC_FEROCITY = "Ferocity"
+L.BEASTMAP_SPEC_CUNNING = "Cunning"
+L.BEASTMAP_SPEC_TENACITY = "Tenacity"
+-- What a family eats. %s: a list of the food types below.
+L.BEASTMAP_EATS = "Eats: %s"
+L.BEASTMAP_FOOD_MEAT = "Meat"
+L.BEASTMAP_FOOD_FISH = "Fish"
+L.BEASTMAP_FOOD_CHEESE = "Cheese"
+L.BEASTMAP_FOOD_BREAD = "Bread"
+L.BEASTMAP_FOOD_FUNGUS = "Fungus"
+L.BEASTMAP_FOOD_FRUIT = "Fruit"
+L.BEASTMAP_FOOD_RAWFISH = "Raw Fish"
+-- A line per ability beasts teach the family. %s: the ability; first %d its lowest rank, second its highest, third how many the hunter knows.
+L.BEASTMAP_FAMILY_ABILITY = "%s: ranks %d-%d, you know %d"
+-- Under the family's beasts list when Kennel's data has none of that family.
+L.BEASTMAP_NO_BEASTS = "No beast of this family in Kennel's data."
 -- A rank's tooltip, a line per beast that teaches it. First %s: the beast and its place; second: its level (BEASTMAP_LEVEL).
 L.BEASTMAP_TEACHER_LINE = "%s: %s"
 

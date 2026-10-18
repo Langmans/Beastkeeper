@@ -611,6 +611,86 @@ describe("Beast Map", function()
         end)
     end)
 
+    describe("the Families tab", function()
+        local function tab(client)
+            client.Kennel:OpenWindow("families")
+            return client.Kennel.window.panels.families
+        end
+
+        local function shown(rows, field)
+            local out = {}
+            for _, row in ipairs(rows) do
+                if row.shown then out[#out + 1] = row[field or "label"].text end
+            end
+            return out
+        end
+
+        local function click(button)
+            button:GetScript("OnClick")(button, "LeftButton")
+        end
+
+        it("lists every family by name, with how many of your pets are of it; the pet out's chosen", function()
+            local client = hunter(10)
+            client.familyNames[2] = "Cat"
+            local panel = tab(client)
+            local rows = shown(panel.rows)
+            assert.are.equal(18, #rows)
+            assert.are.equal("Bat", rows[1])
+            assert.is_truthy(tContains(rows, "Cat (1)"), "Fluffy")
+            assert.are.equal("Cat", panel.title.text)
+        end)
+
+        it("says its specialization, diet and what it can learn", function()
+            local client = hunter(10)
+            client:openTrainer({ { "Claw", "used", CLAW } }):closeTrainer()
+            local panel = tab(client)
+            assert.are.equal("Ferocity", panel.spec.text)
+            assert.are.equal("Eats: Meat, Fish", panel.diet.text)
+            assert.are.equal("Claw: ranks 1-3, you know 1", panel.abilities.text)
+        end)
+
+        it("names the beasts of the family the hunter can tame, nearest first, and goes there", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            assert.are.same({
+                "Low Cat in Elwynn Forest: Level 5-6",
+                "Rare Cat in Tirisfal Glades: Level 10, rare elite",
+                "Late Cat: Level 11",
+            }, shown(panel.beasts, "text"))
+            assert.are.same({ creature = 101 }, panel.model.shownModel)
+            click(panel.beasts[2].go)
+            assert.is_true(client:printedContains("The tame key now targets Rare Cat."))
+            for _, row in ipairs(panel.rows) do
+                if row.shown and row.label.text == "Boar" then click(row) end
+            end
+            assert.are.equal("Cave Boar in Wailing Caverns: Level 12", panel.beasts[2].text.text)
+            assert.is_false(panel.beasts[2].go.shown, "no pin to go to")
+        end)
+
+        it("shows another family on a click, also one Kennel knows little of", function()
+            local client = hunter(10)
+            client.familyNames[40] = "Fuchs"
+            local panel = tab(client)
+            local fox
+            for _, row in ipairs(panel.rows) do
+                if row.shown and row.label.text == "Fuchs" then fox = row end
+            end
+            click(fox)
+            assert.are.equal("Fuchs", panel.title.text)
+            assert.are.equal("", panel.spec.text)
+            assert.are.equal("", panel.diet.text)
+            assert.are.equal("", panel.abilities.text)
+            assert.are.same({}, shown(panel.beasts, "text"))
+            assert.are.equal("No beast of this family in Kennel's data.", panel.none.text)
+            assert.is_false(panel.model.shown)
+        end)
+
+        it("falls back to the first family without a pet out", function()
+            local client = hunter(10, { noPet = true })
+            assert.are.equal("Bat", tab(client).title.text)
+        end)
+    end)
+
     it("sends the hunter to a beast with a left click on its pin, through LibGoThere", function()
         local client = hunter(10)
         local low = client:mapPins(ELWYNN)[1]

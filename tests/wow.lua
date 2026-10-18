@@ -724,6 +724,14 @@ function NewClient(opts)
         end
         return infos
     end
+    -- Pet family names as the client gives them (client.familyNames by ID); none by default.
+    client.familyNames = {}
+    C_CreatureInfo = {
+        GetCreatureFamilyInfo = function(familyID)
+            local name = client.familyNames[familyID]
+            return name and { name = name } or nil
+        end,
+    }
     -- The cursor's position (client.cursorX), for a model turned by dragging.
     client.cursorX = 0
     function GetCursorPosition()

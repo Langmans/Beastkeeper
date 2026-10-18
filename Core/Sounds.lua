@@ -1,72 +1,72 @@
 local _, ns = ...
 
--- Pet sounds by CreatureFamily ID (the second return of UnitCreatureFamily, the same on every
--- client language), as FileDataIDs for PlaySoundFile. One table per kind of sound, named
--- <KIND>_PER_FAMILY; Pet.lua picks the active pet's. FileDataIDs from the wago.tools community
--- listfile, with the file names so they can be looked up again.
+-- Pet sounds by family (Kennel.families, Families.lua), as FileDataIDs for PlaySoundFile. One
+-- table per kind of sound, named <KIND>_PER_FAMILY; Pet.lua picks the active pet's. FileDataIDs
+-- from the wago.tools community listfile, with the file names so they can be looked up again.
 
 ---@type Kennel
 local Kennel = ns
+local F = Kennel.families
 
 Kennel.sounds = {}
 
--- The call a pet gives when it is sent to attack. None was found for Crocolisk (6), Scorpid (20)
--- and Bat (24).
+-- The call a pet gives when it is sent to attack. None was found for the Crocolisk, Scorpid and
+-- Bat.
 ---@type table<number, number>
 Kennel.sounds.AGGRO_PER_FAMILY = {
-    [1] = 564215, -- Wolf: sound/creature/wolf/mwolfaggro1.ogg
-    [2] = 562387, -- Cat: sound/creature/tiger/mtigeraggroa.ogg
-    [3] = 561415, -- Spider: sound/creature/tarantula/mtarantulaaggroa.ogg
-    [4] = 544959, -- Bear: sound/creature/bear/mbearaggroa.ogg
-    [5] = 545134, -- Boar: sound/creature/boar/mwildboaraggro1.ogg
-    [7] = 545937, -- Carrion Bird: sound/creature/carrion/mcarrionaggroa.ogg
-    [8] = 546423, -- Crab: sound/creature/crab/crabaggro.ogg
-    [9] = 550967, -- Gorilla: sound/creature/gorilla/gorillaaggroa.ogg
-    [11] = 558877, -- Raptor: sound/creature/raptor/mraptoraggroa.ogg
-    [12] = 561390, -- Tallstrider: sound/creature/tallstrider/tallstrideraggroa.ogg
-    [21] = 559878, -- Turtle: sound/creature/seaturtle/seaturtleaggroa.ogg
-    [25] = 552339, -- Hyena: sound/creature/hyena/hyenaaggroa.ogg
-    [26] = 557977, -- Bird of Prey: sound/creature/owl/owlaggro.ogg
-    [27] = 559967, -- Wind Serpent: sound/creature/serpent/serpentaggro.ogg
-    [40] = 3593144, -- Fox: sound/creature/fox2/mon_fox2_aggro_00_157872.ogg
+    [F.wolf] = 564215, -- sound/creature/wolf/mwolfaggro1.ogg
+    [F.cat] = 562387, -- sound/creature/tiger/mtigeraggroa.ogg
+    [F.spider] = 561415, -- sound/creature/tarantula/mtarantulaaggroa.ogg
+    [F.bear] = 544959, -- sound/creature/bear/mbearaggroa.ogg
+    [F.boar] = 545134, -- sound/creature/boar/mwildboaraggro1.ogg
+    [F.carrionBird] = 545937, -- sound/creature/carrion/mcarrionaggroa.ogg
+    [F.crab] = 546423, -- sound/creature/crab/crabaggro.ogg
+    [F.gorilla] = 550967, -- sound/creature/gorilla/gorillaaggroa.ogg
+    [F.raptor] = 558877, -- sound/creature/raptor/mraptoraggroa.ogg
+    [F.tallstrider] = 561390, -- sound/creature/tallstrider/tallstrideraggroa.ogg
+    [F.turtle] = 559878, -- sound/creature/seaturtle/seaturtleaggroa.ogg
+    [F.hyena] = 552339, -- sound/creature/hyena/hyenaaggroa.ogg
+    [F.birdOfPrey] = 557977, -- sound/creature/owl/owlaggro.ogg
+    [F.windSerpent] = 559967, -- sound/creature/serpent/serpentaggro.ogg
+    [F.fox] = 3593144, -- sound/creature/fox2/mon_fox2_aggro_00_157872.ogg
 }
 
--- The sound a pet makes when it dies. Hyena (25) has only later files, and Crocolisk, Scorpid and
--- Bat have none of their own.
+-- The sound a pet makes when it dies. The Hyena has only later files, and the Crocolisk, Scorpid
+-- and Bat have none of their own.
 ---@type table<number, number>
 Kennel.sounds.DEATH_PER_FAMILY = {
-    [1] = 564219, -- Wolf: sound/creature/wolf/mwolfdeath1.ogg
-    [2] = 562391, -- Cat: sound/creature/tiger/mtigerdeatha.ogg
-    [3] = 561420, -- Spider: sound/creature/tarantula/mtarantuladeath1a.ogg
-    [4] = 544952, -- Bear: sound/creature/bear/mbeardeatha.ogg
-    [5] = 545132, -- Boar: sound/creature/boar/mwildboardeath1.ogg
-    [7] = 545944, -- Carrion Bird: sound/creature/carrion/mcarriondeatha.ogg
-    [8] = 546431, -- Crab: sound/creature/crab/crabdeatha.ogg
-    [9] = 550959, -- Gorilla: sound/creature/gorilla/gorilladeatha.ogg
-    [11] = 558876, -- Raptor: sound/creature/raptor/mraptordeatha.ogg
-    [12] = 561391, -- Tallstrider: sound/creature/tallstrider/tallstriderdeatha.ogg
-    [21] = 559874, -- Turtle: sound/creature/seaturtle/seaturtledeatha.ogg
-    [26] = 557976, -- Bird of Prey: sound/creature/owl/owldeath.ogg
-    [27] = 559971, -- Wind Serpent: sound/creature/serpent/serpentdeath.ogg
-    [40] = 3593200, -- Fox: sound/creature/fox2/mon_fox2_death_00_157876.ogg
+    [F.wolf] = 564219, -- sound/creature/wolf/mwolfdeath1.ogg
+    [F.cat] = 562391, -- sound/creature/tiger/mtigerdeatha.ogg
+    [F.spider] = 561420, -- sound/creature/tarantula/mtarantuladeath1a.ogg
+    [F.bear] = 544952, -- sound/creature/bear/mbeardeatha.ogg
+    [F.boar] = 545132, -- sound/creature/boar/mwildboardeath1.ogg
+    [F.carrionBird] = 545944, -- sound/creature/carrion/mcarriondeatha.ogg
+    [F.crab] = 546431, -- sound/creature/crab/crabdeatha.ogg
+    [F.gorilla] = 550959, -- sound/creature/gorilla/gorilladeatha.ogg
+    [F.raptor] = 558876, -- sound/creature/raptor/mraptordeatha.ogg
+    [F.tallstrider] = 561391, -- sound/creature/tallstrider/tallstriderdeatha.ogg
+    [F.turtle] = 559874, -- sound/creature/seaturtle/seaturtledeatha.ogg
+    [F.birdOfPrey] = 557976, -- sound/creature/owl/owldeath.ogg
+    [F.windSerpent] = 559971, -- sound/creature/serpent/serpentdeath.ogg
+    [F.fox] = 3593200, -- sound/creature/fox2/mon_fox2_death_00_157876.ogg
 }
 
--- The cry of a pet critically wounded. Crocolisk, Scorpid and Bat have none of their own.
+-- The cry of a pet critically wounded. The Crocolisk, Scorpid and Bat have none of their own.
 ---@type table<number, number>
 Kennel.sounds.WOUND_PER_FAMILY = {
-    [1] = 564231, -- Wolf: sound/creature/wolf/mwolfwoundcritical1.ogg
-    [2] = 562395, -- Cat: sound/creature/tiger/mtigerwoundcriticala.ogg
-    [3] = 561419, -- Spider: sound/creature/tarantula/mtarantulawoundcritical1a.ogg
-    [4] = 544958, -- Bear: sound/creature/bear/mbearwoundcriticala.ogg
-    [5] = 545130, -- Boar: sound/creature/boar/mwildboarwoundcritical1.ogg
-    [7] = 545936, -- Carrion Bird: sound/creature/carrion/mcarrionwoundcriticala.ogg
-    [8] = 546422, -- Crab: sound/creature/crab/crabwoundcrit.ogg
-    [9] = 550964, -- Gorilla: sound/creature/gorilla/gorillawoundcrit.ogg
-    [11] = 558875, -- Raptor: sound/creature/raptor/mraptorwoundcriticala.ogg
-    [12] = 561389, -- Tallstrider: sound/creature/tallstrider/tallstriderwoundcrit.ogg
-    [21] = 559875, -- Turtle: sound/creature/seaturtle/seaturtlewoundcrita.ogg
-    [25] = 552336, -- Hyena: sound/creature/hyena/hyenawoundcrit.ogg
-    [26] = 557975, -- Bird of Prey: sound/creature/owl/owlwoundcrit.ogg
-    [27] = 559974, -- Wind Serpent: sound/creature/serpent/serpentwoundcrit.ogg
-    [40] = 3593220, -- Fox: sound/creature/fox2/mon_fox2_woundcritical_00_157879.ogg
+    [F.wolf] = 564231, -- sound/creature/wolf/mwolfwoundcritical1.ogg
+    [F.cat] = 562395, -- sound/creature/tiger/mtigerwoundcriticala.ogg
+    [F.spider] = 561419, -- sound/creature/tarantula/mtarantulawoundcritical1a.ogg
+    [F.bear] = 544958, -- sound/creature/bear/mbearwoundcriticala.ogg
+    [F.boar] = 545130, -- sound/creature/boar/mwildboarwoundcritical1.ogg
+    [F.carrionBird] = 545936, -- sound/creature/carrion/mcarrionwoundcriticala.ogg
+    [F.crab] = 546422, -- sound/creature/crab/crabwoundcrit.ogg
+    [F.gorilla] = 550964, -- sound/creature/gorilla/gorillawoundcrit.ogg
+    [F.raptor] = 558875, -- sound/creature/raptor/mraptorwoundcriticala.ogg
+    [F.tallstrider] = 561389, -- sound/creature/tallstrider/tallstriderwoundcrit.ogg
+    [F.turtle] = 559875, -- sound/creature/seaturtle/seaturtlewoundcrita.ogg
+    [F.hyena] = 552336, -- sound/creature/hyena/hyenawoundcrit.ogg
+    [F.birdOfPrey] = 557975, -- sound/creature/owl/owlwoundcrit.ogg
+    [F.windSerpent] = 559974, -- sound/creature/serpent/serpentwoundcrit.ogg
+    [F.fox] = 3593220, -- sound/creature/fox2/mon_fox2_woundcritical_00_157879.ogg
 }
