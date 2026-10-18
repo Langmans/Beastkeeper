@@ -254,7 +254,8 @@ How Kennel is built, how to add to it, and how other addons can hook into it:
 3. [What the core offers modules](https://github.com/Langmans/Kennel/blob/main/docs/03-core-for-modules.md):
    toast, macros, pet helpers, chat, combat, key bindings, the beast data.
 4. [Hooking into Kennel](https://github.com/Langmans/Kennel/blob/main/docs/04-hooking.md):
-   the AceEvent messages other addons can listen to, with an example addon
+   the messages other addons (and Kennel's own modules) listen to through
+   `Kennel:Listen`, a flowchart of who sends what, an example addon
    and [their types](https://github.com/Langmans/Kennel/blob/main/docs/KennelMessages.lua)
    for a language server.
 5. [Toast skins](https://github.com/Langmans/Kennel/blob/main/docs/05-toast-skins.md):

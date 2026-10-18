@@ -126,6 +126,9 @@
 ---@field checkPending boolean? a check is on its way (CheckAfter)
 ---@field choice ("growl"|"cower")? what the player chose (KennelKite, KennelGrowl)
 ---@field choiceInDungeon boolean? whether the player was in a dungeon group then
+---@field lastWanted ("growl"|"cower")? what fitted at the last check (KENNEL_AUTOCAST_WANTED)
+---@field lastWhy ("solo"|"dungeon"|"chosen")? what decided it then
+---@field TellWanted fun(self: KennelAutocastCheck)
 ---@field SPELLS table<"growl"|"cower", number>
 ---@field Spell fun(id: number): string, (number|string)?
 ---@field Settings fun(self: KennelAutocastCheck): KennelAutocastSettings used by Options.lua too
@@ -216,10 +219,11 @@
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field current string? the pet out's key
 ---@field outSince number? GetTime() when it came out
----@field dead boolean? whether the pet out was dead at the last health event
----@field taming boolean? a Tame Beast cast went through; the next new pet was tamed
 ---@field picked string? the pet chosen on the page
 ---@field Pets fun(self: KennelPetJournal): table<string, KennelJournalEntry>
+---@field Entry fun(self: KennelPetJournal, key: string): KennelJournalEntry
+---@field OnDied fun(self: KennelPetJournal)
+---@field OnTamed fun(self: KennelPetJournal, message: string, event: KennelPetTamedEvent)
 ---@field Out fun(self: KennelPetJournal, key: string): number
 ---@field Record fun(self: KennelPetJournal)
 ---@field Snapshot fun(self: KennelPetJournal)
@@ -485,6 +489,7 @@
 ---@field SeeCreature fun(self: KennelBeastMap, guid: GameValue)
 ---@field tameTarget string? the beast the tame key goes for
 ---@field SetTameTarget fun(self: KennelBeastMap, name: string)
+---@field OnRareSeen fun(self: KennelBeastMap, message: string, event: KennelRareSeenEvent)
 ---@field ApplyTameButton fun(self: KennelBeastMap)
 ---@field WatchRares fun(self: KennelBeastMap)
 ---@field CreateMapButton fun(self: KennelBeastMap)
@@ -540,6 +545,14 @@
 ---@field rare true?
 ---@field pins table<number, number[]>? per uiMapID, pin positions as x1, y1, x2, y2, ... (percent)
 ---@field zones number[]? AreaTable IDs, for a beast Wowhead has no map of (in an instance)
+
+---One of the core's sources (Core\Listen.lua): the game events it watches while its message has a
+---listener, a method per event of the same name, and Start, which takes stock when it begins.
+---@class KennelSource
+---@field events string[]
+---@field running boolean? watching now
+---@field Start fun(self: KennelSource)
+---@field [string] any its own state and event methods
 
 ---Any value the game hands over, before the addon checks its type.
 ---@alias GameValue string|number|boolean|table|nil

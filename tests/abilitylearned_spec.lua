@@ -212,6 +212,27 @@ describe("AbilityLearned", function()
             assert.are.equal(1, #module(relogged).db.char.history)
         end)
 
+        it("is told to other addons as KENNEL_ABILITY_LEARNED, a simulated learn not", function()
+            local client = ready()
+            local heard = {}
+            client.Kennel:Listen(heard, "KENNEL_ABILITY_LEARNED", function(_, event)
+                heard[#heard + 1] = event
+            end)
+            settle(client:learnLine("Claw (Rank 2)"))
+            assert.are.same({
+                {
+                    module = "AbilityLearned",
+                    name = "Claw",
+                    rank = 2,
+                    pet = "Fluffy",
+                    npc = 165189,
+                    zone = "Darkshore",
+                },
+            }, { heard[1] })
+            module(client):ShowLearn({ name = "Bite", rank = "Rank 1", simulated = true })
+            assert.are.equal(1, #heard)
+        end)
+
         it("keeps the last 200", function()
             local client = ready()
             local history = module(client).db.char.history
@@ -459,6 +480,39 @@ describe("AbilityLearned", function()
             client:gainPoints(1)
             assert.are.equal("Fluffy gained 1 training |4point:points;", client:toastTitle())
             assert.are.equal(count, #client.sounds)
+        end)
+
+        it("are told to other addons as KENNEL_PET_GROWTH, also with the toasts off", function()
+            local client = ready()
+            local heard = {}
+            client.Kennel:Listen(heard, "KENNEL_PET_GROWTH", function(_, event)
+                heard[#heard + 1] = event
+            end)
+            module(client).db.profile.points = false
+            module(client).db.profile.loyalty = false
+            client:petLevelUp(4)
+            client:loyaltyChange("Loyalty Level 3 (Submissive)", -15)
+            client:fire("UNIT_PET_TRAINING_POINTS", "pet")
+            assert.are.same({
+                {
+                    module = "AbilityLearned",
+                    pet = "Fluffy",
+                    level = 16,
+                    loyalty = 4,
+                    points = 54,
+                    free = 47,
+                    before = { level = 15, loyalty = 4, points = 50 },
+                },
+                {
+                    module = "AbilityLearned",
+                    pet = "Fluffy",
+                    level = 16,
+                    loyalty = 3,
+                    points = 39,
+                    free = 32,
+                    before = { level = 16, loyalty = 4, points = 54 },
+                },
+            }, heard)
         end)
 
         it("are not watched with the module off", function()

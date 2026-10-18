@@ -23,6 +23,57 @@
 ---@field source "learn"|"training" a learn it saw, or the Beast Training window
 ---@field ranks KennelKnownRank[] the ranks that were news
 
+---KENNEL_ABILITY_LEARNED: the hunter learned a pet ability from a tamed beast (Ability Learned saw
+---it; Beast Training's window is KENNEL_RANKS_KNOWN).
+---@class KennelAbilityLearnedEvent
+---@field module string "AbilityLearned"
+---@field name string the ability's name in the client's language
+---@field rank number 1 when the client named no rank
+---@field pet string? the pet that taught it; nil when it was not out
+---@field npc number? the NPC ID that pet was tamed as
+---@field zone string? where it happened
+
+---KENNEL_PET_GROWTH: the pet out's training points total, level or loyalty level changed since
+---Ability Learned last saw it (kept per pet name, also across a relog).
+---@class KennelPetGrowthEvent
+---@field module string "AbilityLearned"
+---@field pet string
+---@field level number
+---@field loyalty number? nil when the client does not tell it
+---@field points number the training points total
+---@field free number the points not spent
+---@field before { level: number, loyalty: number?, points: number }
+
+---KENNEL_AUTOCAST_WANTED: what Autocast Check wants on autocast changed, or what decided it.
+---@class KennelAutocastWantedEvent
+---@field module string "AutocastCheck"
+---@field wanted "growl"|"cower"
+---@field why "solo"|"dungeon"|"chosen" alone or in a group outside, in a dungeon group, or a macro chose
+---@field before "growl"|"cower"
+
+---KENNEL_RARE_SEEN: a rare beast that teaches a rank the hunter lacks came in sight; once per spawn.
+---@class KennelRareSeenEvent
+---@field module string "BeastMap"
+---@field npc number
+---@field name string in the client's language once it knows the beast, else English
+---@field guid string the creature's GUID
+---@field ranks number[] the spell IDs of the ranks it would teach
+
+---KENNEL_PET_HAPPINESS (core, through Kennel:Listen): the pet out's happiness changed.
+---@class KennelPetHappinessEvent
+---@field happiness number 1 unhappy, 2 content, 3 happy
+---@field before number? nil for a pet just out
+
+---KENNEL_PET_DIED (core, through Kennel:Listen): the pet out died.
+---@class KennelPetDiedEvent
+---@field pet string?
+
+---KENNEL_PET_TAMED (core, through Kennel:Listen): the pet that came out after a Tame Beast cast.
+---@class KennelPetTamedEvent
+---@field pet string?
+---@field npc number? the NPC ID it was tamed as
+---@field petNumber number? the number the pet keeps through renames and the stable
+
 ---@class KennelKnownRank
 ---@field name string the ability's name in the client's language
 ---@field rank number

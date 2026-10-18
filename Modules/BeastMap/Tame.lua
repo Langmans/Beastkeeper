@@ -45,6 +45,13 @@ function M:SetTameTarget(name)
     self:ApplyTameButton()
 end
 
+---KENNEL_RARE_SEEN, the rare alarm's message: that beast is the one to tame.
+---@param _ string the message
+---@param event KennelRareSeenEvent
+function M:OnRareSeen(_, event)
+    self:SetTameTarget(event.name)
+end
+
 -- A press without a beast does nothing secure; this says how to get one.
 ---@param _ Button
 ---@param _mouse string

@@ -242,10 +242,25 @@ function M:Problems(found)
     return found
 end
 
+---Sends KENNEL_AUTOCAST_WANTED when what fits, or what decided it, changed since the last check.
+function M:TellWanted()
+    local wanted, why = self:Wanted()
+    if wanted == self.lastWanted and why == self.lastWhy then return end
+    local before = self.lastWanted
+    self.lastWanted, self.lastWhy = wanted, why
+    -- The first check after the module started only takes note.
+    if not before then return end
+    Kennel:SendMessage(
+        "KENNEL_AUTOCAST_WANTED",
+        { module = self.moduleName, wanted = wanted, why = why, before = before }
+    )
+end
+
 ---Compares what is wrong now with the last check: a new problem toasts, a solved one takes its
 ---toast away. With remindAll, every problem toasts, new or not. The button follows what fits.
 ---@param remindAll boolean?
 function M:Check(remindAll)
+    self:TellWanted()
     self:ApplyButton()
     local found, active = self:Problems(spare), self.active
     for _, key in ipairs(ORDER) do
@@ -310,6 +325,7 @@ end
 function M:OnDisable()
     Kennel:DropToasts(self.moduleName .. ":")
     self.active = {}
+    self.lastWanted, self.lastWhy = nil, nil
     self:ApplyButton()
 end
 

@@ -238,19 +238,13 @@ function M:UNIT_LEVEL(_, unit)
     if unit == "pet" then self:Update() end
 end
 
----@param _ string the event
----@param unit string
-function M:UNIT_HAPPINESS(_, unit)
-    if unit == "pet" then self:CheckHappiness() end
-end
-
--- What the pet window updates on; happiness among it, on a client without UNIT_HAPPINESS.
-function M:PET_UI_UPDATE()
+-- The core's KENNEL_PET_HAPPINESS: the pet's happiness changed.
+function M:OnHappiness()
     self:CheckHappiness()
 end
 
 -- Not every client has every one; a missing one is skipped.
-local EVENTS = { "BAG_UPDATE_DELAYED", "UNIT_PET", "UNIT_LEVEL", "UNIT_HAPPINESS", "PET_UI_UPDATE" }
+local EVENTS = { "BAG_UPDATE_DELAYED", "UNIT_PET", "UNIT_LEVEL" }
 
 function M:OnEnable()
     local _, class = UnitClass("player")
@@ -258,6 +252,7 @@ function M:OnEnable()
     for _, event in ipairs(EVENTS) do
         pcall(self.RegisterEvent, self, event)
     end
+    Kennel:Listen(self, "KENNEL_PET_HAPPINESS", "OnHappiness")
     self.happiness = nil
     wipe(foods)
     self:Update()
@@ -265,6 +260,7 @@ end
 
 -- AceEvent drops the events by itself; the toasts and the button go here.
 function M:OnDisable()
+    Kennel:StopListening(self)
     Kennel:DropToasts("Feeding:")
     wipe(foods)
     self:CloseFoodList()

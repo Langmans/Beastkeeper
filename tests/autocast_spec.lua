@@ -57,6 +57,25 @@ describe("AutocastCheck", function()
             client:group(false)
             assert.are.same({ "growl", "solo" }, { M:Wanted() }, "leaving the group ends it too")
         end)
+
+        it("is told to other addons as KENNEL_AUTOCAST_WANTED when it changes", function()
+            local client = NewClient():login():advance(0.2)
+            local heard = {}
+            client.Kennel:Listen(heard, "KENNEL_AUTOCAST_WANTED", function(_, event)
+                heard[#heard + 1] = event
+            end)
+            client:fire("PET_BAR_UPDATE"):advance(0.2)
+            assert.are.same({}, heard, "still Growl, solo")
+            client:slash("autocast cower")
+            client:advance(1)
+            client.instance = "party"
+            client:group(true)
+            client:advance(0.2)
+            assert.are.same({
+                { module = "AutocastCheck", wanted = "cower", why = "chosen", before = "growl" },
+                { module = "AutocastCheck", wanted = "cower", why = "dungeon", before = "cower" },
+            }, heard)
+        end)
     end)
 
     describe("solo", function()

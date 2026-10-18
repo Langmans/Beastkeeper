@@ -75,7 +75,11 @@
   a button lists the learns from beasts Kennel's beast data does not know as
   teachers.
 - Care Button: a toast when combat starts with your pet on Passive.
-- For other addons: AceEvent messages KENNEL_TOAST, KENNEL_PRINT and
-  KENNEL_RANKS_KNOWN, each with a table of details (module, toast, line,
-  ranks); see docs/04-hooking.md, with an example addon, and
+- For other addons: messages with a table of details, heard through
+  Kennel:Listen: KENNEL_TOAST, KENNEL_PRINT, KENNEL_RANKS_KNOWN,
+  KENNEL_ABILITY_LEARNED, KENNEL_PET_GROWTH (training points, level and
+  loyalty, up or down), KENNEL_AUTOCAST_WANTED, KENNEL_RARE_SEEN, and from the
+  core KENNEL_PET_HAPPINESS, KENNEL_PET_DIED and KENNEL_PET_TAMED, which it
+  works out only while something listens. Kennel's own modules listen the
+  same way. See docs/04-hooking.md, with an example addon, and
   docs/KennelMessages.lua for their types.

@@ -75,8 +75,12 @@ function M:KENNEL_PRINT(_, event)
 end
 
 function M:OnEnable()
-    self:RegisterMessage("KENNEL_TOAST")
-    self:RegisterMessage("KENNEL_PRINT")
+    Kennel:Listen(self, "KENNEL_TOAST", "KENNEL_TOAST")
+    Kennel:Listen(self, "KENNEL_PRINT", "KENNEL_PRINT")
+end
+
+function M:OnDisable()
+    Kennel:StopListening(self)
 end
 
 ---@return table

@@ -22,32 +22,33 @@ local alarmed = {}
 ---@type string[]
 local lines = {}
 
----The ranks a beast teaches that the hunter wants, as tooltip-style lines in `lines` (emptied
----first); the first one's spell for the icon.
+---The ranks a beast teaches that the hunter wants: their spells, a new list (it goes out with
+---KENNEL_RARE_SEEN), and tooltip-style lines in `lines` (emptied first).
 ---@param npc number
----@return number? first
+---@return number[]
 local function WantedRanks(npc)
     wipe(lines)
     local settings = M:Settings()
-    ---@type number?
-    local first
+    ---@type number[]
+    local wanted = {}
     -- Every beast in the data teaches something: that is why it is there.
     local ranks = M.TeachesOf(npc) --[[@as number[] ]]
     for _, spellID in ipairs(ranks) do
         local lacking = M.Lacking(spellID)
         local rank = M.RankText(spellID)
         if rank and (lacking == "above" or (lacking == "gap" and settings.gaps)) then
-            first = first or spellID
+            wanted[#wanted + 1] = spellID
             lines[#lines + 1] = L.BEASTMAP_RARE_TEACHES:format(rank)
         end
     end
-    return first
+    return wanted
 end
 
----Toasts the creature with `guid` when it is a rare beast worth taming, and not yet this spawn.
+---Sends KENNEL_RARE_SEEN for the creature with `guid` when it is a rare beast worth taming, and
+---not yet this spawn; toasts it too when the rare toast is on.
 ---@param guid GameValue
 function M:SeeCreature(guid)
-    if not self:IsEnabled() or not self:Settings().rareToast then return end
+    if not self:IsEnabled() then return end
     local npc = Kennel.NPCFromGUID(guid, "Creature")
     if not npc then return end
     -- A GUID that gave an NPC ID is a readable string.
@@ -55,21 +56,26 @@ function M:SeeCreature(guid)
     local beast = Kennel.data.beasts[npc] --[[@as KennelBeast?]]
     if not beast or not beast.rare or alarmed[spawn] then return end
     if not self:Settings().aboveLevel and beast.minLevel > self:PlayerLevel() then return end
-    local first = WantedRanks(npc)
-    if not first then return end
+    local ranks = WantedRanks(npc)
+    if #ranks == 0 then return end
     alarmed[spawn] = true
-    local _, icon = Kennel.SpellInfo(first)
+    local name = M.BeastName(npc)
+    Kennel:SendMessage(
+        "KENNEL_RARE_SEEN",
+        { module = self:GetName(), npc = npc, name = name, guid = spawn, ranks = ranks }
+    )
+    if not self:Settings().rareToast then return end
+    local _, icon = Kennel.SpellInfo(ranks[1])
     Kennel:ShowToast({
         key = "BeastMap:rare:" .. spawn,
         type = "BeastMap:rare",
         source = self.title,
-        title = L.BEASTMAP_RARE_TOAST:format(M.BeastName(npc)),
+        title = L.BEASTMAP_RARE_TOAST:format(name),
         text = table.concat(lines, "\n"),
         hint = M.LevelText(beast),
         icon = icon,
         sound = { kit = RAID_WARNING },
     })
-    self:SetTameTarget(M.BeastName(npc))
 end
 
 ---@param _ string the event

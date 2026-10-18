@@ -94,7 +94,8 @@ function M:HasRank(name, rank)
     return set ~= nil and set[rank] == true
 end
 
----Adds a learn to the history, keeping the last HISTORY_MAX, and to what is known.
+---Adds a learn to the history, keeping the last HISTORY_MAX, and to what is known; sends
+---KENNEL_ABILITY_LEARNED (docs\04-hooking.md).
 ---@param entry KennelLearnEntry
 function M:RecordLearn(entry)
     local history = Char().history
@@ -103,6 +104,14 @@ function M:RecordLearn(entry)
         table.remove(history, 1)
     end
     local rank = RankNumber(entry.rank)
+    Kennel:SendMessage("KENNEL_ABILITY_LEARNED", {
+        module = M:GetName(),
+        name = entry.name,
+        rank = rank,
+        pet = entry.pet,
+        npc = entry.npc,
+        zone = entry.zone,
+    })
     if self:MarkKnown(entry.name, rank) then RanksKnown("learn", { { name = entry.name, rank = rank } }) end
 end
 
@@ -263,7 +272,8 @@ end
 ---and one when its loyalty level dropped, with the points that cost. A pet seen for the first time
 ---is only noted; one summoned again is told what changed while it was away. Spending points at
 ---Beast Training changes only what is used, not the total, and says nothing; so does a level-up
----at loyalty level 1, which brings no points.
+---at loyalty level 1, which brings no points. Any change of total, level or loyalty is sent as
+---KENNEL_PET_GROWTH, whatever the toast settings.
 function M:CheckGrowth()
     if not self.ready then return end
     local free, total = Kennel.PetTrainingPoints()
@@ -279,6 +289,17 @@ function M:CheckGrowth()
     -- The pet's own table is updated in place: this runs on every PET_UI_UPDATE.
     local beforeTotal, beforeLevel, beforeLoyalty = seen.total, seen.level, seen.loyalty
     seen.total, seen.level, seen.loyalty = total, level, loyalty
+    if total ~= beforeTotal or level ~= beforeLevel or loyalty ~= beforeLoyalty then
+        Kennel:SendMessage("KENNEL_PET_GROWTH", {
+            module = M:GetName(),
+            pet = pet,
+            level = level,
+            loyalty = loyalty,
+            points = total,
+            free = free,
+            before = { level = beforeLevel, loyalty = beforeLoyalty, points = beforeTotal },
+        })
+    end
     local settings = self:Settings()
     local change = total - beforeTotal
     local loyaltyUp = (loyalty and beforeLoyalty and loyalty > beforeLoyalty) == true

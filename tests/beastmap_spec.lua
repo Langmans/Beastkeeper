@@ -404,6 +404,22 @@ describe("Beast Map", function()
             assert.are.equal(2, #seen, "another spawn")
         end)
 
+        it("is told to other addons as KENNEL_RARE_SEEN, also with the toast off", function()
+            local client = hunter(10)
+            local heard = {}
+            client.Kennel:Listen(heard, "KENNEL_RARE_SEEN", function(_, event)
+                heard[#heard + 1] = event
+            end)
+            local seen = toasts(client)
+            set(client, "rareToast", false)
+            nameplate(client, RARE_CAT)
+            nameplate(client, RARE_CAT)
+            assert.are.same({}, seen)
+            assert.are.same({
+                { module = "BeastMap", npc = 104, name = "Rare Cat", guid = RARE_CAT, ranks = { CLAW_3 } },
+            }, heard)
+        end)
+
         it("sees it as a target, under the mouse, or on the minimap", function()
             local client = hunter(10)
             local seen = toasts(client)

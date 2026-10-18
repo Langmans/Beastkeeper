@@ -557,13 +557,15 @@ function M:OnEnable()
     end
     self.level = nil
     self:RegisterEvent("PLAYER_LEVEL_UP")
-    self:RegisterMessage("KENNEL_RANKS_KNOWN", "Refresh")
+    Kennel:Listen(self, "KENNEL_RANKS_KNOWN", "Refresh")
+    Kennel:Listen(self, "KENNEL_RARE_SEEN", "OnRareSeen")
     self:WatchRares()
     self:ApplyTameButton()
     self:Refresh()
 end
 
 function M:OnDisable()
+    Kennel:StopListening(self)
     self:ApplyTameButton()
     self:Refresh()
 end

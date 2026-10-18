@@ -22,15 +22,13 @@ function M:Settings()
     return self.db.profile --[[@as KennelPetJournalSettings]]
 end
 
-local TAME_BEAST = 1515
 local BOOK_WAIT = 1 -- seconds for a new pet's spellbook to fill in
+-- Deaths and tames come from the core's KENNEL_PET_DIED and KENNEL_PET_TAMED.
 local EVENTS = {
     "UNIT_PET",
     "UNIT_LEVEL",
-    "UNIT_HEALTH",
     "UNIT_PET_TRAINING_POINTS",
     "PET_UI_UPDATE",
-    "UNIT_SPELLCAST_SUCCEEDED",
     "PLAYER_LOGOUT",
 }
 
@@ -99,21 +97,30 @@ function M:Close()
     self.current, self.outSince = nil, nil
 end
 
----A pet came out: its entry, made the first time (tamed if a Tame Beast cast came first).
+---A pet's entry, made the first time it is seen (the pet out).
 ---@param key string
-function M:Open(key)
+---@return KennelJournalEntry
+function M:Entry(key)
     local pets = self:Pets()
-    if not pets[key] then
-        pets[key] = {
-            first = { t = GetServerTime(), zone = GetZoneText(), tamed = self.taming, npc = Kennel.PetNPC() },
+    local entry = pets[key]
+    if not entry then
+        entry = {
+            first = { t = GetServerTime(), zone = GetZoneText(), npc = Kennel.PetNPC() },
             out = 0,
             deaths = 0,
             rises = {},
             abilities = {},
         }
+        pets[key] = entry
     end
-    self.taming = false
-    self.current, self.outSince, self.dead = key, GetTime(), UnitIsDead("pet") == true
+    return entry
+end
+
+---A pet came out.
+---@param key string
+function M:Open(key)
+    self:Entry(key)
+    self.current, self.outSince = key, GetTime()
     self:Record()
     C_Timer.After(BOOK_WAIT, SnapshotLater)
 end
@@ -143,25 +150,19 @@ function M:PET_UI_UPDATE()
     self:Record()
 end
 
--- A death: the pet out going from alive to dead.
----@param _ string the event
----@param unit string
-function M:UNIT_HEALTH(_, unit)
-    if unit ~= "pet" or not self.current then return end
-    local dead = UnitIsDead("pet") == true
-    if dead and not self.dead then
-        local entry = self:Pets()[self.current]
-        entry.deaths = entry.deaths + 1
-    end
-    self.dead = dead
+-- The core's KENNEL_PET_DIED: the pet out died.
+function M:OnDied()
+    if not self.current then return end
+    local entry = self:Pets()[self.current]
+    entry.deaths = entry.deaths + 1
 end
 
----@param _ string the event
----@param unit string
----@param _castGUID GameValue
----@param spellID GameValue
-function M:UNIT_SPELLCAST_SUCCEEDED(_, unit, _castGUID, spellID)
-    if unit == "player" and Kennel.Readable(spellID) and spellID == TAME_BEAST then self.taming = true end
+---The core's KENNEL_PET_TAMED. It may come before or after this module sees the pet come out,
+---so it makes the entry if need be.
+---@param _ string the message
+---@param event KennelPetTamedEvent
+function M:OnTamed(_, event)
+    if event.petNumber then self:Entry(tostring(event.petNumber)).first.tamed = true end
 end
 
 function M:PLAYER_LOGOUT()
@@ -169,15 +170,18 @@ function M:PLAYER_LOGOUT()
 end
 
 function M:OnEnable()
-    self.current, self.outSince, self.taming = nil, nil, false
+    self.current, self.outSince = nil, nil
     local _, class = UnitClass("player")
     if class ~= "HUNTER" then return end
     for _, event in ipairs(EVENTS) do
         pcall(self.RegisterEvent, self, event)
     end
+    Kennel:Listen(self, "KENNEL_PET_DIED", "OnDied")
+    Kennel:Listen(self, "KENNEL_PET_TAMED", "OnTamed")
     self:UNIT_PET("UNIT_PET", "player")
 end
 
 function M:OnDisable()
+    Kennel:StopListening(self)
     self:Close()
 end

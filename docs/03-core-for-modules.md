@@ -53,5 +53,10 @@
   `Kennel.data.beasts` (per NPC ID: name, family, levels, rare/elite, pins per
   uiMapID or the zone of an instance). Generated; `KennelData` in
   `annotations/Kennel.lua`.
-- **Messages**: the core and the modules tell other addons what happens
-  through AceEvent messages: [04-hooking.md](04-hooking.md).
+- **Messages**: the core and the modules tell each other and other addons
+  what happens through KENNEL_* messages ([04-hooking.md](04-hooking.md)). A
+  module listens with `Kennel:Listen(self, message, method)` in OnEnable and
+  `Kennel:StopListening(self)` in OnDisable; that is also what starts and stops
+  the core's sources (pet happiness, death, tame). A new module sends a
+  message where another addon may want to hook in, whether or not its toast
+  for that moment is on.
