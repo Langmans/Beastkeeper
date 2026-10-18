@@ -554,6 +554,34 @@ describe("Beast Map", function()
             assert.are.equal("High Cat in Elwynn Forest, ~2 min, +2 more", panel.ranks[3].text.text)
         end)
 
+        it("asks the route addon once per beast, and again only after half a minute", function()
+            local client = hunter(70)
+            local asked = 0
+            LibStub("LibGoThere-1.0"):RegisterProvider({
+                id = "test",
+                order = 1,
+                Usable = function()
+                    return true
+                end,
+                Navigate = function()
+                    return true
+                end,
+                TravelTime = function()
+                    asked = asked + 1
+                    return 60
+                end,
+            })
+            local panel = tab(client)
+            click(panel.rows[3])
+            local first = asked
+            assert.is_true(first <= 5, "one per beast at most: " .. first)
+            client.Kennel:RefreshWindow("abilities")
+            assert.are.equal(first, asked, "kept")
+            client:advance(31)
+            client.Kennel:RefreshWindow("abilities")
+            assert.is_true(asked > first, "the hunter may have moved")
+        end)
+
         it("without travel times puts beasts on the hunter's map first, then the closest in level", function()
             local client = hunter(70)
             local panel = tab(client)

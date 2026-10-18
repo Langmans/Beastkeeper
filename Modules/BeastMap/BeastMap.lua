@@ -437,12 +437,36 @@ end
 ---number when there is none to ask, or no route.
 ---@param npc number
 ---@return number
-local function TravelSeconds(npc)
+local function AskTravelTime(npc)
     local beast = Data().beasts[npc]
     local map = FirstMap(beast)
     if not map then return math.huge end
     local pin = (beast.pins --[[@as table<number, number[]> ]])[map]
     return GoThere:TravelTime(map, pin[1] / 100, pin[2] / 100) or math.huge
+end
+
+-- Travel times by beast, kept TRAVEL_KEEP seconds: a route addon's answer takes time, and sorting
+-- a rank's teachers asks for the same beasts again and again.
+local TRAVEL_KEEP = 30
+---@type table<number, number>
+local travel = {}
+local travelSince = 0
+
+---Seconds to a beast, kept for a while (AskTravelTime).
+---@param npc number
+---@return number
+local function TravelSeconds(npc)
+    local now = GetTime()
+    if now - travelSince > TRAVEL_KEEP then
+        wipe(travel)
+        travelSince = now
+    end
+    local seconds = travel[npc]
+    if not seconds then
+        seconds = AskTravelTime(npc)
+        travel[npc] = seconds
+    end
+    return seconds
 end
 
 ---Two teaching beasts in the order the window lists them: the ones the hunter can tame now first.
