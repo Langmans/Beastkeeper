@@ -53,13 +53,14 @@
   add theirs with Kennel:RegisterButtonSkin and RegisterButtonHolderSkin.
 - Data Broker: Kennel as a LibDataBroker source (Titan Panel, ChocolateBar,
   ElvUI datatexts): the pet's name, happiness and free training points, more
-  in its tooltip, the settings on a click.
+  in its tooltip, Kennel's window on a click; and as a minimap button.
 - Pet Journal: a page per pet with when and where it was tamed, its level and
   loyalty, the time out together, its deaths, a forecast of the next loyalty
   level and its abilities, stabled pets included, with what each could still
   teach you; the short version in the pet's tooltip. In Kennel's window a
   Pets tab with a card per pet: its model, specialization, journal and
-  abilities. Stabled pets' models and names come from the stable master.
+  abilities, and a Stable tab with every pet side by side. Stabled pets'
+  models and names come from the stable master.
 - Beast Map: with HandyNotes, a pin for every beast your hunter can tame now
   that teaches a pet ability rank you lack, with the ability's icon and a
   tooltip of the ranks it teaches; switches for missing lower ranks, every
@@ -73,7 +74,9 @@
   toast when a rare beast that teaches a rank you lack comes in sight, and a
   tame key that targets and marks that beast (or the one whose pin you
   clicked), Shift for Tame Beast. Pins for the pet trainers and stable
-  masters of your faction.
+  masters of your faction. In Kennel's window an Abilities tab (every rank,
+  known or the nearest beast that teaches it) and a Families tab
+  (specialization, diet, what each family learns, where to tame one).
 - Ability Learned keeps every rank you learned, not only the highest.
 - Ability Learned keeps which beast your pet was tamed as with each learn, and
   a button lists the learns from beasts Kennel's beast data does not know as

@@ -15,10 +15,11 @@ modules move in one at a time.
 
 ## Use
 
-- `/kennel` opens or closes Kennel's window: a tab per part, such as Pets
-  (the Pet Journal). Also from the data broker, or a key binding (Esc >
-  Options > Keybindings > AddOns > Kennel). It takes the look of your button
-  skin (Kennel's own, ElvUI or EllesmereUI); drag it to move it.
+- `/kennel` opens or closes Kennel's window: Pets and Stable (the Pet
+  Journal), Abilities and Families (Beast Map). Also from the data broker,
+  its minimap button, or a key binding (Esc > Options > Keybindings > AddOns
+  > Kennel). It takes the look of your button skin (Kennel's own, ElvUI or
+  EllesmereUI); drag it to move it.
 - `/kennel config` opens the settings page: a switch per module, and the
   toast's settings. Each module with settings has a page of its own below it.
 - `/kennel help` lists the commands the modules offer. Commands exist for what
@@ -210,7 +211,8 @@ In Kennel's window, the Pets tab lists them, the pet out first, with a card
 for each: its model (drag to turn it), level, loyalty, its specialization
 (Ferocity, Cunning or Tenacity), the journal, and its abilities, the ones it
 could still teach you in green. Visit a stable master once: Kennel then
-knows your stabled pets' models and names too.
+knows your stabled pets' models and names too. The Stable tab puts all your
+pets side by side, with how many ranks each could still teach you.
 
 ### Beast Map
 
@@ -234,6 +236,12 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
   pin you clicked, and puts a skull on it; with Shift it casts Tame Beast.
 - **Pet trainers and stable masters** of your faction get a pin too (Beast
   Training's and Call Pet's icons), each kind with its own switch.
+- **In Kennel's window**, also without HandyNotes: the Abilities tab lists
+  every ability beasts teach and how many ranks you know; per rank the
+  nearest beast that teaches it (by travel time with a route addon), a button
+  that goes there, and every teacher in its tooltip. The Families tab shows
+  per family its specialization, diet, what it can learn and where to tame
+  one.
 - **Rare alarm**, also without HandyNotes: a toast with the raid warning
   sound when a rare beast that teaches a rank you lack comes in sight (on the
   minimap, as a nameplate, your target or under the mouse), once per spawn.
