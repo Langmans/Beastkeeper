@@ -99,7 +99,9 @@ describe("the pet helpers", function()
         client.petGUID = SECRET
         assert.is_nil(client.Kennel.PetNPC())
         client.petGUID = "Creature-0-5251-0-12345-1188-0201A3F27C"
-        assert.is_nil(client.Kennel.PetNPC(), "not a pet GUID")
+        assert.are.equal(1188, client.Kennel.PetNPC(), "a pet tamed this session, until relog")
+        client.petGUID = "Player-5251-0ABCDEF0"
+        assert.is_nil(client.Kennel.PetNPC())
         client.pet = nil
         assert.is_nil(client.Kennel.PetNPC())
     end)

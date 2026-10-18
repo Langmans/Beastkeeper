@@ -72,7 +72,7 @@
 ---@class KennelPetTamedEvent
 ---@field pet string?
 ---@field npc number? the NPC ID it was tamed as
----@field petNumber number? the number the pet keeps through renames and the stable
+---@field petNumber number? the number the pet keeps through renames and the stable; nil until the next relog, while its GUID is still the beast's
 
 ---@class KennelKnownRank
 ---@field name string the ability's name in the client's language

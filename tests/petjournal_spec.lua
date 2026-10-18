@@ -49,6 +49,42 @@ describe("Pet Journal", function()
         assert.is_true(says(client, "Abilities: Bite (Rank 1)."))
     end)
 
+    it("keeps a pet tamed this session, which has its creature GUID until relog, then its number", function()
+        local client = NewClient({ noPet = true }):login()
+        local fresh = "Creature-0-5250-0-1-3825-0000ABCDEF"
+        client:fire("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-1", TAME_BEAST)
+        client.petGUID = fresh
+        client:summon("Whiskers", { 17253 }):advance(60)
+        local when = date("%Y-%m-%d %H:%M", client.serverTime)
+        assert.is_true(says(client, "Tamed " .. when .. " in Darkshore, as NPC 3825."), journal(client))
+        local pets = client.Kennel:GetModule("PetJournal"):Pets()
+        assert.is_truthy(pets[fresh])
+        client:logout()
+        client = NewClient({ saved = Saved() })
+        client.petGUID = "Pet-0-5250-0-1-3825-0100ABCDEF"
+        client.pet.name = "Whiskers"
+        client:login():advance(60)
+        pets = client.Kennel:GetModule("PetJournal"):Pets()
+        assert.is_nil(pets[fresh], "moved")
+        local entry = pets[tostring(0xABCDEF)]
+        assert.is_true(entry.first.tamed)
+        assert.are.equal(3825, entry.first.npc)
+        assert.is_true(says(client, "Out together: 2 min."), journal(client))
+    end)
+
+    it("does not take a fresh pet's entry for another beast's pet", function()
+        local client = NewClient({ noPet = true }):login()
+        client.petGUID = "Creature-0-5250-0-1-3825-0000ABCDEF"
+        client:summon("Whiskers", {}):advance(1)
+        client:logout()
+        client = NewClient({ saved = Saved() })
+        client.petGUID = "Pet-0-5250-0-1-1188-0100ABCDEF"
+        client:login():advance(1)
+        local pets = client.Kennel:GetModule("PetJournal"):Pets()
+        assert.is_truthy(pets["Creature-0-5250-0-1-3825-0000ABCDEF"], "still waiting for its own pet")
+        assert.is_nil(pets[tostring(0xABCDEF)].first.tamed)
+    end)
+
     it("counts the time out together, across a relog, and the deaths", function()
         local client = NewClient():login():advance(3900)
         assert.is_true(says(client, "Out together: 1 h 5 min."), journal(client))

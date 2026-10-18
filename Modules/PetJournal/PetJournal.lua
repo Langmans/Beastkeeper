@@ -1,7 +1,8 @@
 local _, ns = ...
 
 -- A journal per pet, per character, kept under the pet's number (Kennel.PetNumber: the same
--- through renames, resummons and stable swaps). It notes when and where a pet was tamed (a Tame
+-- through renames, resummons and stable swaps); a pet tamed this session has no number until the
+-- next relog and is kept under its Creature GUID, then moved to its number. It notes when and where a pet was tamed (a Tame
 -- Beast cast before a new pet comes out) or first seen, its level, family and loyalty, the time
 -- it was out, how often it died, the time out at which each loyalty rise came (for the forecast),
 -- and the abilities in its spellbook. Options.lua shows it. Only a hunter has pets.
@@ -39,11 +40,33 @@ function M:Pets()
     return self.db.char.pets --[[@as table<string, KennelJournalEntry>]]
 end
 
----The pet out's key, or nil.
+---The pet out's key, or nil: its number; for a pet tamed this session, which keeps the beast's
+---Creature GUID until the next relog, that GUID.
 ---@return string?
 local function Key()
     local number = Kennel.PetNumber()
-    return number and tostring(number)
+    if number then return tostring(number) end
+    local guid = UnitGUID("pet")
+    if Kennel.NPCFromGUID(guid, "Creature") then
+        return guid --[[@as string]]
+    end
+end
+
+---Moves the entry of a pet tamed in an earlier session, kept under its Creature GUID, to its
+---number `key` now that it has one: the newest such entry tamed as the same beast.
+---@param pets table<string, KennelJournalEntry>
+---@param key string
+local function Adopt(pets, key)
+    local npc = Kennel.PetNPC()
+    ---@type string?
+    local found
+    for other, entry in pairs(pets) do
+        local fresh = other:find("^Creature%-") ~= nil and entry.first.npc == npc
+        if fresh and (not found or entry.first.t > pets[found].first.t) then found = other end
+    end
+    if found then
+        pets[key], pets[found] = pets[found], nil
+    end
 end
 
 ---The seconds a pet has been out, counting the current stretch.
@@ -121,6 +144,8 @@ end
 ---A pet came out.
 ---@param key string
 function M:Open(key)
+    local pets = self:Pets()
+    if not pets[key] and not key:find("^Creature%-") then Adopt(pets, key) end
     self:Entry(key)
     self.current, self.outSince = key, GetTime()
     self:Record()
@@ -193,7 +218,9 @@ end
 ---@param _ string the message
 ---@param event KennelPetTamedEvent
 function M:OnTamed(_, event)
-    if event.petNumber then self:Entry(tostring(event.petNumber)).first.tamed = true end
+    -- Freshly tamed, the pet has no number yet: it goes under its Creature GUID (Key).
+    local key = event.petNumber and tostring(event.petNumber) or Key()
+    if key then self:Entry(key).first.tamed = true end
 end
 
 function M:PLAYER_LOGOUT()

@@ -139,7 +139,8 @@ function death:UNIT_PET(_, unit)
     if unit == "player" then self.dead = PetDead() end
 end
 
--- KENNEL_PET_TAMED: the pet that came out after a Tame Beast cast.
+-- KENNEL_PET_TAMED: the pet that came out after a Tame Beast cast. It has no pet number until the
+-- next relog (its GUID is still the beast's), so petNumber is nil then.
 ---@type KennelSource
 local tame = { events = { "UNIT_SPELLCAST_SUCCEEDED", "UNIT_PET" } }
 sources.KENNEL_PET_TAMED = tame

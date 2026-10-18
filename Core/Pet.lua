@@ -204,10 +204,13 @@ function Kennel.NPCFromGUID(guid, kind)
     return tonumber(guid:match("^" .. kind .. "%-%d+%-%d+%-%d+%-%d+%-(%d+)%-"))
 end
 
----The NPC ID the active pet was tamed as. Nil without a pet or when the client hides the GUID.
+---The NPC ID the active pet was tamed as. A pet tamed this session keeps the beast's own Creature
+---GUID until the next relog (/reload keeps it too); after that it has a Pet GUID. Nil without a
+---pet or when the client hides the GUID.
 ---@return number?
 function Kennel.PetNPC()
-    return Kennel.NPCFromGUID(UnitGUID("pet"), "Pet")
+    local guid = UnitGUID("pet")
+    return Kennel.NPCFromGUID(guid, "Pet") or Kennel.NPCFromGUID(guid, "Creature")
 end
 
 ---A sound of the active pet's family, as a toast sound; nil without a pet or for a family without

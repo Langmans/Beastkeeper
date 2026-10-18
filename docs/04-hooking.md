@@ -217,7 +217,7 @@ The pet that came out after a Tame Beast cast. The Pet Journal notes it.
 |---|---|---|
 | `pet` | string? | its name |
 | `npc` | number? | the NPC ID it was tamed as |
-| `petNumber` | number? | the number it keeps through renames and the stable |
+| `petNumber` | number? | the number it keeps through renames and the stable; `nil` until your next relog, while the pet still has the beast's GUID |
 
 ## Example
 
