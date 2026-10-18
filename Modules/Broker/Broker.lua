@@ -98,9 +98,7 @@ function M:OnEnable()
             OnClick = OnClick,
         })
     end
-    for _, event in ipairs(EVENTS) do
-        pcall(self.RegisterEvent, self, event, Update)
-    end
+    Kennel.RegisterEvents(self, EVENTS, Update)
     Kennel:Listen(self, "KENNEL_PET_HAPPINESS", Update)
     self:Update()
     self:ApplyMinimapButton()

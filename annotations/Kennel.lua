@@ -42,7 +42,12 @@
 -- they are in docs\KennelMessages.lua, which ships with the addon.
 
 ---A skin frame with a portrait badge (Kennel:AddToastPortrait).
----@class KennelPortraitFrame: Frame
+---A toast skin's frame (Kennel:NewToastFrame).
+---@class KennelToastFrame: Frame
+---@field dragging boolean? the mouse drags it: nothing places it meanwhile
+---@field placed boolean? the card has slid in and is left where it is
+
+---@class KennelPortraitFrame: KennelToastFrame
 ---@field Portrait Texture
 ---@field PortraitRing Texture
 

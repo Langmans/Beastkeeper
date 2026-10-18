@@ -197,6 +197,21 @@ describe("the toast", function()
         assert.is_nil(Kennel.db.profile.toast.pos)
     end)
 
+    it("is left where the mouse takes it while dragged, during and after the slide in", function()
+        Kennel:ShowToast(info("a"))
+        local toast = client:toast()
+        toast.scripts.OnDragStart(toast)
+        toast.points = { { "DRAGGED" } }
+        client:animate(0.1)
+        assert.are.same({ { "DRAGGED" } }, toast.points, "mid slide")
+        client:animate(1)
+        assert.are.same({ { "DRAGGED" } }, toast.points, "after it")
+        toast.scripts.OnDragStop(toast)
+        toast.points = { { "DROPPED" } }
+        client:animate(0.5)
+        assert.are.same({ { "DROPPED" } }, toast.points, "the slide is over: nothing places it again")
+    end)
+
     it("keeps no spot from a drop the client cannot place", function()
         Kennel:ShowToast(info("a"))
         local toast = client:toast()

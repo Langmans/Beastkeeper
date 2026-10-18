@@ -249,9 +249,7 @@ local EVENTS = { "BAG_UPDATE_DELAYED", "UNIT_PET", "UNIT_LEVEL" }
 function M:OnEnable()
     local _, class = UnitClass("player")
     if class ~= "HUNTER" then return end
-    for _, event in ipairs(EVENTS) do
-        pcall(self.RegisterEvent, self, event)
-    end
+    Kennel.RegisterEvents(self, EVENTS)
     Kennel:Listen(self, "KENNEL_PET_HAPPINESS", "OnHappiness")
     self.happiness = nil
     wipe(foods)

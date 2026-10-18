@@ -179,9 +179,7 @@ function M:OnEnable()
     self.ready, self.atTrainer = false, false
     local _, class = UnitClass("player")
     if class ~= "HUNTER" then return end
-    for _, event in ipairs(EVENTS) do
-        pcall(self.RegisterEvent, self, event)
-    end
+    Kennel.RegisterEvents(self, EVENTS)
     C_Timer.After(LOGIN_WAIT, function()
         if not self:IsEnabled() then return end
         self.ready = true

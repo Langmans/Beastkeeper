@@ -106,6 +106,8 @@ end
 ---@field oldLoyaltyAPI boolean? the global GetPetLoyalty instead of C_PetInfo's
 ---@field oldChatAPI boolean? the global SendChatMessage instead of C_ChatInfo's
 ---@field noStableInfo boolean? no C_StableInfo
+---@field unknownEvents string[]? events this client does not have (Forever: LEARNED_SPELL_IN_TAB)
+---@field noEventUtils boolean? no C_EventUtils.IsEventValid
 ---@field dev boolean? a copy straight from the repository: `--@debug@` blocks run (the DevScreenshots module)
 
 -- The spells the simulated client knows, per locale: id -> { name, icon, rank }; the rank is the
@@ -235,6 +237,20 @@ function NewClient(opts)
             return 1
         end,
     })
+    -- Events this client does not have (opts.unknownEvents), and C_EventUtils.IsEventValid, which
+    -- tells them; opts.noEventUtils: a client without it.
+    client.unknownEvents = {}
+    for _, event in ipairs(opts.unknownEvents or {}) do
+        client.unknownEvents[event] = true
+    end
+    C_EventUtils = not opts.noEventUtils
+            and {
+                IsEventValid = function(event)
+                    return not client.unknownEvents[event]
+                end,
+            }
+        or nil
+
     -- client.sounds: { file = FileDataID } for a sound file, { kit = SoundKit ID } for a kit.
     client.sounds = {}
     function PlaySoundFile(file, channel)
@@ -904,10 +920,14 @@ function NewClient(opts)
         assert(not client.inCombat, "SetPropagateKeyboardInput is restricted in combat")
         self.propagate = propagate
     end
+    -- Like the client, an event it does not have (opts.unknownEvents) cannot be registered or
+    -- unregistered.
     function Region:RegisterEvent(event)
+        assert(not client.unknownEvents[event], 'Attempt to register unknown event "' .. event .. '"')
         self.events[event] = true
     end
     function Region:UnregisterEvent(event)
+        assert(not client.unknownEvents[event], 'Attempt to unregister unknown event "' .. event .. '"')
         self.events[event] = nil
     end
     function Region:UnregisterAllEvents()

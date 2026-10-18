@@ -30,10 +30,8 @@ local function Follow(message)
     if wanted == source.running then return end
     source.running = wanted
     if wanted then
-        for _, event in ipairs(source.events) do
-            -- Not every client has every event; a missing one is skipped.
-            pcall(Kennel.RegisterEvent, source, event)
-        end
+        -- Not every client has every event; a missing one is skipped.
+        Kennel.RegisterEvents(source, source.events)
         source:Start()
     else
         Kennel.UnregisterAllEvents(source)

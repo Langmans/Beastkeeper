@@ -42,6 +42,18 @@ describe("Kennel", function()
         assert.is_table(client.Kennel.db)
     end)
 
+    it("registers only the events this client has, so switching modules off stays quiet", function()
+        for _, opts in ipairs({ {}, { noEventUtils = true } }) do
+            opts.unknownEvents = { "LEARNED_SPELL_IN_TAB", "VIGNETTE_MINIMAP_UPDATED", "UNIT_HAPPINESS" }
+            local real = NewClient(opts):login()
+            real.Kennel.db:SetProfile("other")
+            for name in pairs(real.Kennel.modules) do
+                real.Kennel:SetModuleOn(name, false)
+            end
+            assert.are.same({}, real.errors)
+        end
+    end)
+
     describe("module switches", function()
         before_each(function()
             start()

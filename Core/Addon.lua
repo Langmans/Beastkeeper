@@ -87,6 +87,35 @@ function Kennel:OnInitialize()
     self:ApplyDebugLevel()
 end
 
+-- A frame that tries an event on a client without C_EventUtils.
+local probe = CreateFrame("Frame")
+
+---Whether this client has an event. Registering one it lacks errors, and AceEvent has noted it by
+---then, so unregistering it later (a module switched off, a profile change) errors as well.
+---@param event string
+---@return boolean
+local function HasEvent(event)
+    local utils = C_EventUtils
+    if utils and utils.IsEventValid then return utils.IsEventValid(event) == true end
+    local ok = pcall(probe.RegisterEvent, probe, event)
+    if ok then probe:UnregisterEvent(event) end
+    return ok
+end
+
+---Registers each of `events` this client has for `owner` (a module, or any table AceEvent takes),
+---with `handler` (a method name or function; the event's name when nil).
+---@param owner table
+---@param events string[]
+---@param handler (string|function)?
+function Kennel.RegisterEvents(owner, events, handler)
+    for _, event in ipairs(events) do
+        -- AceEvent takes a method name too, and nil for the event's own name.
+        if HasEvent(event) then
+            Kennel.RegisterEvent(owner, event, handler --[[@as fun(event: FrameEvent, ...)]])
+        end
+    end
+end
+
 ---Whether the current profile has this module switched on.
 ---@param name string
 ---@return boolean

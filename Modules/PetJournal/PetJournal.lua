@@ -231,9 +231,7 @@ function M:OnEnable()
     self.current, self.outSince = nil, nil
     local _, class = UnitClass("player")
     if class ~= "HUNTER" then return end
-    for _, event in ipairs(EVENTS) do
-        pcall(self.RegisterEvent, self, event)
-    end
+    Kennel.RegisterEvents(self, EVENTS)
     Kennel:Listen(self, "KENNEL_PET_DIED", "OnDied")
     Kennel:Listen(self, "KENNEL_PET_TAMED", "OnTamed")
     self:UNIT_PET("UNIT_PET", "player")

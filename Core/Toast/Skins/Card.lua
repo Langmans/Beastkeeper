@@ -105,6 +105,7 @@ local function Show(self, info, settings)
     local text = frame.Title:GetStringHeight() + frame.Text:GetStringHeight() + frame.Hint:GetStringHeight() + 8
     frame:SetHeight(math.max(ICON_SIZE, text) + 2 * PAD)
     frame:SetScale(settings.scale)
+    frame.placed = false
     frame:Show()
 end
 
@@ -115,7 +116,11 @@ end
 local function Update(self, intro, fade, left)
     local frame = self.frame --[[@as KennelCardFrame]]
     local slide = 1 - (1 - intro) * (1 - intro)
-    Kennel:PlaceToast(frame, "TOP", 0, -120, SLIDE * (1 - slide))
+    -- Placed while it slides in only, so the mouse can drag it once it is there.
+    if intro < 1 or not frame.placed then
+        Kennel:PlaceToast(frame, "TOP", 0, -120, SLIDE * (1 - slide))
+        frame.placed = intro >= 1
+    end
     frame:SetAlpha(slide * (1 - fade))
     frame.Timer:SetWidth(math.max(1, (WIDTH - ACCENT_WIDTH) * left))
 end

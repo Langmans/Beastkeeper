@@ -7,13 +7,15 @@ local _, ns = ...
 ---@type Kennel
 local Kennel = ns
 
----@param frame Frame
+---@param frame KennelToastFrame
 local function OnDragStart(frame)
+    frame.dragging = true
     frame:StartMoving()
 end
 
----@param frame Frame
+---@param frame KennelToastFrame
 local function OnDragStop(frame)
+    frame.dragging = false
     frame:StopMovingOrSizing()
     local point, _, relativePoint, x, y = frame:GetPoint(1)
     if point then Kennel:ToastSettings().pos = { point, relativePoint, x, y } end
@@ -44,13 +46,14 @@ function Kennel:NewToastFrame(name)
 end
 
 ---Places a skin's frame where it was dragged to, or at the skin's own standard spot; `lift`
----raises it that many pixels (for a slide in).
----@param frame Frame
+---raises it that many pixels (for a slide in). Not while the mouse drags it.
+---@param frame KennelToastFrame
 ---@param point string the standard spot: an anchor point on UIParent
 ---@param x number
 ---@param y number
 ---@param lift number?
 function Kennel:PlaceToast(frame, point, x, y, lift)
+    if frame.dragging then return end
     lift = lift or 0
     frame:ClearAllPoints()
     local pos = self:ToastSettings().pos

@@ -104,7 +104,5 @@ end
 
 ---Listens for creatures coming in sight; from OnEnable.
 function M:WatchRares()
-    for _, event in ipairs(EVENTS) do
-        pcall(self.RegisterEvent, self, event)
-    end
+    Kennel.RegisterEvents(self, EVENTS)
 end
