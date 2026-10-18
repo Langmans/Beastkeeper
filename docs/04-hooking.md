@@ -44,6 +44,7 @@ flowchart LR
         happy[happiness source]
         died[death source]
         tamed[tame source]
+        growth[growth source]
         toast[ShowToast]
         print[Print]
     end
@@ -61,16 +62,17 @@ flowchart LR
 
     other([Other addons])
 
-    game --> happy & died & tamed
+    game --> happy & died & tamed & growth
     game --> al & ac & bm
-    listen -. starts .-> happy & died & tamed
+    listen -. starts .-> happy & died & tamed & growth
 
     happy -- KENNEL_PET_HAPPINESS --> fd & br & other
     died -- KENNEL_PET_DIED --> pj & other
     tamed -- KENNEL_PET_TAMED --> pj & other
+    growth -- KENNEL_PET_GROWTH --> al & pj & br & other
 
     al -- KENNEL_RANKS_KNOWN --> bm & other
-    al -- "KENNEL_ABILITY_LEARNED<br/>KENNEL_PET_GROWTH" --> other
+    al -- KENNEL_ABILITY_LEARNED --> other
     ac -- KENNEL_AUTOCAST_WANTED --> other
     bm -- KENNEL_RARE_SEEN --> tk & other
 
@@ -149,20 +151,23 @@ for every learn, also of a rank already known.
 | `npc` | number? | the NPC ID that pet was tamed as |
 | `zone` | string? | where it happened |
 
-### `KENNEL_PET_GROWTH`
+### `KENNEL_PET_GROWTH` (core)
 
 The pet out's training points total, level or loyalty level changed since
-Ability Learned last saw that pet (kept per pet name, also across a relog).
-Sent whatever the toast settings. Going down counts too: a pet left
-unhappy loses loyalty, and a lower loyalty level means fewer points, so
-`loyalty` and `points` come in below `before`.
+Kennel last saw that pet (kept per pet name, also across a relog: the first
+check after login tells what changed while you were away). A pet seen the
+first time is only noted. Going down counts too: a pet left unhappy loses
+loyalty, and a lower loyalty level means fewer points, so `loyalty` and
+`points` come in below `before`. Points spent at Beast Training change only
+`free`, not the total, and send nothing. Ability Learned toasts from it, the
+Pet Journal and the Data Broker refresh on it.
 
 | Field | Type | |
 |---|---|---|
-| `module` | string | `"AbilityLearned"` |
 | `pet` | string | the pet's name |
 | `level` | number | |
 | `loyalty` | number? | 1-6; `nil` when the client does not tell it |
+| `loyaltyName` | string? | the loyalty level's name, when the client gives one |
 | `points` | number | the training points total |
 | `free` | number | the points not spent |
 | `before` | table | `{ level, loyalty, points }` as they were |

@@ -44,6 +44,8 @@ Kennel:SetDefaultModulePrototype({
 })
 
 function Kennel:OnInitialize()
+    -- The client replays some values in the first seconds after login (Core\Listen.lua waits).
+    self.loginTime = GetTime()
     -- A module is on unless it says otherwise; the saved file keeps only switches that differ.
     -- The same for the look a module gives a kind of toast.
     ---@type table<string, boolean>, table<string, string>
@@ -68,8 +70,10 @@ function Kennel:OnInitialize()
             -- How much goes to OAP Debug when it is installed (Core\Debug.lua).
             oapDebug = "metrics",
         },
-        -- Per character: which modules made their macros already (Core\Macro.lua).
-        char = { macrosMade = {} },
+        -- Per character: which modules made their macros already (Core\Macro.lua); each pet's
+        -- training points total, level and loyalty as last seen, by name (KENNEL_PET_GROWTH,
+        -- Core\Listen.lua).
+        char = { macrosMade = {}, growth = {} },
     }, true)
 
     for name, module in pairs(self.modules) do

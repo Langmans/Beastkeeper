@@ -34,7 +34,7 @@ M.defaults = {
         loyalty = true,
         loyaltySound = "family",
     },
-    char = { history = {}, known = {}, ranks = {}, trainingRead = false, pets = {} },
+    char = { history = {}, known = {}, ranks = {}, trainingRead = false },
 }
 
 local LEVEL_UP = 888 -- SOUNDKIT.LEVEL_UP
@@ -50,8 +50,6 @@ local EVENTS = {
     "TRAINER_CLOSED",
     "TRADE_SKILL_CLOSE",
     "UNIT_PET",
-    "UNIT_PET_TRAINING_POINTS",
-    "PET_UI_UPDATE",
 }
 
 ---The settings of the profile in use.
@@ -146,33 +144,15 @@ end
 -- What WoW: Forever sends when Beast Training closes.
 M.TRADE_SKILL_CLOSE = M.TRAINER_CLOSED
 
----What to tell about the pet out: what it can teach, and how it grew.
-function M:CheckPet()
-    self:CheckHints()
-    self:CheckGrowth()
-end
-
-local function CheckPetLater()
-    M:CheckPet()
+local function CheckHintsLater()
+    M:CheckHints()
 end
 
 -- A pet summoned, tamed or dismissed: its spellbook fills in just after.
 ---@param _ string the event
 ---@param unit string
 function M:UNIT_PET(_, unit)
-    if unit == "player" then C_Timer.After(HINT_WAIT, CheckPetLater) end
-end
-
--- On WoW: Forever this comes for "pet" when the pet's total rises.
----@param _ string the event
----@param unit string
-function M:UNIT_PET_TRAINING_POINTS(_, unit)
-    if unit == "pet" then self:CheckGrowth() end
-end
-
--- What the pet window updates on; loyalty among it.
-function M:PET_UI_UPDATE()
-    self:CheckGrowth()
+    if unit == "player" then C_Timer.After(HINT_WAIT, CheckHintsLater) end
 end
 
 function M:OnEnable()
@@ -180,15 +160,18 @@ function M:OnEnable()
     local _, class = UnitClass("player")
     if class ~= "HUNTER" then return end
     Kennel.RegisterEvents(self, EVENTS)
+    -- How the pet grew comes from the core, which waits out the login itself.
+    Kennel:Listen(self, "KENNEL_PET_GROWTH", "OnGrowth")
     C_Timer.After(LOGIN_WAIT, function()
         if not self:IsEnabled() then return end
         self.ready = true
-        self:CheckPet()
+        self:CheckHints()
     end)
 end
 
--- AceEvent drops the events by itself; the toasts go here.
+-- AceEvent drops the events by itself; the toasts and the message go here.
 function M:OnDisable()
     self.ready = false
+    Kennel:StopListening(self)
     Kennel:DropToasts("AbilityLearned:")
 end

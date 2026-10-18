@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- Kennel:Listen, and the core's sources: messages about the pet out that the core works out from
--- game events (KENNEL_PET_HAPPINESS, KENNEL_PET_DIED, KENNEL_PET_TAMED). One source serves every
+-- game events (KENNEL_PET_HAPPINESS, _DIED, _TAMED, _GROWTH). One source serves every
 -- listener, Kennel's own modules and other addons alike, and watches the game only while at least
 -- one listens through Listen. A message a module sends itself needs no source; Listen hands it on
 -- just the same (docs\04-hooking.md).
@@ -135,6 +135,84 @@ end
 ---@param unit string
 function death:UNIT_PET(_, unit)
     if unit == "player" then self.dead = PetDead() end
+end
+
+-- KENNEL_PET_GROWTH: the pet out's training points total, level or loyalty level changed since it
+-- was last seen, kept per pet name in KennelDB (char.growth), so a pet summoned again, or the pet
+-- after a relog, tells what changed while away. A pet seen the first time is only noted. Not in the
+-- first seconds after login, while the client replays its values; then once. Spending points
+-- changes only what is free, not the total: no growth.
+local LOGIN_WAIT = 5 -- seconds
+local SUMMON_WAIT = 1 -- seconds for a new pet's values to fill in
+---@type KennelSource
+local growth = { events = { "UNIT_PET_TRAINING_POINTS", "PET_UI_UPDATE", "UNIT_LEVEL", "UNIT_PET" } }
+sources.KENNEL_PET_GROWTH = growth
+
+local function CheckGrowthLater()
+    growth.pending = false
+    if growth.running then growth:Check() end
+end
+
+---Checks after `delay` seconds, once however often asked meanwhile.
+---@param delay number
+function growth:CheckAfter(delay)
+    if self.pending then return end
+    self.pending = true
+    C_Timer.After(delay, CheckGrowthLater)
+end
+
+function growth:Start()
+    self.pending = false
+    local waited = GetTime() - (Kennel.loginTime or 0)
+    if waited < LOGIN_WAIT then
+        self:CheckAfter(LOGIN_WAIT - waited)
+    else
+        self:Check()
+    end
+end
+
+---Compares the pet out with how it stood last time and sends what changed.
+function growth:Check()
+    if self.pending then return end
+    local free, total = Kennel.PetTrainingPoints()
+    if not total then return end
+    local pet, level = UnitName("pet"), UnitLevel("pet")
+    local loyalty, loyaltyName = Kennel.PetLoyalty(total, level)
+    local pets = Kennel.db.char.growth --[[@as table<string, KennelGrowthSeen>]]
+    local seen = pets[pet]
+    if not seen then
+        pets[pet] = { total = total, level = level, loyalty = loyalty }
+        return
+    end
+    if total == seen.total and level == seen.level and loyalty == seen.loyalty then return end
+    local before = { level = seen.level, loyalty = seen.loyalty, points = seen.total }
+    seen.total, seen.level, seen.loyalty = total, level, loyalty
+    Kennel:SendMessage("KENNEL_PET_GROWTH", {
+        pet = pet,
+        level = level,
+        loyalty = loyalty,
+        loyaltyName = loyaltyName,
+        points = total,
+        free = free,
+        before = before,
+    })
+end
+
+---@param _ string the event
+---@param unit string
+function growth:UNIT_PET_TRAINING_POINTS(_, unit)
+    if unit == "pet" then self:Check() end
+end
+growth.UNIT_LEVEL = growth.UNIT_PET_TRAINING_POINTS
+
+function growth:PET_UI_UPDATE()
+    self:Check()
+end
+
+---@param _ string the event
+---@param unit string
+function growth:UNIT_PET(_, unit)
+    if unit == "player" then self:CheckAfter(SUMMON_WAIT) end
 end
 
 -- KENNEL_PET_TAMED: the pet that came out after a Tame Beast cast. It has no pet number until the

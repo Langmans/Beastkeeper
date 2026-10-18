@@ -70,6 +70,6 @@
   what happens through KENNEL_* messages ([04-hooking.md](04-hooking.md)). A
   module listens with `Kennel:Listen(self, message, method)` in OnEnable and
   `Kennel:StopListening(self)` in OnDisable; that is also what starts and stops
-  the core's sources (pet happiness, death, tame). A new module sends a
+  the core's sources (pet happiness, death, tame, growth). A new module sends a
   message where another addon may want to hook in, whether or not its toast
   for that moment is on.

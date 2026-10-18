@@ -244,7 +244,7 @@ function M:CheckHints()
     Say(pet, list, unsure)
 end
 
-local ReadLoyalty, LoyaltyLabel = Kennel.PetLoyalty, Kennel.LoyaltyLabel
+local LoyaltyLabel = Kennel.LoyaltyLabel
 
 ---A toast about the pet out's growth, of `kind` ("points" or "loyalty").
 ---@param kind string
@@ -267,41 +267,18 @@ local function GrowthToast(kind, title, text, hint, sound)
     }
 end
 
----Compares the pet out with how it stood last time (kept per pet name): a toast when its total of
----training points rose, naming the cause when there is one (a level-up, a higher loyalty level),
----and one when its loyalty level dropped, with the points that cost. A pet seen for the first time
----is only noted; one summoned again is told what changed while it was away. Spending points at
----Beast Training changes only what is used, not the total, and says nothing; so does a level-up
----at loyalty level 1, which brings no points. Any change of total, level or loyalty is sent as
----KENNEL_PET_GROWTH, whatever the toast settings.
-function M:CheckGrowth()
-    if not self.ready then return end
-    local free, total = Kennel.PetTrainingPoints()
-    if not total then return end
-    local pet, level = UnitName("pet"), UnitLevel("pet")
-    local loyalty, loyaltyName = ReadLoyalty(total, level)
-    local pets = Char().pets
-    local seen = pets[pet]
-    if not seen then
-        pets[pet] = { total = total, level = level, loyalty = loyalty }
-        return
-    end
-    -- The pet's own table is updated in place: this runs on every PET_UI_UPDATE.
-    local beforeTotal, beforeLevel, beforeLoyalty = seen.total, seen.level, seen.loyalty
-    seen.total, seen.level, seen.loyalty = total, level, loyalty
-    if total ~= beforeTotal or level ~= beforeLevel or loyalty ~= beforeLoyalty then
-        Kennel:SendMessage("KENNEL_PET_GROWTH", {
-            module = M:GetName(),
-            pet = pet,
-            level = level,
-            loyalty = loyalty,
-            points = total,
-            free = free,
-            before = { level = beforeLevel, loyalty = beforeLoyalty, points = beforeTotal },
-        })
-    end
+---The core's KENNEL_PET_GROWTH (the pet's points total, level or loyalty changed since last seen):
+---a toast when its total rose, naming the cause when there is one (a level-up, a higher loyalty
+---level), and one when its loyalty level dropped, with the points that cost. A level-up at loyalty
+---level 1 brings no points and says nothing.
+---@param _ string the message
+---@param event KennelPetGrowthEvent
+function M:OnGrowth(_, event)
     local settings = self:Settings()
-    local change = total - beforeTotal
+    local pet, level, loyalty, loyaltyName = event.pet, event.level, event.loyalty, event.loyaltyName
+    local before, free = event.before, event.free
+    local beforeLevel, beforeLoyalty = before.level, before.loyalty
+    local change = event.points - before.points
     local loyaltyUp = (loyalty and beforeLoyalty and loyalty > beforeLoyalty) == true
     if loyalty and beforeLoyalty and loyalty < beforeLoyalty then
         if not settings.loyalty then return end

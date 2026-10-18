@@ -19,6 +19,11 @@ local function module(client)
     return client.Kennel:GetModule("AbilityLearned")
 end
 
+---How the core last saw Fluffy grow (KENNEL_PET_GROWTH's saved state).
+local function fluffy(client)
+    return client.Kennel.db.char.growth.Fluffy
+end
+
 ---Lets the merge window pass, so the learn shows.
 local function settle(client)
     return client:advance(0.3)
@@ -482,37 +487,17 @@ describe("AbilityLearned", function()
             assert.are.equal(count, #client.sounds)
         end)
 
-        it("are told to other addons as KENNEL_PET_GROWTH, also with the toasts off", function()
+        it("are toasted from the core's KENNEL_PET_GROWTH", function()
             local client = ready()
-            local heard = {}
-            client.Kennel:Listen(heard, "KENNEL_PET_GROWTH", function(_, event)
-                heard[#heard + 1] = event
-            end)
-            module(client).db.profile.points = false
-            module(client).db.profile.loyalty = false
-            client:petLevelUp(4)
-            client:loyaltyChange("Loyalty Level 3 (Submissive)", -15)
-            client:fire("UNIT_PET_TRAINING_POINTS", "pet")
-            assert.are.same({
-                {
-                    module = "AbilityLearned",
-                    pet = "Fluffy",
-                    level = 16,
-                    loyalty = 4,
-                    points = 54,
-                    free = 47,
-                    before = { level = 15, loyalty = 4, points = 50 },
-                },
-                {
-                    module = "AbilityLearned",
-                    pet = "Fluffy",
-                    level = 16,
-                    loyalty = 3,
-                    points = 39,
-                    free = 32,
-                    before = { level = 16, loyalty = 4, points = 54 },
-                },
-            }, heard)
+            client.Kennel:SendMessage("KENNEL_PET_GROWTH", {
+                pet = "Shadow",
+                level = 30,
+                loyalty = 2,
+                points = 35,
+                free = 12,
+                before = { level = 29, loyalty = 2, points = 30 },
+            })
+            assert.are.equal("Shadow reached level 30", client:toastTitle())
         end)
 
         it("are not watched with the module off", function()
@@ -530,9 +515,9 @@ describe("AbilityLearned", function()
         it("are not there for a level-up at loyalty level 1, which says nothing", function()
             local client = ready()
             client.loyalty = "Loyalty Level 1 (Rebellious)"
-            module(client).db.char.pets.Fluffy.loyalty = 1
+            fluffy(client).loyalty = 1
             assert.is_nil(client:petLevelUp(0):toast())
-            assert.are.equal(16, module(client).db.char.pets.Fluffy.level, "the level is noted")
+            assert.are.equal(16, fluffy(client).level, "the level is noted")
         end)
 
         it("name a loyalty level-up as their cause", function()
@@ -598,7 +583,7 @@ describe("AbilityLearned", function()
 
         it("reads Forever's bare name, the level coming from the points", function()
             local client = withLoyalty("Dependable", 45) -- 15 × (4 − 1)
-            assert.are.equal(4, module(client).db.char.pets.Fluffy.loyalty)
+            assert.are.equal(4, fluffy(client).loyalty)
             local title = client:loyaltyChange("Faithful", 15):toastTitle()
             assert.are.equal("Fluffy now has loyalty level 5 (|cff00cca3Faithful|r)", title)
         end)
@@ -616,10 +601,10 @@ describe("AbilityLearned", function()
 
         it("leaves loyalty out, without an error, when neither it nor the points tell the level", function()
             local client = withLoyalty("Dependable", 50) -- 50 is no multiple of 15
-            assert.is_nil(module(client).db.char.pets.Fluffy.loyalty)
+            assert.is_nil(fluffy(client).loyalty)
             assert.are.equal("Fluffy reached level 16", client:petLevelUp(4):toastTitle())
             client = withLoyalty(SECRET, 45)
-            assert.are.equal(4, module(client).db.char.pets.Fluffy.loyalty, "hidden: from the points")
+            assert.are.equal(4, fluffy(client).loyalty, "hidden: from the points")
             client = withLoyalty("Dependable", 45)
             client.petLevel = 0
             client:gainPoints(1)

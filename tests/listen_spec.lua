@@ -105,6 +105,74 @@ describe("KENNEL_PET_HAPPINESS", function()
     end)
 end)
 
+describe("KENNEL_PET_GROWTH", function()
+    ---A client past the login wait, with every module off, hearing the message.
+    local function growing(opts)
+        local client = NewClient(opts):login()
+        for name in pairs(client.Kennel.modules) do
+            client.Kennel:SetModuleOn(name, false)
+        end
+        local _, heard = listen(client, "KENNEL_PET_GROWTH")
+        client:advance(5)
+        return client, heard
+    end
+
+    it("says what changed of the pet's points, level and loyalty, and what it was", function()
+        local client, heard = growing()
+        client:petLevelUp(4)
+        assert.are.same({
+            {
+                pet = "Fluffy",
+                level = 16,
+                loyalty = 4,
+                loyaltyName = "Dependable",
+                points = 54,
+                free = 47,
+                before = { level = 15, loyalty = 4, points = 50 },
+            },
+        }, heard)
+        client:fire("UNIT_PET_TRAINING_POINTS", "pet")
+        assert.are.equal(1, #heard, "nothing changed")
+    end)
+
+    it("notes a pet the first time, and tells one summoned again what changed while away", function()
+        local client, heard = growing()
+        client.trainingPoints = { 10, 0 }
+        client:summon("Shadow", {}):advance(1)
+        assert.are.same({}, heard, "first time Kennel sees Shadow")
+        client.trainingPoints = { 14, 0 }
+        client:summon("Shadow", {}):advance(1)
+        assert.are.equal(14, heard[1].points)
+    end)
+
+    it("waits out the first seconds after login, then tells what changed since the last session", function()
+        local client = NewClient():login():advance(5)
+        client:logout()
+        client = NewClient({ saved = Saved() })
+        client.trainingPoints = { 52, 7 }
+        client:login()
+        local _, heard = listen(client, "KENNEL_PET_GROWTH")
+        client:fire("UNIT_PET_TRAINING_POINTS", "pet")
+        assert.are.same({}, heard, "not in the login wait")
+        client:advance(5)
+        assert.are.equal(52, heard[1].points)
+    end)
+
+    it("takes stock at once for a listener that comes after the login wait", function()
+        local client = bare()
+        client:advance(10)
+        local _, heard = listen(client, "KENNEL_PET_GROWTH")
+        client:petLevelUp(4)
+        assert.are.equal(16, heard[1].level)
+    end)
+
+    it("says nothing on a client without training points", function()
+        local client, heard = growing({ noTrainingAPI = true })
+        client:petLevelUp(4)
+        assert.are.same({}, heard)
+    end)
+end)
+
 describe("KENNEL_PET_DIED", function()
     it("says once when the pet out dies", function()
         local client = bare()

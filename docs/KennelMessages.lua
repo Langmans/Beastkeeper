@@ -33,13 +33,13 @@
 ---@field npc number? the NPC ID that pet was tamed as
 ---@field zone string? where it happened
 
----KENNEL_PET_GROWTH: the pet out's training points total, level or loyalty level changed since
----Ability Learned last saw it (kept per pet name, also across a relog).
+---KENNEL_PET_GROWTH (core, through Kennel:Listen): the pet out's training points total, level or
+---loyalty level changed since it was last seen (kept per pet name, also across a relog).
 ---@class KennelPetGrowthEvent
----@field module string "AbilityLearned"
 ---@field pet string
 ---@field level number
 ---@field loyalty number? nil when the client does not tell it
+---@field loyaltyName string? the loyalty level's name, when the client gives one
 ---@field points number the training points total
 ---@field free number the points not spent
 ---@field before { level: number, loyalty: number?, points: number }

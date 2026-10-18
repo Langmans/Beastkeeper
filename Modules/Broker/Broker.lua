@@ -22,8 +22,9 @@ local HINT_COLOR = { 0.5, 0.5, 0.5 }
 local JOURNAL_COLOR = { 0.6, 0.6, 0.6 }
 -- The happiness levels by number, as Feeding names them.
 local HAPPINESS = { L.FEEDING_UNHAPPY, L.FEEDING_CONTENT, L.FEEDING_HAPPY }
--- Happiness comes from the core's KENNEL_PET_HAPPINESS.
-local EVENTS = { "UNIT_PET", "PET_UI_UPDATE", "UNIT_PET_TRAINING_POINTS", "UNIT_LEVEL" }
+-- Happiness and growth come from the core's KENNEL_PET_HAPPINESS and KENNEL_PET_GROWTH; points
+-- spent change only what is free, which UNIT_PET_TRAINING_POINTS tells.
+local EVENTS = { "UNIT_PET", "UNIT_PET_TRAINING_POINTS" }
 
 ---The text for a display: the pet's name, with its happiness and free points when the client
 ---tells them.
@@ -100,6 +101,7 @@ function M:OnEnable()
     end
     Kennel.RegisterEvents(self, EVENTS, Update)
     Kennel:Listen(self, "KENNEL_PET_HAPPINESS", Update)
+    Kennel:Listen(self, "KENNEL_PET_GROWTH", Update)
     self:Update()
     self:ApplyMinimapButton()
 end

@@ -24,12 +24,9 @@ function M:Settings()
 end
 
 local BOOK_WAIT = 1 -- seconds for a new pet's spellbook to fill in
--- Deaths and tames come from the core's KENNEL_PET_DIED and KENNEL_PET_TAMED.
+-- Deaths, tames and growth come from the core's KENNEL_PET_DIED, _TAMED and _GROWTH.
 local EVENTS = {
     "UNIT_PET",
-    "UNIT_LEVEL",
-    "UNIT_PET_TRAINING_POINTS",
-    "PET_UI_UPDATE",
     "PET_STABLE_UPDATE",
     "PLAYER_LOGOUT",
 }
@@ -262,15 +259,10 @@ function M:PET_STABLE_UPDATE()
     Kennel:RefreshWindow("pets")
 end
 
----@param _ string the event
----@param unit string
-function M:UNIT_LEVEL(_, unit)
-    if unit == "pet" then self:Record() end
-end
-M.UNIT_PET_TRAINING_POINTS = M.UNIT_LEVEL
-
-function M:PET_UI_UPDATE()
+-- The core's KENNEL_PET_GROWTH: the pet's level, points or loyalty changed.
+function M:OnGrowth()
     self:Record()
+    Kennel:RefreshWindow("pets")
 end
 
 -- The core's KENNEL_PET_DIED: the pet out died.
@@ -301,6 +293,7 @@ function M:OnEnable()
     Kennel.RegisterEvents(self, EVENTS)
     Kennel:Listen(self, "KENNEL_PET_DIED", "OnDied")
     Kennel:Listen(self, "KENNEL_PET_TAMED", "OnTamed")
+    Kennel:Listen(self, "KENNEL_PET_GROWTH", "OnGrowth")
     self:UNIT_PET("UNIT_PET", "player")
 end
 

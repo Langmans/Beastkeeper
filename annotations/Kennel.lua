@@ -239,6 +239,8 @@
 ---@field ShowModel fun(model: PlayerModel, key: string, entry: KennelJournalEntry)
 ---@field OnDied fun(self: KennelPetJournal)
 ---@field OnTamed fun(self: KennelPetJournal, message: string, event: KennelPetTamedEvent)
+---@field OnGrowth fun(self: KennelPetJournal)
+---@field ReadStable fun(self: KennelPetJournal)
 ---@field Out fun(self: KennelPetJournal, key: string): number
 ---@field Record fun(self: KennelPetJournal)
 ---@field Snapshot fun(self: KennelPetJournal)
@@ -336,10 +338,9 @@
 ---@field known table<string, number> the highest rank known per ability name
 ---@field ranks table<string, table<number, true>> every rank known per ability name
 ---@field trainingRead boolean Beast Training has been read once
----@field pets table<string, KennelPetGrowth> how each pet stood when last seen, by pet name
 
----How a pet stood when AbilityLearned last saw it.
----@class KennelPetGrowth
+---How a pet stood when the core last saw it (KennelDB char.growth, by pet name).
+---@class KennelGrowthSeen
 ---@field total number its training points total
 ---@field level number
 ---@field loyalty number? its loyalty level; nil on a client without GetPetLoyalty
@@ -384,8 +385,7 @@
 ---@field ReportMissingTeachers fun(self: KennelAbilityLearned)
 ---@field ReadBeastTraining fun(self: KennelAbilityLearned)
 ---@field CheckHints fun(self: KennelAbilityLearned)
----@field CheckGrowth fun(self: KennelAbilityLearned)
----@field CheckPet fun(self: KennelAbilityLearned)
+---@field OnGrowth fun(self: KennelAbilityLearned, message: string, event: KennelPetGrowthEvent)
 ---@field Sound fun(self: KennelAbilityLearned, key: "sound"|"pointsSound"|"loyaltySound", petSound: "AGGRO"|"WOUND"|nil): KennelSound?
 ---@field ReportTeachable fun(self: KennelAbilityLearned)
 
@@ -689,6 +689,7 @@
 ---@class KennelSource
 ---@field events string[]
 ---@field running boolean? watching now
+---@field pending boolean? a check is on its way (the growth source)
 ---@field Start fun(self: KennelSource)
 ---@field [string] any its own state and event methods
 

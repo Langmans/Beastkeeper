@@ -97,7 +97,7 @@ describe("Pet Journal", function()
         client:login():advance(1)
         assert.is_true(says(client, "First seen " .. date("%Y-%m-%d %H:%M", client.serverTime) .. " in ?."))
         client.zone = "Darkshore"
-        client:fire("PET_UI_UPDATE")
+        client:advance(5):petLevelUp(4)
         assert.is_true(says(client, " in Darkshore."), journal(client))
     end)
 
