@@ -32,34 +32,24 @@ local MESSAGES = {
 }
 
 local level = METRICS
-local registered = false
+-- OAP Debug's table, found once when Kennel's settings load (OptionalDeps loads it first); nil
+-- without it.
+---@type OAPDebugApi?
+local api
 -- The table Kennel listens with, to its own messages.
 local listener = {}
 
----OAP Debug's table when it is installed.
----@return OAPDebugApi?
-local function Installed()
-    local api = rawget(_G, "OAPDebug") --[[@as GameValue]]
-    if type(api) == "table" and type(api.Log) == "function" then
-        return api --[[@as OAPDebugApi]]
-    end
-end
-
----OAP Debug's table, registering Kennel the first time; nil when it is not installed.
----@return OAPDebugApi?
-local function D()
-    local api = Installed()
-    if api and not registered then
-        registered = true
-        api.Register(SOURCE, { title = addonName, folder = addonName, icon = ICON })
-    end
-    return api
+---Finds OAP Debug and registers Kennel with it, once.
+local function Connect()
+    if api then return end
+    api = rawget(_G, "OAPDebug") --[[@as OAPDebugApi?]]
+    if api then api.Register(SOURCE, { title = addonName, folder = addonName, icon = ICON }) end
 end
 
 ---Whether OAP Debug is installed.
 ---@return boolean
 function Kennel.HasOAPDebug()
-    return Installed() ~= nil
+    return api ~= nil
 end
 
 ---A log line: "error", "warn", "info" or "debug"; values fill {1}, {2}, ... (tables become links).
@@ -67,17 +57,13 @@ end
 ---@param msg string
 ---@param ... any
 function Kennel:Log(kind, msg, ...)
-    if level < NEEDS[kind] then return end
-    local d = D()
-    if d then d.Log(SOURCE, msg, kind, ...) end
+    if api and level >= NEEDS[kind] then api.Log(SOURCE, msg, kind, ...) end
 end
 
 ---Counts something that happens, from Normal + metrics.
 ---@param name string
 function Kennel:Count(name)
-    if level < METRICS then return end
-    local d = D()
-    if d then d.Count(SOURCE, name) end
+    if api and level >= METRICS then api.Count(SOURCE, name) end
 end
 
 ---Runs fn, timed from Normal + metrics.
@@ -85,9 +71,8 @@ end
 ---@param fn fun(...)
 ---@param ... any
 function Kennel:Time(name, fn, ...)
-    local d = level >= METRICS and D()
-    if d then
-        d.Time(SOURCE, name, fn, ...)
+    if api and level >= METRICS then
+        api.Time(SOURCE, name, fn, ...)
     else
         fn(...)
     end
@@ -105,16 +90,16 @@ end
 ---@param _ string the message
 ---@param event KennelPrintEvent
 local function OnPrint(_, event)
-    if level < NORMAL then return end
-    local d = D()
-    if d then d.Chat(SOURCE, event.line) end
+    if api and level >= NORMAL then api.Chat(SOURCE, event.line) end
 end
 
----Listens to Kennel's messages while OAP Debug is there and the level logs them; stops otherwise.
+---Takes the profile's level; listens to Kennel's messages while OAP Debug is there and the level
+---logs them, stops otherwise.
 function Kennel:ApplyDebugLevel()
+    Connect()
     level = LEVELS[self.db.profile.oapDebug] or METRICS
     self:StopListening(listener)
-    if level < NORMAL or not Kennel.HasOAPDebug() then return end
+    if level < NORMAL or not api then return end
     self:Listen(listener, "KENNEL_PRINT", OnPrint)
     for _, message in ipairs(MESSAGES) do
         self:Listen(listener, message, OnMessage)
