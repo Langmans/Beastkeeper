@@ -464,6 +464,8 @@ function NewClient(opts)
         SpellBookSpellBank = { Player = 0, Pet = 1 },
         LuaCurveType = { Linear = 0, Step = 1, Cosine = 2, Cubic = 3 },
         TooltipDataType = { Item = 0, Spell = 1, Unit = 2 },
+        ItemClass = { Weapon = 2, Projectile = 6 },
+        ItemWeaponSubclass = { Bows = 2, Guns = 3, Sword1H = 7, Crossbow = 18 },
     }
     C_SpellBook = nil
     if not opts.noSpellBookAPI then

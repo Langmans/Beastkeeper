@@ -26,10 +26,10 @@ function M:Settings()
 end
 
 local GoThere = LibStub("LibGoThere-1.0") --[[@as LibGoThere]]
-local AMMO_SLOT, RANGED_SLOT, WEAPON = 0, 18, 2
-local K = Kennel.ammoKinds
+local AMMO_SLOT, RANGED_SLOT = 0, 18
+local K, W = Kennel.ammoKinds, Enum.ItemWeaponSubclass
 -- A ranged weapon's ammo by the weapon's subclass: a bow and a crossbow shoot arrows, a gun bullets.
-local KINDS = { [2] = K.arrow, [18] = K.arrow, [3] = K.bullet }
+local KINDS = { [W.Bows] = K.arrow, [W.Crossbow] = K.arrow, [W.Guns] = K.bullet }
 local ICON = "Interface\\Icons\\INV_Ammo_Arrow_02"
 local COLORS = { low = "|cffff8000%d|r", critical = "|cffff2020%d|r" }
 -- A shot takes one from the bags: BAG_UPDATE_DELAYED comes once after it (also for a stack bought or
@@ -44,7 +44,7 @@ function M.Kind()
     local id = GetInventoryItemID("player", RANGED_SLOT)
     if not id then return nil end
     local _, _, _, _, _, classID, subclassID = C_Item.GetItemInfoInstant(id)
-    if classID ~= WEAPON then return nil end
+    if classID ~= Enum.ItemClass.Weapon then return nil end
     return KINDS[subclassID]
 end
 
