@@ -106,9 +106,7 @@ end
 ---@field oldLoyaltyAPI boolean? the global GetPetLoyalty instead of C_PetInfo's
 ---@field oldChatAPI boolean? the global SendChatMessage instead of C_ChatInfo's
 ---@field noStableInfo boolean? no C_StableInfo
----@field unknownEvents string[]? events this client does not have (Forever: LEARNED_SPELL_IN_TAB)
----@field noMapWorldSize boolean? a client without C_Map.GetMapWorldSize
----@field noEventUtils boolean? no C_EventUtils.IsEventValid
+---@field unknownEvents string[]? events this client does not have (Forever: LEARNED_SPELL_IN_TAB)---@field noEventUtils boolean? no C_EventUtils.IsEventValid
 ---@field ranged number? the ranged weapon's item ID (none by default)
 ---@field ammo number? the item ID in the ammo slot (none by default)
 ---@field dev boolean? a copy straight from the repository: `--@debug@` blocks run (the DevScreenshots module)
@@ -672,11 +670,15 @@ function NewClient(opts)
     local MAP_NAMES = { [1429] = "Elwynn Forest", [1420] = "Tirisfal Glades" }
     local AREA_NAMES = { [718] = "Wailing Caverns" }
     -- Where the player stands in the world (UnitPosition: y, x and the instance; nil inside an
-    -- instance) and on its map (0..1), and each map's size in yards. opts.noMapWorldSize: a client
-    -- without C_Map.GetMapWorldSize.
+    -- instance) and on its map (0..1). client.mapWorld: where each map lies in the world, its
+    -- middle (y, x as UnitPosition gives them), size in yards and continent; map 1430 lies right
+    -- east of Elwynn Forest, the player in Elwynn's middle.
     client.worldPos = { -9000, 400, 0 }
     client.mapPos = { 0.5, 0.5 }
-    client.mapSizes = { [1429] = { 3470, 2314 } }
+    client.mapWorld = {
+        [1429] = { y = -9000, x = 400, width = 3470, height = 2314, continent = 0 },
+        [1430] = { y = -9000, x = 400 - 3470 / 2 - 1000 / 2, width = 1000, height = 2314, continent = 0 },
+    }
     function UnitPosition(unit)
         local pos = unit == "player" and client.worldPos
         if pos then return pos[1], pos[2], 0, pos[3] end
@@ -691,16 +693,12 @@ function NewClient(opts)
         }
     end
     C_Map = {
-        GetMapWorldSize = not opts.noMapWorldSize and function(uiMapID)
-            local size = client.mapSizes[uiMapID]
-            if size then return size[1], size[2] end
-            return 0, 0
-        end or nil,
-        -- World x runs along the map's y axis and world y along its x axis, both reversed.
+        -- The world position's x is UnitPosition's first return and runs south along the map's y
+        -- axis; its y is the second and runs west along the map's x axis.
         GetWorldPosFromMapPos = function(uiMapID, pos)
-            local size = client.mapSizes[uiMapID]
-            if not size then return nil end
-            return 0, CreateVector2D(1000 - pos.y * size[2], 2000 - pos.x * size[1])
+            local map = client.mapWorld[uiMapID]
+            if not map then return nil end
+            return map.continent, CreateVector2D(map.y - (pos.y - 0.5) * map.height, map.x - (pos.x - 0.5) * map.width)
         end,
         GetMapInfo = function(uiMapID)
             return MAP_NAMES[uiMapID] and { mapID = uiMapID, name = MAP_NAMES[uiMapID] } or nil

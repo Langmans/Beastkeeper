@@ -287,22 +287,70 @@ describe("Ammo", function()
             assert.is_true(asked.n > 3 * first, "another kind of ammo")
         end)
 
-        for _, case in ipairs({ { "the map's size", {} }, { "the map's corners", { noMapWorldSize = true } } }) do
-            it("without a world position, goes by the map position in yards from " .. case[1], function()
-                local client = hunter(400, case[2])
-                vendors(client)
+        it("without a world position, goes by where the map position lies in the world", function()
+            local client = hunter(400)
+            vendors(client)
+            local asked = routes(120)
+            client.worldPos = nil
+            tooltip(client)
+            local first = asked.n
+            assert.is_true(first > 0)
+            client.mapPos = { 0.51, 0.5 } -- 35 yards on
+            tooltip(client)
+            assert.are.equal(first, asked.n, "within 100 yards")
+            client.mapPos = { 0.53, 0.5 }
+            tooltip(client)
+            assert.are.equal(2 * first, asked.n, "moved on")
+        end)
+
+        describe("among many", function()
+            -- The hunter at Elwynn Forest's east edge; arrow vendors further west in Elwynn, and one
+            -- just across the border on map 1430.
+            local EDGE = { -9000, 400 - 0.45 * 3470, 0 }
+
+            local function many(client)
+                local list = {}
+                for i, x in ipairs({ 80, 75, 70, 65, 60, 55 }) do
+                    list[i] = { name = "West " .. x, sells = { ROUGH }, pins = { [1429] = { x, 50 } } }
+                end
+                list[#list + 1] = { name = "Over the border", sells = { ROUGH }, pins = { [1430] = { 10, 50 } } }
+                client.Kennel.data.ammoVendors = list
+                client.worldPos = EDGE
+            end
+
+            it("asks the route addon about the 5 nearest only", function()
+                local client = hunter(400)
+                many(client)
                 local asked = routes(120)
-                client.worldPos = nil
                 tooltip(client)
-                local first = asked.n
-                client.mapPos = { 0.51, 0.5 } -- 35 yards on
-                tooltip(client)
-                assert.are.equal(first, asked.n, "same 100 yards")
-                client.mapPos = { 0.53, 0.5 }
-                tooltip(client)
-                assert.are.equal(2 * first, asked.n, "moved on")
+                assert.are.equal(5, asked.n)
             end)
-        end
+
+            it("measures in the world, so a vendor across a zone border counts as near", function()
+                local client = hunter(400)
+                many(client)
+                broker().OnClick(nil, "LeftButton")
+                assert.is_true(client:printedContains("|Hworldmap:1430:1000:5000|h"), "over the border")
+            end)
+
+            it("asks about every vendor when none is on the hunter's continent", function()
+                local client = hunter(400)
+                many(client)
+                client.worldPos = { -9000, 400, 1 }
+                local asked = routes(120)
+                tooltip(client)
+                assert.are.equal(7, asked.n)
+            end)
+
+            it("takes the nearest on the hunter's own map when the world position is unknown", function()
+                local client = hunter(400)
+                many(client)
+                client.worldPos, client.mapWorld = nil, {}
+                client.mapPos = { 0.95, 0.5 }
+                broker().OnClick(nil, "LeftButton")
+                assert.is_true(client:printedContains("|Hworldmap:1429:8000:5000|h"), "West 80")
+            end)
+        end)
 
         it("is looked up each time when the hunter's position is unknown", function()
             local client = hunter(400)

@@ -125,6 +125,10 @@ end
 local pointsByKind = {}
 ---@type table?
 local pointsFrom
+-- Where each spot lies in the world, worked out once with its list: the continent and x, y in
+-- yards as UnitPosition gives them. A spot whose map the client cannot place has none.
+---@type table<LibGoTherePoint, number>, table<LibGoTherePoint, number>, table<LibGoTherePoint, number>
+local continentOf, worldX, worldY = {}, {}, {}
 
 ---Whether a vendor sells ammo of `kind`.
 ---@param vendor KennelAmmoVendor
@@ -152,7 +156,14 @@ local function VendorPoints(kind)
         if (not vendor.side or vendor.side == side) and Sells(vendor, kind) then
             for map, flat in pairs(vendor.pins) do
                 for i = 1, #flat, 2 do
-                    points[#points + 1] = { map, flat[i] / 100, flat[i + 1] / 100, vendor.name }
+                    local x, y = flat[i] / 100, flat[i + 1] / 100
+                    local point = { map, x, y, vendor.name }
+                    points[#points + 1] = point
+                    -- The world position's x is UnitPosition's y and the other way round.
+                    local continent, world = C_Map.GetWorldPosFromMapPos(map, CreateVector2D(x, y))
+                    if continent and world then
+                        continentOf[point], worldX[point], worldY[point] = continent, world.y, world.x
+                    end
                 end
             end
         end
@@ -160,15 +171,48 @@ local function VendorPoints(kind)
     return points
 end
 
----The spot of several nearest the hunter: the one reached first when a route addon gives travel
----times (with its seconds), else the nearest on the hunter's own map, else the first.
+-- The NEAR spots nearest the hunter in a straight line, nearest first, refilled for each look.
+local NEAR = 5
+---@type LibGoTherePoint[], number[]
+local near, nearDistance = {}, {}
+
+---The NEAR spots of `list` on the hunter's continent nearest it in a straight line through the
+---world, so across zone borders too, nearest first; empty when none lies on that continent.
 ---@param list LibGoTherePoint[]
+---@param continent number
+---@param x number
+---@param y number
+---@return LibGoTherePoint[]
+local function NearestInLine(list, continent, x, y)
+    wipe(near)
+    wipe(nearDistance)
+    for _, point in ipairs(list) do
+        if continentOf[point] == continent then
+            local distance = math.sqrt((worldX[point] - x) ^ 2 + (worldY[point] - y) ^ 2)
+            local i = #near + 1
+            while i > 1 and nearDistance[i - 1] > distance do
+                near[i], nearDistance[i] = near[i - 1], nearDistance[i - 1]
+                i = i - 1
+            end
+            near[i], nearDistance[i] = point, distance
+            near[NEAR + 1], nearDistance[NEAR + 1] = nil, nil
+        end
+    end
+    return near
+end
+
+---The spot of several nearest the hunter: the one reached first when a route addon gives travel
+---times (with its seconds); else the first of a `sorted` list, the nearest on the hunter's own
+---map, or the first.
+---@param list LibGoTherePoint[]
+---@param sorted boolean the list is sorted nearest first
 ---@return LibGoTherePoint? point
 ---@return number? seconds
-local function Nearest(list)
+local function Nearest(list, sorted)
     if #list == 0 then return nil end
     local seconds, index = GoThere:TravelTimeNearest(list)
     if index then return list[index], seconds end
+    if sorted then return list[1] end
     local here = C_Map.GetBestMapForUnit("player")
     local position = here and C_Map.GetPlayerMapPosition(here, "player")
     if not position then return list[1] end
@@ -186,39 +230,14 @@ end
 
 -- The nearest vendor is kept while the hunter stays within RANGE yards of where it was looked up,
 -- at most KEEP seconds, for one kind of ammo: a route addon's travel times take a while, and RANGE
--- yards are a few seconds of travel. The spot is a place (Position) and x, y in yards.
+-- yards are a few seconds of travel. The spot is a continent (Position) and x, y in yards.
 local RANGE, KEEP = 100, 60
 ---@type number?, number, number, KennelAmmoKind?, number, LibGoTherePoint?, number?
 local keptPlace, keptX, keptY, keptKind, keptSince, keptPoint, keptSeconds = nil, 0, 0, nil, 0, nil, nil
----@type table<number, number>, table<number, number>
-local widths, heights = {}, {}
 
----A map's size in yards, from the client or else from where its corners lie in the world; nil when
----unknown.
----@param map number
----@return number?, number?
-local function MapSize(map)
-    if not widths[map] then
-        local width, height
-        if C_Map.GetMapWorldSize then
-            width, height = C_Map.GetMapWorldSize(map)
-        end
-        if not width or width <= 0 then
-            local _, a = C_Map.GetWorldPosFromMapPos(map, CreateVector2D(0, 0))
-            local _, b = C_Map.GetWorldPosFromMapPos(map, CreateVector2D(1, 1))
-            -- The world's x runs along the map's y axis, its y along the map's x axis.
-            if not a or not b then return nil end
-            width, height = math.abs(a.y - b.y), math.abs(a.x - b.x)
-        end
-        widths[map], heights[map] = width, height
-    end
-    return widths[map], heights[map]
-end
-
----Where the hunter stands, in yards: the place (the instance ID for a world position, minus the map
----ID for one worked out from the map position and the map's size) and x, y; nil when neither is
----known.
----@return number? place
+---Where the hunter stands in the world: the continent (instance ID) and x, y in yards, from
+---UnitPosition, else from where its map position lies in the world; nil when neither is known.
+---@return number? continent
 ---@return number x
 ---@return number y
 local function Position()
@@ -227,10 +246,9 @@ local function Position()
     local map = C_Map.GetBestMapForUnit("player")
     local position = map and C_Map.GetPlayerMapPosition(map, "player")
     if not map or not position then return nil, 0, 0 end
-    local width, height = MapSize(map)
-    if not width or not height then return nil, 0, 0 end
-    local px, py = position:GetXY()
-    return -map, px * width, py * height
+    local continent, world = C_Map.GetWorldPosFromMapPos(map, position)
+    if not continent or not world then return nil, 0, 0 end
+    return continent, world.y, world.x
 end
 
 ---The nearest vendor for the hunter's kind of ammo, and the seconds to it when known.
@@ -241,6 +259,9 @@ function M:NearestVendor()
     if not kind then return nil end
     if Kennel.data.ammoVendors ~= pointsFrom then
         wipe(pointsByKind)
+        wipe(continentOf)
+        wipe(worldX)
+        wipe(worldY)
         pointsFrom, keptPlace = Kennel.data.ammoVendors, nil
     end
     local place, x, y = Position()
@@ -254,7 +275,15 @@ function M:NearestVendor()
     then
         return keptPoint, keptSeconds
     end
-    keptPoint, keptSeconds = Nearest(VendorPoints(kind))
+    -- A route addon weighs only the few nearest in a straight line; all without one on the continent.
+    local list, sorted = VendorPoints(kind), false
+    if place then
+        local inLine = NearestInLine(list, place, x, y)
+        if #inLine > 0 then
+            list, sorted = inLine, true
+        end
+    end
+    keptPoint, keptSeconds = Nearest(list, sorted)
     keptPlace, keptX, keptY, keptKind, keptSince = place, x, y, kind, now
     return keptPoint, keptSeconds
 end
