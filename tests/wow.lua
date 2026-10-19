@@ -107,6 +107,7 @@ end
 ---@field oldChatAPI boolean? the global SendChatMessage instead of C_ChatInfo's
 ---@field noStableInfo boolean? no C_StableInfo
 ---@field unknownEvents string[]? events this client does not have (Forever: LEARNED_SPELL_IN_TAB)
+---@field noMapWorldSize boolean? a client without C_Map.GetMapWorldSize
 ---@field noEventUtils boolean? no C_EventUtils.IsEventValid
 ---@field ranged number? the ranged weapon's item ID (none by default)
 ---@field ammo number? the item ID in the ammo slot (none by default)
@@ -670,7 +671,37 @@ function NewClient(opts)
     -- ID's, as an instance has (C_Map.GetAreaInfo). Anything else is unknown (nil).
     local MAP_NAMES = { [1429] = "Elwynn Forest", [1420] = "Tirisfal Glades" }
     local AREA_NAMES = { [718] = "Wailing Caverns" }
+    -- Where the player stands in the world (UnitPosition: y, x and the instance; nil inside an
+    -- instance) and on its map (0..1), and each map's size in yards. opts.noMapWorldSize: a client
+    -- without C_Map.GetMapWorldSize.
+    client.worldPos = { -9000, 400, 0 }
+    client.mapPos = { 0.5, 0.5 }
+    client.mapSizes = { [1429] = { 3470, 2314 } }
+    function UnitPosition(unit)
+        local pos = unit == "player" and client.worldPos
+        if pos then return pos[1], pos[2], 0, pos[3] end
+    end
+    function CreateVector2D(x, y)
+        return {
+            x = x,
+            y = y,
+            GetXY = function()
+                return x, y
+            end,
+        }
+    end
     C_Map = {
+        GetMapWorldSize = not opts.noMapWorldSize and function(uiMapID)
+            local size = client.mapSizes[uiMapID]
+            if size then return size[1], size[2] end
+            return 0, 0
+        end or nil,
+        -- World x runs along the map's y axis and world y along its x axis, both reversed.
+        GetWorldPosFromMapPos = function(uiMapID, pos)
+            local size = client.mapSizes[uiMapID]
+            if not size then return nil end
+            return 0, CreateVector2D(1000 - pos.y * size[2], 2000 - pos.x * size[1])
+        end,
         GetMapInfo = function(uiMapID)
             return MAP_NAMES[uiMapID] and { mapID = uiMapID, name = MAP_NAMES[uiMapID] } or nil
         end,
@@ -682,12 +713,8 @@ function NewClient(opts)
             return unit == "player" and 1429 or nil
         end,
         GetPlayerMapPosition = function(map, unit)
-            if unit ~= "player" or map ~= 1429 then return nil end
-            return {
-                GetXY = function()
-                    return 0.5, 0.5
-                end,
-            }
+            if unit ~= "player" or map ~= 1429 or not client.mapPos then return nil end
+            return CreateVector2D(client.mapPos[1], client.mapPos[2])
         end,
     }
     -- Dungeon entrances on a map, named as the instance's area: Wailing Caverns and Razorfen
@@ -819,7 +846,13 @@ function NewClient(opts)
     -- counted from the bag as the client counts it; client.ammoBag a quiver or ammo pouch in bag
     -- slot 1 ({ slots, type }: type 1 quiver, 2 ammo pouch). client.merchant: the item IDs the open
     -- vendor sells, or nil; client.bought: what was bought, { itemID, quantity } each.
+    -- client.rangedSpeed: seconds between two Auto Shots (UnitRangedDamage), 0 without a weapon.
     client.ranged, client.ammoID, client.ammoBag, client.bought = opts.ranged, opts.ammo, nil, {}
+    client.rangedSpeed = 3
+    function UnitRangedDamage(unit)
+        if unit ~= "player" or not client.ranged then return 0, 0, 0, 0, 0, 1 end
+        return client.rangedSpeed, 10, 20, 0, 0, 1
+    end
     function GetInventoryItemID(unit, slot)
         if unit ~= "player" then return nil end
         if slot == 18 then return client.ranged end

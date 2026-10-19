@@ -74,9 +74,24 @@ function M:State(count)
     return "ok"
 end
 
--- The vendors' spots for the hunter's kind and faction, refilled for each look.
----@type LibGoTherePoint[]
-local points = {}
+---How long `count` lasts at one Auto Shot per weapon swing ("~17 min", "~25 s"); nil without a
+---weapon speed or ammo.
+---@param count number
+---@return string?
+local function Lasts(count)
+    local speed = UnitRangedDamage("player")
+    if not canaccessvalue(speed) or not speed or speed <= 0 or count <= 0 then return nil end
+    local seconds = count * speed
+    if seconds < 60 then return L.AMMO_SECONDS:format(math.floor(seconds + 0.5)) end
+    return L.AMMO_MINUTES:format(math.floor(seconds / 60 + 0.5))
+end
+
+-- The vendors' spots per kind of ammo for the hunter's faction, built on first use and again when
+-- the data changes.
+---@type table<KennelAmmoKind, LibGoTherePoint[]>
+local pointsByKind = {}
+---@type table?
+local pointsFrom
 
 ---Whether a vendor sells ammo of `kind`.
 ---@param vendor KennelAmmoVendor
@@ -94,9 +109,12 @@ end
 ---@param kind KennelAmmoKind
 ---@return LibGoTherePoint[]
 local function VendorPoints(kind)
-    wipe(points)
-    local side = UnitFactionGroup("player")
     local vendors = Kennel.data.ammoVendors --[[@as table<number, KennelAmmoVendor>]]
+    if pointsByKind[kind] then return pointsByKind[kind] end
+    ---@type LibGoTherePoint[]
+    local points = {}
+    pointsByKind[kind] = points
+    local side = UnitFactionGroup("player")
     for _, vendor in pairs(vendors) do
         if (not vendor.side or vendor.side == side) and Sells(vendor, kind) then
             for map, flat in pairs(vendor.pins) do
@@ -133,13 +151,71 @@ local function Nearest(list)
     return best or list[1]
 end
 
+-- The nearest vendor is kept while the hunter stays in one square of CELL yards, at most KEEP
+-- seconds: a route addon's travel times take a while, and two vendors are a few yards apart at the
+-- least, so a square's error is a few seconds of travel.
+local CELL, KEEP = 100, 60
+---@type string?, number, LibGoTherePoint?, number?
+local keptKey, keptSince, keptPoint, keptSeconds = nil, 0, nil, nil
+---@type table<number, number>, table<number, number>
+local widths, heights = {}, {}
+
+---A map's size in yards, from the client or else from where its corners lie in the world; nil when
+---unknown.
+---@param map number
+---@return number?, number?
+local function MapSize(map)
+    if not widths[map] then
+        local width, height
+        if C_Map.GetMapWorldSize then
+            width, height = C_Map.GetMapWorldSize(map)
+        end
+        if not width or width <= 0 then
+            local _, a = C_Map.GetWorldPosFromMapPos(map, CreateVector2D(0, 0))
+            local _, b = C_Map.GetWorldPosFromMapPos(map, CreateVector2D(1, 1))
+            -- The world's x runs along the map's y axis, its y along the map's x axis.
+            if not a or not b then return nil end
+            width, height = math.abs(a.y - b.y), math.abs(a.x - b.x)
+        end
+        widths[map], heights[map] = width, height
+    end
+    return widths[map], heights[map]
+end
+
+---The square of CELL yards the hunter stands in, as a key: from the world position, else from the
+---map position and the map's size; nil when neither is known.
+---@return string?
+local function Square()
+    local y, x, _, instance = UnitPosition("player")
+    if Kennel.Readable(x) and x and y then
+        return ("%d:%d:%d"):format(instance or 0, math.floor(x / CELL), math.floor(y / CELL))
+    end
+    local map = C_Map.GetBestMapForUnit("player")
+    local position = map and C_Map.GetPlayerMapPosition(map, "player")
+    if not map or not position then return nil end
+    local width, height = MapSize(map)
+    if not width or not height then return nil end
+    local px, py = position:GetXY()
+    return ("map%d:%d:%d"):format(map, math.floor(px * width / CELL), math.floor(py * height / CELL))
+end
+
 ---The nearest vendor for the hunter's kind of ammo, and the seconds to it when known.
 ---@return LibGoTherePoint?
 ---@return number?
 function M:NearestVendor()
     local kind = M.Kind()
     if not kind then return nil end
-    return Nearest(VendorPoints(kind))
+    if Kennel.data.ammoVendors ~= pointsFrom then
+        wipe(pointsByKind)
+        pointsFrom, keptKey = Kennel.data.ammoVendors, nil
+    end
+    local square = Square()
+    local key = square and square .. ":" .. kind
+    local now = GetTime()
+    if key and key == keptKey and now - keptSince <= KEEP then return keptPoint, keptSeconds end
+    keptPoint, keptSeconds = Nearest(VendorPoints(kind))
+    keptKey, keptSince = key, now
+    return keptPoint, keptSeconds
 end
 
 ---The tooltip a display shows on hover.
@@ -149,7 +225,10 @@ local function OnTooltipShow(tooltip)
     if not M.Kind() then
         tooltip:AddLine(L.AMMO_NO_WEAPON)
     else
-        tooltip:AddLine(L.AMMO_COUNT:format(ammo and M.AmmoName(ammo) or L.AMMO_LABEL, Count()))
+        local count = Count()
+        local lasts = Lasts(count)
+        local line = L.AMMO_COUNT:format(ammo and M.AmmoName(ammo) or L.AMMO_LABEL, count)
+        tooltip:AddLine(lasts and line .. L.AMMO_LASTS:format(lasts) or line)
         local vendor, seconds = M:NearestVendor()
         if vendor then
             local info = C_Map.GetMapInfo(vendor[1])
@@ -184,12 +263,13 @@ end
 ---@param count number
 ---@return KennelToastInfo
 local function Toast(state, count)
+    local lasts = Lasts(count)
     return {
         key = "Ammo:" .. state,
         type = "Ammo:" .. state,
         source = M.title,
         title = (state == "low" and L.AMMO_LOW or L.AMMO_CRITICAL):format(count),
-        text = L.AMMO_TOAST_TEXT,
+        text = lasts and L.AMMO_ENOUGH:format(lasts) .. " " .. L.AMMO_TOAST_TEXT or L.AMMO_TOAST_TEXT,
         icon = GetInventoryItemTexture("player", AMMO_SLOT) or ICON,
     }
 end

@@ -42,6 +42,27 @@ local function vendors(client)
     }
 end
 
+---A route addon that gives every spot `seconds`; it counts the spots it was asked about.
+---@param seconds number
+local function routes(seconds)
+    local asked = { n = 0 }
+    LibStub("LibGoThere-1.0"):RegisterProvider({
+        id = "test",
+        order = 1,
+        Usable = function()
+            return true
+        end,
+        Navigate = function()
+            return true
+        end,
+        TravelTime = function()
+            asked.n = asked.n + 1
+            return seconds
+        end,
+    })
+    return asked
+end
+
 ---The tooltip a display shows: its lines' texts.
 local function tooltip(client)
     client.tooltipLines = {}
@@ -98,11 +119,33 @@ describe("Ammo", function()
             assert.are.equal(2, #seen)
             assert.are.equal("Ammo:critical", seen[2].type)
             assert.are.equal("Ammo critically low: 200 left", seen[2].title)
-            assert.are.equal("Click the ammo counter for the nearest ammo vendor.", seen[2].text)
+            assert.are.equal(
+                "Enough for ~10 min of Auto Shot. Click the ammo counter for the nearest ammo vendor.",
+                seen[2].text
+            )
             client:stock(ROUGH, 1000):animate(1)
             assert.is_false(client:toast().shown)
             client:stock(ROUGH, 400)
             assert.are.equal(3, #seen, "low again after a restock")
+        end)
+
+        it("says how long the ammo lasts at the weapon's speed, in the toast and the tooltip", function()
+            local client = hunter(1000)
+            client.rangedSpeed = 2.5
+            local seen = toasts(client)
+            client:stock(ROUGH, 400)
+            assert.are.equal(
+                "Enough for ~17 min of Auto Shot. Click the ammo counter for the nearest ammo vendor.",
+                seen[1].text
+            )
+            assert.are.equal("Rough Arrow: 400 (~17 min of Auto Shot)", tooltip(client)[1])
+            client:stock(ROUGH, 10)
+            assert.are.equal(
+                "Enough for ~25 s of Auto Shot. Click the ammo counter for the nearest ammo vendor.",
+                seen[2].text
+            )
+            client:stock(ROUGH, 0)
+            assert.are.equal("Rough Arrow: 0", tooltip(client)[1], "nothing to last")
         end)
 
         it("follows the lines set on its page, and the toasts' switch", function()
@@ -182,7 +225,7 @@ describe("Ammo", function()
             local client = hunter(400)
             vendors(client)
             local lines = tooltip(client)
-            assert.are.equal("Rough Arrow: 400", lines[1])
+            assert.are.equal("Rough Arrow: 400 (~20 min of Auto Shot)", lines[1])
             assert.are.equal("Nearest ammo vendor: Arrow Al in Elwynn Forest", lines[2])
             assert.are.equal("Click: the way to it. Right-click: settings.", lines[#lines])
         end)
@@ -193,6 +236,57 @@ describe("Ammo", function()
             assert.are.equal("No ammo vendor known.", tooltip(client)[2])
             broker().OnClick(nil, "LeftButton")
             assert.is_true(client:printedContains("No ammo vendor known."))
+        end)
+
+        it("is kept while the hunter stays within 100 yards, for a minute, for one kind of ammo", function()
+            local client = hunter(400)
+            vendors(client)
+            local asked = routes(120)
+            tooltip(client)
+            local first = asked.n
+            assert.is_true(first > 0)
+            client.worldPos = { -8950, 450, 0 }
+            tooltip(client)
+            broker().OnClick(nil, "LeftButton")
+            assert.are.equal(first, asked.n, "same 100 yards")
+            client.worldPos = { -8850, 450, 0 }
+            tooltip(client)
+            assert.are.equal(2 * first, asked.n, "moved on")
+            client:advance(61)
+            tooltip(client)
+            assert.are.equal(3 * first, asked.n, "a minute later")
+            client.ranged = GUN
+            client:fire("PLAYER_EQUIPMENT_CHANGED", 18)
+            tooltip(client)
+            assert.is_true(asked.n > 3 * first, "another kind of ammo")
+        end)
+
+        for _, case in ipairs({ { "the map's size", {} }, { "the map's corners", { noMapWorldSize = true } } }) do
+            it("without a world position, goes by the map position in yards from " .. case[1], function()
+                local client = hunter(400, case[2])
+                vendors(client)
+                local asked = routes(120)
+                client.worldPos = nil
+                tooltip(client)
+                local first = asked.n
+                client.mapPos = { 0.51, 0.5 } -- 35 yards on
+                tooltip(client)
+                assert.are.equal(first, asked.n, "same 100 yards")
+                client.mapPos = { 0.53, 0.5 }
+                tooltip(client)
+                assert.are.equal(2 * first, asked.n, "moved on")
+            end)
+        end
+
+        it("is looked up each time when the hunter's position is unknown", function()
+            local client = hunter(400)
+            vendors(client)
+            local asked = routes(120)
+            client.worldPos, client.mapPos = nil, nil
+            tooltip(client)
+            local first = asked.n
+            tooltip(client)
+            assert.are.equal(2 * first, asked.n)
         end)
 
         it("opens the module's settings on a right-click", function()

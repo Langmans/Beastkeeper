@@ -197,7 +197,9 @@ it to feed the next food from your bags.
 
 Your ammo count in data broker displays (EllesmereUI's data bars, Titan
 Panel, ...) as "Kennel Ammo": orange below 500 and red below 250, with a toast
-each time (both lines on its page). Hover for the nearest vendor of your
+each time (both lines on its page). The toast and the tooltip say how long
+the ammo lasts at your weapon's speed ("~17 min of Auto Shot"). Hover for the
+nearest vendor of your
 faction that sells your kind of ammo (arrows for a bow or crossbow, bullets
 for a gun), click for the way there (Shortest Path Forever, TomTom, the game's
 map pin), right-click for its page. At a vendor that sells your kind, it buys

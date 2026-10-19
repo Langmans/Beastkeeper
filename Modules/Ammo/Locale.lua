@@ -28,6 +28,12 @@ L.AMMO_CLICK = "Click: the way to it. Right-click: settings."
 L.AMMO_LOW = "Ammo low: %d left"
 L.AMMO_CRITICAL = "Ammo critically low: %d left"
 L.AMMO_TOAST_TEXT = "Click the ammo counter for the nearest ammo vendor."
+-- How long the ammo lasts at one Auto Shot per weapon swing: in the toast before AMMO_TOAST_TEXT
+-- (%s: AMMO_MINUTES or AMMO_SECONDS), and after the tooltip's count (AMMO_LASTS).
+L.AMMO_ENOUGH = "Enough for %s of Auto Shot."
+L.AMMO_LASTS = " (%s of Auto Shot)"
+L.AMMO_MINUTES = "~%d min"
+L.AMMO_SECONDS = "~%d s"
 -- Kennel's page: the kinds of toast, for a look of their own.
 L.AMMO_TOASTTYPE_LOW = "Ammo low"
 L.AMMO_TOASTTYPE_CRITICAL = "Ammo critically low"

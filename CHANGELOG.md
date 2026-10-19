@@ -82,7 +82,8 @@
   (specialization, diet, what each family learns, where to tame one).
 - Ammo: your ammo count as a data broker source (EllesmereUI's data bars,
   Titan Panel), orange when low and red when critically low with a toast at
-  each; a click shows the way to the nearest ammo vendor of your faction for
+  each, both saying how long the ammo lasts at your weapon's speed; a click
+  shows the way to the nearest ammo vendor of your faction for
   your kind of ammo; at a vendor it buys the best ammo for your level to fill
   your quiver or ammo pouch.
 
