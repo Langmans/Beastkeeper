@@ -74,16 +74,49 @@ function M:State(count)
     return "ok"
 end
 
----How long `count` lasts at one Auto Shot per weapon swing ("~17 min", "~25 s"); nil without a
----weapon speed or ammo.
+-- The pace ammo goes at, measured per fight: the count and time at its start (nil out of combat),
+-- and the pace of the last fight that used any, in ammo per second.
+---@type number?, number?, number?
+local fightStart, fightCount, lastPace
+
+---Ammo per second in the fight going on, nil before it used any.
+---@return number?
+local function FightPace()
+    if not fightStart or not fightCount then return nil end
+    local used, elapsed = fightCount - Count(), GetTime() - fightStart
+    if used > 0 and elapsed > 0 then return used / elapsed end
+end
+
+---Ammo per second: this fight's pace, else the last fight's, else one Auto Shot per weapon swing;
+---nil without any of them.
+---@return number?
+local function Pace()
+    local pace = FightPace() or lastPace
+    if pace then return pace end
+    local speed = UnitRangedDamage("player")
+    if canaccessvalue(speed) and speed and speed > 0 then return 1 / speed end
+end
+
+---How long `count` lasts at the pace ammo goes ("~17 min", "~25 s"); nil without a pace or ammo.
 ---@param count number
 ---@return string?
 local function Lasts(count)
-    local speed = UnitRangedDamage("player")
-    if not canaccessvalue(speed) or not speed or speed <= 0 or count <= 0 then return nil end
-    local seconds = count * speed
+    local pace = Pace()
+    if not pace or count <= 0 then return nil end
+    local seconds = count / pace
     if seconds < 60 then return L.AMMO_SECONDS:format(math.floor(seconds + 0.5)) end
     return L.AMMO_MINUTES:format(math.floor(seconds / 60 + 0.5))
+end
+
+-- A fight starts: measure from here.
+function M:PLAYER_REGEN_DISABLED()
+    fightStart, fightCount = GetTime(), Count()
+end
+
+-- A fight ends: keep its pace when it used any.
+function M:PLAYER_REGEN_ENABLED()
+    lastPace = FightPace() or lastPace
+    fightStart, fightCount = nil, nil
 end
 
 -- The vendors' spots per kind of ammo for the hunter's faction, built on first use and again when
@@ -320,6 +353,8 @@ function M:OnEnable()
     self.state = nil
     Kennel.RegisterEvents(self, EVENTS, Update)
     self:RegisterEvent("MERCHANT_SHOW")
+    self:RegisterEvent("PLAYER_REGEN_DISABLED")
+    self:RegisterEvent("PLAYER_REGEN_ENABLED")
     self:Update()
 end
 
