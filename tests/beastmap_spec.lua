@@ -3,6 +3,7 @@
 
 local BITE, CHARGE = 17253, 7371
 local ELWYNN, TIRISFAL, BARRENS, STORMWIND = 1429, 1420, 1413, 1453
+local BORDER = 1430 -- the simulated map right east of Elwynn Forest
 local TRAINER_ICON, STABLE_ICON = 132162, 132161
 local CLAW_ICON, BITE_ICON, CHARGE_ICON = 132140, 132278, 132183
 
@@ -590,6 +591,63 @@ describe("Beast Map", function()
             client.Kennel.data.beasts[102].pins = { [TIRISFAL] = { 1, 1 } }
             client.Kennel:RefreshWindow("abilities")
             assert.are.equal("High Cat in Tirisfal Glades, +2 more", panel.ranks[3].text.text, "65 is closer to 70")
+        end)
+
+        it("puts the beasts in reach in order of distance in a straight line, across zone borders", function()
+            local client = hunter(70)
+            -- At Elwynn Forest's east edge; Late Cat lives in Elwynn's west and just over the border.
+            client.worldPos = { -9000, 400 - 0.45 * 3470, 0 }
+            client.Kennel.data.beasts[106].pins = { [ELWYNN] = { 5, 50 }, [BORDER] = { 10, 50 } }
+            local panel = tab(client)
+            click(panel.rows[3])
+            assert.are.equal("Late Cat in Border Valley, +2 more", panel.ranks[3].text.text)
+            click(panel.ranks[3].go)
+            assert.is_true(client:printedContains("|Hworldmap:1430:1000:5000|h"), "its nearest pin")
+        end)
+
+        it("asks the route addon about the 5 nearest beasts in reach only", function()
+            local client = hunter(70)
+            local beasts, teachers = client.Kennel.data.beasts, {}
+            for i = 1, 7 do
+                beasts[300 + i] = {
+                    name = "Cat " .. i,
+                    family = 2,
+                    minLevel = 10,
+                    maxLevel = 10,
+                    pins = { [ELWYNN] = { 10 * i, 55 } },
+                }
+                teachers[i] = 300 + i
+            end
+            client.Kennel.data.petAbilityRanks[CLAW_3].teachers = teachers
+            local asked = {}
+            LibStub("LibGoThere-1.0"):RegisterProvider({
+                id = "test",
+                order = 1,
+                Usable = function()
+                    return true
+                end,
+                Navigate = function()
+                    return true
+                end,
+                TravelTime = function(_, _, _, _, _, x, y)
+                    -- The cats only; the other ranks' beasts are asked about too.
+                    if y == 0.55 then asked[#asked + 1] = x end
+                    return x < 0.5 and 60 or 30
+                end,
+            })
+            local panel = tab(client)
+            click(panel.rows[3])
+            table.sort(asked)
+            assert.are.same({ 0.3, 0.4, 0.5, 0.6, 0.7 }, asked, "the 5 nearest the middle")
+            assert.are.equal("Cat 5 in Elwynn Forest, ~1 min, +6 more", panel.ranks[3].text.text)
+        end)
+
+        it("goes to the nearest of a beast's pins", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            click(panel.rows[1])
+            click(panel.ranks[1].go)
+            assert.is_true(client:printedContains("|Hworldmap:1429:2000:2000|h"), "Spider's pin at 20/20")
         end)
 
         it("sends the hunter to the beast on a click, and makes it the tame key's", function()

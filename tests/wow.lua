@@ -667,7 +667,7 @@ function NewClient(opts)
     end
     -- Map and area names the client knows: a uiMapID's (C_Map.GetMapInfo) and an AreaTable
     -- ID's, as an instance has (C_Map.GetAreaInfo). Anything else is unknown (nil).
-    local MAP_NAMES = { [1429] = "Elwynn Forest", [1420] = "Tirisfal Glades" }
+    local MAP_NAMES = { [1429] = "Elwynn Forest", [1420] = "Tirisfal Glades", [1430] = "Border Valley" }
     local AREA_NAMES = { [718] = "Wailing Caverns" }
     -- Where the player stands in the world (UnitPosition: y, x and the instance; nil inside an
     -- instance) and on its map (0..1). client.mapWorld: where each map lies in the world, its

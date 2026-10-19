@@ -433,16 +433,73 @@ local function FirstMap(beast)
     return first
 end
 
----Seconds to a beast's first pin, as the player's route addon works it out (LibGoThere); a huge
+-- Where each beast's pins lie in the world, worked out once per beast (and again when its pins
+-- change): flattened continent, x, y (Kennel.InWorld) per pin, in the order of `pinsOf`'s map, x,
+-- y; false for a pin the client cannot place.
+---@type table<number, (number|false)[]>, table<number, number[]>, table<number, table>
+local worldOf, pinsOf, pinsFrom = {}, {}, {}
+-- What an instance beast's pins count as.
+local NO_SPOTS = {}
+
+---A beast's pins and where they lie in the world, flattened (map, x, y and continent, x, y each).
+---@param npc number
+---@return number[] pins
+---@return (number|false)[] world
+local function Spots(npc)
+    local from = Data().beasts[npc].pins or NO_SPOTS
+    if pinsFrom[npc] ~= from then
+        pinsFrom[npc] = from
+        ---@type number[], (number|false)[]
+        local pins, world = {}, {}
+        for map, flat in pairs(from) do
+            for i = 1, #flat, 2 do
+                local x, y = flat[i] / 100, flat[i + 1] / 100
+                pins[#pins + 1], pins[#pins + 2], pins[#pins + 3] = map, x, y
+                local continent, wx, wy = Kennel.InWorld(map, x, y)
+                world[#world + 1], world[#world + 2], world[#world + 3] = continent or false, wx, wy
+            end
+        end
+        pinsOf[npc], worldOf[npc] = pins, world
+    end
+    return pinsOf[npc], worldOf[npc]
+end
+
+---A beast's pin nearest the player in a straight line, across zone borders: its map, x, y and the
+---yards to it; the first pin by map with a huge distance when the player or the pins cannot be
+---placed on one continent; nil for a beast in an instance.
+---@param npc number
+---@return number? map
+---@return number x
+---@return number y
+---@return number yards
+local function NearestPin(npc)
+    local pins, world = Spots(npc)
+    local continent, px, py = Kennel.PlayerInWorld()
+    ---@type integer?, number
+    local best, bestYards = nil, math.huge
+    for i = 1, #world, 3 do
+        if continent and world[i] == continent then
+            local yards = math.sqrt((world[i + 1] - px) ^ 2 + (world[i + 2] - py) ^ 2)
+            if yards < bestYards then
+                best, bestYards = i, yards
+            end
+        end
+    end
+    if best then return pins[best], pins[best + 1], pins[best + 2], bestYards end
+    local map = FirstMap(Data().beasts[npc])
+    if not map then return nil, 0, 0, math.huge end
+    local pin = (Data().beasts[npc].pins --[[@as table<number, number[]> ]])[map]
+    return map, pin[1] / 100, pin[2] / 100, math.huge
+end
+
+---Seconds to a beast's nearest pin, as the player's route addon works it out (LibGoThere); a huge
 ---number when there is none to ask, or no route.
 ---@param npc number
 ---@return number
 local function AskTravelTime(npc)
-    local beast = Data().beasts[npc]
-    local map = FirstMap(beast)
+    local map, x, y = NearestPin(npc)
     if not map then return math.huge end
-    local pin = (beast.pins --[[@as table<number, number[]> ]])[map]
-    return GoThere:TravelTime(map, pin[1] / 100, pin[2] / 100) or math.huge
+    return GoThere:TravelTime(map, x, y) or math.huge
 end
 
 -- Travel times by beast, kept TRAVEL_KEEP seconds: a route addon's answer takes time, and sorting
@@ -469,9 +526,15 @@ local function TravelSeconds(npc)
     return seconds
 end
 
----Two teaching beasts in the order the window lists them: the ones the hunter can tame now first.
----Among those, the one reached first when a route addon gives travel times, else the ones on the
----hunter's map, then the closest in level; above the hunter's level, the lowest first.
+-- The yards to each beast being sorted, filled before each sort (M.Nearest).
+---@type table<number, number>
+local yardsTo = {}
+-- A route addon weighs only the TRAVEL_FEW beasts in reach nearest in a straight line.
+local TRAVEL_FEW = 5
+
+---Two teaching beasts in the order the window lists them: the ones the hunter can tame now first,
+---above the hunter's level the lowest first. Then the nearer in a straight line (yardsTo), else the
+---one on the hunter's map, then the closest in level.
 ---@param a number
 ---@param b number
 ---@return boolean
@@ -481,39 +544,53 @@ local function Closer(a, b)
     local inA, inB = ba.minLevel <= level, bb.minLevel <= level
     if inA ~= inB then return inA end
     if not inA and ba.minLevel ~= bb.minLevel then return ba.minLevel < bb.minLevel end
-    if GoThere:HasTravelTimes() then
-        local ta, tb = TravelSeconds(a), TravelSeconds(b)
-        if ta ~= tb then return ta < tb end
-    end
+    if yardsTo[a] ~= yardsTo[b] then return yardsTo[a] < yardsTo[b] end
     local here = C_Map.GetBestMapForUnit("player")
     local hereA, hereB = FirstMap(ba) == here, FirstMap(bb) == here
     if hereA ~= hereB then return hereA end
     return math.abs(ba.minLevel - level) < math.abs(bb.minLevel - level)
 end
 
----A rank's teachers in the window's order (Closer); a new list.
+---A rank's teachers in the window's order (Closer); with travel times, the first TRAVEL_FEW in
+---reach in the order a route addon reaches them. A new list.
 ---@param teachers number[]
 ---@return number[]
 function M.Nearest(teachers)
     ---@type number[]
     local list = {}
+    wipe(yardsTo)
     for i, npc in ipairs(teachers) do
         list[i] = npc
+        yardsTo[npc] = select(4, NearestPin(npc))
     end
     table.sort(list, Closer)
+    if not GoThere:HasTravelTimes() then return list end
+    local beasts, level = Data().beasts, M:PlayerLevel()
+    local few = 0
+    while few < TRAVEL_FEW and list[few + 1] and beasts[list[few + 1]].minLevel <= level do
+        few = few + 1
+    end
+    -- An insertion sort keeps the straight-line order among equal travel times.
+    for i = 2, few do
+        local npc, seconds = list[i], TravelSeconds(list[i])
+        local j = i - 1
+        while j >= 1 and TravelSeconds(list[j]) > seconds do
+            list[j + 1] = list[j]
+            j = j - 1
+        end
+        list[j + 1] = npc
+    end
     return list
 end
 
----Sends the hunter to a beast's first pin through LibGoThere, and makes it the tame key's beast.
+---Sends the hunter to a beast's nearest pin through LibGoThere, and makes it the tame key's beast.
 ---False for a beast in an instance, which has no pin.
 ---@param npc number
 ---@return boolean
 function M:GoToBeast(npc)
-    local beast = Data().beasts[npc]
-    local map = FirstMap(beast)
+    local map, x, y = NearestPin(npc)
     if not map then return false end
-    local pin = (beast.pins --[[@as table<number, number[]> ]])[map]
-    GoThere:Navigate("Kennel", map, pin[1] / 100, pin[2] / 100, BeastName(npc))
+    GoThere:Navigate("Kennel", map, x, y, BeastName(npc))
     self:SetTameTarget(BeastName(npc))
     return true
 end
@@ -556,17 +633,17 @@ local function NewTeacher(rank, level)
     return pick
 end
 
----"Ridge Stalker in Badlands": the beast and its first map by uiMapID, or its zone when it lives in
----an instance; the beast alone when the client has no name for either.
+---"Ridge Stalker in Badlands": the beast and the map of its nearest pin, or its zone when it lives
+---in an instance; the beast alone when the client has no name for either.
 ---@param npc number
 ---@return string
 local function Place(npc)
     local beast = Data().beasts[npc]
     ---@type string?
     local where
-    local first = FirstMap(beast)
-    if first then
-        local info = C_Map.GetMapInfo(first)
+    local map = NearestPin(npc)
+    if map then
+        local info = C_Map.GetMapInfo(map)
         where = info and info.name
     else
         -- A beast has pins or, in an instance, zones (the data spec checks it).
