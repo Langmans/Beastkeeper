@@ -56,6 +56,7 @@ end
 describe("Ammo", function()
     it("has data: arrows and bullets with their level, and vendors that sell them with a pin", function()
         local ns = {}
+        assert(loadfile("Core/Constants/Enums.lua"))("Kennel", ns)
         assert(loadfile("Data/Ammo.lua"))("Kennel", ns)
         local ammo, vendors = ns.data.ammo, ns.data.ammoVendors
         assert.are.same({ arrow = 2, bullet = 3 }, ns.ammoKinds, "the Projectile item subclasses")

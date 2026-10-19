@@ -6,6 +6,7 @@ local _, ns = ...
 ---@type Kennel
 local Kennel = ns
 local M = Kennel:GetModule("FeedEmotes") --[[@as KennelFeedEmotes]]
+local D = Kennel.diets
 
 ---Locale code ("enUS", "deDE", ...) -> that language's emote lines.
 ---@type table<string, KennelEmoteLines>
@@ -36,56 +37,56 @@ M.FoodGroups = {
 ---@type table<number, string>
 M.FoodTypes = {
     -- Bread
-    [4540] = "bread", -- Tough Hunk of Bread
-    [4541] = "bread", -- Freshly Baked Bread
-    [4542] = "bread", -- Moist Cornbread
-    [4544] = "bread", -- Mulgore Spice Bread
-    [4601] = "bread", -- Soft Banana Bread
-    [8950] = "bread", -- Homemade Cherry Pie
-    [252026] = "bread", -- Gustberry Pie
-    [278119] = "bread", -- Bread with Butter
+    [4540] = D.bread, -- Tough Hunk of Bread
+    [4541] = D.bread, -- Freshly Baked Bread
+    [4542] = D.bread, -- Moist Cornbread
+    [4544] = D.bread, -- Mulgore Spice Bread
+    [4601] = D.bread, -- Soft Banana Bread
+    [8950] = D.bread, -- Homemade Cherry Pie
+    [252026] = D.bread, -- Gustberry Pie
+    [278119] = D.bread, -- Bread with Butter
     -- Meat
-    [117] = "meat", -- Tough Jerky
-    [2287] = "meat", -- Haunch of Meat
-    [3770] = "meat", -- Mutton Chop
-    [3771] = "meat", -- Wild Hog Shank
-    [4599] = "meat", -- Cured Ham Steak
-    [8952] = "meat", -- Roasted Quail
-    [11444] = "meat", -- Grim Guzzler Boar
-    [17119] = "meat", -- Deeprun Rat Kabob
-    [252029] = "meat", -- Hippogryph Flank
-    [278121] = "meat", -- Smoked Sausage
+    [117] = D.meat, -- Tough Jerky
+    [2287] = D.meat, -- Haunch of Meat
+    [3770] = D.meat, -- Mutton Chop
+    [3771] = D.meat, -- Wild Hog Shank
+    [4599] = D.meat, -- Cured Ham Steak
+    [8952] = D.meat, -- Roasted Quail
+    [11444] = D.meat, -- Grim Guzzler Boar
+    [17119] = D.meat, -- Deeprun Rat Kabob
+    [252029] = D.meat, -- Hippogryph Flank
+    [278121] = D.meat, -- Smoked Sausage
     -- Fish
-    [787] = "fish", -- Slitherskin Mackerel
-    [4592] = "fish", -- Longjaw Mud Snapper
-    [4593] = "fish", -- Bristle Whisker Catfish
-    [4594] = "fish", -- Rockscale Cod
-    [8957] = "fish", -- Spinefin Halibut
-    [21552] = "fish", -- Striped Yellowtail
+    [787] = D.fish, -- Slitherskin Mackerel
+    [4592] = D.fish, -- Longjaw Mud Snapper
+    [4593] = D.fish, -- Bristle Whisker Catfish
+    [4594] = D.fish, -- Rockscale Cod
+    [8957] = D.fish, -- Spinefin Halibut
+    [21552] = D.fish, -- Striped Yellowtail
     -- Cheese
-    [414] = "cheese", -- Dalaran Sharp
-    [422] = "cheese", -- Dwarven Mild
-    [1707] = "cheese", -- Stormwind Brie
-    [2070] = "cheese", -- Darnassian Bleu
-    [3927] = "cheese", -- Fine Aged Cheddar
-    [8932] = "cheese", -- Alterac Swiss
-    [252030] = "cheese", -- Pungent Skycheddar
+    [414] = D.cheese, -- Dalaran Sharp
+    [422] = D.cheese, -- Dwarven Mild
+    [1707] = D.cheese, -- Stormwind Brie
+    [2070] = D.cheese, -- Darnassian Bleu
+    [3927] = D.cheese, -- Fine Aged Cheddar
+    [8932] = D.cheese, -- Alterac Swiss
+    [252030] = D.cheese, -- Pungent Skycheddar
     -- Fruit
-    [4536] = "fruit", -- Shiny Red Apple
-    [4537] = "fruit", -- Tel'Abim Banana
-    [4538] = "fruit", -- Snapvine Watermelon
-    [4539] = "fruit", -- Goldenbark Apple
-    [4602] = "fruit", -- Moon Harvest Pumpkin
-    [8953] = "fruit", -- Deep Fried Plantains
-    [13810] = "fruit", -- Blessed Sunfruit
-    [252032] = "fruit", -- Red Delicious Stormapple
+    [4536] = D.fruit, -- Shiny Red Apple
+    [4537] = D.fruit, -- Tel'Abim Banana
+    [4538] = D.fruit, -- Snapvine Watermelon
+    [4539] = D.fruit, -- Goldenbark Apple
+    [4602] = D.fruit, -- Moon Harvest Pumpkin
+    [8953] = D.fruit, -- Deep Fried Plantains
+    [13810] = D.fruit, -- Blessed Sunfruit
+    [252032] = D.fruit, -- Red Delicious Stormapple
     -- Fungus
-    [4604] = "fungus", -- Forest Mushroom Cap
-    [4605] = "fungus", -- Red-speckled Mushroom
-    [4606] = "fungus", -- Spongy Morel
-    [4607] = "fungus", -- Delicious Cave Mold
-    [4608] = "fungus", -- Raw Black Truffle
-    [8948] = "fungus", -- Dried King Bolete
+    [4604] = D.fungus, -- Forest Mushroom Cap
+    [4605] = D.fungus, -- Red-speckled Mushroom
+    [4606] = D.fungus, -- Spongy Morel
+    [4607] = D.fungus, -- Delicious Cave Mold
+    [4608] = D.fungus, -- Raw Black Truffle
+    [8948] = D.fungus, -- Dried King Bolete
 }
 
 -- CreatureFamily IDs, the second return of UnitCreatureFamily("pet"); the

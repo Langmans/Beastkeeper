@@ -32,7 +32,7 @@ local FEED_PET_ICON = 132165
 local WELL_FED = 19705 -- a Well Fed buff: its name is what a food's tooltip says
 -- Happiness a bite by levels below the pet: at most `below` levels lower gives `bite`.
 local BITES = { { below = 10, bite = 35 }, { below = 20, bite = 17 }, { below = 30, bite = 8 } }
-local HAPPY, CONTENT, UNHAPPY = 3, 2, 1
+local HAPPY, CONTENT, UNHAPPY = Kennel.happiness.happy, Kennel.happiness.content, Kennel.happiness.unhappy
 
 ---The settings of the profile in use.
 ---@return KennelFeedingSettings

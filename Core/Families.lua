@@ -1,61 +1,14 @@
 local _, ns = ...
 
--- Hunter pet families by CreatureFamily ID (UnitCreatureFamily's second return, the same on every
--- client language), both ways: Kennel.families.cat is 2, so code says families.cat instead of a
--- bare number; Kennel.familyInfo[2] is what Kennel knows of the Cat. Its specialization and diet
--- are as Wowhead's Forever hunter pet pages give them; the Fox, new in Forever, is on none of
--- them yet. The name shown is the client's (Kennel.FamilyName), English as fallback.
+-- A pet family's ID, name and specialization, from Kennel.familyInfo (Constants\Families.lua) and
+-- the client.
 
 ---@type Kennel
 local Kennel = ns
-
-Kennel.families = {
-    wolf = 1,
-    cat = 2,
-    spider = 3,
-    bear = 4,
-    boar = 5,
-    crocolisk = 6,
-    carrionBird = 7,
-    crab = 8,
-    gorilla = 9,
-    raptor = 11,
-    tallstrider = 12,
-    scorpid = 20,
-    turtle = 21,
-    bat = 24,
-    hyena = 25,
-    birdOfPrey = 26,
-    windSerpent = 27,
-    fox = 40,
-}
-
-local F = Kennel.families
-
----@type table<number, KennelFamilyInfo>
-Kennel.familyInfo = {
-    [F.wolf] = { name = "Wolf", spec = "ferocity", diet = { "meat" } },
-    [F.cat] = { name = "Cat", spec = "ferocity", diet = { "meat", "fish" } },
-    [F.spider] = { name = "Spider", spec = "ferocity", diet = { "meat" } },
-    [F.bear] = { name = "Bear", spec = "tenacity", diet = { "meat", "fish", "cheese", "bread", "fungus", "fruit" } },
-    [F.boar] = { name = "Boar", spec = "cunning", diet = { "meat", "fish", "cheese", "bread", "fungus", "fruit" } },
-    [F.crocolisk] = { name = "Crocolisk", spec = "ferocity", diet = { "meat", "fish" } },
-    [F.carrionBird] = { name = "Carrion Bird", spec = "ferocity", diet = { "meat", "fish" } },
-    [F.crab] = { name = "Crab", spec = "tenacity", diet = { "fish", "bread", "fungus", "fruit" } },
-    [F.gorilla] = { name = "Gorilla", spec = "ferocity", diet = { "fungus", "fruit" } },
-    [F.raptor] = { name = "Raptor", spec = "cunning", diet = { "meat" } },
-    [F.tallstrider] = { name = "Tallstrider", spec = "ferocity", diet = { "cheese", "fungus", "fruit" } },
-    [F.scorpid] = { name = "Scorpid", spec = "ferocity", diet = { "meat" } },
-    [F.turtle] = { name = "Turtle", spec = "tenacity", diet = { "fish", "fungus", "fruit", "rawFish" } },
-    [F.bat] = { name = "Bat", spec = "ferocity", diet = { "fungus", "fruit" } },
-    [F.hyena] = { name = "Hyena", spec = "cunning", diet = { "meat", "fruit" } },
-    [F.birdOfPrey] = { name = "Bird of Prey", spec = "cunning", diet = { "meat" } },
-    [F.windSerpent] = { name = "Wind Serpent", spec = "ferocity", diet = { "fish", "cheese", "bread" } },
-    [F.fox] = { name = "Fox" },
-}
-
 local L = Kennel.L
-local SPEC_NAMES = { ferocity = L.FAMILY_FEROCITY, cunning = L.FAMILY_CUNNING, tenacity = L.FAMILY_TENACITY }
+local S = Kennel.petSpecs
+local SPEC_NAMES =
+    { [S.ferocity] = L.FAMILY_FEROCITY, [S.cunning] = L.FAMILY_CUNNING, [S.tenacity] = L.FAMILY_TENACITY }
 
 ---A family's ID from its name as Kennel.FamilyName gives it (a pet's UnitCreatureFamily, a stable
 ---list's familyName); nil for a name Kennel does not know.

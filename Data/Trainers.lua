@@ -6,8 +6,7 @@ local _, ns = ...
 ---@type Kennel
 local Kennel = ns
 
--- The factions, as UnitFactionGroup gives them.
-local ALLIANCE, HORDE = "Alliance", "Horde"
+local ALLIANCE, HORDE = Kennel.factions.alliance, Kennel.factions.horde
 
 ---@type table<number, KennelTrainer>
 local T = {}

@@ -12,11 +12,12 @@ local Kennel = ns
 local L = Kennel.L
 local M = Kennel:GetModule("Feeding") --[[@as KennelFeeding]]
 
--- Border colour per happiness (1 unhappy, 2 content, 3 happy), and food line colour per bite.
+local H = Kennel.happiness
+-- Border colour per happiness, and food line colour per bite.
 local HAPPINESS = {
-    { name = L.FEEDING_UNHAPPY, color = { 1, 0, 0 } },
-    { name = L.FEEDING_CONTENT, color = { 1, 1, 0 } },
-    { name = L.FEEDING_HAPPY, color = { 0, 1, 0 } },
+    [H.unhappy] = { name = L.FEEDING_UNHAPPY, color = { 1, 0, 0 } },
+    [H.content] = { name = L.FEEDING_CONTENT, color = { 1, 1, 0 } },
+    [H.happy] = { name = L.FEEDING_HAPPY, color = { 0, 1, 0 } },
 }
 local HINT_COLOR = { 0.5, 0.5, 0.5 }
 local SIZE = 36
@@ -74,11 +75,11 @@ function M:ApplyButton()
         local _, feedIcon = Kennel.SpellInfo(M.FEED_PET)
         icon:SetTexture(first and C_Item.GetItemIconByID(first.itemID) or feedIcon)
         local watching = self:IsEnabled() and class == "HUNTER" and UnitExists("pet")
-        local happiness = watching and M.Happiness() or 3
+        local happiness = watching and M.Happiness() or H.happy
         local mood = HAPPINESS[happiness]
         SetBorderColor = SetBorderColor or Kennel:StyleButton(button, { icon = icon, group = "Feeding" })
         SetBorderColor(mood.color[1], mood.color[2], mood.color[3])
-        button:SetShown(happiness < 3)
+        button:SetShown(happiness < H.happy)
     end)
 end
 
@@ -88,7 +89,7 @@ local function OnEnter(self)
     local pet = UnitName("pet") or ""
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     GameTooltip:SetText(L.FEEDING_TOOLTIP:format(pet))
-    local happiness = HAPPINESS[M.Happiness() or 3]
+    local happiness = HAPPINESS[M.Happiness() or H.happy]
     GameTooltip:AddLine(happiness.name, happiness.color[1], happiness.color[2], happiness.color[3])
     local foods = M:Foods()
     for _, food in ipairs(foods) do

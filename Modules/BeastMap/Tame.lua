@@ -12,7 +12,7 @@ local L = Kennel.L
 local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
 
 local TAME_BEAST = 1515
-local SKULL = 8
+local SKULL = Kennel.raidMarks.skull
 
 local button = CreateFrame("Button", "KennelTameButton", UIParent, "SecureActionButtonTemplate")
 button:RegisterForClicks("AnyUp", "AnyDown")

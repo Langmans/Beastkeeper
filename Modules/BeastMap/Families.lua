@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- The Families tab of Kennel's window (Core\Window.lua): every pet family (Core\Families.lua), with
+-- The Families tab of Kennel's window (Core\Window.lua): every pet family (Core\Constants\Families.lua), with
 -- how many of the hunter's pets are of it; for the chosen one (the pet out's at first) its
 -- specialization, diet, the abilities beasts teach it with how many ranks the hunter knows, and the
 -- beasts of that family nearest first (BeastMap.lua's Nearest), each with a button that goes there,

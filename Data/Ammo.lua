@@ -11,8 +11,7 @@ local Kennel = ns
 Kennel.ammoKinds = { arrow = 2, bullet = 3 }
 local K = Kennel.ammoKinds
 
--- The factions, as UnitFactionGroup gives them.
-local ALLIANCE, HORDE = "Alliance", "Horde"
+local ALLIANCE, HORDE = Kennel.factions.alliance, Kennel.factions.horde
 
 -- The item IDs, by name.
 local ROUGH_ARROW = 2512

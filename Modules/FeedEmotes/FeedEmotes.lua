@@ -16,7 +16,7 @@ M.description = L.FEEDEMOTES_DESC
 M.enabledByDefault = false
 M.defaults = {
     profile = { petName = false, customChance = 0, customFallback = true },
-    -- petSex: pet number (Kennel.PetNumber) -> 2 male or 3 female, where the player chose.
+    -- petSex: pet number (Kennel.PetNumber) -> Kennel.sex.male or .female, where the player chose.
     char = { sharedLines = false, customLines = {}, petSex = {} },
     global = { customLines = {} },
 }
@@ -50,8 +50,8 @@ function M:CustomLines()
     return self:Char().customLines
 end
 
----The summoned pet's sex: 2 male, 3 female, nil when unknown. The player's choice for this pet
----comes first; WoW: Forever reports 1 (unknown) for hunter pets.
+---The summoned pet's sex: Kennel.sex.male or .female, nil when unknown. The player's choice for
+---this pet comes first; WoW: Forever reports unknown for hunter pets.
 ---@return number?
 function M:PetSex()
     local petNumber = Kennel.PetNumber()
@@ -59,7 +59,7 @@ function M:PetSex()
     if chosen then return chosen end
     local sex = UnitSex("pet")
     if not Kennel.Readable(sex) then return nil end
-    return (sex == 2 or sex == 3) and sex or nil
+    return (sex == Kennel.sex.male or sex == Kennel.sex.female) and sex or nil
 end
 
 ---Saves the player's choice for the summoned pet: 2 male, 3 female, or nil for the game's value.

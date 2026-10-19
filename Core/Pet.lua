@@ -174,8 +174,7 @@ function Kennel.PetLoyalty(total, petLevel)
     return loyalty, name
 end
 
----The pet's happiness: 1 unhappy, 2 content, 3 happy; nil without a pet, the API, or a readable
----answer.
+---The pet's happiness, a Kennel.happiness value; nil without a pet, the API, or a readable answer.
 ---@return number?
 function Kennel.PetHappiness()
     local happiness = C_PetInfo.GetPetHappiness and C_PetInfo.GetPetHappiness()

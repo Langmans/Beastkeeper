@@ -16,10 +16,11 @@ M.CUSTOM_LINE_MAX = 150
 ---Every condition, in the order a saved line lists them: sex, food type, family by ID.
 ---@type KennelFeedCondition[]
 M.Conditions = {
-    { tag = "male", group = "sex", value = 2 },
-    { tag = "female", group = "sex", value = 3 },
+    { tag = "male", group = "sex", value = Kennel.sex.male },
+    { tag = "female", group = "sex", value = Kennel.sex.female },
 }
-for _, foodType in ipairs({ "bread", "meat", "fish", "cheese", "fruit", "fungus" }) do
+local D = Kennel.diets
+for _, foodType in ipairs({ D.bread, D.meat, D.fish, D.cheese, D.fruit, D.fungus }) do
     M.Conditions[#M.Conditions + 1] = { tag = foodType, group = "foodType", value = foodType }
 end
 ---@type KennelFeedCondition[]

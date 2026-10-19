@@ -6,6 +6,7 @@ local _, ns = ...
 ---@type Kennel
 local Kennel = ns
 local M = Kennel:GetModule("FeedEmotes") --[[@as KennelFeedEmotes]]
+local SEX = Kennel.sex
 
 ---Adds the lines of `list`, if there is one, to the end of `pool`.
 ---@param pool string[]
@@ -49,9 +50,9 @@ function M:LinePools(itemID, foodName)
         end
     end
     Append(builtIn, emotes.any)
-    if situation.sex == 2 then
+    if situation.sex == SEX.male then
         Append(builtIn, emotes.male)
-    elseif situation.sex == 3 then
+    elseif situation.sex == SEX.female then
         Append(builtIn, emotes.female)
     end
     local group = itemID and self.FoodGroups[itemID]
@@ -104,7 +105,7 @@ end
 local function PronounSex()
     if M:Settings().petName then return nil end
     local sex = M:PetSex()
-    return sex == 2 and "male" or sex == 3 and "female" or nil
+    return sex == SEX.male and "male" or sex == SEX.female and "female" or nil
 end
 
 ---Replaces the placeholders in an emote line. {pet} is the pet's name, {food} the food, {a} its

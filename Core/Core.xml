@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Addon.lua first: it makes the addon object every other file adds to. -->
     <Script file="Addon.lua"/>
+    <Include file="Constants\Constants.xml"/>
     <Script file="Families.lua"/>
     <Script file="Sounds.lua"/>
     <Script file="Pet.lua"/>

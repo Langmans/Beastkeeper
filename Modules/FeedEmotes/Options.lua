@@ -9,7 +9,7 @@ local L = Kennel.L
 local M = Kennel:GetModule("FeedEmotes") --[[@as KennelFeedEmotes]]
 
 local MYSTERY_MEAT = 12037
-local SEX = { game = nil, male = 2, female = 3 }
+local SEX = { game = nil, male = Kennel.sex.male, female = Kennel.sex.female }
 local EMOTE_COLOR = "|cffff8040"
 
 -- The conditions ticked for the next new line, by tag.
@@ -69,7 +69,7 @@ end
 ---@return table
 local function SexChoice()
     ---@type table<string, string>
-    local names = { [2] = "male", [3] = "female" }
+    local names = { [Kennel.sex.male] = "male", [Kennel.sex.female] = "female" }
     return {
         type = "select",
         name = function()

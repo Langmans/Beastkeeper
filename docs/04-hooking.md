@@ -217,7 +217,7 @@ The pet out's happiness changed. Feeding and the Data Broker listen.
 
 | Field | Type | |
 |---|---|---|
-| `happiness` | number | 1 unhappy, 2 content, 3 happy |
+| `happiness` | number | `Kennel.happiness.unhappy` (1), `.content` (2) or `.happy` (3) |
 | `before` | number? | `nil` for a pet just out |
 
 ### `KENNEL_PET_DIED` (core)

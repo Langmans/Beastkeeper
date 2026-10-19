@@ -10,7 +10,7 @@ local _, ns = ...
 
 ---@type Kennel
 local Kennel = ns
--- Pet families by name (Core\Families.lua): F.cat is 2.
+-- Pet families by name (Core\Constants\Families.lua): F.cat is 2.
 local F = Kennel.families
 
 ---@type table<number, KennelPetAbilityRank>

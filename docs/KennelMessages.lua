@@ -68,7 +68,7 @@
 
 ---KENNEL_PET_HAPPINESS (core, through Kennel:Listen): the pet out's happiness changed.
 ---@class KennelPetHappinessEvent
----@field happiness number 1 unhappy, 2 content, 3 happy
+---@field happiness number Kennel.happiness.unhappy (1), .content (2) or .happy (3)
 ---@field before number? nil for a pet just out
 
 ---KENNEL_PET_DIED (core, through Kennel:Listen): the pet out died.
