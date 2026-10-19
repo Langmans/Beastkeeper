@@ -2,42 +2,45 @@
 
 ## Unreleased
 
-- The framework: a settings page under AddOns → Kennel with a switch per
-  module, a page per module with options, and profiles.
+### Kennel itself
+
+- A settings page under AddOns → Kennel with a switch per module, a page per
+  module with options, and profiles.
 - `/kennel` opens Kennel's window, `/kennel config` the settings page;
   `/kennel help` lists the module commands. The window has a tab per part,
   takes the button skin's look, moves by dragging, and opens from the data
   broker and a key binding too.
-- With OAP Debug installed: Kennel's messages, chat lines, counts, the
-  window's timings and its Lua errors in OAP Debug's window, as much as the
-  "OAP Debug" setting on Kennel's page says.
 - Kennel's macros say what they do in the tooltip of the action button they
   are on.
+
+### Toasts
+
 - A toast for every module, in two looks: a small card near the top of the
   screen, or a large splash in the middle. Both have a timer bar; drag to
   move, right-click to close, hover to keep it up. Duration, size and look on
   Kennel's page, and a look per kind of toast. Other addons can add looks.
-- Care Button (from Pet Care Button): one key and the KennelCare macro for
-  Mend Pet, Revive Pet and Call Pet that remember a dead pet, also once the
-  body is gone; toasts when the pet dies, is missing at the pull or runs low;
-  a low health marker beside the pet frame that works while the game hides
-  the pet's health; the button on screen too, showing what a click casts.
-- With EllesmereUI loaded: the card and the splash in EllesmereUI's look;
-  with ElvUI loaded, in ElvUI's. A look that shows toasts as the game's raid
-  warning.
-- A look that sends toasts through LibSink: Blizzard's floating text, chat,
-  raid warning, MikSBT and the other outputs LibSink knows.
-- With MessageQueue loaded: a LibSink output that says toasts in a chat
-  channel (say, party, group, a custom channel); say, yell and channels go out
-  on your next key press or click, as WoW: Forever requires.
-- Ability Learned (from Pet Ability Learned): a toast, on the splash by
-  default, when your hunter learns a pet ability from a tamed beast, with the
-  pet's portrait and free training points; a history per character; hints on
-  what a summoned pet can still teach, from what Beast Training shows; a toast
-  when your pet gains training points, naming the level-up or loyalty level
-  behind them, and one when its loyalty drops; a sound choice for each.
 - A kind of toast can start on a look its module picks; the pet's portrait on
   the icon; an optional screenshot per toast.
+- A look that shows toasts as the game's raid warning, and one that sends
+  them through LibSink: Blizzard's floating text, chat, raid warning, MikSBT
+  and the other outputs LibSink knows.
+
+### Modules
+
+- Care Button (from Pet Care Button): one key and the KennelCare macro for
+  Mend Pet, Revive Pet and Call Pet that remember a dead pet, also once the
+  body is gone; toasts when the pet dies, is missing at the pull or runs low,
+  or combat starts with it on Passive; a low health marker beside the pet
+  frame that works while the game hides the pet's health; the button on
+  screen too, showing what a click casts.
+- Ability Learned (from Pet Ability Learned): a toast, on the splash by
+  default, when your hunter learns a pet ability from a tamed beast, with the
+  pet's portrait and free training points; a history per character of every
+  rank learned and the beast it came from, with a list of learns from beasts
+  Kennel's data does not know as teachers; hints on what a summoned pet can
+  still teach, from what Beast Training shows; a toast when your pet gains
+  training points, naming the level-up or loyalty level behind them, and one
+  when its loyalty drops; a sound choice for each.
 - Feed Emotes (from Feed Pet Emotes, which it replaces): a random /emote
   every time you feed your pet, with your own lines, conditions and the pet's
   sex per pet. Off until switched on. Lines for Forever's foxes in all six
@@ -51,9 +54,6 @@
   the food that keeps it happy cheapest (Well Fed food last), the order in
   its tooltip, a list to pick another food on a right-click; toasts when the
   pet becomes content or unhappy and when the last food it eats is gone.
-- Button skins: Kennel's buttons and lists in the look of Masque, ElvUI or
-  EllesmereUI, chosen on Kennel's page (Automatic by default). Other addons
-  add theirs with Kennel:RegisterButtonSkin and RegisterButtonHolderSkin.
 - Data Broker: Kennel as a LibDataBroker source (Titan Panel, ChocolateBar,
   ElvUI datatexts): the pet's name, happiness and free training points, more
   in its tooltip, Kennel's window on a click; and as a minimap button.
@@ -85,16 +85,24 @@
   each; a click shows the way to the nearest ammo vendor of your faction for
   your kind of ammo; at a vendor it buys the best ammo for your level to fill
   your quiver or ammo pouch.
-- Ability Learned keeps every rank you learned, not only the highest.
-- Ability Learned keeps which beast your pet was tamed as with each learn, and
-  a button lists the learns from beasts Kennel's beast data does not know as
-  teachers.
-- Care Button: a toast when combat starts with your pet on Passive.
-- For other addons: messages with a table of details, heard through
-  Kennel:Listen: KENNEL_TOAST, KENNEL_PRINT, KENNEL_RANKS_KNOWN,
-  KENNEL_ABILITY_LEARNED, KENNEL_AUTOCAST_WANTED, KENNEL_RARE_SEEN,
-  KENNEL_AMMO, and from
-  the core KENNEL_PET_HAPPINESS, KENNEL_PET_DIED, KENNEL_PET_TAMED and
+
+### Other addons
+
+- Button skins: Kennel's buttons and lists in the look of Masque, ElvUI or
+  EllesmereUI, chosen on Kennel's page (Automatic by default). Other addons
+  add theirs with Kennel:RegisterButtonSkin and RegisterButtonHolderSkin.
+- With EllesmereUI loaded: the card and the splash in EllesmereUI's look;
+  with ElvUI loaded, in ElvUI's.
+- With MessageQueue loaded: a LibSink output that says toasts in a chat
+  channel (say, party, group, a custom channel); say, yell and channels go out
+  on your next key press or click, as WoW: Forever requires.
+- With OAP Debug installed: Kennel's messages, chat lines, counts, the
+  window's timings and its Lua errors in OAP Debug's window, as much as the
+  "OAP Debug" setting on Kennel's page says.
+- Messages with a table of details, heard through Kennel:Listen:
+  KENNEL_TOAST, KENNEL_PRINT, KENNEL_RANKS_KNOWN, KENNEL_ABILITY_LEARNED,
+  KENNEL_AUTOCAST_WANTED, KENNEL_RARE_SEEN, KENNEL_AMMO, and from the core
+  KENNEL_PET_HAPPINESS, KENNEL_PET_DIED, KENNEL_PET_TAMED and
   KENNEL_PET_GROWTH (training points, level and loyalty, up or down), which
   it works out only while something listens. Kennel's own modules listen the
   same way. See docs/04-hooking.md, with an example addon, and
