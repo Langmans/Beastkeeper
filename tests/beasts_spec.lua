@@ -1,11 +1,12 @@
 -- The generated beast data: pet ability ranks and the beasts that teach them, loaded here on its
--- own (the module specs use a small data set instead).
+-- own after the family table it names families by (the module specs use a small data set instead).
 
----@return table<number, KennelPetAbilityRank>, table<number, KennelBeast>
+---@return table<number, KennelPetAbilityRank>, table<number, KennelBeast>, table<number, KennelFamilyInfo>
 local function Load()
-    local ns = {}
+    local ns = { L = {} }
+    assert(loadfile("Core/Families.lua"))("Kennel", ns)
     assert(loadfile("Data/Beasts.lua"))("Kennel", ns)
-    return ns.data.petAbilityRanks, ns.data.beasts
+    return ns.data.petAbilityRanks, ns.data.beasts, ns.familyInfo
 end
 
 ---@param list number[]
@@ -23,7 +24,30 @@ local FOREST_SPIDER, GRIZZLED_BLACK_BEAR, NIGHT_WEB_SPIDER = 30, 1188, 1505
 local ELWYNN, TIRISFAL, SPIDER, CAT, BEAR = 1429, 1420, 3, 2, 4
 
 describe("the beast data", function()
-    local ranks, beasts = Load()
+    local ranks, beasts, families = Load()
+
+    it("names only families Kennel's family table has", function()
+        for npc, beast in pairs(beasts) do
+            assert.is_truthy(families[beast.family], npc .. " " .. beast.name)
+        end
+        for spellID, rank in pairs(ranks) do
+            for _, family in ipairs(rank.families) do
+                assert.is_truthy(families[family], spellID)
+            end
+        end
+    end)
+
+    it("gives a beast one rank of each ability", function()
+        ---@type table<number, table<number, true>>
+        local seen = {}
+        for spellID, rank in pairs(ranks) do
+            for _, npc in ipairs(rank.teachers) do
+                seen[npc] = seen[npc] or {}
+                assert.is_nil(seen[npc][rank.ability], npc .. " teaches two ranks of " .. rank.ability)
+                seen[npc][rank.ability] = true
+            end
+        end
+    end)
 
     it("knows a rank's ability, number, pet level and the families that learn it", function()
         local claw = ranks[CLAW_2]

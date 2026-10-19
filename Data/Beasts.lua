@@ -10,6 +10,8 @@ local _, ns = ...
 
 ---@type Kennel
 local Kennel = ns
+-- Pet families by name (Core\Families.lua): F.cat is 2.
+local F = Kennel.families
 
 ---@type table<number, KennelPetAbilityRank>
 local R = {}
@@ -22,7 +24,6 @@ R[1742] = {
     ability = 1742,
     rank = 1,
     level = 5,
-    families = {},
     teachers = {
         345,
         574,
@@ -69,41 +70,41 @@ R[1742] = {
         14430,
         208124,
     },
+    families = {},
 }
 R[1753] = {
     ability = 1742,
     rank = 2,
     level = 15,
-    families = {},
     teachers = { 521, 1258, 2237, 2323, 2384, 2563, 2850, 3241, 3245, 3475, 3619, 3809, 4067, 4117, 4118 },
+    families = {},
 }
 R[1754] = {
     ability = 1742,
     rank = 3,
     level = 25,
-    families = {},
     teachers = { 681, 682, 683, 684, 736, 1557, 2385, 2560, 3825, 4126, 4425, 4538 },
+    families = {},
 }
-R[1755] = { ability = 1742, rank = 4, level = 35, families = {}, teachers = { 2729, 2731, 2732, 4861 } }
+R[1755] = { ability = 1742, rank = 4, level = 35, teachers = { 2729, 2731, 2732, 4861 }, families = {} }
 R[1756] = {
     ability = 1742,
     rank = 5,
     level = 45,
-    families = {},
     teachers = { 2522, 6585, 7434, 7455, 8600, 8601, 8927, 9690 },
+    families = {},
 }
 R[3009] = {
     ability = 16827,
     rank = 8,
     level = 56,
-    families = { 4, 7, 2, 8, 26, 11, 20 },
     teachers = { 7431, 7432, 7433, 7434, 7445, 7446, 7456, 10200, 10737, 10741, 10806, 11360, 11361, 11365 },
+    families = { F.bear, F.carrionBird, F.cat, F.crab, F.birdOfPrey, F.raptor, F.scorpid },
 }
 R[3010] = {
     ability = 16827,
     rank = 7,
     level = 48,
-    families = { 4, 7, 2, 8, 26, 11, 20 },
     teachers = {
         1816,
         2522,
@@ -123,12 +124,12 @@ R[3010] = {
         14343,
         14344,
     },
+    families = { F.bear, F.carrionBird, F.cat, F.crab, F.birdOfPrey, F.raptor, F.scorpid },
 }
 R[7371] = {
     ability = 7371,
     rank = 1,
     level = 1,
-    families = { 5 },
     teachers = {
         113,
         119,
@@ -150,20 +151,20 @@ R[7371] = {
         3100,
         3225,
     },
+    families = { F.boar },
 }
-R[16697] = { ability = 1742, rank = 6, level = 55, families = {}, teachers = { 7430, 8602, 10737 } }
+R[16697] = { ability = 1742, rank = 6, level = 55, teachers = { 7430, 8602, 10737 }, families = {} }
 R[16827] = {
     ability = 16827,
     rank = 1,
     level = 1,
-    families = { 4, 7, 2, 8, 26, 11, 20 },
     teachers = { 1196, 1199, 1201, 1995, 1996, 2042, 2043, 3106, 3121, 3124, 3281 },
+    families = { F.bear, F.carrionBird, F.cat, F.crab, F.birdOfPrey, F.raptor, F.scorpid },
 }
 R[16828] = {
     ability = 16827,
     rank = 2,
     level = 8,
-    families = { 4, 7, 2, 8, 26, 11, 20 },
     teachers = {
         199,
         822,
@@ -207,12 +208,12 @@ R[16828] = {
         208812,
         211965,
     },
+    families = { F.bear, F.carrionBird, F.cat, F.crab, F.birdOfPrey, F.raptor, F.scorpid },
 }
 R[16829] = {
     ability = 16827,
     rank = 3,
     level = 16,
-    families = { 4, 7, 2, 8, 26, 11, 20 },
     teachers = {
         154,
         428,
@@ -245,33 +246,33 @@ R[16829] = {
         5828,
         6788,
     },
+    families = { F.bear, F.carrionBird, F.cat, F.crab, F.birdOfPrey, F.raptor, F.scorpid },
 }
 R[16830] = {
     ability = 16827,
     rank = 4,
     level = 24,
-    families = { 4, 7, 2, 8, 26, 11, 20 },
     teachers = { 681, 683, 687, 768, 1815, 2578, 2731, 3810, 4124, 4140, 4154, 4693, 4694, 4696, 4823, 5430, 12037 },
+    families = { F.bear, F.carrionBird, F.cat, F.crab, F.birdOfPrey, F.raptor, F.scorpid },
 }
 R[16831] = {
     ability = 16827,
     rank = 5,
     level = 32,
-    families = { 4, 7, 2, 8, 26, 11, 20 },
     teachers = { 682, 684, 736, 767, 772, 1085, 2406, 2732, 2830, 2850, 4158, 4697, 5937, 7022 },
+    families = { F.bear, F.carrionBird, F.cat, F.crab, F.birdOfPrey, F.raptor, F.scorpid },
 }
 R[16832] = {
     ability = 16827,
     rank = 6,
     level = 40,
-    families = { 4, 7, 2, 8, 26, 11, 20 },
     teachers = { 728, 731, 922, 1088, 1713, 2734, 5268, 5352, 5422, 5424, 5428, 222243 },
+    families = { F.bear, F.carrionBird, F.cat, F.crab, F.birdOfPrey, F.raptor, F.scorpid },
 }
 R[17253] = {
     ability = 17253,
     rank = 1,
     level = 1,
-    families = { 24, 4, 5, 7, 2, 9, 6, 25, 11, 3, 12, 21, 27, 1 },
     teachers = {
         30,
         1020,
@@ -301,12 +302,27 @@ R[17253] = {
         3121,
         3566,
     },
+    families = {
+        F.bat,
+        F.bear,
+        F.boar,
+        F.carrionBird,
+        F.cat,
+        F.gorilla,
+        F.crocolisk,
+        F.hyena,
+        F.raptor,
+        F.spider,
+        F.tallstrider,
+        F.turtle,
+        F.windSerpent,
+        F.wolf,
+    },
 }
 R[17255] = {
     ability = 17253,
     rank = 2,
     level = 8,
-    families = { 24, 5, 4, 7, 2, 9, 6, 25, 11, 3, 12, 21, 27, 1 },
     teachers = {
         118,
         119,
@@ -365,12 +381,27 @@ R[17255] = {
         10357,
         14430,
     },
+    families = {
+        F.bat,
+        F.boar,
+        F.bear,
+        F.carrionBird,
+        F.cat,
+        F.gorilla,
+        F.crocolisk,
+        F.hyena,
+        F.raptor,
+        F.spider,
+        F.tallstrider,
+        F.turtle,
+        F.windSerpent,
+        F.wolf,
+    },
 }
 R[17256] = {
     ability = 17253,
     rank = 3,
     level = 16,
-    families = { 24, 5, 4, 7, 2, 9, 6, 25, 11, 3, 12, 21, 27, 1 },
     teachers = {
         154,
         213,
@@ -420,12 +451,27 @@ R[17256] = {
         14266,
         14279,
     },
+    families = {
+        F.bat,
+        F.boar,
+        F.bear,
+        F.carrionBird,
+        F.cat,
+        F.gorilla,
+        F.crocolisk,
+        F.hyena,
+        F.raptor,
+        F.spider,
+        F.tallstrider,
+        F.turtle,
+        F.windSerpent,
+        F.wolf,
+    },
 }
 R[17257] = {
     ability = 17253,
     rank = 4,
     level = 24,
-    families = { 24, 5, 4, 2, 7, 9, 6, 25, 11, 3, 12, 21, 27, 1 },
     teachers = {
         345,
         574,
@@ -465,12 +511,27 @@ R[17257] = {
         12037,
         14223,
     },
+    families = {
+        F.bat,
+        F.boar,
+        F.bear,
+        F.cat,
+        F.carrionBird,
+        F.gorilla,
+        F.crocolisk,
+        F.hyena,
+        F.raptor,
+        F.spider,
+        F.tallstrider,
+        F.turtle,
+        F.windSerpent,
+        F.wolf,
+    },
 }
 R[17258] = {
     ability = 17253,
     rank = 5,
     level = 32,
-    families = { 24, 5, 4, 2, 7, 9, 6, 25, 11, 3, 12, 21, 27, 1 },
     teachers = {
         682,
         684,
@@ -507,12 +568,27 @@ R[17258] = {
         5425,
         213795,
     },
+    families = {
+        F.bat,
+        F.boar,
+        F.bear,
+        F.cat,
+        F.carrionBird,
+        F.gorilla,
+        F.crocolisk,
+        F.hyena,
+        F.raptor,
+        F.spider,
+        F.tallstrider,
+        F.turtle,
+        F.windSerpent,
+        F.wolf,
+    },
 }
 R[17259] = {
     ability = 17253,
     rank = 6,
     level = 40,
-    families = { 24, 5, 4, 7, 2, 9, 6, 25, 11, 3, 12, 21, 27, 1 },
     teachers = {
         728,
         731,
@@ -544,12 +620,27 @@ R[17259] = {
         14233,
         14339,
     },
+    families = {
+        F.bat,
+        F.boar,
+        F.bear,
+        F.carrionBird,
+        F.cat,
+        F.gorilla,
+        F.crocolisk,
+        F.hyena,
+        F.raptor,
+        F.spider,
+        F.tallstrider,
+        F.turtle,
+        F.windSerpent,
+        F.wolf,
+    },
 }
 R[17260] = {
     ability = 17253,
     rank = 7,
     level = 48,
-    families = { 24, 5, 4, 2, 7, 9, 6, 25, 11, 3, 12, 21, 27, 1 },
     teachers = {
         1817,
         1824,
@@ -586,19 +677,49 @@ R[17260] = {
         10077,
         10981,
     },
+    families = {
+        F.bat,
+        F.boar,
+        F.bear,
+        F.cat,
+        F.carrionBird,
+        F.gorilla,
+        F.crocolisk,
+        F.hyena,
+        F.raptor,
+        F.spider,
+        F.tallstrider,
+        F.turtle,
+        F.windSerpent,
+        F.wolf,
+    },
 }
 R[17261] = {
     ability = 17253,
     rank = 8,
     level = 56,
-    families = { 24, 5, 4, 2, 7, 9, 6, 25, 11, 3, 12, 21, 27, 1 },
     teachers = { 7431, 7432, 7434, 7446, 9696, 10200, 10737, 10741, 10806, 11357, 11365, 11368, 11370, 16117 },
+    families = {
+        F.bat,
+        F.boar,
+        F.bear,
+        F.cat,
+        F.carrionBird,
+        F.gorilla,
+        F.crocolisk,
+        F.hyena,
+        F.raptor,
+        F.spider,
+        F.tallstrider,
+        F.turtle,
+        F.windSerpent,
+        F.wolf,
+    },
 }
 R[23099] = {
     ability = 23099,
     rank = 1,
     level = 30,
-    families = { 5, 2, 25, 12, 1, 20, 21, 9, 4, 8, 6, 11, 3 },
     teachers = {
         682,
         684,
@@ -622,12 +743,26 @@ R[23099] = {
         4950,
         8959,
     },
+    families = {
+        F.boar,
+        F.cat,
+        F.hyena,
+        F.tallstrider,
+        F.wolf,
+        F.scorpid,
+        F.turtle,
+        F.gorilla,
+        F.bear,
+        F.crab,
+        F.crocolisk,
+        F.raptor,
+        F.spider,
+    },
 }
 R[23109] = {
     ability = 23099,
     rank = 2,
     level = 40,
-    families = { 5, 2, 25, 12, 1, 20, 21, 9, 4, 8, 6, 11, 3 },
     teachers = {
         728,
         731,
@@ -648,12 +783,26 @@ R[23109] = {
         8211,
         8960,
     },
+    families = {
+        F.boar,
+        F.cat,
+        F.hyena,
+        F.tallstrider,
+        F.wolf,
+        F.scorpid,
+        F.turtle,
+        F.gorilla,
+        F.bear,
+        F.crab,
+        F.crocolisk,
+        F.raptor,
+        F.spider,
+    },
 }
 R[23110] = {
     ability = 23099,
     rank = 3,
     level = 50,
-    families = { 5, 2, 25, 12, 1, 20, 21, 9, 4, 8, 6, 11, 3 },
     teachers = {
         1817,
         2522,
@@ -682,74 +831,94 @@ R[23110] = {
         15067,
         16117,
     },
+    families = {
+        F.boar,
+        F.cat,
+        F.hyena,
+        F.tallstrider,
+        F.wolf,
+        F.scorpid,
+        F.turtle,
+        F.gorilla,
+        F.bear,
+        F.crab,
+        F.crocolisk,
+        F.raptor,
+        F.spider,
+    },
 }
 R[23145] = {
     ability = 23145,
     rank = 1,
     level = 30,
-    families = { 7, 26, 27 },
     teachers = { 2578, 2579, 2830, 4158, 4692, 4693, 4694, 6013 },
+    families = { F.carrionBird, F.birdOfPrey, F.windSerpent },
 }
 R[23147] = {
     ability = 23145,
     rank = 2,
     level = 40,
-    families = { 24, 7, 26, 27 },
     teachers = { 5291, 5307, 5308, 5349, 5428, 5429, 5430, 7097, 8207, 8336, 213795, 222243 },
+    families = { F.bat, F.carrionBird, F.birdOfPrey, F.windSerpent },
 }
 R[23148] = {
     ability = 23145,
     rank = 3,
     level = 50,
-    families = { 24, 7, 26, 27 },
     teachers = { 1809, 2931, 5708, 7098, 7099, 7455, 7456, 8299, 8600, 8602, 8927, 11357, 11368, 14343 },
+    families = { F.bat, F.carrionBird, F.birdOfPrey, F.windSerpent },
 }
-R[24423] = { ability = 24423, rank = 1, level = 8, families = { 7 }, teachers = { 154, 199, 428, 1194, 4154, 5428 } }
+R[24423] = {
+    ability = 24423,
+    rank = 1,
+    level = 8,
+    teachers = { 154, 199, 428, 1194, 4154, 5428 },
+    families = { F.carrionBird },
+}
 R[24450] = {
     ability = 24450,
     rank = 1,
     level = 30,
-    families = { 2 },
     teachers = { 682, 684, 736, 767, 768, 2406, 2731, 2732, 2850 },
+    families = { F.cat },
 }
-R[24452] = { ability = 24450, rank = 2, level = 40, families = { 2 }, teachers = { 731, 1713, 2734 } }
+R[24452] = { ability = 24450, rank = 2, level = 40, teachers = { 731, 1713, 2734 }, families = { F.cat } }
 R[24453] = {
     ability = 24450,
     rank = 3,
     level = 50,
-    families = { 2 },
     teachers = { 2522, 7430, 7431, 7432, 7434, 10737, 10741, 11360, 11365, 15067 },
+    families = { F.cat },
 }
 R[24577] = {
     ability = 24423,
     rank = 2,
     level = 24,
-    families = { 7 },
     teachers = { 2578, 2579, 4158, 4692, 4693, 4694, 5429, 213795, 222243 },
+    families = { F.carrionBird },
 }
-R[24578] = { ability = 24423, rank = 3, level = 48, families = { 7 }, teachers = { 1809, 2931 } }
-R[24579] = { ability = 24423, rank = 4, level = 56, families = { 7 }, teachers = {} }
+R[24578] = { ability = 24423, rank = 3, level = 48, teachers = { 1809, 2931 }, families = { F.carrionBird } }
+R[24579] = { ability = 24423, rank = 4, level = 56, teachers = {}, families = { F.carrionBird } }
 R[24583] = {
     ability = 24640,
     rank = 2,
     level = 24,
-    families = { 20 },
     teachers = { 4139, 4140, 4696, 4697, 4699, 5937, 7078 },
+    families = { F.scorpid },
 }
 R[24586] = {
     ability = 24640,
     rank = 3,
     level = 40,
-    families = { 20 },
     teachers = { 5422, 5423, 5424, 5988, 7405, 7803, 8926, 9691, 9695, 11735 },
+    families = { F.scorpid },
 }
-R[24587] = { ability = 24640, rank = 4, level = 56, families = { 20 }, teachers = { 9698, 11736, 11737, 14476 } }
-R[24597] = { ability = 24604, rank = 4, level = 56, families = { 1 }, teachers = { 9696 } }
+R[24587] = { ability = 24640, rank = 4, level = 56, teachers = { 9698, 11736, 11737, 14476 }, families = { F.scorpid } }
+R[24597] = { ability = 24604, rank = 4, level = 56, teachers = { 9696 }, families = { F.wolf } }
 R[24603] = {
     ability = 24604,
     rank = 3,
     level = 40,
-    families = { 1 },
     teachers = {
         1817,
         2680,
@@ -770,133 +939,142 @@ R[24603] = {
         10981,
         14339,
     },
+    families = { F.wolf },
 }
 R[24604] = {
     ability = 24604,
     rank = 1,
     level = 10,
-    families = { 1 },
     teachers = { 213, 521, 833, 1765, 3823, 3824, 3862, 10644, 12431 },
+    families = { F.wolf },
 }
-R[24605] =
-    { ability = 24604, rank = 2, level = 24, families = { 1 }, teachers = { 1258, 2727, 2728, 2729, 2925, 3825, 4950 } }
-R[24640] = { ability = 24640, rank = 1, level = 8, families = { 20 }, teachers = { 3127, 3226, 3250, 3252, 5823 } }
-R[24844] = { ability = 24844, rank = 1, level = 1, families = { 27 }, teachers = {} }
+R[24605] = {
+    ability = 24604,
+    rank = 2,
+    level = 24,
+    teachers = { 1258, 2727, 2728, 2729, 2925, 3825, 4950 },
+    families = { F.wolf },
+}
+R[24640] =
+    { ability = 24640, rank = 1, level = 8, teachers = { 3127, 3226, 3250, 3252, 5823 }, families = { F.scorpid } }
+R[24844] = { ability = 24844, rank = 1, level = 1, teachers = {}, families = { F.windSerpent } }
 R[25008] = {
     ability = 24844,
     rank = 2,
     level = 12,
-    families = { 27 },
     teachers = { 3247, 3249, 3424, 3630, 3631, 4011, 5056, 5756 },
+    families = { F.windSerpent },
 }
-R[25009] = { ability = 24844, rank = 3, level = 24, families = { 27 }, teachers = { 3472, 4117, 4118, 4119, 5834 } }
-R[25010] = { ability = 24844, rank = 4, level = 36, families = { 27 }, teachers = { 5307, 5308 } }
-R[25011] = { ability = 24844, rank = 5, level = 48, families = { 27 }, teachers = { 5291, 5349, 5708, 8336 } }
-R[25012] = { ability = 24844, rank = 6, level = 60, families = { 27 }, teachers = { 11357, 11359 } }
+R[25009] =
+    { ability = 24844, rank = 3, level = 24, teachers = { 3472, 4117, 4118, 4119, 5834 }, families = { F.windSerpent } }
+R[25010] = { ability = 24844, rank = 4, level = 36, teachers = { 5307, 5308 }, families = { F.windSerpent } }
+R[25011] =
+    { ability = 24844, rank = 5, level = 48, teachers = { 5291, 5349, 5708, 8336 }, families = { F.windSerpent } }
+R[25012] = { ability = 24844, rank = 6, level = 60, teachers = { 11357, 11359 }, families = { F.windSerpent } }
 R[26064] = {
     ability = 26064,
     rank = 1,
     level = 0,
-    families = { 21 },
     teachers = { 2408, 2505, 3653, 4398, 4399, 4824, 4825, 4887, 5431, 6352, 8213, 14223 },
+    families = { F.turtle },
 }
-R[26090] = { ability = 26090, rank = 1, level = 30, families = { 9 }, teachers = { 1108, 1114 } }
-R[26177] = { ability = 7371, rank = 2, level = 12, families = { 5 }, teachers = { 157, 454, 547, 1191, 1192 } }
-R[26178] = { ability = 7371, rank = 3, level = 24, families = { 5 }, teachers = { 345, 4511, 4512, 4514 } }
-R[26179] = { ability = 7371, rank = 4, level = 36, families = { 5 }, teachers = {} }
-R[26187] = { ability = 26090, rank = 2, level = 40, families = { 9 }, teachers = { 1557, 5260, 5262 } }
-R[26188] = { ability = 26090, rank = 3, level = 50, families = { 9 }, teachers = { 6516, 6585, 9622 } }
-R[26201] = { ability = 7371, rank = 5, level = 48, families = { 5 }, teachers = { 5992, 8303 } }
-R[27685] = { ability = 7371, rank = 6, level = 60, families = { 5 }, teachers = { 16117 } }
-R[1264455] = { ability = 26090, rank = 4, level = 60, families = { 9 }, teachers = {} }
-R[1264478] = { ability = 1264478, rank = 1, level = 12, families = { 24 }, teachers = {} }
-R[1264479] = { ability = 1264478, rank = 2, level = 24, families = { 24 }, teachers = {} }
-R[1264480] = { ability = 1264478, rank = 3, level = 36, families = { 24 }, teachers = {} }
-R[1264481] = { ability = 1264478, rank = 4, level = 48, families = { 24 }, teachers = {} }
-R[1264482] = { ability = 1264478, rank = 5, level = 60, families = { 24 }, teachers = {} }
-R[1264494] = { ability = 1264494, rank = 1, level = 12, families = { 4 }, teachers = { 1188, 1797 } }
-R[1264497] = { ability = 1264494, rank = 2, level = 24, families = { 4 }, teachers = { 2356 } }
-R[1264498] = { ability = 1264494, rank = 3, level = 36, families = { 4 }, teachers = {} }
-R[1264501] = { ability = 1264494, rank = 4, level = 48, families = { 4 }, teachers = {} }
-R[1264502] = { ability = 1264494, rank = 5, level = 60, families = { 4 }, teachers = {} }
-R[1264735] = { ability = 1264735, rank = 1, level = 12, families = { 8 }, teachers = { 2232 } }
-R[1264736] = { ability = 1264735, rank = 2, level = 24, families = { 8 }, teachers = {} }
-R[1264739] = { ability = 1264735, rank = 3, level = 36, families = { 8 }, teachers = {} }
-R[1264741] = { ability = 1264735, rank = 4, level = 48, families = { 8 }, teachers = {} }
-R[1264742] = { ability = 1264735, rank = 5, level = 60, families = { 8 }, teachers = {} }
-R[1264758] = { ability = 1264758, rank = 1, level = 12, families = { 6 }, teachers = {} }
-R[1264927] = { ability = 1264758, rank = 2, level = 24, families = { 6 }, teachers = { 1150 } }
-R[1264929] = { ability = 1264758, rank = 3, level = 36, families = { 6 }, teachers = {} }
-R[1264930] = { ability = 1264758, rank = 4, level = 48, families = { 6 }, teachers = {} }
-R[1264933] = { ability = 1264758, rank = 5, level = 60, families = { 6 }, teachers = {} }
-R[1265038] = { ability = 1265038, rank = 1, level = 12, families = { 25 }, teachers = { 4127 } }
-R[1265039] = { ability = 1265038, rank = 2, level = 24, families = { 25 }, teachers = { 4248 } }
-R[1265040] = { ability = 1265038, rank = 3, level = 36, families = { 25 }, teachers = {} }
-R[1265041] = { ability = 1265038, rank = 4, level = 48, families = { 25 }, teachers = {} }
-R[1265042] = { ability = 1265038, rank = 5, level = 60, families = { 25 }, teachers = {} }
-R[1265054] = { ability = 1265054, rank = 1, level = 10, families = { 26 }, teachers = {} }
-R[1265055] = { ability = 1265054, rank = 2, level = 20, families = { 26 }, teachers = {} }
-R[1265056] = { ability = 1265054, rank = 3, level = 30, families = { 26 }, teachers = {} }
-R[1265057] = { ability = 1265054, rank = 4, level = 40, families = { 26 }, teachers = {} }
-R[1265058] = { ability = 1265054, rank = 5, level = 50, families = { 26 }, teachers = {} }
-R[1265065] = { ability = 1265065, rank = 1, level = 12, families = { 11 }, teachers = { 3255 } }
-R[1265066] = { ability = 1265065, rank = 2, level = 24, families = { 11 }, teachers = { 1016, 1019, 1022, 1023 } }
-R[1265067] = { ability = 1265065, rank = 3, level = 36, families = { 11 }, teachers = {} }
-R[1265068] = { ability = 1265065, rank = 4, level = 48, families = { 11 }, teachers = {} }
-R[1265069] = { ability = 1265065, rank = 5, level = 60, families = { 11 }, teachers = {} }
-R[1265843] = { ability = 1265843, rank = 1, level = 12, families = { 3 }, teachers = { 1184, 1780 } }
-R[1265878] = { ability = 1265843, rank = 2, level = 24, families = { 3 }, teachers = { 2349 } }
-R[1265880] = { ability = 1265843, rank = 3, level = 36, families = { 3 }, teachers = {} }
-R[1265881] = { ability = 1265843, rank = 4, level = 48, families = { 3 }, teachers = {} }
-R[1265883] = { ability = 1265843, rank = 5, level = 60, families = { 3 }, teachers = {} }
-R[1265899] = { ability = 1265899, rank = 1, level = 12, families = { 12 }, teachers = { 2322, 3246 } }
-R[1265901] = { ability = 1265899, rank = 2, level = 24, families = { 12 }, teachers = {} }
-R[1265902] = { ability = 1265899, rank = 3, level = 36, families = { 12 }, teachers = {} }
-R[1265903] = { ability = 1265899, rank = 4, level = 48, families = { 12 }, teachers = {} }
-R[1265904] = { ability = 1265899, rank = 5, level = 60, families = { 12 }, teachers = {} }
-R[1310617] = { ability = 1310617, rank = 1, level = 0, families = {}, teachers = {} }
+R[26090] = { ability = 26090, rank = 1, level = 30, teachers = { 1108, 1114 }, families = { F.gorilla } }
+R[26177] = { ability = 7371, rank = 2, level = 12, teachers = { 157, 454, 547, 1191, 1192 }, families = { F.boar } }
+R[26178] = { ability = 7371, rank = 3, level = 24, teachers = { 345, 4511, 4512, 4514 }, families = { F.boar } }
+R[26179] = { ability = 7371, rank = 4, level = 36, teachers = {}, families = { F.boar } }
+R[26187] = { ability = 26090, rank = 2, level = 40, teachers = { 1557, 5260, 5262 }, families = { F.gorilla } }
+R[26188] = { ability = 26090, rank = 3, level = 50, teachers = { 6516, 6585, 9622 }, families = { F.gorilla } }
+R[26201] = { ability = 7371, rank = 5, level = 48, teachers = { 5992, 8303 }, families = { F.boar } }
+R[27685] = { ability = 7371, rank = 6, level = 60, teachers = { 16117 }, families = { F.boar } }
+R[1264455] = { ability = 26090, rank = 4, level = 60, teachers = {}, families = { F.gorilla } }
+R[1264478] = { ability = 1264478, rank = 1, level = 12, teachers = {}, families = { F.bat } }
+R[1264479] = { ability = 1264478, rank = 2, level = 24, teachers = {}, families = { F.bat } }
+R[1264480] = { ability = 1264478, rank = 3, level = 36, teachers = {}, families = { F.bat } }
+R[1264481] = { ability = 1264478, rank = 4, level = 48, teachers = {}, families = { F.bat } }
+R[1264482] = { ability = 1264478, rank = 5, level = 60, teachers = {}, families = { F.bat } }
+R[1264494] = { ability = 1264494, rank = 1, level = 12, teachers = { 1188, 1797 }, families = { F.bear } }
+R[1264497] = { ability = 1264494, rank = 2, level = 24, teachers = { 2356 }, families = { F.bear } }
+R[1264498] = { ability = 1264494, rank = 3, level = 36, teachers = {}, families = { F.bear } }
+R[1264501] = { ability = 1264494, rank = 4, level = 48, teachers = {}, families = { F.bear } }
+R[1264502] = { ability = 1264494, rank = 5, level = 60, teachers = {}, families = { F.bear } }
+R[1264735] = { ability = 1264735, rank = 1, level = 12, teachers = { 2232 }, families = { F.crab } }
+R[1264736] = { ability = 1264735, rank = 2, level = 24, teachers = {}, families = { F.crab } }
+R[1264739] = { ability = 1264735, rank = 3, level = 36, teachers = {}, families = { F.crab } }
+R[1264741] = { ability = 1264735, rank = 4, level = 48, teachers = {}, families = { F.crab } }
+R[1264742] = { ability = 1264735, rank = 5, level = 60, teachers = {}, families = { F.crab } }
+R[1264758] = { ability = 1264758, rank = 1, level = 12, teachers = {}, families = { F.crocolisk } }
+R[1264927] = { ability = 1264758, rank = 2, level = 24, teachers = { 1150 }, families = { F.crocolisk } }
+R[1264929] = { ability = 1264758, rank = 3, level = 36, teachers = {}, families = { F.crocolisk } }
+R[1264930] = { ability = 1264758, rank = 4, level = 48, teachers = {}, families = { F.crocolisk } }
+R[1264933] = { ability = 1264758, rank = 5, level = 60, teachers = {}, families = { F.crocolisk } }
+R[1265038] = { ability = 1265038, rank = 1, level = 12, teachers = { 4127 }, families = { F.hyena } }
+R[1265039] = { ability = 1265038, rank = 2, level = 24, teachers = { 4248 }, families = { F.hyena } }
+R[1265040] = { ability = 1265038, rank = 3, level = 36, teachers = {}, families = { F.hyena } }
+R[1265041] = { ability = 1265038, rank = 4, level = 48, teachers = {}, families = { F.hyena } }
+R[1265042] = { ability = 1265038, rank = 5, level = 60, teachers = {}, families = { F.hyena } }
+R[1265054] = { ability = 1265054, rank = 1, level = 10, teachers = {}, families = { F.birdOfPrey } }
+R[1265055] = { ability = 1265054, rank = 2, level = 20, teachers = {}, families = { F.birdOfPrey } }
+R[1265056] = { ability = 1265054, rank = 3, level = 30, teachers = {}, families = { F.birdOfPrey } }
+R[1265057] = { ability = 1265054, rank = 4, level = 40, teachers = {}, families = { F.birdOfPrey } }
+R[1265058] = { ability = 1265054, rank = 5, level = 50, teachers = {}, families = { F.birdOfPrey } }
+R[1265065] = { ability = 1265065, rank = 1, level = 12, teachers = { 3255 }, families = { F.raptor } }
+R[1265066] = { ability = 1265065, rank = 2, level = 24, teachers = { 1016, 1019, 1022, 1023 }, families = { F.raptor } }
+R[1265067] = { ability = 1265065, rank = 3, level = 36, teachers = {}, families = { F.raptor } }
+R[1265068] = { ability = 1265065, rank = 4, level = 48, teachers = {}, families = { F.raptor } }
+R[1265069] = { ability = 1265065, rank = 5, level = 60, teachers = {}, families = { F.raptor } }
+R[1265843] = { ability = 1265843, rank = 1, level = 12, teachers = { 1184, 1780 }, families = { F.spider } }
+R[1265878] = { ability = 1265843, rank = 2, level = 24, teachers = { 2349 }, families = { F.spider } }
+R[1265880] = { ability = 1265843, rank = 3, level = 36, teachers = {}, families = { F.spider } }
+R[1265881] = { ability = 1265843, rank = 4, level = 48, teachers = {}, families = { F.spider } }
+R[1265883] = { ability = 1265843, rank = 5, level = 60, teachers = {}, families = { F.spider } }
+R[1265899] = { ability = 1265899, rank = 1, level = 12, teachers = { 2322, 3246 }, families = { F.tallstrider } }
+R[1265901] = { ability = 1265899, rank = 2, level = 24, teachers = {}, families = { F.tallstrider } }
+R[1265902] = { ability = 1265899, rank = 3, level = 36, teachers = {}, families = { F.tallstrider } }
+R[1265903] = { ability = 1265899, rank = 4, level = 48, teachers = {}, families = { F.tallstrider } }
+R[1265904] = { ability = 1265899, rank = 5, level = 60, teachers = {}, families = { F.tallstrider } }
+R[1310617] = { ability = 1310617, rank = 1, level = 0, teachers = {}, families = {} }
 
 B[30] = {
     name = "Forest Spider",
-    family = 3,
     minLevel = 5,
     maxLevel = 6,
+    family = F.spider,
     pins = { [1429] = { 32.1, 68.1, 36.2, 59.2, 40.5, 74.2, 36.2, 62.6, 40.1, 69.1, 43.2, 60.5 } },
 }
 B[113] = {
     name = "Stonetusk Boar",
-    family = 5,
     minLevel = 5,
     maxLevel = 6,
+    family = F.boar,
     pins = { [1429] = { 32.6, 85.6, 41.5, 87.1, 41.5, 72.1, 40, 69.6 } },
 }
 B[118] = {
     name = "Prowler",
-    family = 1,
     minLevel = 9,
     maxLevel = 10,
+    family = F.wolf,
     pins = { [1429] = { 68.9, 42.4, 77.4, 62.5, 78.1, 76.7, 81.4, 83, 80, 41.2, 85.1, 62.5, 87.2, 71.5, 88.1, 78.5 } },
 }
-B[119] = { name = "Longsnout", family = 5, minLevel = 10, maxLevel = 11, pins = { [1429] = { 25.2, 83 } } }
+B[119] = { name = "Longsnout", minLevel = 10, maxLevel = 11, family = F.boar, pins = { [1429] = { 25.2, 83 } } }
 B[154] = {
     name = "Greater Fleshripper",
-    family = 7,
     minLevel = 16,
     maxLevel = 17,
+    family = F.carrionBird,
     pins = { [1436] = { 27, 43.3, 60.8, 59.2, 61.2, 50.5 } },
 }
 B[157] = {
     name = "Goretusk",
-    family = 5,
     minLevel = 14,
     maxLevel = 15,
+    family = F.boar,
     pins = { [1436] = { 34.9, 57.8, 43.9, 41.4, 45, 60.1, 54.7, 65.4, 59.8, 44.9 } },
 }
 B[199] = {
     name = "Young Fleshripper",
-    family = 7,
     minLevel = 10,
     maxLevel = 11,
+    family = F.carrionBird,
     pins = {
         [1436] = {
             40,
@@ -926,9 +1104,9 @@ B[199] = {
 }
 B[213] = {
     name = "Starving Dire Wolf",
-    family = 1,
     minLevel = 19,
     maxLevel = 20,
+    family = F.wolf,
     pins = {
         [1429] = { 34.9, 96.8, 41.2, 97.6, 63.6, 86.5, 78.8, 90.2 },
         [1431] = {
@@ -963,15 +1141,20 @@ B[213] = {
         },
     },
 }
-B[330] = { name = "Princess", family = 5, minLevel = 9, maxLevel = 9, pins = { [1429] = { 69.6, 79.5 } } }
-B[345] =
-    { name = "Bellygrub", family = 5, minLevel = 24, maxLevel = 24, pins = { [1433] = { 13.5, 49.2, 21.2, 46.6 } } }
-B[390] = { name = "Porcine Entourage", family = 5, minLevel = 7, maxLevel = 7, pins = { [1429] = { 69.7, 79.2 } } }
+B[330] = { name = "Princess", minLevel = 9, maxLevel = 9, family = F.boar, pins = { [1429] = { 69.6, 79.5 } } }
+B[345] = {
+    name = "Bellygrub",
+    minLevel = 24,
+    maxLevel = 24,
+    family = F.boar,
+    pins = { [1433] = { 13.5, 49.2, 21.2, 46.6 } },
+}
+B[390] = { name = "Porcine Entourage", minLevel = 7, maxLevel = 7, family = F.boar, pins = { [1429] = { 69.7, 79.2 } } }
 B[428] = {
     name = "Dire Condor",
-    family = 7,
     minLevel = 18,
     maxLevel = 19,
+    family = F.carrionBird,
     pins = {
         [1433] = {
             20,
@@ -1003,45 +1186,45 @@ B[428] = {
 }
 B[442] = {
     name = "Tarantula",
-    family = 3,
     minLevel = 15,
     maxLevel = 16,
+    family = F.spider,
     pins = { [1433] = { 9.1, 77.8, 9.9, 84.6, 10.2, 92.5, 17, 70.2, 25.5, 77.1, 21.7, 66.8, 33.1, 74.6 } },
 }
 B[454] = {
     name = "Young Goretusk",
-    family = 5,
     minLevel = 12,
     maxLevel = 13,
+    family = F.boar,
     pins = { [1436] = { 53.4, 42.5, 51.2, 21, 50, 31.4, 54.2, 26.5, 57.9, 14.4, 58.5, 32 } },
 }
 B[505] = {
     name = "Greater Tarantula",
-    family = 3,
     minLevel = 19,
     maxLevel = 20,
+    family = F.spider,
     pins = { [1433] = { 49.3, 41, 53.8, 45.6, 53.9, 39.2, 64.4, 75.8 } },
 }
 B[521] = {
     name = "Lupos",
-    family = 1,
     minLevel = 23,
     maxLevel = 23,
     rare = true,
+    family = F.wolf,
     pins = { [1431] = { 25.1, 27.8, 35.7, 28.4, 63.9, 25.6, 71.3, 25.6 } },
 }
 B[524] = {
     name = "Rockhide Boar",
-    family = 5,
     minLevel = 7,
     maxLevel = 8,
+    family = F.boar,
     pins = { [1429] = { 43.5, 69.9, 43.8, 78.4, 45.3, 86.7, 54.1, 71.9, 54.3, 77.6, 67, 76.5, 69.4, 72.6 } },
 }
 B[547] = {
     name = "Great Goretusk",
-    family = 5,
     minLevel = 16,
     maxLevel = 17,
+    family = F.boar,
     pins = {
         [1433] = {
             7.9,
@@ -1082,9 +1265,9 @@ B[547] = {
 }
 B[565] = {
     name = "Rabid Dire Wolf",
-    family = 1,
     minLevel = 20,
     maxLevel = 21,
+    family = F.wolf,
     pins = {
         [1431] = {
             9.3,
@@ -1116,82 +1299,100 @@ B[565] = {
 }
 B[569] = {
     name = "Green Recluse",
-    family = 3,
     minLevel = 21,
     maxLevel = 22,
+    family = F.spider,
     pins = { [1431] = { 10.9, 41.5, 11.9, 51.4, 13.3, 59.4, 16.1, 71.5, 16, 66.5, 55.7, 20.6, 66.1, 22.1, 73, 23.6 } },
 }
-B[574] = { name = "Naraxis", family = 3, minLevel = 27, maxLevel = 27, rare = true, pins = { [1431] = { 86.5, 48.7 } } }
+B[574] = {
+    name = "Naraxis",
+    minLevel = 27,
+    maxLevel = 27,
+    rare = true,
+    family = F.spider,
+    pins = { [1431] = { 86.5, 48.7 } },
+}
 B[616] = {
     name = "Chatter",
-    family = 3,
     minLevel = 23,
     maxLevel = 23,
     rare = true,
+    family = F.spider,
     pins = { [1433] = { 43.4, 31.4, 53.4, 41.3, 51.3, 35.3, 56.4, 47.6, 60.8, 40.1 } },
 }
 B[628] = {
     name = "Black Ravager",
-    family = 1,
     minLevel = 24,
     maxLevel = 25,
+    family = F.wolf,
     pins = { [1431] = { 52.7, 60.7, 59.3, 58.9, 66.5, 29, 69.2, 35.9 } },
 }
 B[681] = {
     name = "Young Stranglethorn Tiger",
-    family = 2,
     minLevel = 30,
     maxLevel = 31,
+    family = F.cat,
     pins = { [1434] = { 35.3, 11.6, 35, 16.5, 40.2, 7.6 } },
 }
 B[682] = {
     name = "Stranglethorn Tiger",
-    family = 2,
     minLevel = 32,
     maxLevel = 33,
+    family = F.cat,
     pins = { [1434] = { 30.2, 11.3, 35, 14.5, 45.8, 14.5 } },
 }
-B[683] =
-    { name = "Young Panther", family = 2, minLevel = 30, maxLevel = 31, pins = { [1434] = { 39.6, 12.6, 39.1, 7.7 } } }
+B[683] = {
+    name = "Young Panther",
+    minLevel = 30,
+    maxLevel = 31,
+    family = F.cat,
+    pins = { [1434] = { 39.6, 12.6, 39.1, 7.7 } },
+}
 B[684] = {
     name = "Shadowmaw Panther",
-    family = 2,
     minLevel = 37,
     maxLevel = 38,
+    family = F.cat,
     pins = { [1434] = { 38.6, 37, 38.6, 44.4, 41, 31.5, 47.9, 24.4, 48, 20 } },
 }
 B[687] = {
     name = "Jungle Stalker",
-    family = 11,
     minLevel = 40,
     maxLevel = 41,
+    family = F.raptor,
     pins = { [1434] = { 26.5, 48.5, 31.9, 40.5 } },
 }
-B[708] =
-    { name = "Small Crag Boar", family = 5, minLevel = 3, maxLevel = 3, pins = { [1426] = { 23.3, 72.2, 23.9, 78.7 } } }
+B[708] = {
+    name = "Small Crag Boar",
+    minLevel = 3,
+    maxLevel = 3,
+    family = F.boar,
+    pins = { [1426] = { 23.3, 72.2, 23.9, 78.7 } },
+}
 B[728] = {
     name = "Bhag'thera",
-    family = 2,
     minLevel = 40,
     maxLevel = 40,
     elite = true,
+    family = F.cat,
     pins = { [1434] = { 48.5, 26.3, 48.7, 19.8 } },
 }
-B[729] = { name = "Sin'Dall", family = 2, minLevel = 37, maxLevel = 37, pins = { [1434] = { 32.2, 17.5 } } }
+B[729] = { name = "Sin'Dall", minLevel = 37, maxLevel = 37, family = F.cat, pins = { [1434] = { 32.2, 17.5 } } }
 B[731] = {
     name = "King Bangalash",
-    family = 2,
     minLevel = 43,
     maxLevel = 43,
     elite = true,
+    family = F.cat,
     pins = { [1434] = { 38.4, 35.3 } },
 }
-B[736] = { name = "Panther", family = 2, minLevel = 32, maxLevel = 43, pins = { [1434] = { 29.5, 12.2, 39.9, 32.7 } } }
+B[736] =
+    { name = "Panther", minLevel = 32, maxLevel = 43, family = F.cat, pins = { [1434] = { 29.5, 12.2, 39.9, 32.7 } } }
 B[767] = {
     name = "Swamp Jaguar",
-    family = 2,
     minLevel = 36,
     maxLevel = 37,
+    family = F.cat,
     pins = {
         [1435] = {
             14.3,
@@ -1219,9 +1420,9 @@ B[767] = {
 }
 B[768] = {
     name = "Shadow Panther",
-    family = 2,
     minLevel = 39,
     maxLevel = 40,
+    family = F.cat,
     pins = {
         [1435] = {
             67.5,
@@ -1259,23 +1460,23 @@ B[768] = {
 }
 B[769] = {
     name = "Deathstrike Tarantula",
-    family = 3,
     minLevel = 40,
     maxLevel = 41,
+    family = F.spider,
     pins = { [1435] = { 58, 62.1, 66.6, 68.5, 71.9, 78.6, 75.6, 86.7, 77.7, 76.1, 80, 91.3, 81.2, 82.4 } },
 }
 B[772] = {
     name = "Stranglethorn Tigress",
-    family = 2,
     minLevel = 37,
     maxLevel = 38,
+    family = F.cat,
     pins = { [1434] = { 38.4, 36.7, 38.8, 44.4, 48.4, 24.8, 46.7, 23.7 } },
 }
 B[822] = {
     name = "Young Forest Bear",
-    family = 4,
     minLevel = 8,
     maxLevel = 9,
+    family = F.bear,
     pins = {
         [1429] = {
             22.7,
@@ -1315,9 +1516,9 @@ B[822] = {
 }
 B[833] = {
     name = "Coyote Packleader",
-    family = 1,
     minLevel = 11,
     maxLevel = 12,
+    family = F.wolf,
     pins = {
         [1436] = {
             34.1,
@@ -1353,9 +1554,9 @@ B[833] = {
 }
 B[834] = {
     name = "Coyote",
-    family = 1,
     minLevel = 10,
     maxLevel = 11,
+    family = F.wolf,
     pins = {
         [1436] = {
             33.9,
@@ -1387,16 +1588,16 @@ B[834] = {
 }
 B[922] = {
     name = "Silt Crawler",
-    family = 8,
     minLevel = 40,
     maxLevel = 41,
+    family = F.crab,
     pins = { [1435] = { 79.2, 8.5, 83.6, 87.2, 85.2, 16.6, 86, 80.2, 89.8, 23.8, 90.6, 74 } },
 }
 B[923] = {
     name = "Young Black Ravager",
-    family = 1,
     minLevel = 23,
     maxLevel = 24,
+    family = F.wolf,
     pins = {
         [1431] = {
             24,
@@ -1422,49 +1623,56 @@ B[923] = {
 }
 B[949] = {
     name = "Carrion Recluse",
-    family = 3,
     minLevel = 25,
     maxLevel = 26,
+    family = F.spider,
     pins = { [1431] = { 17.9, 39.2, 21.3, 44, 23.5, 35.7 } },
 }
-B[976] = { name = "Kurzen War Tiger", family = 2, minLevel = 32, maxLevel = 33, pins = { [1434] = { 45.6, 9.9 } } }
+B[976] = { name = "Kurzen War Tiger", minLevel = 32, maxLevel = 33, family = F.cat, pins = { [1434] = { 45.6, 9.9 } } }
 B[1016] = {
     name = "Highland Lashtail",
-    family = 11,
     minLevel = 24,
     maxLevel = 25,
+    family = F.raptor,
     pins = { [1437] = { 35.6, 24.6, 58.4, 26.7, 58.3, 33.3 } },
 }
 B[1019] = {
     name = "Elder Razormaw",
-    family = 11,
     minLevel = 29,
     maxLevel = 29,
+    family = F.raptor,
     pins = { [1437] = { 69.7, 31.5, 73.9, 42.8 } },
 }
 B[1020] = {
     name = "Mottled Raptor",
-    family = 11,
     minLevel = 22,
     maxLevel = 23,
+    family = F.raptor,
     pins = { [1437] = { 26.3, 46.6, 34.7, 42.7, 38, 50 } },
 }
 B[1021] = {
     name = "Mottled Screecher",
-    family = 11,
     minLevel = 24,
     maxLevel = 25,
+    family = F.raptor,
     pins = { [1437] = { 23.8, 51.6, 30.1, 44 } },
 }
-B[1022] = { name = "Mottled Scytheclaw", family = 11, minLevel = 25, maxLevel = 26, pins = { [1437] = { 34.2, 47.8 } } }
-B[1023] = { name = "Mottled Razormaw", family = 11, minLevel = 26, maxLevel = 27, pins = { [1437] = { 34.1, 47.7 } } }
-B[1085] =
-    { name = "Elder Stranglethorn Tiger", family = 2, minLevel = 34, maxLevel = 35, pins = { [1434] = { 32.9, 18 } } }
+B[1022] =
+    { name = "Mottled Scytheclaw", minLevel = 25, maxLevel = 26, family = F.raptor, pins = { [1437] = { 34.2, 47.8 } } }
+B[1023] =
+    { name = "Mottled Razormaw", minLevel = 26, maxLevel = 27, family = F.raptor, pins = { [1437] = { 34.1, 47.7 } } }
+B[1085] = {
+    name = "Elder Stranglethorn Tiger",
+    minLevel = 34,
+    maxLevel = 35,
+    family = F.cat,
+    pins = { [1434] = { 32.9, 18 } },
+}
 B[1087] = {
     name = "Sawtooth Snapper",
-    family = 6,
     minLevel = 41,
     maxLevel = 42,
+    family = F.crocolisk,
     pins = {
         [1435] = {
             79.7,
@@ -1510,9 +1718,9 @@ B[1087] = {
 }
 B[1088] = {
     name = "Monstrous Crawler",
-    family = 8,
     minLevel = 43,
     maxLevel = 44,
+    family = F.crab,
     pins = {
         [1435] = {
             78.7,
@@ -1548,35 +1756,42 @@ B[1088] = {
         },
     },
 }
-B[1108] = { name = "Mistvale Gorilla", family = 9, minLevel = 32, maxLevel = 33, pins = { [1434] = { 37.7, 17.3 } } }
+B[1108] =
+    { name = "Mistvale Gorilla", minLevel = 32, maxLevel = 33, family = F.gorilla, pins = { [1434] = { 37.7, 17.3 } } }
 B[1109] = {
     name = "Fleshripper",
-    family = 7,
     minLevel = 13,
     maxLevel = 14,
+    family = F.carrionBird,
     pins = { [1436] = { 30.6, 38.2, 39.7, 67.6, 43.7, 41.9, 42.5, 18.2, 51, 60.2, 48.4, 52.9, 51.4, 23.1, 60.3, 45.2 } },
 }
-B[1112] =
-    { name = "Leech Widow", family = 3, minLevel = 24, maxLevel = 24, rare = true, pins = { [1437] = { 46.3, 63.8 } } }
+B[1112] = {
+    name = "Leech Widow",
+    minLevel = 24,
+    maxLevel = 24,
+    rare = true,
+    family = F.spider,
+    pins = { [1437] = { 46.3, 63.8 } },
+}
 B[1114] = {
     name = "Jungle Thunderer",
-    family = 9,
     minLevel = 37,
     maxLevel = 38,
+    family = F.gorilla,
     pins = { [1434] = { 42.9, 28.8, 45.7, 36.6 } },
 }
 B[1125] = {
     name = "Crag Boar",
-    family = 5,
     minLevel = 5,
     maxLevel = 6,
+    family = F.boar,
     pins = { [1426] = { 41, 60.2, 45.8, 63.7, 47.4, 52.2, 49.4, 58.9 } },
 }
 B[1126] = {
     name = "Large Crag Boar",
-    family = 5,
     minLevel = 6,
     maxLevel = 7,
+    family = F.boar,
     pins = {
         [1426] = {
             36.9,
@@ -1602,9 +1817,9 @@ B[1126] = {
 }
 B[1127] = {
     name = "Elder Crag Boar",
-    family = 5,
     minLevel = 7,
     maxLevel = 8,
+    family = F.boar,
     pins = {
         [1426] = {
             28.8,
@@ -1632,48 +1847,51 @@ B[1127] = {
 }
 B[1130] = {
     name = "Bjarn",
-    family = 4,
     minLevel = 12,
     maxLevel = 12,
     rare = true,
+    family = F.bear,
     pins = { [1426] = { 56.2, 58, 63.4, 59.2, 62.2, 57.4 } },
 }
 B[1131] = {
     name = "Winter Wolf",
-    family = 1,
     minLevel = 7,
     maxLevel = 8,
+    family = F.wolf,
     pins = { [1426] = { 34.1, 42.4, 47.3, 45.6, 50.6, 50.9 } },
 }
-B[1132] = { name = "Timber", family = 1, minLevel = 10, maxLevel = 10, rare = true, pins = { [1426] = { 34.3, 41.6 } } }
-B[1133] = { name = "Starving Winter Wolf", family = 1, minLevel = 8, maxLevel = 9, pins = { [1426] = { 33.9, 41.5 } } }
-B[1138] = { name = "Snow Tracker Wolf", family = 1, minLevel = 6, maxLevel = 7, pins = { [1426] = { 46.4, 46.3 } } }
+B[1132] =
+    { name = "Timber", minLevel = 10, maxLevel = 10, rare = true, family = F.wolf, pins = { [1426] = { 34.3, 41.6 } } }
+B[1133] =
+    { name = "Starving Winter Wolf", minLevel = 8, maxLevel = 9, family = F.wolf, pins = { [1426] = { 33.9, 41.5 } } }
+B[1138] =
+    { name = "Snow Tracker Wolf", minLevel = 6, maxLevel = 7, family = F.wolf, pins = { [1426] = { 46.4, 46.3 } } }
 B[1150] = {
     name = "River Crocolisk",
-    family = 6,
     minLevel = 30,
     maxLevel = 31,
+    family = F.crocolisk,
     pins = { [1434] = { 36.4, 10.4, 39.7, 14.5 } },
 }
 B[1184] = {
     name = "Cliff Lurker",
-    family = 3,
     minLevel = 13,
     maxLevel = 14,
+    family = F.spider,
     pins = { [1432] = { 47, 73.7, 55.2, 66.9, 65.2, 53.6, 63, 64.4, 70, 50.2 } },
 }
 B[1185] = {
     name = "Wood Lurker",
-    family = 3,
     minLevel = 17,
     maxLevel = 18,
+    family = F.spider,
     pins = { [1432] = { 60.8, 22.8, 61.8, 16.8, 76.2, 36.4, 75.1, 40.5 } },
 }
 B[1186] = {
     name = "Elder Black Bear",
-    family = 4,
     minLevel = 11,
     maxLevel = 12,
+    family = F.bear,
     pins = {
         [1432] = {
             20,
@@ -1699,58 +1917,58 @@ B[1186] = {
 }
 B[1188] = {
     name = "Grizzled Black Bear",
-    family = 4,
     minLevel = 13,
     maxLevel = 14,
+    family = F.bear,
     pins = { [1432] = { 41.9, 62.9, 41.8, 55.8, 58, 69.1, 59.4, 77, 65.2, 45.4, 66.1, 71.6, 74.8, 52.6, 78.1, 67.6 } },
 }
 B[1189] = {
     name = "Black Bear Patriarch",
-    family = 4,
     minLevel = 16,
     maxLevel = 17,
+    family = F.bear,
     pins = { [1432] = { 38.4, 62.8, 60.1, 31.4, 72.9, 44.8 } },
 }
 B[1190] = {
     name = "Mountain Boar",
-    family = 5,
     minLevel = 10,
     maxLevel = 11,
+    family = F.boar,
     pins = { [1432] = { 27.7, 24.7, 28, 15.6, 33.8, 35.8, 29.3, 47.7, 36.2, 30.3 } },
 }
 B[1191] = {
     name = "Mangy Mountain Boar",
-    family = 5,
     minLevel = 14,
     maxLevel = 15,
+    family = F.boar,
     pins = { [1432] = { 37.4, 50.6, 51.6, 72.9, 60.1, 59.9, 74.4, 52.6 } },
 }
 B[1192] = {
     name = "Elder Mountain Boar",
-    family = 5,
     minLevel = 16,
     maxLevel = 17,
+    family = F.boar,
     pins = { [1432] = { 64.8, 38.5, 75.3, 45.4, 74.5, 50.7 } },
 }
 B[1194] = {
     name = "Mountain Buzzard",
-    family = 7,
     minLevel = 15,
     maxLevel = 16,
+    family = F.carrionBird,
     pins = { [1432] = { 69.9, 51.5, 75.3, 72.8, 78, 62.4, 76.8, 56.2, 78.8, 67.6 } },
 }
 B[1195] = {
     name = "Forest Lurker",
-    family = 3,
     minLevel = 10,
     maxLevel = 11,
+    family = F.spider,
     pins = { [1432] = { 20.7, 74.6, 29.2, 19.4, 29.9, 49.5, 31.2, 41.4, 33.7, 31.8, 35.4, 53, 37.6, 74.3 } },
 }
 B[1196] = {
     name = "Ice Claw Bear",
-    family = 4,
     minLevel = 7,
     maxLevel = 8,
+    family = F.bear,
     pins = {
         [1426] = {
             28.8,
@@ -1776,35 +1994,42 @@ B[1196] = {
         },
     },
 }
-B[1199] = { name = "Juvenile Snow Leopard", family = 2, minLevel = 5, maxLevel = 6, pins = { [1426] = { 41, 59.5 } } }
+B[1199] =
+    { name = "Juvenile Snow Leopard", minLevel = 5, maxLevel = 6, family = F.cat, pins = { [1426] = { 41, 59.5 } } }
 B[1201] = {
     name = "Snow Leopard",
-    family = 2,
     minLevel = 7,
     maxLevel = 8,
+    family = F.cat,
     pins = { [1426] = { 29, 47.6, 28.5, 53.7, 33.3, 38.3, 40.5, 31.5, 48.5, 57.8, 47.9, 62.3, 59.6, 56.1, 79.9, 36.2 } },
 }
 B[1216] = {
     name = "Shore Crawler",
-    family = 8,
     minLevel = 17,
     maxLevel = 18,
+    family = F.crab,
     pins = { [1436] = { 25.9, 65.7, 30.5, 80.7, 36.2, 88.4 } },
 }
-B[1225] =
-    { name = "Ol' Sooty", family = 4, minLevel = 20, maxLevel = 20, elite = true, pins = { [1432] = { 38.4, 62.1 } } }
+B[1225] = {
+    name = "Ol' Sooty",
+    minLevel = 20,
+    maxLevel = 20,
+    elite = true,
+    family = F.bear,
+    pins = { [1432] = { 38.4, 62.1 } },
+}
 B[1258] = {
     name = "Black Ravager Mastiff",
-    family = 1,
     minLevel = 25,
     maxLevel = 26,
+    family = F.wolf,
     pins = { [1431] = { 53.9, 58.5, 65.3, 31.9, 68.8, 37.9 } },
 }
 B[1417] = {
     name = "Young Wetlands Crocolisk",
-    family = 6,
     minLevel = 21,
     maxLevel = 22,
+    family = F.crocolisk,
     pins = {
         [1437] = {
             5.1,
@@ -1838,20 +2063,21 @@ B[1417] = {
         },
     },
 }
-B[1505] = { name = "Night Web Spider", family = 3, minLevel = 3, maxLevel = 4, pins = { [1420] = { 25.2, 59.6 } } }
-B[1509] = { name = "Ragged Scavenger", family = 1, minLevel = 2, maxLevel = 3, pins = { [1420] = { 35.8, 60.9 } } }
+B[1505] =
+    { name = "Night Web Spider", minLevel = 3, maxLevel = 4, family = F.spider, pins = { [1420] = { 25.2, 59.6 } } }
+B[1509] = { name = "Ragged Scavenger", minLevel = 2, maxLevel = 3, family = F.wolf, pins = { [1420] = { 35.8, 60.9 } } }
 B[1553] = {
     name = "Greater Duskbat",
-    family = 24,
     minLevel = 6,
     maxLevel = 7,
+    family = F.bat,
     pins = { [1420] = { 37.5, 49.2, 48.3, 57.6, 50, 47.9, 58.1, 59.1, 56.4, 53.4, 61.6, 42.7, 64.3, 53.9, 66.7, 59.7 } },
 }
 B[1554] = {
     name = "Vampiric Duskbat",
-    family = 24,
     minLevel = 8,
     maxLevel = 9,
+    family = F.bat,
     pins = {
         [1420] = {
             50.7,
@@ -1881,58 +2107,70 @@ B[1554] = {
 }
 B[1555] = {
     name = "Vicious Night Web Spider",
-    family = 3,
     minLevel = 9,
     maxLevel = 10,
+    family = F.spider,
     pins = { [1420] = { 86.5, 52.2, 85, 47.4 } },
 }
-B[1557] =
-    { name = "Elder Mistvale Gorilla", family = 9, minLevel = 40, maxLevel = 41, pins = { [1434] = { 32.8, 64.3 } } }
-B[1688] = { name = "Night Web Matriarch", family = 3, minLevel = 5, maxLevel = 5, pins = { [1420] = { 23.5, 58.8 } } }
+B[1557] = {
+    name = "Elder Mistvale Gorilla",
+    minLevel = 40,
+    maxLevel = 41,
+    family = F.gorilla,
+    pins = { [1434] = { 32.8, 64.3 } },
+}
+B[1688] =
+    { name = "Night Web Matriarch", minLevel = 5, maxLevel = 5, family = F.spider, pins = { [1420] = { 23.5, 58.8 } } }
 B[1689] = {
     name = "Scarred Crag Boar",
-    family = 5,
     minLevel = 9,
     maxLevel = 10,
+    family = F.boar,
     pins = { [1426] = { 75.4, 52, 76.8, 59.2, 79.9, 45.5, 82.3, 35.9, 84.8, 50.7 } },
 }
 B[1693] = {
     name = "Loch Crocolisk",
-    family = 6,
     minLevel = 14,
     maxLevel = 15,
+    family = F.crocolisk,
     pins = { [1432] = { 55.3, 36.8, 55.2, 55, 58, 22.8, 57.9, 31.1, 58.4, 59.6, 61.6, 44.3, 62.5, 51.6 } },
 }
-B[1713] =
-    { name = "Elder Shadowmaw Panther", family = 2, minLevel = 42, maxLevel = 43, pins = { [1434] = { 34.1, 57.1 } } }
+B[1713] = {
+    name = "Elder Shadowmaw Panther",
+    minLevel = 42,
+    maxLevel = 43,
+    family = F.cat,
+    pins = { [1434] = { 34.1, 57.1 } },
+}
 B[1765] = {
     name = "Worg",
-    family = 1,
     minLevel = 10,
     maxLevel = 11,
+    family = F.wolf,
     pins = { [1420] = { 54.1, 75.3 }, [1421] = { 46.7, 46.2, 64.6, 7.9, 70.4, 4.8 } },
 }
-B[1766] = { name = "Mottled Worg", family = 1, minLevel = 11, maxLevel = 12, pins = { [1421] = { 57, 11, 63, 8.8 } } }
+B[1766] =
+    { name = "Mottled Worg", minLevel = 11, maxLevel = 12, family = F.wolf, pins = { [1421] = { 57, 11, 63, 8.8 } } }
 B[1778] = {
     name = "Ferocious Grizzled Bear",
-    family = 4,
     minLevel = 11,
     maxLevel = 12,
+    family = F.bear,
     pins = { [1421] = { 50.4, 46.5, 49.7, 20.9, 50.6, 36.3, 48.9, 16.3, 52.2, 42.5 } },
 }
-B[1780] = { name = "Moss Stalker", family = 3, minLevel = 12, maxLevel = 13, pins = { [1421] = { 35.7, 15.1 } } }
+B[1780] = { name = "Moss Stalker", minLevel = 12, maxLevel = 13, family = F.spider, pins = { [1421] = { 35.7, 15.1 } } }
 B[1797] = {
     name = "Giant Grizzled Bear",
-    family = 4,
     minLevel = 12,
     maxLevel = 13,
+    family = F.bear,
     pins = { [1421] = { 39.2, 17.9, 45.5, 20.3, 45.5, 16.9, 52, 67.7, 52.2, 57.8, 52.7, 51.9, 54.8, 73.8 } },
 }
 B[1809] = {
     name = "Carrion Vulture",
-    family = 7,
     minLevel = 50,
     maxLevel = 52,
+    family = F.carrionBird,
     pins = {
         [1420] = { 68.8, 61.5, 73.8, 46.6, 75.4, 52.6, 81.5, 69.1, 80.2, 59.2, 83.8, 52.4 },
         [1422] = { 32.2, 60.8, 30.6, 55.3, 33.6, 67.8 },
@@ -1940,63 +2178,70 @@ B[1809] = {
 }
 B[1815] = {
     name = "Diseased Black Bear",
-    family = 4,
     minLevel = 51,
     maxLevel = 52,
+    family = F.bear,
     pins = { [1420] = { 82, 68.9, 81.4, 41.7, 82.4, 52.2 }, [1422] = { 32.4, 59.6, 36, 65.1, 34.8, 52.9 } },
 }
 B[1816] = {
     name = "Diseased Grizzly",
-    family = 4,
     minLevel = 55,
     maxLevel = 56,
+    family = F.bear,
     pins = { [1422] = { 57.1, 52.5, 53.9, 47.4, 56.2, 61.2, 65, 47.7, 66.2, 55.3 } },
 }
 B[1817] = {
     name = "Diseased Wolf",
-    family = 1,
     minLevel = 53,
     maxLevel = 54,
+    family = F.wolf,
     pins = { [1422] = { 46, 46.7, 46.4, 58.2, 47.6, 38.1, 47.6, 29.9, 51.4, 65, 51.1, 51.8, 51.3, 70.2, 52.4, 34.5 } },
 }
 B[1824] = {
     name = "Plague Lurker",
-    family = 3,
     minLevel = 54,
     maxLevel = 55,
+    family = F.spider,
     pins = { [1422] = { 56.7, 60.5, 57.8, 50.8, 65.8, 48.1, 66.3, 55.4 } },
 }
 B[1922] = {
     name = "Gray Forest Wolf",
-    family = 1,
     minLevel = 7,
     maxLevel = 8,
+    family = F.wolf,
     pins = { [1429] = { 61.8, 65.1, 62.9, 69.9, 69.3, 61.6, 72.8, 66.9 } },
 }
 B[1923] = {
     name = "Bloodsnout Worg",
-    family = 1,
     minLevel = 16,
     maxLevel = 17,
+    family = F.wolf,
     pins = { [1421] = { 49.2, 76.4, 55.2, 80.8 } },
 }
-B[1961] = { name = "Mangeclaw", family = 4, minLevel = 11, maxLevel = 11, pins = { [1426] = { 79.1, 36.9 } } }
-B[1984] = { name = "Young Thistle Boar", family = 5, minLevel = 1, maxLevel = 2, pins = { [1438] = { 58.6, 43.5 } } }
-B[1985] =
-    { name = "Thistle Boar", family = 5, minLevel = 2, maxLevel = 3, pins = { [1438] = { 59.1, 36.9, 59.7, 31.7 } } }
-B[1994] = { name = "Githyiss the Vile", family = 3, minLevel = 5, maxLevel = 5, pins = { [1438] = { 56.6, 25.8 } } }
+B[1961] = { name = "Mangeclaw", minLevel = 11, maxLevel = 11, family = F.bear, pins = { [1426] = { 79.1, 36.9 } } }
+B[1984] =
+    { name = "Young Thistle Boar", minLevel = 1, maxLevel = 2, family = F.boar, pins = { [1438] = { 58.6, 43.5 } } }
+B[1985] = {
+    name = "Thistle Boar",
+    minLevel = 2,
+    maxLevel = 3,
+    family = F.boar,
+    pins = { [1438] = { 59.1, 36.9, 59.7, 31.7 } },
+}
+B[1994] =
+    { name = "Githyiss the Vile", minLevel = 5, maxLevel = 5, family = F.spider, pins = { [1438] = { 56.6, 25.8 } } }
 B[1995] = {
     name = "Strigid Owl",
-    family = 26,
     minLevel = 5,
     maxLevel = 6,
+    family = F.birdOfPrey,
     pins = { [1438] = { 46.1, 48.8, 55.1, 58.5, 55.5, 66.6, 64.5, 53.1, 65, 62.4 } },
 }
 B[1996] = {
     name = "Strigid Screecher",
-    family = 26,
     minLevel = 7,
     maxLevel = 8,
+    family = F.birdOfPrey,
     pins = {
         [1438] = { 40.6, 52, 41.2, 65.9, 42.8, 75.5, 54.4, 76.7, 56.3, 59.1, 64.5, 67.1, 68.3, 52.2 },
         [1457] = {
@@ -2031,72 +2276,72 @@ B[1996] = {
 }
 B[1997] = {
     name = "Strigid Hunter",
-    family = 26,
     minLevel = 8,
     maxLevel = 9,
+    family = F.birdOfPrey,
     pins = { [1438] = { 38.4, 30.8, 39.8, 38.6, 39.9, 46.1, 45.8, 31.9, 46, 40.3 } },
 }
 B[1999] = {
     name = "Webwood Venomfang",
-    family = 3,
     minLevel = 7,
     maxLevel = 8,
+    family = F.spider,
     pins = { [1438] = { 41.2, 50.5, 39.8, 60.8, 44.7, 73.1, 57.1, 74.4, 64.5, 69.7 } },
 }
 B[2000] = {
     name = "Webwood Silkspinner",
-    family = 3,
     minLevel = 8,
     maxLevel = 9,
+    family = F.spider,
     pins = { [1438] = { 37.2, 33.3, 43.3, 43.1, 42.2, 46.4, 46.3, 34.5, 48.8, 45.9 } },
 }
 B[2001] = {
     name = "Giant Webwood Spider",
-    family = 3,
     minLevel = 10,
     maxLevel = 11,
+    family = F.spider,
     pins = { [1438] = { 39.8, 26.9, 46.7, 27.4 } },
 }
 B[2033] = {
     name = "Elder Nightsaber",
-    family = 2,
     minLevel = 8,
     maxLevel = 9,
+    family = F.cat,
     pins = { [1438] = { 37.4, 32, 42.7, 41.8, 44, 35.1, 46.4, 46 } },
 }
 B[2034] = {
     name = "Feral Nightsaber",
-    family = 2,
     minLevel = 10,
     maxLevel = 11,
+    family = F.cat,
     pins = { [1438] = { 40.4, 26.8, 46.8, 27.3 } },
 }
 B[2042] = {
     name = "Nightsaber",
-    family = 2,
     minLevel = 5,
     maxLevel = 6,
+    family = F.cat,
     pins = { [1438] = { 50.7, 54.6, 52.8, 61.9, 60.8, 58.9, 67.2, 53.6 } },
 }
 B[2043] = {
     name = "Nightsaber Stalker",
-    family = 2,
     minLevel = 7,
     maxLevel = 8,
+    family = F.cat,
     pins = { [1438] = { 39.9, 57.9, 43, 68.8, 47.1, 75.3, 58.6, 72.3, 56.3, 62, 63.5, 69.8 } },
 }
 B[2069] = {
     name = "Moonstalker",
-    family = 2,
     minLevel = 14,
     maxLevel = 15,
+    family = F.cat,
     pins = { [1439] = { 39.9, 71.3, 37.6, 78.6, 40.1, 63, 38.3, 54.3, 48.6, 27.7, 49.8, 34, 54.7, 22.5, 54.5, 29.6 } },
 }
 B[2070] = {
     name = "Moonstalker Runt",
-    family = 2,
     minLevel = 10,
     maxLevel = 17,
+    family = F.cat,
     pins = {
         [1439] = {
             39.5,
@@ -2122,68 +2367,73 @@ B[2070] = {
 }
 B[2071] = {
     name = "Moonstalker Matriarch",
-    family = 2,
     minLevel = 19,
     maxLevel = 20,
+    family = F.cat,
     pins = { [1439] = { 39.6, 91.3, 36.3, 81.6, 61.2, 9.9 } },
 }
 B[2089] = {
     name = "Giant Wetlands Crocolisk",
-    family = 6,
     minLevel = 25,
     maxLevel = 26,
+    family = F.crocolisk,
     pins = { [1437] = { 18.3, 26.6, 17.4, 58.3, 24.4, 20.8 } },
 }
 B[2163] = {
     name = "Thistle Bear",
-    family = 4,
     minLevel = 11,
     maxLevel = 12,
+    family = F.bear,
     pins = { [1439] = { 40.3, 47.5, 41.2, 37.8, 44.4, 55, 45, 25.9, 44.8, 32.5, 47.1, 41.5 } },
 }
 B[2165] = {
     name = "Grizzled Thistle Bear",
-    family = 4,
     minLevel = 16,
     maxLevel = 17,
+    family = F.bear,
     pins = { [1439] = { 40.2, 80.9, 38.6, 70.6, 41.5, 86.4 } },
 }
 B[2175] = {
     name = "Shadowclaw",
-    family = 2,
     minLevel = 13,
     maxLevel = 13,
     rare = true,
+    family = F.cat,
     pins = { [1439] = { 39.8, 38.3, 39.2, 44 } },
 }
 B[2231] = {
     name = "Pygmy Tide Crawler",
-    family = 8,
     minLevel = 9,
     maxLevel = 10,
+    family = F.crab,
     pins = { [1439] = { 35.9, 47.7, 37, 38.4 } },
 }
-B[2232] =
-    { name = "Tide Crawler", family = 8, minLevel = 12, maxLevel = 14, pins = { [1439] = { 36.5, 66, 41.9, 25.5 } } }
+B[2232] = {
+    name = "Tide Crawler",
+    minLevel = 12,
+    maxLevel = 14,
+    family = F.crab,
+    pins = { [1439] = { 36.5, 66, 41.9, 25.5 } },
+}
 B[2234] = {
     name = "Young Reef Crawler",
-    family = 8,
     minLevel = 10,
     maxLevel = 11,
+    family = F.crab,
     pins = { [1439] = { 36.3, 55.2, 38.6, 32.1 } },
 }
 B[2237] = {
     name = "Moonstalker Sire",
-    family = 2,
     minLevel = 17,
     maxLevel = 18,
+    family = F.cat,
     pins = { [1439] = { 39.7, 91.3, 40.2, 81.3, 38.7, 71, 61.2, 10 } },
 }
 B[2321] = {
     name = "Foreststrider Fledgling",
-    family = 12,
     minLevel = 11,
     maxLevel = 13,
+    family = F.tallstrider,
     pins = {
         [1439] = {
             38.1,
@@ -2209,30 +2459,30 @@ B[2321] = {
 }
 B[2322] = {
     name = "Foreststrider",
-    family = 12,
     minLevel = 14,
     maxLevel = 16,
+    family = F.tallstrider,
     pins = { [1439] = { 40.1, 73.3, 38.1, 71.4, 50, 29.9, 50.4, 36.1, 53.2, 25.4 } },
 }
 B[2323] = {
     name = "Giant Foreststrider",
-    family = 12,
     minLevel = 17,
     maxLevel = 19,
+    family = F.tallstrider,
     pins = { [1439] = { 39.7, 82.5, 38, 90.9, 60.2, 12 } },
 }
 B[2348] = {
     name = "Elder Moss Creeper",
-    family = 3,
     minLevel = 26,
     maxLevel = 27,
+    family = F.spider,
     pins = { [1424] = { 58.9, 57, 64.8, 68.7 } },
 }
 B[2349] = {
     name = "Giant Moss Creeper",
-    family = 3,
     minLevel = 24,
     maxLevel = 25,
+    family = F.spider,
     pins = {
         [1421] = { 68.4, 49.3 },
         [1424] = {
@@ -2279,9 +2529,9 @@ B[2349] = {
 }
 B[2350] = {
     name = "Forest Moss Creeper",
-    family = 3,
     minLevel = 20,
     maxLevel = 21,
+    family = F.spider,
     pins = {
         [1416] = { 52.9, 70.4, 54.1, 65.7, 63.5, 62.9, 72.4, 66.8 },
         [1424] = {
@@ -2314,9 +2564,9 @@ B[2350] = {
 }
 B[2351] = {
     name = "Gray Bear",
-    family = 4,
     minLevel = 21,
     maxLevel = 22,
+    family = F.bear,
     pins = {
         [1416] = { 51.4, 68.5, 71.5, 67 },
         [1424] = {
@@ -2347,9 +2597,9 @@ B[2351] = {
 }
 B[2354] = {
     name = "Vicious Gray Bear",
-    family = 4,
     minLevel = 22,
     maxLevel = 23,
+    family = F.bear,
     pins = {
         [1424] = {
             41.1,
@@ -2377,9 +2627,9 @@ B[2354] = {
 }
 B[2356] = {
     name = "Elder Gray Bear",
-    family = 4,
     minLevel = 25,
     maxLevel = 26,
+    family = F.bear,
     pins = {
         [1416] = { 21.2, 69, 25.2, 63.1, 25.7, 87.4 },
         [1424] = {
@@ -2418,9 +2668,9 @@ B[2356] = {
 }
 B[2384] = {
     name = "Starving Mountain Lion",
-    family = 2,
     minLevel = 23,
     maxLevel = 24,
+    family = F.cat,
     pins = {
         [1416] = { 23.1, 82.5, 23.4, 77.6, 25.6, 88.2, 31.4, 80.8, 42.1, 83.5, 41.6, 76.6, 51.2, 65.8 },
         [1424] = { 41.5, 38.5, 44, 45.3, 51.7, 32.1, 53.8, 41.9, 48.5, 34.9, 55.5, 25.7, 55.6, 50.8 },
@@ -2428,16 +2678,16 @@ B[2384] = {
 }
 B[2385] = {
     name = "Feral Mountain Lion",
-    family = 2,
     minLevel = 27,
     maxLevel = 28,
+    family = F.cat,
     pins = { [1424] = { 59, 57.9, 59.2, 50.6, 65.2, 69.7, 66.2, 75.5, 68.3, 64.3 } },
 }
 B[2406] = {
     name = "Mountain Lion",
-    family = 2,
     minLevel = 32,
     maxLevel = 33,
+    family = F.cat,
     pins = {
         [1416] = { 35.2, 84.3, 30.8, 76.2, 39.1, 90.4, 44.7, 78, 49.2, 74.4, 67, 51.8 },
         [1424] = { 37.8, 24.4, 52.3, 13.4 },
@@ -2445,9 +2695,9 @@ B[2406] = {
 }
 B[2408] = {
     name = "Snapjaw",
-    family = 21,
     minLevel = 30,
     maxLevel = 31,
+    family = F.turtle,
     pins = {
         [1416] = { 29.4, 39.2, 75.2, 65, 80.6, 57, 86.8, 48.5 },
         [1424] = { 56.1, 52.2, 61.1, 43.2, 66.9, 34.8, 68.1, 27, 68.7, 16.9, 70.3, 10.9 },
@@ -2455,25 +2705,25 @@ B[2408] = {
 }
 B[2476] = {
     name = "Large Loch Crocolisk",
-    family = 6,
     minLevel = 22,
     maxLevel = 22,
     rare = true,
+    family = F.crocolisk,
     pins = { [1432] = { 59.1, 31.1, 58.9, 21.9, 60.7, 40.5, 63.7, 49.3 } },
 }
 B[2505] = {
     name = "Saltwater Snapjaw",
-    family = 21,
     minLevel = 49,
     maxLevel = 50,
+    family = F.turtle,
     pins = { [1425] = { 76.6, 69.2, 79.3, 59.8, 82, 46.5, 81.5, 53.1 } },
 }
-B[2522] = { name = "Jaguero Stalker", family = 2, minLevel = 50, maxLevel = 50, pins = { [1434] = { 37.4, 80.9 } } }
+B[2522] = { name = "Jaguero Stalker", minLevel = 50, maxLevel = 50, family = F.cat, pins = { [1434] = { 37.4, 80.9 } } }
 B[2559] = {
     name = "Highland Strider",
-    family = 11,
     minLevel = 30,
     maxLevel = 31,
+    family = F.raptor,
     pins = {
         [1417] = {
             24.2,
@@ -2521,9 +2771,9 @@ B[2559] = {
 }
 B[2560] = {
     name = "Highland Thrasher",
-    family = 11,
     minLevel = 33,
     maxLevel = 34,
+    family = F.raptor,
     pins = {
         [1417] = {
             20,
@@ -2553,9 +2803,9 @@ B[2560] = {
 }
 B[2563] = {
     name = "Plains Creeper",
-    family = 3,
     minLevel = 32,
     maxLevel = 33,
+    family = F.spider,
     pins = {
         [1417] = {
             18.1,
@@ -2611,16 +2861,16 @@ B[2563] = {
 }
 B[2565] = {
     name = "Giant Plains Creeper",
-    family = 3,
     minLevel = 35,
     maxLevel = 36,
+    family = F.spider,
     pins = { [1417] = { 44.4, 33.2, 56.6, 61.8, 61.6, 69.6 } },
 }
 B[2578] = {
     name = "Young Mesa Buzzard",
-    family = 7,
     minLevel = 31,
     maxLevel = 32,
+    family = F.carrionBird,
     pins = {
         [1417] = {
             20.6,
@@ -2650,9 +2900,9 @@ B[2578] = {
 }
 B[2579] = {
     name = "Mesa Buzzard",
-    family = 7,
     minLevel = 34,
     maxLevel = 35,
+    family = F.carrionBird,
     pins = {
         [1417] = {
             19.6,
@@ -2690,38 +2940,38 @@ B[2579] = {
 }
 B[2680] = {
     name = "Vilebranch Wolf Pup",
-    family = 1,
     minLevel = 46,
     maxLevel = 47,
+    family = F.wolf,
     pins = { [1425] = { 47.6, 65.6, 65.7, 70.1 } },
 }
 B[2681] = {
     name = "Vilebranch Raiding Wolf",
-    family = 1,
     minLevel = 50,
     maxLevel = 51,
     elite = true,
+    family = F.wolf,
     pins = { [1425] = { 59.9, 77.4, 58.6, 65.4 } },
 }
 B[2727] = {
     name = "Crag Coyote",
-    family = 1,
     minLevel = 35,
     maxLevel = 36,
+    family = F.wolf,
     pins = { [1418] = { 49.3, 38.8, 51.9, 48.1, 48.4, 32.4, 52.3, 16.7, 53.6, 24.8, 55, 44.7 } },
 }
 B[2728] = {
     name = "Feral Crag Coyote",
-    family = 1,
     minLevel = 37,
     maxLevel = 38,
+    family = F.wolf,
     pins = { [1418] = { 47.4, 74.2, 55.9, 58.3, 58.5, 50.9, 57.1, 69.9, 58.3, 64.5, 61.3, 46.4, 65.5, 51.4 } },
 }
 B[2729] = {
     name = "Elder Crag Coyote",
-    family = 1,
     minLevel = 39,
     maxLevel = 40,
+    family = F.wolf,
     pins = {
         [1418] = {
             13.1,
@@ -2749,19 +2999,20 @@ B[2729] = {
         },
     },
 }
-B[2730] = { name = "Rabid Crag Coyote", family = 1, minLevel = 42, maxLevel = 43, pins = { [1418] = { 70.5, 33.5 } } }
+B[2730] =
+    { name = "Rabid Crag Coyote", minLevel = 42, maxLevel = 43, family = F.wolf, pins = { [1418] = { 70.5, 33.5 } } }
 B[2731] = {
     name = "Ridge Stalker",
-    family = 2,
     minLevel = 36,
     maxLevel = 37,
+    family = F.cat,
     pins = { [1418] = { 40.9, 40.1, 45.2, 36.8, 45.4, 42.8, 54.7, 16.1, 61.3, 29, 62, 42.8, 64.2, 35.7, 64.7, 50.7 } },
 }
 B[2732] = {
     name = "Ridge Huntress",
-    family = 2,
     minLevel = 38,
     maxLevel = 39,
+    family = F.cat,
     pins = {
         [1418] = {
             32.8,
@@ -2793,34 +3044,34 @@ B[2732] = {
 }
 B[2734] = {
     name = "Ridge Stalker Patriarch",
-    family = 2,
     minLevel = 40,
     maxLevel = 41,
+    family = F.cat,
     pins = {
         [1418] = { 13, 56.9, 14.6, 69.1, 16, 50.1, 19, 80, 23.4, 62.9, 23.8, 73.5, 21.6, 57.6, 25, 79.6, 27.6, 67.2 },
     },
 }
 B[2753] = {
     name = "Barnabus",
-    family = 1,
     minLevel = 38,
     maxLevel = 38,
     rare = true,
+    family = F.wolf,
     pins = { [1418] = { 38.6, 70, 46.5, 74.2, 53.3, 69.4, 56.7, 55.9 } },
 }
 B[2830] = {
     name = "Buzzard",
-    family = 7,
     minLevel = 37,
     maxLevel = 39,
+    family = F.carrionBird,
     pins = { [1418] = { 54.3, 56.5, 55.3, 65.6, 52.4, 73.7, 57.8, 50, 58.8, 71.2, 61.6, 59 } },
 }
 B[2850] = {
     name = "Broken Tooth",
-    family = 2,
     minLevel = 37,
     maxLevel = 37,
     rare = true,
+    family = F.cat,
     pins = {
         [1418] = {
             27,
@@ -2846,39 +3097,39 @@ B[2850] = {
 }
 B[2923] = {
     name = "Mangy Silvermane",
-    family = 1,
     minLevel = 41,
     maxLevel = 42,
+    family = F.wolf,
     pins = { [1425] = { 18.8, 51.7, 20.5, 57.5 } },
 }
 B[2924] = {
     name = "Silvermane Wolf",
-    family = 1,
     minLevel = 43,
     maxLevel = 44,
+    family = F.wolf,
     pins = { [1425] = { 29.1, 53.9, 29.4, 62.7, 27.4, 68.2, 35.7, 56.6, 36.2, 49.5, 36.6, 43.9 } },
 }
 B[2925] = {
     name = "Silvermane Howler",
-    family = 1,
     minLevel = 45,
     maxLevel = 46,
+    family = F.wolf,
     pins = { [1425] = { 41.1, 59.5, 41.2, 47.8, 41.9, 66.3, 47.8, 56.5, 50.3, 45.1, 50.2, 62.5 } },
 }
 B[2926] = {
     name = "Silvermane Stalker",
-    family = 1,
     minLevel = 47,
     maxLevel = 48,
+    family = F.wolf,
     pins = { [1425] = { 56.1, 53.5, 58.7, 45.6, 62, 41.3, 69, 58.6, 66.5, 48.6, 71.4, 64.9, 74.6, 51.5 } },
 }
 B[2931] = {
     name = "Zaricotl",
-    family = 7,
     minLevel = 55,
     maxLevel = 56,
     elite = true,
     rare = true,
+    family = F.carrionBird,
     pins = {
         [1418] = {
             4.4,
@@ -2931,26 +3182,26 @@ B[2931] = {
     },
 }
 B[2954] =
-    { name = "Bristleback Battleboar", family = 5, minLevel = 4, maxLevel = 5, pins = { [1412] = { 61.4, 79.2 } } }
+    { name = "Bristleback Battleboar", minLevel = 4, maxLevel = 5, family = F.boar, pins = { [1412] = { 61.4, 79.2 } } }
 B[2957] = {
     name = "Elder Plainstrider",
-    family = 12,
     minLevel = 8,
     maxLevel = 9,
+    family = F.tallstrider,
     pins = { [1412] = { 53.9, 61.5, 61.3, 64.7, 60, 25, 67.5, 60.6 }, [1456] = { 18.4, 6.4, 64.6, 20.8, 84.2, 12.7 } },
 }
 B[2958] = {
     name = "Prairie Wolf",
-    family = 1,
     minLevel = 5,
     maxLevel = 6,
+    family = F.wolf,
     pins = { [1412] = { 39, 73.7, 44.4, 65.5, 39.4, 58.9, 38.8, 51, 40.2, 6.5, 51.4, 68.2, 53.3, 61 } },
 }
 B[2959] = {
     name = "Prairie Stalker",
-    family = 1,
     minLevel = 7,
     maxLevel = 8,
+    family = F.wolf,
     pins = {
         [1412] = { 36.3, 37.2, 38.5, 45.8, 45.3, 53.5, 50.1, 44.8, 54.9, 59.7, 53.5, 53.6, 58.6, 69.6 },
         [1456] = { 24.2, 72.5, 27.5, 41.2, 27.1, 80 },
@@ -2958,34 +3209,35 @@ B[2959] = {
 }
 B[2960] = {
     name = "Prairie Wolf Alpha",
-    family = 1,
     minLevel = 9,
     maxLevel = 10,
+    family = F.wolf,
     pins = {
         [1412] = { 46, 28.7, 48.8, 35.1, 48.4, 38.6, 51, 20.4, 54, 31.2, 54.5, 39.2, 60.5, 66.5, 66.6, 58.9 },
         [1456] = { 46.3, 13.7, 45.8, 7.8, 66.1, 14 },
     },
 }
-B[2966] = { name = "Battleboar", family = 5, minLevel = 3, maxLevel = 4, pins = { [1412] = { 54, 81.5, 56.5, 88.6 } } }
+B[2966] =
+    { name = "Battleboar", minLevel = 3, maxLevel = 4, family = F.boar, pins = { [1412] = { 54, 81.5, 56.5, 88.6 } } }
 B[2970] = {
     name = "Swoop",
-    family = 7,
     minLevel = 7,
     maxLevel = 9,
+    family = F.carrionBird,
     pins = { [1412] = { 41.7, 49.3, 40.5, 41.1, 45.8, 53.1, 49.1, 45.3, 56.2, 59.3, 56.9, 50.1, 56.9, 68.5 } },
 }
 B[2971] = {
     name = "Taloned Swoop",
-    family = 7,
     minLevel = 8,
     maxLevel = 10,
+    family = F.carrionBird,
     pins = { [1412] = { 45.2, 16.8, 48.5, 30.8, 51.7, 24.2, 53.4, 40.3, 60.3, 66.6, 66.4, 59 } },
 }
 B[3035] = {
     name = "Flatland Cougar",
-    family = 2,
     minLevel = 7,
     maxLevel = 8,
+    family = F.cat,
     pins = {
         [1412] = {
             37.2,
@@ -3015,26 +3267,31 @@ B[3035] = {
 }
 B[3068] = {
     name = "Mazzranache",
-    family = 12,
     minLevel = 9,
     maxLevel = 9,
     rare = true,
+    family = F.tallstrider,
     pins = { [1412] = { 37.9, 45.4, 54.2, 43.4 } },
 }
-B[3098] =
-    { name = "Mottled Boar", family = 5, minLevel = 1, maxLevel = 2, pins = { [1411] = { 44.2, 63.9, 43.5, 71.5 } } }
+B[3098] = {
+    name = "Mottled Boar",
+    minLevel = 1,
+    maxLevel = 2,
+    family = F.boar,
+    pins = { [1411] = { 44.2, 63.9, 43.5, 71.5 } },
+}
 B[3099] = {
     name = "Dire Mottled Boar",
-    family = 5,
     minLevel = 6,
     maxLevel = 7,
+    family = F.boar,
     pins = { [1411] = { 50.7, 43.8, 52.4, 50.5, 55.9, 76.3, 54.5, 38.3, 59.1, 44.9 } },
 }
 B[3100] = {
     name = "Elder Mottled Boar",
-    family = 5,
     minLevel = 8,
     maxLevel = 9,
+    family = F.boar,
     pins = {
         [1411] = { 36.3, 41.9, 42.3, 27, 38.6, 34.1, 43.7, 18.9, 39.5, 49.7, 52.1, 14, 56.3, 26.7, 56.1, 19.7 },
         [1454] = {
@@ -3063,23 +3320,23 @@ B[3100] = {
 }
 B[3106] = {
     name = "Pygmy Surf Crawler",
-    family = 8,
     minLevel = 5,
     maxLevel = 6,
+    family = F.crab,
     pins = { [1411] = { 55.6, 80.1, 59.7, 72.2, 61.7, 48.7, 62.6, 58.9 } },
 }
 B[3108] = {
     name = "Encrusted Surf Crawler",
-    family = 8,
     minLevel = 9,
     maxLevel = 10,
+    family = F.crab,
     pins = { [1411] = { 57.4, 11.9, 59.4, 17.6 } },
 }
 B[3110] = {
     name = "Dreadmaw Crocolisk",
-    family = 6,
     minLevel = 9,
     maxLevel = 11,
+    family = F.crocolisk,
     pins = {
         [1411] = { 34.4, 52.1, 34.5, 42.9, 34.8, 34, 35.9, 23.9, 37.4, 16.3 },
         [1413] = { 25.8, 23.8, 63, 23.1, 63.4, 12.3 },
@@ -3087,111 +3344,118 @@ B[3110] = {
 }
 B[3121] = {
     name = "Durotar Tiger",
-    family = 2,
     minLevel = 7,
     maxLevel = 8,
+    family = F.cat,
     pins = { [1411] = { 61.7, 87.2, 64.6, 80.8, 63, 95.9, 68.4, 72.2, 69.4, 85 } },
 }
 B[3123] = {
     name = "Bloodtalon Scythemaw",
-    family = 11,
     minLevel = 8,
     maxLevel = 10,
+    family = F.raptor,
     pins = { [1411] = { 36.8, 30, 37.1, 37.6, 36.6, 48.2, 36.4, 53.5, 41, 18.7, 53.9, 14.7 } },
 }
 B[3124] = {
     name = "Scorpid Worker",
-    family = 20,
     minLevel = 3,
     maxLevel = 3,
+    family = F.scorpid,
     pins = { [1411] = { 42.7, 62.2, 44, 72, 44.1, 57.4 } },
 }
 B[3127] = {
     name = "Venomtail Scorpid",
-    family = 20,
     minLevel = 9,
     maxLevel = 10,
+    family = F.scorpid,
     pins = { [1411] = { 36.3, 28.9, 36.3, 53.3, 41.5, 19.1, 53.2, 15 } },
 }
 B[3225] = {
     name = "Corrupted Mottled Boar",
-    family = 5,
     minLevel = 10,
     maxLevel = 11,
+    family = F.boar,
     pins = { [1411] = { 36.6, 41.2, 36.4, 36.5, 40.3, 22.5 } },
 }
 B[3226] = {
     name = "Corrupted Scorpid",
-    family = 20,
     minLevel = 10,
     maxLevel = 11,
+    family = F.scorpid,
     pins = { [1411] = { 36.5, 27.4, 39.5, 48.7, 50.4, 13.9 } },
 }
 B[3227] = {
     name = "Corrupted Bloodtalon Scythemaw",
-    family = 11,
     minLevel = 10,
     maxLevel = 11,
+    family = F.raptor,
     pins = { [1411] = { 41.2, 17.2, 43.9, 28.7 } },
 }
 B[3228] = {
     name = "Corrupted Surf Crawler",
-    family = 8,
     minLevel = 10,
     maxLevel = 11,
+    family = F.crab,
     pins = { [1411] = { 57.4, 13.6, 58.8, 26.4 } },
 }
 B[3241] = {
     name = "Savannah Patriarch",
-    family = 2,
     minLevel = 15,
     maxLevel = 16,
+    family = F.cat,
     pins = { [1413] = { 45, 15, 61.5, 32.5 } },
 }
 B[3243] = {
     name = "Savannah Highmane",
-    family = 2,
     minLevel = 12,
     maxLevel = 13,
+    family = F.cat,
     pins = { [1413] = { 51.6, 27.8, 50.7, 18.9 } },
 }
 B[3245] = {
     name = "Ornery Plainstrider",
-    family = 12,
     minLevel = 16,
     maxLevel = 17,
+    family = F.tallstrider,
     pins = { [1413] = { 38.2, 26.4, 45.1, 14.3, 54.7, 49.8, 59.1, 7.5, 60.6, 32.8 } },
 }
 B[3246] = {
     name = "Fleeting Plainstrider",
-    family = 12,
     minLevel = 12,
     maxLevel = 13,
+    family = F.tallstrider,
     pins = { [1413] = { 45.4, 25.5, 51.5, 35.5, 52.3, 19.3, 50.4, 12.6, 57.1, 28, 55.8, 30.7, 60, 21.4, 64, 32.4 } },
 }
 B[3247] = {
     name = "Thunderhawk Hatchling",
-    family = 27,
     minLevel = 18,
     maxLevel = 20,
+    family = F.windSerpent,
     pins = { [1413] = { 45.5, 48.4, 46.9, 55.3 } },
 }
-B[3249] =
-    { name = "Greater Thunderhawk", family = 27, minLevel = 23, maxLevel = 24, pins = { [1413] = { 46.1, 77.6 } } }
-B[3250] = { name = "Silithid Creeper", family = 20, minLevel = 20, maxLevel = 21, pins = { [1413] = { 45, 70.5 } } }
-B[3252] = { name = "Silithid Swarmer", family = 20, minLevel = 21, maxLevel = 22, pins = { [1413] = { 44.8, 70.7 } } }
+B[3249] = {
+    name = "Greater Thunderhawk",
+    minLevel = 23,
+    maxLevel = 24,
+    family = F.windSerpent,
+    pins = { [1413] = { 46.1, 77.6 } },
+}
+B[3250] =
+    { name = "Silithid Creeper", minLevel = 20, maxLevel = 21, family = F.scorpid, pins = { [1413] = { 45, 70.5 } } }
+B[3252] =
+    { name = "Silithid Swarmer", minLevel = 21, maxLevel = 22, family = F.scorpid, pins = { [1413] = { 44.8, 70.7 } } }
 B[3254] = {
     name = "Sunscale Lashtail",
-    family = 11,
     minLevel = 11,
     maxLevel = 13,
+    family = F.raptor,
     pins = { [1413] = { 25.8, 23.8, 49.5, 16.6, 51.4, 26.4, 53.2, 34.3 } },
 }
 B[3255] = {
     name = "Sunscale Screecher",
-    family = 11,
     minLevel = 13,
     maxLevel = 15,
+    family = F.raptor,
     pins = {
         [1413] = {
             43.3,
@@ -3221,45 +3485,56 @@ B[3255] = {
 }
 B[3256] = {
     name = "Sunscale Scytheclaw",
-    family = 11,
     minLevel = 16,
     maxLevel = 18,
+    family = F.raptor,
     pins = { [1413] = { 25.8, 23.8, 44, 14.7, 52.4, 46.4, 57.3, 52.8 } },
 }
-B[3257] = { name = "Ishamuhale", family = 11, minLevel = 19, maxLevel = 19, pins = { [1413] = { 59.8, 30.5 } } }
-B[3281] = { name = "Sarkoth", family = 20, minLevel = 4, maxLevel = 4, pins = { [1411] = { 40.5, 66.7 } } }
+B[3257] = { name = "Ishamuhale", minLevel = 19, maxLevel = 19, family = F.raptor, pins = { [1413] = { 59.8, 30.5 } } }
+B[3281] = { name = "Sarkoth", minLevel = 4, maxLevel = 4, family = F.scorpid, pins = { [1411] = { 40.5, 66.7 } } }
 B[3415] = {
     name = "Savannah Huntress",
-    family = 2,
     minLevel = 11,
     maxLevel = 12,
+    family = F.cat,
     pins = { [1413] = { 52.1, 28.1, 53.6, 19.2 } },
 }
-B[3416] = { name = "Savannah Matriarch", family = 2, minLevel = 17, maxLevel = 18, pins = { [1413] = { 61, 32.9 } } }
-B[3424] =
-    { name = "Thunderhawk Cloudscraper", family = 27, minLevel = 20, maxLevel = 22, pins = { [1413] = { 46.6, 61.8 } } }
+B[3416] =
+    { name = "Savannah Matriarch", minLevel = 17, maxLevel = 18, family = F.cat, pins = { [1413] = { 61, 32.9 } } }
+B[3424] = {
+    name = "Thunderhawk Cloudscraper",
+    minLevel = 20,
+    maxLevel = 22,
+    family = F.windSerpent,
+    pins = { [1413] = { 46.6, 61.8 } },
+}
 B[3425] = {
     name = "Savannah Prowler",
-    family = 2,
     minLevel = 14,
     maxLevel = 15,
+    family = F.cat,
     pins = { [1413] = { 41.1, 24.4, 43.3, 34.6, 54.5, 15.4, 58.5, 38.3, 62.5, 6.4, 63, 27.8 } },
 }
 B[3461] = {
     name = "Oasis Snapjaw",
-    family = 21,
     minLevel = 15,
     maxLevel = 16,
+    family = F.turtle,
     pins = { [1413] = { 25.8, 23.8, 46.9, 39.7, 55.5, 42.6 } },
 }
-B[3472] =
-    { name = "Washte Pawne", family = 27, minLevel = 25, maxLevel = 25, pins = { [1413] = { 45.2, 78.8, 44.4, 74.6 } } }
-B[3475] = { name = "Echeyakee", family = 2, minLevel = 16, maxLevel = 16, pins = { [1413] = { 55.7, 17.3 } } }
+B[3472] = {
+    name = "Washte Pawne",
+    minLevel = 25,
+    maxLevel = 25,
+    family = F.windSerpent,
+    pins = { [1413] = { 45.2, 78.8, 44.4, 74.6 } },
+}
+B[3475] = { name = "Echeyakee", minLevel = 16, maxLevel = 16, family = F.cat, pins = { [1413] = { 55.7, 17.3 } } }
 B[3566] = {
     name = "Flatland Prowler",
-    family = 2,
     minLevel = 9,
     maxLevel = 9,
+    family = F.cat,
     pins = {
         [1412] = {
             41.2,
@@ -3287,10 +3562,10 @@ B[3566] = {
 }
 B[3581] = {
     name = "Sewer Beast",
-    family = 6,
     minLevel = 50,
     maxLevel = 50,
     rare = true,
+    family = F.crocolisk,
     pins = {
         [1453] = {
             22.4,
@@ -3340,29 +3615,29 @@ B[3581] = {
         },
     },
 }
-B[3619] = { name = "Ghost Saber", family = 2, minLevel = 19, maxLevel = 20, pins = { [1439] = { 59.2, 19.5 } } }
+B[3619] = { name = "Ghost Saber", minLevel = 19, maxLevel = 20, family = F.cat, pins = { [1439] = { 59.2, 19.5 } } }
 B[3630] = {
     name = "Deviate Coiler",
-    family = 27,
     minLevel = 15,
     maxLevel = 16,
     elite = true,
+    family = F.windSerpent,
     pins = { [1413] = { 46, 35 }, [1414] = { 51.9, 55 } },
 }
 B[3631] = {
     name = "Deviate Stinglash",
-    family = 27,
     minLevel = 16,
     maxLevel = 17,
     elite = true,
+    family = F.windSerpent,
     pins = { [1414] = { 52.4, 54.6 } },
 }
-B[3653] = { name = "Kresh", family = 21, minLevel = 20, maxLevel = 20, elite = true, zones = { 718 } }
+B[3653] = { name = "Kresh", minLevel = 20, maxLevel = 20, elite = true, zones = { 718 }, family = F.turtle }
 B[3809] = {
     name = "Ashenvale Bear",
-    family = 4,
     minLevel = 21,
     maxLevel = 22,
+    family = F.bear,
     pins = {
         [1440] = {
             35.3,
@@ -3390,44 +3665,44 @@ B[3809] = {
 }
 B[3810] = {
     name = "Elder Ashenvale Bear",
-    family = 4,
     minLevel = 25,
     maxLevel = 26,
+    family = F.bear,
     pins = { [1440] = { 64.8, 63.6, 67, 55, 70.4, 49.5 } },
 }
 B[3811] = {
     name = "Giant Ashenvale Bear",
-    family = 4,
     minLevel = 29,
     maxLevel = 30,
+    family = F.bear,
     pins = { [1440] = { 84.3, 46.6, 81.4, 61.5, 82.7, 54.9, 90, 66.2, 92.2, 55.8, 91.7, 48.9 } },
 }
 B[3812] = {
     name = "Clattering Crawler",
-    family = 8,
     minLevel = 19,
     maxLevel = 20,
+    family = F.crab,
     pins = { [1440] = { 12.7, 15.9, 12, 29.4, 14.7, 21.8 } },
 }
 B[3814] = {
     name = "Spined Crawler",
-    family = 8,
     minLevel = 20,
     maxLevel = 21,
+    family = F.crab,
     pins = { [1440] = { 12.1, 15.2, 12, 29.3, 14.6, 21.5 } },
 }
 B[3821] = {
     name = "Wildthorn Lurker",
-    family = 3,
     minLevel = 28,
     maxLevel = 29,
+    family = F.spider,
     pins = { [1440] = { 81.4, 62, 82.7, 47.7, 82.8, 55.2, 89.8, 65.3 }, [1447] = { 5.1, 91.7, 7.5, 78.6 } },
 }
 B[3823] = {
     name = "Ghostpaw Runner",
-    family = 1,
     minLevel = 19,
     maxLevel = 20,
+    family = F.wolf,
     pins = {
         [1440] = {
             20.3,
@@ -3463,68 +3738,73 @@ B[3823] = {
 }
 B[3824] = {
     name = "Ghostpaw Howler",
-    family = 1,
     minLevel = 23,
     maxLevel = 24,
+    family = F.wolf,
     pins = { [1440] = { 57.3, 71.4, 57.8, 65.4, 57.2, 78 } },
 }
 B[3825] = {
     name = "Ghostpaw Alpha",
-    family = 1,
     minLevel = 27,
     maxLevel = 28,
+    family = F.wolf,
     pins = { [1440] = { 54.4, 34.6, 56.8, 41, 68.2, 66.4, 74, 56.3 } },
 }
-B[3862] = { name = "Slavering Worg", family = 1, minLevel = 18, maxLevel = 25, elite = true, zones = { 209 } }
+B[3862] = { name = "Slavering Worg", minLevel = 18, maxLevel = 25, elite = true, zones = { 209 }, family = F.wolf }
 B[4005] = {
     name = "Deepmoss Creeper",
-    family = 3,
     minLevel = 16,
     maxLevel = 17,
+    family = F.spider,
     pins = { [1442] = { 56.6, 75.2, 62.7, 82.5, 64.2, 93.2, 68, 87.9 } },
 }
 B[4006] = {
     name = "Deepmoss Webspinner",
-    family = 3,
     minLevel = 19,
     maxLevel = 20,
+    family = F.spider,
     pins = { [1442] = { 53.7, 72.2, 69, 41.6, 76.5, 45.3 } },
 }
 B[4011] = {
     name = "Young Pridewing",
-    family = 27,
     minLevel = 19,
     maxLevel = 20,
+    family = F.windSerpent,
     pins = { [1442] = { 61.7, 61.3, 60.3, 48.6, 60.6, 69.8, 76.1, 46.1, 77.4, 53.8 } },
 }
-B[4067] =
-    { name = "Twilight Runner", family = 2, minLevel = 23, maxLevel = 24, pins = { [1442] = { 33.4, 11, 38.4, 15.8 } } }
+B[4067] = {
+    name = "Twilight Runner",
+    minLevel = 23,
+    maxLevel = 24,
+    family = F.cat,
+    pins = { [1442] = { 33.4, 11, 38.4, 15.8 } },
+}
 B[4117] = {
     name = "Cloud Serpent",
-    family = 27,
     minLevel = 25,
     maxLevel = 26,
+    family = F.windSerpent,
     pins = { [1441] = { 35.8, 28.1, 37.7, 55.3, 38.3, 37.4, 48.8, 56 } },
 }
 B[4118] = {
     name = "Venomous Cloud Serpent",
-    family = 27,
     minLevel = 26,
     maxLevel = 28,
+    family = F.windSerpent,
     pins = { [1441] = { 24.8, 26.4, 25.6, 42.8, 25.5, 38.2, 37.4, 54.4, 51.9, 55.3 } },
 }
 B[4119] = {
     name = "Elder Cloud Serpent",
-    family = 27,
     minLevel = 27,
     maxLevel = 29,
+    family = F.windSerpent,
     pins = { [1441] = { 16.9, 32.7, 19.5, 38.7, 55.5, 48.1, 55.2, 52.6 } },
 }
 B[4124] = {
     name = "Needles Cougar",
-    family = 2,
     minLevel = 27,
     maxLevel = 28,
+    family = F.cat,
     pins = {
         [1441] = {
             12.6,
@@ -3558,121 +3838,133 @@ B[4124] = {
 }
 B[4126] = {
     name = "Crag Stalker",
-    family = 2,
     minLevel = 25,
     maxLevel = 26,
+    family = F.cat,
     pins = { [1441] = { 34.7, 30.5, 33.5, 25.4, 37, 41.5, 43.3, 56.3, 46.8, 60.6, 50.7, 48.4 } },
 }
 B[4127] = {
     name = "Hecklefang Hyena",
-    family = 25,
     minLevel = 15,
     maxLevel = 16,
+    family = F.hyena,
     pins = { [1413] = { 41.3, 27, 43.1, 19.8, 52.6, 42.5, 54.3, 12.2, 58.5, 37.3, 57.1, 17.9, 61.1, 28.3, 62.6, 6.6 } },
 }
 B[4139] = {
     name = "Scorpid Terror",
-    family = 20,
     minLevel = 33,
     maxLevel = 34,
+    family = F.scorpid,
     pins = { [1441] = { 71.5, 76.1, 79.8, 86.4, 73.6, 82.2, 85.9, 72.7, 85.7, 79.7 } },
 }
 B[4140] = {
     name = "Scorpid Reaver",
-    family = 20,
     minLevel = 31,
     maxLevel = 32,
+    family = F.scorpid,
     pins = { [1441] = { 72.1, 63.6, 74.8, 71, 76.1, 54.9, 84, 65.1, 84.6, 59.1 } },
 }
 B[4143] = {
     name = "Sparkleshell Snapper",
-    family = 21,
     minLevel = 34,
     maxLevel = 35,
+    family = F.turtle,
     pins = { [1441] = { 71.4, 78.2, 72.3, 69.6, 82, 55.3, 85.9, 71.4, 85.7, 61.8, 87.6, 78.2 } },
 }
 B[4154] = {
     name = "Salt Flats Scavenger",
-    family = 7,
     minLevel = 30,
     maxLevel = 32,
+    family = F.carrionBird,
     pins = { [1441] = { 83.5, 56.2, 87.6, 65.6 } },
 }
 B[4158] = {
     name = "Salt Flats Vulture",
-    family = 7,
     minLevel = 32,
     maxLevel = 34,
+    family = F.carrionBird,
     pins = { [1441] = { 74.3, 88.3, 71.9, 77.2, 70.7, 69.7, 81.3, 82, 84.6, 73.3, 81.8, 88.8, 86.2, 66.2, 87.8, 79.7 } },
 }
 B[4248] = {
     name = "Pesterhide Hyena",
-    family = 25,
     minLevel = 26,
     maxLevel = 27,
+    family = F.hyena,
     pins = { [1441] = { 24.9, 25.6, 25.5, 42.3, 33.4, 30.9, 30.4, 49.6, 38.9, 53.3, 49.5, 52.1, 49.5, 46.7 } },
 }
 B[4249] = {
     name = "Pesterhide Snarler",
-    family = 25,
     minLevel = 28,
     maxLevel = 29,
+    family = F.hyena,
     pins = {
         [1441] = { 13, 19.2, 12, 11.4, 15.9, 29.7, 19.1, 36.9, 52.9, 44.9, 60, 57.2, 63.8, 49.5, 67, 60.7 },
         [1444] = { 89.5, 45.3, 90.2, 38.8 },
     },
 }
-B[4304] = { name = "Scarlet Tracking Hound", family = 25, minLevel = 33, maxLevel = 34, elite = true, zones = { 796 } }
-B[4341] = { name = "Drywallow Crocolisk", family = 6, minLevel = 35, maxLevel = 36, pins = { [1445] = { 49.2, 22.2 } } }
+B[4304] =
+    { name = "Scarlet Tracking Hound", minLevel = 33, maxLevel = 34, elite = true, zones = { 796 }, family = F.hyena }
+B[4341] = {
+    name = "Drywallow Crocolisk",
+    minLevel = 35,
+    maxLevel = 36,
+    family = F.crocolisk,
+    pins = { [1445] = { 49.2, 22.2 } },
+}
 B[4343] = {
     name = "Drywallow Snapper",
-    family = 6,
     minLevel = 37,
     maxLevel = 38,
+    family = F.crocolisk,
     pins = { [1445] = { 38.8, 37.5, 39.6, 31.3, 40.5, 47.3, 43.7, 55.1, 44.8, 41.5, 48.3, 62.1, 50.7, 54.3 } },
 }
 B[4344] = {
     name = "Mottled Drywallow Crocolisk",
-    family = 6,
     minLevel = 38,
     maxLevel = 39,
+    family = F.crocolisk,
     pins = { [1445] = { 39.2, 50.3, 41.2, 59.3, 48.2, 63.3, 47.7, 53, 49.2, 57.8 } },
 }
 B[4345] = {
     name = "Drywallow Daggermaw",
-    family = 6,
     minLevel = 40,
     maxLevel = 41,
+    family = F.crocolisk,
     pins = { [1445] = { 44.8, 71, 48.8, 75.7, 53.8, 70.8 } },
 }
 B[4396] = {
     name = "Mudrock Tortoise",
-    family = 21,
     minLevel = 36,
     maxLevel = 37,
+    family = F.turtle,
     pins = { [1445] = { 58, 13, 61.5, 21.9, 62.1, 31.5, 64.3, 40 } },
 }
 B[4398] = {
     name = "Mudrock Burrower",
-    family = 21,
     minLevel = 39,
     maxLevel = 40,
+    family = F.turtle,
     pins = { [1445] = { 49.3, 37, 54.6, 44.7, 58.9, 49.7 } },
 }
-B[4399] =
-    { name = "Mudrock Borer", family = 21, minLevel = 42, maxLevel = 43, pins = { [1445] = { 60, 54.6, 59.3, 62.5 } } }
+B[4399] = {
+    name = "Mudrock Borer",
+    minLevel = 42,
+    maxLevel = 43,
+    family = F.turtle,
+    pins = { [1445] = { 60, 54.6, 59.3, 62.5 } },
+}
 B[4400] = {
     name = "Mudrock Snapjaw",
-    family = 21,
     minLevel = 41,
     maxLevel = 42,
+    family = F.turtle,
     pins = { [1445] = { 59.8, 53.6, 59.6, 62.8 } },
 }
 B[4411] = {
     name = "Darkfang Lurker",
-    family = 3,
     minLevel = 36,
     maxLevel = 37,
+    family = F.spider,
     pins = {
         [1445] = {
             38.8,
@@ -3700,37 +3992,37 @@ B[4411] = {
 }
 B[4412] = {
     name = "Darkfang Creeper",
-    family = 3,
     minLevel = 38,
     maxLevel = 39,
+    family = F.spider,
     pins = { [1445] = { 39.1, 54, 40.6, 48.2, 46.1, 59.9 } },
 }
 B[4413] = {
     name = "Darkfang Spider",
-    family = 3,
     minLevel = 35,
     maxLevel = 36,
+    family = F.spider,
     pins = { [1445] = { 40.3, 24.4, 40.3, 17.7, 51.5, 24.9, 54.9, 31.9, 58, 22.7, 60.9, 37.7 } },
 }
 B[4425] =
-    { name = "Blind Hunter", family = 24, minLevel = 32, maxLevel = 32, elite = true, rare = true, zones = { 491 } }
-B[4511] = { name = "Agam'ar", family = 5, minLevel = 24, maxLevel = 25, elite = true, zones = { 491 } }
-B[4512] = { name = "Rotting Agam'ar", family = 5, minLevel = 28, maxLevel = 28, elite = true, zones = { 491 } }
-B[4514] = { name = "Raging Agam'ar", family = 5, minLevel = 25, maxLevel = 26, elite = true, zones = { 491 } }
-B[4538] = { name = "Kraul Bat", family = 24, minLevel = 30, maxLevel = 31, elite = true, zones = { 491 } }
-B[4539] = { name = "Greater Kraul Bat", family = 24, minLevel = 32, maxLevel = 32, elite = true, zones = { 491 } }
+    { name = "Blind Hunter", minLevel = 32, maxLevel = 32, elite = true, rare = true, zones = { 491 }, family = F.bat }
+B[4511] = { name = "Agam'ar", minLevel = 24, maxLevel = 25, elite = true, zones = { 491 }, family = F.boar }
+B[4512] = { name = "Rotting Agam'ar", minLevel = 28, maxLevel = 28, elite = true, zones = { 491 }, family = F.boar }
+B[4514] = { name = "Raging Agam'ar", minLevel = 25, maxLevel = 26, elite = true, zones = { 491 }, family = F.boar }
+B[4538] = { name = "Kraul Bat", minLevel = 30, maxLevel = 31, elite = true, zones = { 491 }, family = F.bat }
+B[4539] = { name = "Greater Kraul Bat", minLevel = 32, maxLevel = 32, elite = true, zones = { 491 }, family = F.bat }
 B[4662] = {
     name = "Magram Bonepaw",
-    family = 25,
     minLevel = 37,
     maxLevel = 38,
+    family = F.hyena,
     pins = { [1443] = { 69.1, 76.8, 68.2, 83.6, 72.8, 71, 75.5, 75.7 } },
 }
 B[4688] = {
     name = "Bonepaw Hyena",
-    family = 25,
     minLevel = 33,
     maxLevel = 35,
+    family = F.hyena,
     pins = {
         [1443] = {
             39.1,
@@ -3756,9 +4048,9 @@ B[4688] = {
 }
 B[4692] = {
     name = "Dread Swoop",
-    family = 7,
     minLevel = 32,
     maxLevel = 33,
+    family = F.carrionBird,
     pins = {
         [1443] = {
             42.2,
@@ -3800,9 +4092,9 @@ B[4692] = {
 }
 B[4693] = {
     name = "Dread Flyer",
-    family = 7,
     minLevel = 36,
     maxLevel = 37,
+    family = F.carrionBird,
     pins = {
         [1443] = {
             40.2,
@@ -3848,9 +4140,9 @@ B[4693] = {
 }
 B[4694] = {
     name = "Dread Ripper",
-    family = 7,
     minLevel = 39,
     maxLevel = 40,
+    family = F.carrionBird,
     pins = {
         [1443] = {
             29.4,
@@ -3876,9 +4168,9 @@ B[4694] = {
 }
 B[4696] = {
     name = "Scorpashi Snapper",
-    family = 20,
     minLevel = 30,
     maxLevel = 31,
+    family = F.scorpid,
     pins = {
         [1443] = {
             57.4,
@@ -3906,9 +4198,9 @@ B[4696] = {
 }
 B[4697] = {
     name = "Scorpashi Lasher",
-    family = 20,
     minLevel = 34,
     maxLevel = 35,
+    family = F.scorpid,
     pins = {
         [1443] = {
             41.4,
@@ -3940,61 +4232,63 @@ B[4697] = {
 }
 B[4699] = {
     name = "Scorpashi Venomlash",
-    family = 20,
     minLevel = 38,
     maxLevel = 39,
+    family = F.scorpid,
     pins = { [1443] = { 30.4, 77.3, 28.9, 83.1, 30.8, 69.2, 46.5, 86.5, 55.2, 85.5, 62, 74.2, 60.9, 80.7 } },
 }
-B[4821] = { name = "Skittering Crustacean", family = 8, minLevel = 22, maxLevel = 25, elite = true, zones = { 719 } }
-B[4822] = { name = "Snapping Crustacean", family = 8, minLevel = 23, maxLevel = 25, elite = true, zones = { 719 } }
-B[4823] = { name = "Barbed Crustacean", family = 8, minLevel = 25, maxLevel = 26, elite = true, zones = { 719 } }
-B[4824] = { name = "Aku'mai Fisher", family = 21, minLevel = 23, maxLevel = 24, elite = true, zones = { 719 } }
-B[4825] = { name = "Aku'mai Snapjaw", family = 21, minLevel = 26, maxLevel = 27, elite = true, zones = { 719 } }
+B[4821] =
+    { name = "Skittering Crustacean", minLevel = 22, maxLevel = 25, elite = true, zones = { 719 }, family = F.crab }
+B[4822] = { name = "Snapping Crustacean", minLevel = 23, maxLevel = 25, elite = true, zones = { 719 }, family = F.crab }
+B[4823] = { name = "Barbed Crustacean", minLevel = 25, maxLevel = 26, elite = true, zones = { 719 }, family = F.crab }
+B[4824] = { name = "Aku'mai Fisher", minLevel = 23, maxLevel = 24, elite = true, zones = { 719 }, family = F.turtle }
+B[4825] = { name = "Aku'mai Snapjaw", minLevel = 26, maxLevel = 27, elite = true, zones = { 719 }, family = F.turtle }
 B[4841] = {
     name = "Deadmire",
-    family = 6,
     minLevel = 45,
     maxLevel = 45,
+    family = F.crocolisk,
     pins = { [1445] = { 46.8, 58.9, 48, 52.6, 53.8, 51.1 } },
 }
-B[4861] = { name = "Shrike Bat", family = 24, minLevel = 38, maxLevel = 39, elite = true, zones = { 1337 } }
-B[4887] = { name = "Ghamoo-ra", family = 21, minLevel = 25, maxLevel = 25, elite = true, zones = { 719 } }
-B[4950] = { name = "Spot", family = 1, minLevel = 35, maxLevel = 35, pins = { [1445] = { 67.8, 46.6 } } }
-B[5053] = { name = "Deviate Crocolisk", family = 6, minLevel = 18, maxLevel = 19, zones = { 718 } }
-B[5056] = { name = "Deviate Dreadfang", family = 27, minLevel = 20, maxLevel = 21, elite = true, zones = { 718 } }
+B[4861] = { name = "Shrike Bat", minLevel = 38, maxLevel = 39, elite = true, zones = { 1337 }, family = F.bat }
+B[4887] = { name = "Ghamoo-ra", minLevel = 25, maxLevel = 25, elite = true, zones = { 719 }, family = F.turtle }
+B[4950] = { name = "Spot", minLevel = 35, maxLevel = 35, family = F.wolf, pins = { [1445] = { 67.8, 46.6 } } }
+B[5053] = { name = "Deviate Crocolisk", minLevel = 18, maxLevel = 19, zones = { 718 }, family = F.crocolisk }
+B[5056] =
+    { name = "Deviate Dreadfang", minLevel = 20, maxLevel = 21, elite = true, zones = { 718 }, family = F.windSerpent }
 B[5260] = {
     name = "Groddoc Ape",
-    family = 9,
     minLevel = 42,
     maxLevel = 43,
+    family = F.gorilla,
     pins = { [1444] = { 49.8, 48.9, 57.4, 55, 68.2, 50.8 } },
 }
 B[5262] = {
     name = "Groddoc Thunderer",
-    family = 9,
     minLevel = 49,
     maxLevel = 50,
+    family = F.gorilla,
     pins = { [1444] = { 42.6, 20.9, 43.6, 10.5, 48.8, 28.8, 49.4, 34 } },
 }
 B[5268] = {
     name = "Ironfur Bear",
-    family = 4,
     minLevel = 41,
     maxLevel = 42,
+    family = F.bear,
     pins = { [1444] = { 57.9, 56.3, 57.9, 60.8, 70, 45.8, 78.9, 39, 83, 45.2, 87.2, 37.8 } },
 }
 B[5274] = {
     name = "Ironfur Patriarch",
-    family = 4,
     minLevel = 48,
     maxLevel = 49,
+    family = F.bear,
     pins = { [1444] = { 42.5, 22, 44, 11, 49.1, 29.5, 49, 35.9 } },
 }
 B[5286] = {
     name = "Longtooth Runner",
-    family = 1,
     minLevel = 40,
     maxLevel = 41,
+    family = F.wolf,
     pins = {
         [1441] = { 9.2, 9.9, 9.5, 18.8, 15.9, 17.9 },
         [1444] = { 28.9, 47.7, 31.2, 53.2, 69.9, 45, 77, 38.9, 83.4, 44.2, 85.7, 38.3 },
@@ -4002,79 +4296,91 @@ B[5286] = {
 }
 B[5287] = {
     name = "Longtooth Howler",
-    family = 1,
     minLevel = 43,
     maxLevel = 44,
+    family = F.wolf,
     pins = { [1444] = { 56.9, 49.3, 72.4, 53.1, 70.4, 61 } },
 }
-B[5291] = { name = "Hakkari Frostwing", family = 27, minLevel = 49, maxLevel = 50, elite = true, zones = { 1477 } }
-B[5307] =
-    { name = "Vale Screecher", family = 27, minLevel = 41, maxLevel = 43, pins = { [1444] = { 57.7, 56.6, 59.2, 62 } } }
+B[5291] =
+    { name = "Hakkari Frostwing", minLevel = 49, maxLevel = 50, elite = true, zones = { 1477 }, family = F.windSerpent }
+B[5307] = {
+    name = "Vale Screecher",
+    minLevel = 41,
+    maxLevel = 43,
+    family = F.windSerpent,
+    pins = { [1444] = { 57.7, 56.6, 59.2, 62 } },
+}
 B[5308] = {
     name = "Rogue Vale Screecher",
-    family = 27,
     minLevel = 44,
     maxLevel = 46,
+    family = F.windSerpent,
     pins = { [1444] = { 45.2, 38, 49.7, 48.4, 47.6, 58.3, 58.5, 49.7 } },
 }
-B[5349] =
-    { name = "Arash-ethis", family = 27, minLevel = 49, maxLevel = 49, rare = true, pins = { [1444] = { 44.7, 24.2 } } }
+B[5349] = {
+    name = "Arash-ethis",
+    minLevel = 49,
+    maxLevel = 49,
+    rare = true,
+    family = F.windSerpent,
+    pins = { [1444] = { 44.7, 24.2 } },
+}
 B[5352] = {
     name = "Old Grizzlegut",
-    family = 4,
     minLevel = 43,
     maxLevel = 43,
     rare = true,
+    family = F.bear,
     pins = { [1444] = { 59.3, 59.1, 68.9, 46.4 } },
 }
 B[5356] = {
     name = "Snarler",
-    family = 1,
     minLevel = 42,
     maxLevel = 42,
     rare = true,
+    family = F.wolf,
     pins = { [1444] = { 79.1, 38.7, 76, 43.4, 85.5, 39.6 } },
 }
 B[5422] = {
     name = "Scorpid Hunter",
-    family = 20,
     minLevel = 40,
     maxLevel = 41,
+    family = F.scorpid,
     pins = { [1446] = { 51.2, 31, 47, 31.8, 56.3, 34.3, 57.8, 25.7, 65.1, 27.4, 65.8, 20 } },
 }
 B[5423] = {
     name = "Scorpid Tail Lasher",
-    family = 20,
     minLevel = 43,
     maxLevel = 44,
+    family = F.scorpid,
     pins = { [1446] = { 40.8, 41.3, 45.6, 24.6, 49.3, 36.3, 60.3, 47.6, 65.2, 41.9 } },
 }
 B[5424] = {
     name = "Scorpid Dunestalker",
-    family = 20,
     minLevel = 46,
     maxLevel = 47,
+    family = F.scorpid,
     pins = { [1446] = { 33.8, 79.2, 35.9, 53.1, 36.8, 35.2, 38.8, 65.8, 44.2, 45.6, 52.5, 58.9, 61, 56, 61, 51.7 } },
 }
 B[5425] = {
     name = "Starving Blisterpaw",
-    family = 25,
     minLevel = 41,
     maxLevel = 42,
+    family = F.hyena,
     pins = { [1446] = { 47, 29.8, 43.8, 24.5, 54.5, 33.9, 56.2, 25.5, 64.1, 26.9, 65.6, 20 } },
 }
 B[5426] = {
     name = "Blisterpaw Hyena",
-    family = 25,
     minLevel = 44,
     maxLevel = 45,
+    family = F.hyena,
     pins = { [1446] = { 36.8, 35.2, 44.5, 40, 54.3, 54.3, 61.3, 48.7, 60.8, 58, 65.2, 41.9 } },
 }
 B[5427] = {
     name = "Rabid Blisterpaw",
-    family = 25,
     minLevel = 47,
     maxLevel = 48,
+    family = F.hyena,
     pins = {
         [1446] = {
             31,
@@ -4102,20 +4408,25 @@ B[5427] = {
         },
     },
 }
-B[5428] =
-    { name = "Roc", family = 7, minLevel = 41, maxLevel = 43, pins = { [1446] = { 49.4, 29.8, 49.4, 36.2, 56, 25.5 } } }
+B[5428] = {
+    name = "Roc",
+    minLevel = 41,
+    maxLevel = 43,
+    family = F.carrionBird,
+    pins = { [1446] = { 49.4, 29.8, 49.4, 36.2, 56, 25.5 } },
+}
 B[5429] = {
     name = "Fire Roc",
-    family = 7,
     minLevel = 43,
     maxLevel = 45,
+    family = F.carrionBird,
     pins = { [1446] = { 45.7, 40.8, 47.6, 46.7, 49.5, 53.2, 62.7, 45 } },
 }
 B[5430] = {
     name = "Searing Roc",
-    family = 7,
     minLevel = 47,
     maxLevel = 49,
+    family = F.carrionBird,
     pins = {
         [1446] = {
             31.9,
@@ -4143,102 +4454,115 @@ B[5430] = {
 }
 B[5431] = {
     name = "Surf Glider",
-    family = 21,
     minLevel = 48,
     maxLevel = 50,
+    family = F.turtle,
     pins = { [1446] = { 53.4, 93.1, 60, 86.1, 60, 81.4, 66.9, 59, 71.7, 53.7 } },
 }
-B[5708] = { name = "Spawn of Hakkar", family = 27, minLevel = 50, maxLevel = 51, elite = true, zones = { 1477 } }
-B[5756] = { name = "Deviate Venomwing", family = 27, minLevel = 20, maxLevel = 21, elite = true, zones = { 718 } }
+B[5708] =
+    { name = "Spawn of Hakkar", minLevel = 50, maxLevel = 51, elite = true, zones = { 1477 }, family = F.windSerpent }
+B[5756] =
+    { name = "Deviate Venomwing", minLevel = 20, maxLevel = 21, elite = true, zones = { 718 }, family = F.windSerpent }
 B[5807] = {
     name = "The Rake",
-    family = 2,
     minLevel = 10,
     maxLevel = 10,
     rare = true,
+    family = F.cat,
     pins = { [1412] = { 50.2, 26.8, 51.5, 17.5 } },
 }
 B[5823] = {
     name = "Death Flayer",
-    family = 20,
     minLevel = 11,
     maxLevel = 11,
     rare = true,
+    family = F.scorpid,
     pins = { [1411] = { 36.9, 51.1, 38.8, 44.6 } },
 }
 B[5828] = {
     name = "Humar the Pridelord",
-    family = 2,
     minLevel = 23,
     maxLevel = 23,
     elite = true,
     rare = true,
+    family = F.cat,
     pins = { [1413] = { 62, 33.9 } },
 }
 B[5829] = {
     name = "Snort the Heckler",
-    family = 25,
     minLevel = 17,
     maxLevel = 17,
     rare = true,
+    family = F.hyena,
     pins = { [1413] = { 41.2, 24 } },
 }
 B[5834] = {
     name = "Azzere the Skyblade",
-    family = 27,
     minLevel = 25,
     maxLevel = 25,
     rare = true,
+    family = F.windSerpent,
     pins = { [1413] = { 45.2, 62.7 } },
 }
 B[5842] = {
     name = "Takk the Leaper",
-    family = 11,
     minLevel = 19,
     maxLevel = 19,
     elite = true,
     rare = true,
+    family = F.raptor,
     pins = { [1413] = { 59.8, 9.3, 60.8, 15.5 } },
 }
 B[5857] = {
     name = "Searing Lava Spider",
-    family = 3,
     minLevel = 45,
     maxLevel = 47,
+    family = F.spider,
     pins = { [1427] = { 48.3, 72.5, 49.6, 62.4, 53.1, 37, 57, 81.5, 59.8, 30.8 } },
 }
 B[5865] = {
     name = "Dishu",
-    family = 2,
     minLevel = 13,
     maxLevel = 13,
     rare = true,
+    family = F.cat,
     pins = { [1413] = { 50, 17.2, 50.8, 26.7 } },
 }
 B[5937] = {
     name = "Vile Sting",
-    family = 20,
     minLevel = 35,
     maxLevel = 35,
     elite = true,
     rare = true,
+    family = F.scorpid,
     pins = { [1441] = { 71.1, 66.7, 72.4, 74.9, 70.1, 73.4, 76.4, 59.8, 80.1, 74.7 } },
 }
 B[5988] = {
     name = "Scorpok Stinger",
-    family = 20,
     minLevel = 50,
     maxLevel = 51,
+    family = F.scorpid,
     pins = { [1419] = { 46.3, 23.3, 47.4, 17.7, 51, 28.7, 59.3, 38.8, 59.2, 35.5, 60.4, 44.8 } },
 }
-B[5992] =
-    { name = "Ashmane Boar", family = 5, minLevel = 48, maxLevel = 49, pins = { [1419] = { 58.4, 30.2, 62, 26.3 } } }
-B[6013] = { name = "Wayward Buzzard", family = 7, minLevel = 35, maxLevel = 37, pins = { [1418] = { 43.5, 52.5 } } }
+B[5992] = {
+    name = "Ashmane Boar",
+    minLevel = 48,
+    maxLevel = 49,
+    family = F.boar,
+    pins = { [1419] = { 58.4, 30.2, 62, 26.3 } },
+}
+B[6013] = {
+    name = "Wayward Buzzard",
+    minLevel = 35,
+    maxLevel = 37,
+    family = F.carrionBird,
+    pins = { [1418] = { 43.5, 52.5 } },
+}
 B[6352] = {
     name = "Coralshell Lurker",
-    family = 21,
     minLevel = 53,
     maxLevel = 54,
+    family = F.turtle,
     pins = {
         [1447] = {
             47.9,
@@ -4284,137 +4608,161 @@ B[6352] = {
         },
     },
 }
-B[6516] = { name = "Un'Goro Thunderer", family = 9, minLevel = 52, maxLevel = 53, pins = { [1449] = { 66.6, 15.9 } } }
-B[6585] =
-    { name = "Uhk'loc", family = 9, minLevel = 52, maxLevel = 53, rare = true, pins = { [1449] = { 68.6, 13.8 } } }
-B[6788] = { name = "Den Mother", family = 4, minLevel = 18, maxLevel = 19, pins = { [1439] = { 51.5, 37.6 } } }
-B[7022] = { name = "Venomlash Scorpid", family = 20, minLevel = 39, maxLevel = 40, elite = true, zones = { 1337 } }
+B[6516] =
+    { name = "Un'Goro Thunderer", minLevel = 52, maxLevel = 53, family = F.gorilla, pins = { [1449] = { 66.6, 15.9 } } }
+B[6585] = {
+    name = "Uhk'loc",
+    minLevel = 52,
+    maxLevel = 53,
+    rare = true,
+    family = F.gorilla,
+    pins = { [1449] = { 68.6, 13.8 } },
+}
+B[6788] = { name = "Den Mother", minLevel = 18, maxLevel = 19, family = F.bear, pins = { [1439] = { 51.5, 37.6 } } }
+B[7022] =
+    { name = "Venomlash Scorpid", minLevel = 39, maxLevel = 40, elite = true, zones = { 1337 }, family = F.scorpid }
 B[7055] = {
     name = "Blackrock Worg",
-    family = 1,
     minLevel = 54,
     maxLevel = 55,
+    family = F.wolf,
     pins = { [1428] = { 38.8, 54.6, 48.9, 56, 55.8, 53.5 } },
 }
-B[7078] = { name = "Cleft Scorpid", family = 20, minLevel = 35, maxLevel = 36, zones = { 1337 } }
+B[7078] = { name = "Cleft Scorpid", minLevel = 35, maxLevel = 36, zones = { 1337 }, family = F.scorpid }
 B[7097] = {
     name = "Ironbeak Owl",
-    family = 26,
     minLevel = 48,
     maxLevel = 49,
+    family = F.birdOfPrey,
     pins = { [1448] = { 39.6, 69.4, 44.8, 83.2, 47.9, 75.7, 51.9, 84.8 } },
 }
 B[7098] = {
     name = "Ironbeak Screecher",
-    family = 26,
     minLevel = 52,
     maxLevel = 53,
+    family = F.birdOfPrey,
     pins = { [1448] = { 56.5, 12.3, 62.9, 19.9 } },
 }
 B[7099] = {
     name = "Ironbeak Hunter",
-    family = 26,
     minLevel = 50,
     maxLevel = 51,
+    family = F.birdOfPrey,
     pins = { [1448] = { 40.6, 52.6, 39.4, 37, 39.8, 57, 43.3, 65.5 } },
 }
-B[7319] =
-    { name = "Lady Sathrah", family = 3, minLevel = 12, maxLevel = 12, pins = { [1438] = { 40.5, 25.4, 47.8, 25.2 } } }
-B[7405] = { name = "Deadly Cleft Scorpid", family = 20, minLevel = 42, maxLevel = 43, zones = { 1337 } }
+B[7319] = {
+    name = "Lady Sathrah",
+    minLevel = 12,
+    maxLevel = 12,
+    family = F.spider,
+    pins = { [1438] = { 40.5, 25.4, 47.8, 25.2 } },
+}
+B[7405] = { name = "Deadly Cleft Scorpid", minLevel = 42, maxLevel = 43, zones = { 1337 }, family = F.scorpid }
 B[7430] = {
     name = "Frostsaber Cub",
-    family = 2,
     minLevel = 55,
     maxLevel = 56,
+    family = F.cat,
     pins = { [1452] = { 50.7, 9.9, 49.8, 17.9, 55.5, 14.5 } },
 }
 B[7431] =
-    { name = "Frostsaber", family = 2, minLevel = 56, maxLevel = 57, pins = { [1452] = { 53.5, 16.4, 55, 12.2 } } }
+    { name = "Frostsaber", minLevel = 56, maxLevel = 57, family = F.cat, pins = { [1452] = { 53.5, 16.4, 55, 12.2 } } }
 B[7432] = {
     name = "Frostsaber Stalker",
-    family = 2,
     minLevel = 59,
     maxLevel = 60,
+    family = F.cat,
     pins = { [1452] = { 52.6, 14.8, 49.4, 20.2, 52.4, 10.4 } },
 }
-B[7433] = { name = "Frostsaber Huntress", family = 2, minLevel = 58, maxLevel = 59, pins = { [1452] = { 50.8, 12.3 } } }
-B[7434] =
-    { name = "Frostsaber Pride Watcher", family = 2, minLevel = 59, maxLevel = 60, pins = { [1452] = { 50.2, 9.7 } } }
+B[7433] =
+    { name = "Frostsaber Huntress", minLevel = 58, maxLevel = 59, family = F.cat, pins = { [1452] = { 50.8, 12.3 } } }
+B[7434] = {
+    name = "Frostsaber Pride Watcher",
+    minLevel = 59,
+    maxLevel = 60,
+    family = F.cat,
+    pins = { [1452] = { 50.2, 9.7 } },
+}
 B[7444] = {
     name = "Shardtooth Bear",
-    family = 4,
     minLevel = 53,
     maxLevel = 54,
+    family = F.bear,
     pins = { [1452] = { 33.7, 44.3, 31.9, 39.3, 42.6, 37.4, 46.3, 44.6, 51.8, 37.6 } },
 }
 B[7445] = {
     name = "Elder Shardtooth",
-    family = 4,
     minLevel = 57,
     maxLevel = 58,
+    family = F.bear,
     pins = { [1452] = { 58.5, 22.2, 59.2, 14.1, 61.8, 27.2 } },
 }
 B[7446] = {
     name = "Rabid Shardtooth",
-    family = 4,
     minLevel = 59,
     maxLevel = 60,
+    family = F.bear,
     pins = { [1452] = { 60.5, 72.2, 66.7, 70.2 } },
 }
 B[7455] = {
     name = "Winterspring Owl",
-    family = 26,
     minLevel = 54,
     maxLevel = 56,
+    family = F.birdOfPrey,
     pins = { [1452] = { 58, 32.8, 55, 28, 59.3, 44, 58, 40.2, 64.9, 28.6, 65.6, 50.1, 64, 37, 66.2, 54.2 } },
 }
 B[7456] = {
     name = "Winterspring Screecher",
-    family = 26,
     minLevel = 57,
     maxLevel = 59,
+    family = F.birdOfPrey,
     pins = { [1452] = { 58.5, 21.7, 58.6, 13.4, 60.9, 60, 61.8, 54.4, 62.5, 27.6 } },
 }
-B[7803] =
-    { name = "Scorpid Duneburrower", family = 20, minLevel = 46, maxLevel = 47, pins = { [1446] = { 61.2, 53.9 } } }
+B[7803] = {
+    name = "Scorpid Duneburrower",
+    minLevel = 46,
+    maxLevel = 47,
+    family = F.scorpid,
+    pins = { [1446] = { 61.2, 53.9 } },
+}
 B[8207] = {
     name = "Greater Firebird",
-    family = 7,
     minLevel = 46,
     maxLevel = 46,
     rare = true,
+    family = F.carrionBird,
     pins = { [1446] = { 45.5, 36.2, 52.2, 39.2 } },
 }
 B[8208] = {
     name = "Murderous Blisterpaw",
-    family = 25,
     minLevel = 43,
     maxLevel = 43,
     rare = true,
+    family = F.hyena,
     pins = { [1446] = { 50.4, 30.6, 54.8, 36 } },
 }
 B[8211] = {
     name = "Old Cliff Jumper",
-    family = 1,
     minLevel = 42,
     maxLevel = 42,
     rare = true,
+    family = F.wolf,
     pins = { [1425] = { 19.6, 52 } },
 }
 B[8213] = {
     name = "Ironback",
-    family = 21,
     minLevel = 51,
     maxLevel = 51,
     rare = true,
+    family = F.turtle,
     pins = { [1425] = { 75, 88.1, 77.7, 64.4, 77.4, 80.7, 76.6, 60.8, 81.9, 48.5, 81.4, 45.2 } },
 }
 B[8277] = {
     name = "Rekk'tilac",
-    family = 3,
     minLevel = 48,
     maxLevel = 48,
     rare = true,
+    family = F.spider,
     pins = {
         [1427] = {
             30.5,
@@ -4440,42 +4788,43 @@ B[8277] = {
 }
 B[8299] = {
     name = "Spiteflayer",
-    family = 7,
     minLevel = 52,
     maxLevel = 52,
     rare = true,
+    family = F.carrionBird,
     pins = { [1419] = { 59.6, 37.8, 59.1, 45.6, 62.4, 30.4 } },
 }
 B[8300] = {
     name = "Ravage",
-    family = 25,
     minLevel = 51,
     maxLevel = 51,
     rare = true,
+    family = F.hyena,
     pins = { [1419] = { 48.2, 36.2, 59.9, 36.5 } },
 }
 B[8301] = {
     name = "Clack the Reaver",
-    family = 20,
     minLevel = 53,
     maxLevel = 53,
     rare = true,
+    family = F.scorpid,
     pins = { [1419] = { 50, 38.3, 51.6, 25.4, 57.7, 34.8, 61, 22.1 } },
 }
 B[8303] = {
     name = "Grunter",
-    family = 5,
     minLevel = 50,
     maxLevel = 50,
     rare = true,
+    family = F.boar,
     pins = { [1419] = { 57.7, 28.7, 60.1, 23.5 } },
 }
-B[8336] = { name = "Hakkari Sapper", family = 27, minLevel = 49, maxLevel = 50, elite = true, zones = { 1477 } }
+B[8336] =
+    { name = "Hakkari Sapper", minLevel = 49, maxLevel = 50, elite = true, zones = { 1477 }, family = F.windSerpent }
 B[8600] = {
     name = "Plaguebat",
-    family = 24,
     minLevel = 53,
     maxLevel = 55,
+    family = F.bat,
     pins = {
         [1423] = {
             7.1,
@@ -4517,18 +4866,18 @@ B[8600] = {
 }
 B[8601] = {
     name = "Noxious Plaguebat",
-    family = 24,
     minLevel = 54,
     maxLevel = 56,
+    family = F.bat,
     pins = {
         [1423] = { 48.1, 65.1, 50.5, 57, 55, 51.6, 61.2, 59.1, 67, 65.6, 70.8, 73.4, 73.7, 55.8, 76.5, 66.1, 77, 71.6 },
     },
 }
 B[8602] = {
     name = "Monstrous Plaguebat",
-    family = 24,
     minLevel = 56,
     maxLevel = 58,
+    family = F.bat,
     pins = {
         [1423] = {
             48.8,
@@ -4554,49 +4903,49 @@ B[8602] = {
 }
 B[8762] = {
     name = "Timberweb Recluse",
-    family = 3,
     minLevel = 47,
     maxLevel = 48,
+    family = F.spider,
     pins = { [1447] = { 28.4, 48.8, 39.2, 39.3, 43.7, 32.7, 42.2, 24.5 } },
 }
-B[8926] = { name = "Deep Stinger", family = 20, minLevel = 50, maxLevel = 52, zones = { 1584 } }
-B[8927] = { name = "Dark Screecher", family = 24, minLevel = 50, maxLevel = 52, zones = { 1584 } }
-B[8933] = { name = "Cave Creeper", family = 3, minLevel = 50, maxLevel = 52, zones = { 1584 } }
+B[8926] = { name = "Deep Stinger", minLevel = 50, maxLevel = 52, zones = { 1584 }, family = F.scorpid }
+B[8927] = { name = "Dark Screecher", minLevel = 50, maxLevel = 52, zones = { 1584 }, family = F.bat }
+B[8933] = { name = "Cave Creeper", minLevel = 50, maxLevel = 52, zones = { 1584 }, family = F.spider }
 B[8958] = {
     name = "Angerclaw Mauler",
-    family = 4,
     minLevel = 49,
     maxLevel = 50,
+    family = F.bear,
     pins = { [1448] = { 38.8, 45.7, 38.4, 52.8, 42, 25.4, 43.4, 63.9, 47, 17.4, 48.7, 37.1 } },
 }
 B[8959] = {
     name = "Felpaw Wolf",
-    family = 1,
     minLevel = 47,
     maxLevel = 48,
+    family = F.wolf,
     pins = { [1448] = { 44.9, 74.6, 46.3, 80.7, 51.9, 85.9, 55.4, 91.1 } },
 }
 B[8960] = {
     name = "Felpaw Scavenger",
-    family = 1,
     minLevel = 49,
     maxLevel = 50,
+    family = F.wolf,
     pins = { [1448] = { 39.5, 36.2, 38.7, 50.8, 43.5, 22.7, 42, 58.8, 44.8, 69.3, 48.3, 15.7, 50.4, 32.5 } },
 }
 B[8961] = {
     name = "Felpaw Ravager",
-    family = 1,
     minLevel = 51,
     maxLevel = 52,
+    family = F.wolf,
     pins = { [1448] = { 56.3, 13.9, 55.3, 24.4, 56.4, 6.5, 62.1, 17.3 } },
 }
-B[9416] = { name = "Scarshield Worg", family = 1, minLevel = 53, maxLevel = 54, zones = { 1583 } }
-B[9622] = { name = "U'cha", family = 9, minLevel = 55, maxLevel = 55, pins = { [1449] = { 68.4, 13.4 } } }
+B[9416] = { name = "Scarshield Worg", minLevel = 53, maxLevel = 54, zones = { 1583 }, family = F.wolf }
+B[9622] = { name = "U'cha", minLevel = 55, maxLevel = 55, family = F.gorilla, pins = { [1449] = { 68.4, 13.4 } } }
 B[9690] = {
     name = "Ember Worg",
-    family = 1,
     minLevel = 51,
     maxLevel = 52,
+    family = F.wolf,
     pins = {
         [1428] = {
             83.4,
@@ -4624,16 +4973,16 @@ B[9690] = {
 }
 B[9691] = {
     name = "Venomtip Scorpid",
-    family = 20,
     minLevel = 52,
     maxLevel = 53,
+    family = F.scorpid,
     pins = { [1428] = { 85.8, 30.9, 85.1, 59.6, 89.2, 51.7, 91.1, 41, 91.9, 33.8, 91.4, 59.3 } },
 }
 B[9695] = {
     name = "Deathlash Scorpid",
-    family = 20,
     minLevel = 54,
     maxLevel = 55,
+    family = F.scorpid,
     pins = {
         [1428] = {
             34.8,
@@ -4663,12 +5012,12 @@ B[9695] = {
         },
     },
 }
-B[9696] = { name = "Bloodaxe Worg", family = 1, minLevel = 56, maxLevel = 60, zones = { 1583 } }
+B[9696] = { name = "Bloodaxe Worg", minLevel = 56, maxLevel = 60, zones = { 1583 }, family = F.wolf }
 B[9697] = {
     name = "Giant Ember Worg",
-    family = 1,
     minLevel = 55,
     maxLevel = 56,
+    family = F.wolf,
     pins = {
         [1428] = {
             17.6,
@@ -4698,68 +5047,82 @@ B[9697] = {
 }
 B[9698] = {
     name = "Firetail Scorpid",
-    family = 20,
     minLevel = 56,
     maxLevel = 57,
+    family = F.scorpid,
     pins = { [1428] = { 17.5, 51.1, 26.2, 59.5, 24.2, 69.1, 25, 48.3, 31.1, 55 } },
 }
 B[10077] = {
     name = "Deathmaw",
-    family = 1,
     minLevel = 53,
     maxLevel = 53,
     rare = true,
+    family = F.wolf,
     pins = { [1428] = { 74.5, 32, 80.6, 57.8, 82.3, 30.8, 86.9, 50.9 } },
 }
 B[10200] = {
     name = "Rak'shiri",
-    family = 2,
     minLevel = 57,
     maxLevel = 57,
     rare = true,
+    family = F.cat,
     pins = { [1452] = { 51.7, 12.8, 50.5, 19.2 } },
 }
 B[10357] = {
     name = "Ressan the Needler",
-    family = 24,
     minLevel = 11,
     maxLevel = 12,
     rare = true,
+    family = F.bat,
     pins = { [1420] = { 46.8, 65.6, 54.6, 62.1, 54.4, 75.2, 57.9, 56.3 } },
 }
 B[10644] = {
     name = "Mist Howler",
-    family = 1,
     minLevel = 22,
     maxLevel = 22,
     rare = true,
+    family = F.wolf,
     pins = { [1440] = { 21.4, 31.4, 22.9, 36.4, 26.8, 17.6 } },
 }
-B[10737] =
-    { name = "Shy-Rotam", family = 2, minLevel = 60, maxLevel = 60, elite = true, pins = { [1452] = { 50.1, 10.1 } } }
-B[10741] =
-    { name = "Sian-Rotam", family = 2, minLevel = 60, maxLevel = 60, elite = true, pins = { [1452] = { 50.2, 9.9 } } }
+B[10737] = {
+    name = "Shy-Rotam",
+    minLevel = 60,
+    maxLevel = 60,
+    elite = true,
+    family = F.cat,
+    pins = { [1452] = { 50.1, 10.1 } },
+}
+B[10741] = {
+    name = "Sian-Rotam",
+    minLevel = 60,
+    maxLevel = 60,
+    elite = true,
+    family = F.cat,
+    pins = { [1452] = { 50.2, 9.9 } },
+}
 B[10806] = {
     name = "Ursius",
-    family = 4,
     minLevel = 56,
     maxLevel = 56,
     elite = true,
+    family = F.bear,
     pins = { [1452] = { 60.2, 32.4, 63.1, 25.7 } },
 }
-B[10981] = { name = "Frostwolf", family = 1, minLevel = 50, maxLevel = 51, zones = { 2597 } }
-B[11357] = { name = "Son of Hakkar", family = 27, minLevel = 60, maxLevel = 60, elite = true, zones = { 1977 } }
-B[11359] = { name = "Soulflayer", family = 27, minLevel = 61, maxLevel = 61, elite = true, zones = { 1977 } }
-B[11360] = { name = "Zulian Cub", family = 2, minLevel = 60, maxLevel = 60, zones = { 1977 } }
-B[11361] = { name = "Zulian Tiger", family = 2, minLevel = 60, maxLevel = 60, elite = true, zones = { 1977 } }
-B[11365] = { name = "Zulian Panther", family = 2, minLevel = 60, maxLevel = 60, elite = true, zones = { 1977 } }
-B[11368] = { name = "Bloodseeker Bat", family = 24, minLevel = 60, maxLevel = 60, zones = { 1977 } }
-B[11370] = { name = "Razzashi Broodwidow", family = 3, minLevel = 56, maxLevel = 61, elite = true, zones = { 1977 } }
+B[10981] = { name = "Frostwolf", minLevel = 50, maxLevel = 51, zones = { 2597 }, family = F.wolf }
+B[11357] =
+    { name = "Son of Hakkar", minLevel = 60, maxLevel = 60, elite = true, zones = { 1977 }, family = F.windSerpent }
+B[11359] = { name = "Soulflayer", minLevel = 61, maxLevel = 61, elite = true, zones = { 1977 }, family = F.windSerpent }
+B[11360] = { name = "Zulian Cub", minLevel = 60, maxLevel = 60, zones = { 1977 }, family = F.cat }
+B[11361] = { name = "Zulian Tiger", minLevel = 60, maxLevel = 60, elite = true, zones = { 1977 }, family = F.cat }
+B[11365] = { name = "Zulian Panther", minLevel = 60, maxLevel = 60, elite = true, zones = { 1977 }, family = F.cat }
+B[11368] = { name = "Bloodseeker Bat", minLevel = 60, maxLevel = 60, zones = { 1977 }, family = F.bat }
+B[11370] =
+    { name = "Razzashi Broodwidow", minLevel = 56, maxLevel = 61, elite = true, zones = { 1977 }, family = F.spider }
 B[11735] = {
     name = "Stonelash Scorpid",
-    family = 20,
     minLevel = 54,
     maxLevel = 55,
+    family = F.scorpid,
     pins = {
         [1451] = {
             35.5,
@@ -4791,9 +5154,9 @@ B[11735] = {
 }
 B[11736] = {
     name = "Stonelash Pincer",
-    family = 20,
     minLevel = 56,
     maxLevel = 56,
+    family = F.scorpid,
     pins = {
         [1451] = {
             23.1,
@@ -4827,9 +5190,9 @@ B[11736] = {
 }
 B[11737] = {
     name = "Stonelash Flayer",
-    family = 20,
     minLevel = 57,
     maxLevel = 58,
+    family = F.scorpid,
     pins = {
         [1451] = {
             26.2,
@@ -4855,110 +5218,125 @@ B[11737] = {
         },
     },
 }
-B[11921] =
-    { name = "Besseleth", family = 3, minLevel = 21, maxLevel = 21, elite = true, pins = { [1442] = { 53.1, 72.7 } } }
+B[11921] = {
+    name = "Besseleth",
+    minLevel = 21,
+    maxLevel = 21,
+    elite = true,
+    family = F.spider,
+    pins = { [1442] = { 53.1, 72.7 } },
+}
 B[12037] = {
     name = "Ursol'lok",
-    family = 4,
     minLevel = 31,
     maxLevel = 31,
     rare = true,
+    family = F.bear,
     pins = { [1440] = { 83, 48.6, 83.4, 56.7, 88.5, 68.2 } },
 }
 B[12431] = {
     name = "Gorefang",
-    family = 1,
     minLevel = 13,
     maxLevel = 13,
     rare = true,
+    family = F.wolf,
     pins = { [1421] = { 48.2, 22.7, 48.4, 17.5, 59.9, 8.9 } },
 }
-B[13599] = { name = "Stolid Snapjaw", family = 21, minLevel = 46, maxLevel = 47, zones = { 2100 } }
+B[13599] = { name = "Stolid Snapjaw", minLevel = 46, maxLevel = 47, zones = { 2100 }, family = F.turtle }
 B[14223] = {
     name = "Cranky Benj",
-    family = 21,
     minLevel = 32,
     maxLevel = 32,
     rare = true,
+    family = F.turtle,
     pins = { [1416] = { 16.7, 52.9, 24.1, 44.6, 31.2, 34.1, 35.3, 26.2, 36.7, 16.8 } },
 }
 B[14233] = {
     name = "Ripscale",
-    family = 6,
     minLevel = 39,
     maxLevel = 39,
     rare = true,
+    family = F.crocolisk,
     pins = { [1445] = { 41, 50.5, 46.9, 56 } },
 }
 B[14266] = {
     name = "Shanda the Spinner",
-    family = 3,
     minLevel = 19,
     maxLevel = 19,
     rare = true,
+    family = F.spider,
     pins = { [1432] = { 78.3, 52.4 } },
 }
 B[14279] = {
     name = "Creepthess",
-    family = 3,
     minLevel = 24,
     maxLevel = 24,
     rare = true,
+    family = F.spider,
     pins = { [1424] = { 25, 54.3, 28.5, 64.1, 36.1, 57.4, 38.6, 51.2 } },
 }
 B[14339] = {
     name = "Death Howl",
-    family = 1,
     minLevel = 49,
     maxLevel = 49,
     rare = true,
+    family = F.wolf,
     pins = { [1448] = { 48.8, 77.7, 56.5, 89.1 } },
 }
 B[14343] = {
     name = "Olm the Wise",
-    family = 26,
     minLevel = 52,
     maxLevel = 52,
     rare = true,
+    family = F.birdOfPrey,
     pins = { [1448] = { 55.5, 9.7, 56.2, 22.2 } },
 }
 B[14344] = {
     name = "Mongress",
-    family = 4,
     minLevel = 50,
     maxLevel = 50,
     rare = true,
+    family = F.bear,
     pins = { [1448] = { 43.4, 77.4, 46.5, 84.3 } },
 }
 B[14430] = {
     name = "Duskstalker",
-    family = 2,
     minLevel = 9,
     maxLevel = 9,
     rare = true,
+    family = F.cat,
     pins = { [1438] = { 55.8, 76.3, 61.4, 72.8 } },
 }
 B[14476] = {
     name = "Krellack",
-    family = 20,
     minLevel = 56,
     maxLevel = 56,
     rare = true,
+    family = F.scorpid,
     pins = { [1451] = { 59.6, 18.2, 62.5, 42.7, 66, 30.4, 69.6, 40.9 } },
 }
-B[15067] = { name = "Zulian Stalker", family = 2, minLevel = 61, maxLevel = 61, elite = true, zones = { 1977 } }
-B[16117] = { name = "Plagued Swine", family = 5, minLevel = 60, maxLevel = 60, pins = { [1423] = { 16.9, 32.5 } } }
-B[208124] = { name = "Raluk", family = 2, minLevel = 7, maxLevel = 7, rare = true, pins = { [1411] = { 68.5, 71.5 } } }
-B[208812] = { name = "Jorul", family = 4, minLevel = 8, maxLevel = 8, rare = true, pins = { [1426] = { 37.6, 43.1 } } }
-B[211965] =
-    { name = "Carrodin", family = 26, minLevel = 25, maxLevel = 25, rare = true, pins = { [1437] = { 47.1, 64.6 } } }
-B[213795] = { name = "Gharrik", family = 7, minLevel = 40, maxLevel = 40, pins = { [1418] = { 22.8, 67.1 } } }
+B[15067] = { name = "Zulian Stalker", minLevel = 61, maxLevel = 61, elite = true, zones = { 1977 }, family = F.cat }
+B[16117] = { name = "Plagued Swine", minLevel = 60, maxLevel = 60, family = F.boar, pins = { [1423] = { 16.9, 32.5 } } }
+B[208124] =
+    { name = "Raluk", minLevel = 7, maxLevel = 7, rare = true, family = F.cat, pins = { [1411] = { 68.5, 71.5 } } }
+B[208812] =
+    { name = "Jorul", minLevel = 8, maxLevel = 8, rare = true, family = F.bear, pins = { [1426] = { 37.6, 43.1 } } }
+B[211965] = {
+    name = "Carrodin",
+    minLevel = 25,
+    maxLevel = 25,
+    rare = true,
+    family = F.birdOfPrey,
+    pins = { [1437] = { 47.1, 64.6 } },
+}
+B[213795] =
+    { name = "Gharrik", minLevel = 40, maxLevel = 40, family = F.carrionBird, pins = { [1418] = { 22.8, 67.1 } } }
 B[222243] = {
     name = "Zopilote",
-    family = 7,
     minLevel = 43,
     maxLevel = 43,
     elite = true,
     rare = true,
+    family = F.carrionBird,
     pins = { [1446] = { 45.3, 32.9, 50.3, 27.3, 53.5, 37, 51.4, 21.4 } },
 }
