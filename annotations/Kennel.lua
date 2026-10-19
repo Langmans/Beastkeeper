@@ -538,6 +538,42 @@
 ---@field petAbilityRanks table<number, KennelPetAbilityRank> by the rank's spell ID
 ---@field beasts table<number, KennelBeast> by NPC ID
 ---@field trainers table<number, KennelTrainer>? pet trainers and stable masters by NPC ID (Data\Trainers.lua)
+---@field ammo table<number, KennelAmmoItem> the arrows and bullets vendors sell, by item ID (Data\Ammo.lua)
+---@field ammoVendors table<number, KennelAmmoVendor> the vendors that sell them, by NPC ID
+
+---Ammo a vendor sells.
+---@class KennelAmmoItem
+---@field name string English, from the data
+---@field kind "arrow"|"bullet"
+---@field level number the level it needs
+
+---A vendor that sells ammo.
+---@class KennelAmmoVendor
+---@field name string English, from the data
+---@field sells number[] the ammo it sells, item IDs
+---@field side ("Alliance"|"Horde")? the one faction it serves; both without
+---@field pins table<number, number[]> per uiMapID its spots, flattened x1, y1, x2, y2 in percent
+
+---Ammo's saved settings, its namespace's profile.
+---@class KennelAmmoSettings
+---@field low number the count turns orange, with a toast, below this
+---@field critical number red, with a toast, below this
+---@field toasts boolean
+---@field buy boolean buy at a vendor
+---@field stacks number stacks to keep without an ammo bag
+
+---@class KennelAmmo: KennelModule, KennelSettingsModule
+---@field db AceDBObject-3.0 always set: the module has defaults
+---@field object table? the data object ("Kennel Ammo"), made for a hunter on the first enable
+---@field state ("ok"|"low"|"critical")? where the count stood at the last update
+---@field Settings fun(self: KennelAmmo): KennelAmmoSettings
+---@field Kind fun(): ("arrow"|"bullet")?
+---@field AmmoName fun(itemID: number): string
+---@field State fun(self: KennelAmmo, count: number): "ok"|"low"|"critical"
+---@field NearestVendor fun(self: KennelAmmo): LibGoTherePoint?, number?
+---@field Update fun(self: KennelAmmo)
+---@field MERCHANT_SHOW fun(self: KennelAmmo)
+---@field GetOptions fun(self: KennelAmmo): table
 
 ---A hunter pet trainer or a stable master.
 ---@class KennelTrainer

@@ -1,0 +1,7 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- The module object first (Ammo.lua); buying and the page add to it. -->
+    <Script file="Locale.lua"/>
+    <Script file="Ammo.lua"/>
+    <Script file="Buy.lua"/>
+    <Script file="Options.lua"/>
+</Ui>

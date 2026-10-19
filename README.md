@@ -193,6 +193,18 @@ it to feed the next food from your bags.
 - **Toasts** when your pet becomes content or unhappy, with the food that is
   next, and when the last food it eats leaves your bags. Each has a switch.
 
+### Ammo
+
+Your ammo count in data broker displays (EllesmereUI's data bars, Titan
+Panel, ...) as "Kennel Ammo": orange below 500 and red below 250, with a toast
+each time (both lines on its page). Hover for the nearest vendor of your
+faction that sells your kind of ammo (arrows for a bow or crossbow, bullets
+for a gun), click for the way there (Shortest Path Forever, TomTom, the game's
+map pin), right-click for its page. At a vendor that sells your kind, it buys
+the best ammo for your level: enough to fill your quiver or ammo pouch, or
+the stacks set on its page without one (1 by default). Hunters with a bow,
+gun or crossbow only.
+
 ### Data Broker
 
 Kennel in Titan Panel, ChocolateBar, ElvUI's datatexts or any other data

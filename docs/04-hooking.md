@@ -58,6 +58,7 @@ flowchart LR
         pj[Pet Journal]
         tk[Beast Map: tame key]
         dev[Dev Screenshots]
+        am[Ammo]
     end
 
     other([Other addons])
@@ -75,8 +76,9 @@ flowchart LR
     al -- KENNEL_ABILITY_LEARNED --> other
     ac -- KENNEL_AUTOCAST_WANTED --> other
     bm -- KENNEL_RARE_SEEN --> tk & other
+    am -- KENNEL_AMMO --> other
 
-    al & ac & bm & fd --> toast
+    al & ac & bm & fd & am --> toast
     toast -- KENNEL_TOAST --> dev & other
     print -- KENNEL_PRINT --> dev & other
 ```
@@ -196,6 +198,18 @@ also with the rare toast off. Beast Map's tame key listens to it.
 | `name` | string | the client's name once it knows the beast, else English |
 | `guid` | string | the creature's GUID |
 | `ranks` | table | the spell IDs of the ranks it would teach |
+
+### `KENNEL_AMMO`
+
+The hunter's ammo count crossed a line set on the Ammo page: low, critically
+low, or back to enough after restocking. Also once when the module starts.
+
+| Field | Type | |
+|---|---|---|
+| `module` | string | `"Ammo"` |
+| `count` | number | the ammo in the ammo slot, counted in the bags |
+| `state` | string | `"ok"`, `"low"` or `"critical"` |
+| `kind` | string | `"arrow"` (bow, crossbow) or `"bullet"` (gun) |
 
 ### `KENNEL_PET_HAPPINESS` (core)
 

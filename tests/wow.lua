@@ -108,6 +108,8 @@ end
 ---@field noStableInfo boolean? no C_StableInfo
 ---@field unknownEvents string[]? events this client does not have (Forever: LEARNED_SPELL_IN_TAB)
 ---@field noEventUtils boolean? no C_EventUtils.IsEventValid
+---@field ranged number? the ranged weapon's item ID (none by default)
+---@field ammo number? the item ID in the ammo slot (none by default)
 ---@field dev boolean? a copy straight from the repository: `--@debug@` blocks run (the DevScreenshots module)
 
 -- The spells the simulated client knows, per locale: id -> { name, icon, rank }; the rank is the
@@ -786,12 +788,19 @@ function NewClient(opts)
     function GetCursorInfo()
         if client.cursorItem then return "item", client.cursorItem end
     end
+    -- Ranged weapons by item ID, with their subclass: a bow, a gun, a crossbow, a sword.
+    local RANGED_KINDS = { [2504] = 2, [2508] = 3, [15808] = 18, [25] = 7 }
     C_Item = {
         GetItemInfo = function(itemID)
             if ITEM_NAMES[itemID] then return ITEM_NAMES[itemID], ItemLink(itemID), 1, ITEM_LEVELS[itemID] end
         end,
         GetItemIconByID = function(itemID)
             return 133000 + itemID
+        end,
+        -- The class (2 weapon) and subclass of a ranged weapon (RANGED_KINDS, below).
+        GetItemInfoInstant = function(itemID)
+            local subclass = RANGED_KINDS[itemID]
+            if subclass then return itemID, "Weapon", "", "INVTYPE_RANGED", 133000 + itemID, 2, subclass end
         end,
         GetItemCount = function(itemID)
             local total = 0
@@ -801,10 +810,46 @@ function NewClient(opts)
             return total
         end,
     }
+    -- The hunter's gear and ammo: client.ranged, the ranged weapon's item ID (none by default, so
+    -- the Ammo module stays quiet in other specs; RANGED_KINDS gives each test weapon's
+    -- subclass), client.ammoID the ammo in the ammo slot,
+    -- counted from the bag as the client counts it; client.ammoBag a quiver or ammo pouch in bag
+    -- slot 1 ({ slots, type }: type 1 quiver, 2 ammo pouch). client.merchant: the item IDs the open
+    -- vendor sells, or nil; client.bought: what was bought, { itemID, quantity } each.
+    client.ranged, client.ammoID, client.ammoBag, client.bought = opts.ranged, opts.ammo, nil, {}
+    function GetInventoryItemID(unit, slot)
+        if unit ~= "player" then return nil end
+        if slot == 18 then return client.ranged end
+        if slot == 0 then return client.ammoID end
+    end
+    function GetInventoryItemCount(unit, slot)
+        if unit ~= "player" or slot ~= 0 or not client.ammoID then return 0 end
+        return C_Item.GetItemCount(client.ammoID)
+    end
+    function GetInventoryItemTexture(unit, slot)
+        local id = GetInventoryItemID(unit, slot)
+        return id and 133000 + id or nil
+    end
+    function GetMerchantNumItems()
+        return client.merchant and #client.merchant or 0
+    end
+    function GetMerchantItemID(index)
+        return client.merchant and client.merchant[index]
+    end
+    function BuyMerchantItem(index, quantity)
+        local itemID = client.merchant[index]
+        client.bought[#client.bought + 1] = { itemID, quantity }
+        client:stock(itemID, C_Item.GetItemCount(itemID) + quantity)
+    end
     C_Container = {
         UseContainerItem = function() end,
         GetContainerNumSlots = function(bag)
+            if bag == 1 and client.ammoBag then return client.ammoBag.slots end
             return bag == 0 and #client.bag or 0
+        end,
+        GetContainerNumFreeSlots = function(bag)
+            if bag == 1 and client.ammoBag then return client.ammoBag.slots, client.ammoBag.type end
+            return 0, 0
         end,
         GetContainerItemID = function(bag, slot)
             local item = bag == 0 and client.bag[slot]

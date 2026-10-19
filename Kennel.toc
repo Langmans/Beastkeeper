@@ -14,5 +14,6 @@ Locales\Locales.xml
 Core\Core.xml
 Data\Beasts.lua
 Data\Trainers.lua
+Data\Ammo.lua
 Integrations\Integrations.xml
 Modules\Modules.xml

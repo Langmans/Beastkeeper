@@ -8,6 +8,7 @@
     <Include file="BeastMap\BeastMap.xml"/>
     <Include file="PetJournal\PetJournal.xml"/>
     <Include file="Broker\Broker.xml"/>
+    <Include file="Ammo\Ammo.xml"/>
     <Include file="DevScreenshots\DevScreenshots.xml"/>
     <Include file="DevProbe\DevProbe.xml"/>
 </Ui>

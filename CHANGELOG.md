@@ -80,6 +80,11 @@
   masters of your faction. In Kennel's window an Abilities tab (every rank,
   known or the nearest beast that teaches it) and a Families tab
   (specialization, diet, what each family learns, where to tame one).
+- Ammo: your ammo count as a data broker source (EllesmereUI's data bars,
+  Titan Panel), orange when low and red when critically low with a toast at
+  each; a click shows the way to the nearest ammo vendor of your faction for
+  your kind of ammo; at a vendor it buys the best ammo for your level to fill
+  your quiver or ammo pouch.
 - Ability Learned keeps every rank you learned, not only the highest.
 - Ability Learned keeps which beast your pet was tamed as with each learn, and
   a button lists the learns from beasts Kennel's beast data does not know as
@@ -87,7 +92,8 @@
 - Care Button: a toast when combat starts with your pet on Passive.
 - For other addons: messages with a table of details, heard through
   Kennel:Listen: KENNEL_TOAST, KENNEL_PRINT, KENNEL_RANKS_KNOWN,
-  KENNEL_ABILITY_LEARNED, KENNEL_AUTOCAST_WANTED, KENNEL_RARE_SEEN, and from
+  KENNEL_ABILITY_LEARNED, KENNEL_AUTOCAST_WANTED, KENNEL_RARE_SEEN,
+  KENNEL_AMMO, and from
   the core KENNEL_PET_HAPPINESS, KENNEL_PET_DIED, KENNEL_PET_TAMED and
   KENNEL_PET_GROWTH (training points, level and loyalty, up or down), which
   it works out only while something listens. Kennel's own modules listen the

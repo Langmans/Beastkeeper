@@ -59,6 +59,13 @@
 ---@field guid string the creature's GUID
 ---@field ranks number[] the spell IDs of the ranks it would teach
 
+---KENNEL_AMMO: the hunter's ammo count crossed a line: low, critically low, or back to enough.
+---@class KennelAmmoEvent
+---@field module string "Ammo"
+---@field count number
+---@field state "ok"|"low"|"critical"
+---@field kind "arrow"|"bullet" what the hunter's ranged weapon shoots
+
 ---KENNEL_PET_HAPPINESS (core, through Kennel:Listen): the pet out's happiness changed.
 ---@class KennelPetHappinessEvent
 ---@field happiness number 1 unhappy, 2 content, 3 happy
