@@ -26,7 +26,7 @@ function M:Settings()
 end
 
 local GoThere = LibStub("LibGoThere-1.0") --[[@as LibGoThere]]
-local AMMO_SLOT, RANGED_SLOT = 0, 18
+local AMMO_SLOT, RANGED_SLOT = INVSLOT_AMMO, INVSLOT_RANGED
 local K, W = Kennel.ammoKinds, Enum.ItemWeaponSubclass
 -- A ranged weapon's ammo by the weapon's subclass: a bow and a crossbow shoot arrows, a gun bullets.
 local KINDS = { [W.Bows] = K.arrow, [W.Crossbow] = K.arrow, [W.Guns] = K.bullet }

@@ -234,7 +234,8 @@ function NewClient(opts)
     ACCEPT, CANCEL, CLOSE, OKAY, NOT_BOUND = "Accept", "Cancel", "Close", "Okay", "Not Bound"
     WOW_PROJECT_MAINLINE, WOW_PROJECT_CLASSIC = 1, 2
     WOW_PROJECT_ID = WOW_PROJECT_CLASSIC
-    SOUNDKIT = setmetatable({}, {
+    INVSLOT_AMMO, INVSLOT_RANGED = 0, 18
+    SOUNDKIT = setmetatable({ RAID_WARNING = 8959 }, {
         __index = function()
             return 1
         end,

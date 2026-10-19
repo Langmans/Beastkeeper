@@ -39,7 +39,7 @@ local GROWL, COWER, DISTRACTING_SHOT = 2649, 1742, 20736
 M.SPELLS = { growl = GROWL, cower = COWER }
 -- The English names, for a client that cannot name a spell itself (test toasts and macros only).
 local FALLBACK_NAMES = { [GROWL] = "Growl", [COWER] = "Cower", [DISTRACTING_SHOT] = "Distracting Shot" }
-local RAID_WARNING = 8959 -- SOUNDKIT.RAID_WARNING
+local RAID_WARNING = SOUNDKIT.RAID_WARNING --[[@as number]]
 local QUESTION_MARK = 134400 -- the icon a macro gets when #showtooltip picks the spell's own
 -- Ability_Hunter_BeastTraining: a macro takes a file ID; given a path it has no icon.
 local BEAST_TRAINING_ICON = 132162

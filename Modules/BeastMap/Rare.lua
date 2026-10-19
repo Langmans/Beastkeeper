@@ -12,7 +12,7 @@ local Kennel = ns
 local L = Kennel.L
 local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
 
-local RAID_WARNING = 8959 -- SOUNDKIT.RAID_WARNING
+local RAID_WARNING = SOUNDKIT.RAID_WARNING --[[@as number]]
 -- Not every client has every one; a missing one is skipped.
 local EVENTS = { "NAME_PLATE_UNIT_ADDED", "PLAYER_TARGET_CHANGED", "UPDATE_MOUSEOVER_UNIT", "VIGNETTE_MINIMAP_UPDATED" }
 

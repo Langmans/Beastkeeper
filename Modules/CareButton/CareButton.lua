@@ -31,7 +31,7 @@ M.defaults = {
 }
 
 M.MEND_PET, M.REVIVE_PET, M.CALL_PET = 136, 982, 883
-local RAID_WARNING = 8959 -- SOUNDKIT.RAID_WARNING
+local RAID_WARNING = SOUNDKIT.RAID_WARNING --[[@as number]]
 -- The English names, for a client that cannot name the spell itself.
 local FALLBACK_NAMES = { [136] = "Mend Pet", [982] = "Revive Pet", [883] = "Call Pet" }
 -- The names the client's "Your pet is dead" error may have among the global strings.
