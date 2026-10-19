@@ -184,12 +184,12 @@ local function Nearest(list)
     return best or list[1]
 end
 
--- The nearest vendor is kept while the hunter stays in one square of CELL yards, at most KEEP
--- seconds: a route addon's travel times take a while, and two vendors are a few yards apart at the
--- least, so a square's error is a few seconds of travel.
-local CELL, KEEP = 100, 60
----@type string?, number, LibGoTherePoint?, number?
-local keptKey, keptSince, keptPoint, keptSeconds = nil, 0, nil, nil
+-- The nearest vendor is kept while the hunter stays within RANGE yards of where it was looked up,
+-- at most KEEP seconds, for one kind of ammo: a route addon's travel times take a while, and RANGE
+-- yards are a few seconds of travel. The spot is a place (Position) and x, y in yards.
+local RANGE, KEEP = 100, 60
+---@type number?, number, number, KennelAmmoKind?, number, LibGoTherePoint?, number?
+local keptPlace, keptX, keptY, keptKind, keptSince, keptPoint, keptSeconds = nil, 0, 0, nil, 0, nil, nil
 ---@type table<number, number>, table<number, number>
 local widths, heights = {}, {}
 
@@ -215,21 +215,22 @@ local function MapSize(map)
     return widths[map], heights[map]
 end
 
----The square of CELL yards the hunter stands in, as a key: from the world position, else from the
----map position and the map's size; nil when neither is known.
----@return string?
-local function Square()
+---Where the hunter stands, in yards: the place (the instance ID for a world position, minus the map
+---ID for one worked out from the map position and the map's size) and x, y; nil when neither is
+---known.
+---@return number? place
+---@return number x
+---@return number y
+local function Position()
     local y, x, _, instance = UnitPosition("player")
-    if Kennel.Readable(x) and x and y then
-        return ("%d:%d:%d"):format(instance or 0, math.floor(x / CELL), math.floor(y / CELL))
-    end
+    if Kennel.Readable(x) and x and y then return instance or 0, x, y end
     local map = C_Map.GetBestMapForUnit("player")
     local position = map and C_Map.GetPlayerMapPosition(map, "player")
-    if not map or not position then return nil end
+    if not map or not position then return nil, 0, 0 end
     local width, height = MapSize(map)
-    if not width or not height then return nil end
+    if not width or not height then return nil, 0, 0 end
     local px, py = position:GetXY()
-    return ("map%d:%d:%d"):format(map, math.floor(px * width / CELL), math.floor(py * height / CELL))
+    return -map, px * width, py * height
 end
 
 ---The nearest vendor for the hunter's kind of ammo, and the seconds to it when known.
@@ -240,14 +241,21 @@ function M:NearestVendor()
     if not kind then return nil end
     if Kennel.data.ammoVendors ~= pointsFrom then
         wipe(pointsByKind)
-        pointsFrom, keptKey = Kennel.data.ammoVendors, nil
+        pointsFrom, keptPlace = Kennel.data.ammoVendors, nil
     end
-    local square = Square()
-    local key = square and square .. ":" .. kind
+    local place, x, y = Position()
     local now = GetTime()
-    if key and key == keptKey and now - keptSince <= KEEP then return keptPoint, keptSeconds end
+    if
+        place
+        and place == keptPlace
+        and kind == keptKind
+        and now - keptSince <= KEEP
+        and math.sqrt((x - keptX) ^ 2 + (y - keptY) ^ 2) <= RANGE
+    then
+        return keptPoint, keptSeconds
+    end
     keptPoint, keptSeconds = Nearest(VendorPoints(kind))
-    keptKey, keptSince = key, now
+    keptPlace, keptX, keptY, keptKind, keptSince = place, x, y, kind, now
     return keptPoint, keptSeconds
 end
 

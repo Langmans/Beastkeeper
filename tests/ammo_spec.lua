@@ -258,20 +258,26 @@ describe("Ammo", function()
             assert.is_true(client:printedContains("No ammo vendor known."))
         end)
 
-        it("is kept while the hunter stays within 100 yards, for a minute, for one kind of ammo", function()
+        it("is kept within 100 yards of where it was looked up, for a minute, for one kind of ammo", function()
             local client = hunter(400)
             vendors(client)
             local asked = routes(120)
             tooltip(client)
             local first = asked.n
             assert.is_true(first > 0)
-            client.worldPos = { -8950, 450, 0 }
+            client.worldPos = { -9010, 400, 0 }
+            tooltip(client)
+            assert.are.equal(first, asked.n, "10 yards, whatever line lies between")
+            client.worldPos = { -8940, 480, 0 }
             tooltip(client)
             broker().OnClick(nil, "LeftButton")
-            assert.are.equal(first, asked.n, "same 100 yards")
-            client.worldPos = { -8850, 450, 0 }
+            assert.are.equal(first, asked.n, "60 and 80 yards: 100 yards away")
+            client.worldPos = { -8930, 480, 0 }
             tooltip(client)
-            assert.are.equal(2 * first, asked.n, "moved on")
+            assert.are.equal(2 * first, asked.n, "70 and 80 yards: 106 yards away")
+            client.worldPos = { -8930, 400, 0 }
+            tooltip(client)
+            assert.are.equal(2 * first, asked.n, "80 yards from the new spot")
             client:advance(61)
             tooltip(client)
             assert.are.equal(3 * first, asked.n, "a minute later")
