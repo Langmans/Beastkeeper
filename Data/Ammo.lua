@@ -7,6 +7,10 @@ local _, ns = ...
 ---@type Kennel
 local Kennel = ns
 
+-- The kinds of ammo by their Projectile item subclass, as GetItemInfoInstant gives it.
+Kennel.ammoKinds = { arrow = 2, bullet = 3 }
+local K = Kennel.ammoKinds
+
 ---@type table<number, KennelAmmoItem>
 local I = {}
 ---@type table<number, KennelAmmoVendor>
@@ -14,18 +18,18 @@ local V = {}
 Kennel.data = Kennel.data or {}
 Kennel.data.ammo, Kennel.data.ammoVendors = I, V
 
-I[2512] = { name = "Rough Arrow", kind = "arrow", level = 1 }
-I[2515] = { name = "Sharp Arrow", kind = "arrow", level = 10 }
-I[2516] = { name = "Light Shot", kind = "bullet", level = 1 }
-I[2519] = { name = "Heavy Shot", kind = "bullet", level = 10 }
-I[3030] = { name = "Razor Arrow", kind = "arrow", level = 25 }
-I[3033] = { name = "Solid Shot", kind = "bullet", level = 25 }
-I[11284] = { name = "Accurate Slugs", kind = "bullet", level = 40 }
-I[11285] = { name = "Jagged Arrow", kind = "arrow", level = 40 }
-I[15997] = { name = "Thorium Shells", kind = "bullet", level = 52 }
-I[18042] = { name = "Thorium Headed Arrow", kind = "arrow", level = 52 }
-I[19316] = { name = "Ice Threaded Arrow", kind = "arrow", level = 51 }
-I[19317] = { name = "Ice Threaded Bullet", kind = "bullet", level = 51 }
+I[2512] = { name = "Rough Arrow", kind = K.arrow, level = 1 }
+I[2515] = { name = "Sharp Arrow", kind = K.arrow, level = 10 }
+I[2516] = { name = "Light Shot", kind = K.bullet, level = 1 }
+I[2519] = { name = "Heavy Shot", kind = K.bullet, level = 10 }
+I[3030] = { name = "Razor Arrow", kind = K.arrow, level = 25 }
+I[3033] = { name = "Solid Shot", kind = K.bullet, level = 25 }
+I[11284] = { name = "Accurate Slugs", kind = K.bullet, level = 40 }
+I[11285] = { name = "Jagged Arrow", kind = K.arrow, level = 40 }
+I[15997] = { name = "Thorium Shells", kind = K.bullet, level = 52 }
+I[18042] = { name = "Thorium Headed Arrow", kind = K.arrow, level = 52 }
+I[19316] = { name = "Ice Threaded Arrow", kind = K.arrow, level = 51 }
+I[19317] = { name = "Ice Threaded Bullet", kind = K.bullet, level = 51 }
 
 V[151] = { name = "Brog Hamfist", sells = { 2512, 2516 }, side = "Alliance", pins = { [1429] = { 43.8, 66 } } }
 V[152] = { name = "Brother Danil", sells = { 2512, 2516 }, side = "Alliance", pins = { [1429] = { 47.4, 41.4 } } }

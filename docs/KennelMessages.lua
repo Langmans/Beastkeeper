@@ -64,7 +64,7 @@
 ---@field module string "Ammo"
 ---@field count number
 ---@field state "ok"|"low"|"critical"
----@field kind "arrow"|"bullet" what the hunter's ranged weapon shoots
+---@field kind number what the hunter's ranged weapon shoots: Kennel.ammoKinds.arrow (2) or .bullet (3)
 
 ---KENNEL_PET_HAPPINESS (core, through Kennel:Listen): the pet out's happiness changed.
 ---@class KennelPetHappinessEvent

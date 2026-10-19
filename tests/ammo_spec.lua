@@ -58,8 +58,9 @@ describe("Ammo", function()
         local ns = {}
         assert(loadfile("Data/Ammo.lua"))("Kennel", ns)
         local ammo, vendors = ns.data.ammo, ns.data.ammoVendors
-        assert.are.same({ name = "Rough Arrow", kind = "arrow", level = 1 }, ammo[ROUGH])
-        assert.are.equal("bullet", ammo[LIGHT_SHOT].kind)
+        assert.are.same({ arrow = 2, bullet = 3 }, ns.ammoKinds, "the Projectile item subclasses")
+        assert.are.same({ name = "Rough Arrow", kind = ns.ammoKinds.arrow, level = 1 }, ammo[ROUGH])
+        assert.are.equal(ns.ammoKinds.bullet, ammo[LIGHT_SHOT].kind)
         local count = 0
         for npc, vendor in pairs(vendors) do
             count = count + 1
@@ -125,9 +126,10 @@ describe("Ammo", function()
             client:stock(ROUGH, 990)
             client:stock(ROUGH, 400)
             client:stock(ROUGH, 100)
+            local arrow = client.Kennel.ammoKinds.arrow
             assert.are.same({
-                { module = "Ammo", count = 400, state = "low", kind = "arrow" },
-                { module = "Ammo", count = 100, state = "critical", kind = "arrow" },
+                { module = "Ammo", count = 400, state = "low", kind = arrow },
+                { module = "Ammo", count = 100, state = "critical", kind = arrow },
             }, heard)
         end)
 

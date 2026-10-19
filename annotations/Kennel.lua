@@ -541,10 +541,13 @@
 ---@field ammo table<number, KennelAmmoItem> the arrows and bullets vendors sell, by item ID (Data\Ammo.lua)
 ---@field ammoVendors table<number, KennelAmmoVendor> the vendors that sell them, by NPC ID
 
+---A kind of ammo: its Projectile item subclass, a Kennel.ammoKinds value (arrow 2, bullet 3).
+---@alias KennelAmmoKind number
+
 ---Ammo a vendor sells.
 ---@class KennelAmmoItem
 ---@field name string English, from the data
----@field kind "arrow"|"bullet"
+---@field kind KennelAmmoKind
 ---@field level number the level it needs
 
 ---A vendor that sells ammo.
@@ -567,7 +570,7 @@
 ---@field object table? the data object ("Kennel Ammo"), made for a hunter on the first enable
 ---@field state ("ok"|"low"|"critical")? where the count stood at the last update
 ---@field Settings fun(self: KennelAmmo): KennelAmmoSettings
----@field Kind fun(): ("arrow"|"bullet")?
+---@field Kind fun(): KennelAmmoKind?
 ---@field AmmoName fun(itemID: number): string
 ---@field State fun(self: KennelAmmo, count: number): "ok"|"low"|"critical"
 ---@field NearestVendor fun(self: KennelAmmo): LibGoTherePoint?, number?
@@ -744,4 +747,5 @@
 ---@field window KennelWindow? made the first time it opens
 ---@field WINDOW_PANEL_WIDTH number a window tab's panel width
 ---@field families table<string, number> CreatureFamily IDs by key: families.cat is 2
+---@field ammoKinds {arrow: KennelAmmoKind, bullet: KennelAmmoKind} Projectile item subclasses (Data\Ammo.lua)
 ---@field familyInfo table<number, KennelFamilyInfo> by CreatureFamily ID

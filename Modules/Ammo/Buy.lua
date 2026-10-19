@@ -11,11 +11,12 @@ local L = Kennel.L
 local M = Kennel:GetModule("Ammo") --[[@as KennelAmmo]]
 
 local STACK = 200 -- ammo stacks to 200
+local K = Kennel.ammoKinds
 -- The bag type flags of an ammo bag: a quiver holds arrows, an ammo pouch bullets.
-local BAG_TYPES = { arrow = 1, bullet = 2 }
+local BAG_TYPES = { [K.arrow] = 1, [K.bullet] = 2 }
 
 ---The slots of the hunter's ammo bag for `kind`, nil without one.
----@param kind "arrow"|"bullet"
+---@param kind KennelAmmoKind
 ---@return number?
 local function AmmoBagSlots(kind)
     for bag = 1, NUM_BAG_SLOTS do
@@ -26,7 +27,7 @@ end
 
 ---The vendor's best ammo of `kind` for the hunter's level: its index in the vendor's list and its
 ---item ID; nil when it sells none.
----@param kind "arrow"|"bullet"
+---@param kind KennelAmmoKind
 ---@return number? index
 ---@return number? itemID
 local function BestOnSale(kind)

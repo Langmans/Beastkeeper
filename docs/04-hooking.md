@@ -209,7 +209,7 @@ low, or back to enough after restocking. Also once when the module starts.
 | `module` | string | `"Ammo"` |
 | `count` | number | the ammo in the ammo slot, counted in the bags |
 | `state` | string | `"ok"`, `"low"` or `"critical"` |
-| `kind` | string | `"arrow"` (bow, crossbow) or `"bullet"` (gun) |
+| `kind` | number | `Kennel.ammoKinds.arrow` (2: bow, crossbow) or `.bullet` (3: gun), the Projectile item subclass |
 
 ### `KENNEL_PET_HAPPINESS` (core)
 

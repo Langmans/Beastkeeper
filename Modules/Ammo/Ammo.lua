@@ -27,8 +27,9 @@ end
 
 local GoThere = LibStub("LibGoThere-1.0") --[[@as LibGoThere]]
 local AMMO_SLOT, RANGED_SLOT, WEAPON = 0, 18, 2
--- A ranged weapon's ammo by its subclass: a bow and a crossbow shoot arrows, a gun bullets.
-local KINDS = { [2] = "arrow", [18] = "arrow", [3] = "bullet" }
+local K = Kennel.ammoKinds
+-- A ranged weapon's ammo by the weapon's subclass: a bow and a crossbow shoot arrows, a gun bullets.
+local KINDS = { [2] = K.arrow, [18] = K.arrow, [3] = K.bullet }
 local ICON = "Interface\\Icons\\INV_Ammo_Arrow_02"
 local COLORS = { low = "|cffff8000%d|r", critical = "|cffff2020%d|r" }
 -- A shot takes one from the bags: BAG_UPDATE_DELAYED comes once after it (also for a stack bought or
@@ -36,9 +37,9 @@ local COLORS = { low = "|cffff8000%d|r", critical = "|cffff2020%d|r" }
 -- display redraws only when the text changes.
 local EVENTS = { "BAG_UPDATE_DELAYED", "PLAYER_EQUIPMENT_CHANGED" }
 
----The ammo the hunter's ranged weapon shoots: "arrow", "bullet", or nil without a bow, gun or
----crossbow.
----@return ("arrow"|"bullet")?
+---The kind of ammo the hunter's ranged weapon shoots (a Kennel.ammoKinds value), nil without a
+---bow, gun or crossbow.
+---@return KennelAmmoKind?
 function M.Kind()
     local id = GetInventoryItemID("player", RANGED_SLOT)
     if not id then return nil end
@@ -79,7 +80,7 @@ local points = {}
 
 ---Whether a vendor sells ammo of `kind`.
 ---@param vendor KennelAmmoVendor
----@param kind string
+---@param kind KennelAmmoKind
 ---@return boolean
 local function Sells(vendor, kind)
     for _, itemID in ipairs(vendor.sells) do
@@ -90,7 +91,7 @@ local function Sells(vendor, kind)
 end
 
 ---Every pin of every vendor of the hunter's faction that sells its kind of ammo.
----@param kind string
+---@param kind KennelAmmoKind
 ---@return LibGoTherePoint[]
 local function VendorPoints(kind)
     wipe(points)
