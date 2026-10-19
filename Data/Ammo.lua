@@ -11,6 +11,9 @@ local Kennel = ns
 Kennel.ammoKinds = { arrow = 2, bullet = 3 }
 local K = Kennel.ammoKinds
 
+-- The factions, as UnitFactionGroup gives them.
+local ALLIANCE, HORDE = "Alliance", "Horde"
+
 -- The item IDs, by name.
 local ROUGH_ARROW = 2512
 local SHARP_ARROW = 2515
@@ -46,207 +49,194 @@ I[ICE_THREADED_ARROW] = { name = "Ice Threaded Arrow", kind = K.arrow, level = 5
 I[ICE_THREADED_BULLET] = { name = "Ice Threaded Bullet", kind = K.bullet, level = 51 }
 
 V[151] =
-    { name = "Brog Hamfist", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = "Alliance", pins = { [1429] = { 43.8, 66 } } }
-V[152] = {
-    name = "Brother Danil",
-    sells = { ROUGH_ARROW, LIGHT_SHOT },
-    side = "Alliance",
-    pins = { [1429] = { 47.4, 41.4 } },
-}
+    { name = "Brog Hamfist", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = ALLIANCE, pins = { [1429] = { 43.8, 66 } } }
+V[152] =
+    { name = "Brother Danil", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = ALLIANCE, pins = { [1429] = { 47.4, 41.4 } } }
 V[227] = {
     name = "Mabel Solaj",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1431] = { 73.8, 45.6 } },
 }
 V[228] = {
     name = "Avette Fellwood",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1431] = { 73, 44.4 } },
 }
 V[491] = {
     name = "Quartermaster Lewis",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1436] = { 56.8, 47.2 } },
 }
 V[734] = {
     name = "Corporal Bluth",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1434] = { 38, 3 } },
 }
 V[789] = {
     name = "Kimberly Hiett",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1433] = { 21.8, 45.4, 27, 45.4 } },
 }
 V[791] = {
     name = "Lindsay Ashlock",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1433] = { 23.4, 47.4, 28.4, 47.4 } },
 }
 V[829] = {
     name = "Adlin Pridedrift",
     sells = { ROUGH_ARROW, LIGHT_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1426] = { 30, 71.4 } },
 }
 V[1149] = {
     name = "Uthok",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1434] = { 31.4, 28 } },
 }
 V[1198] =
-    { name = "Rallic Finn", sells = { ROUGH_ARROW, SHARP_ARROW }, side = "Alliance", pins = { [1429] = { 83.2, 66 } } }
+    { name = "Rallic Finn", sells = { ROUGH_ARROW, SHARP_ARROW }, side = ALLIANCE, pins = { [1429] = { 83.2, 66 } } }
 V[1243] = {
     name = "Hegnar Rumbleshot",
     sells = { LIGHT_SHOT, HEAVY_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1426] = { 40.6, 65 } },
 }
-V[1250] = {
-    name = "Drake Lindgren",
-    sells = { ROUGH_ARROW, LIGHT_SHOT },
-    side = "Alliance",
-    pins = { [1429] = { 83, 66.4 } },
-}
+V[1250] =
+    { name = "Drake Lindgren", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = ALLIANCE, pins = { [1429] = { 83, 66.4 } } }
 V[1285] = {
     name = "Thurman Mullby",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1453] = { 58, 61.6, 64.6, 72 } },
 }
 V[1287] = {
     name = "Marda Weller",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1453] = { 57.2, 57, 64, 68.6 } },
 }
 V[1297] = {
     name = "Lina Stover",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1453] = { 50.4, 57.4, 58.6, 68.8 } },
 }
 V[1298] = {
     name = "Frederick Stover",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1453] = { 50.2, 57.4, 58.6, 69 } },
 }
 V[1448] = {
     name = "Neal Allen",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1437] = { 10.6, 56.8 } },
 }
 V[1452] = {
     name = "Gruham Rumdnul",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1437] = { 12, 57.8 } },
 }
-V[1459] = {
-    name = "Naela Trance",
-    sells = { ROUGH_ARROW, SHARP_ARROW },
-    side = "Alliance",
-    pins = { [1437] = { 11.2, 58.4 } },
-}
+V[1459] =
+    { name = "Naela Trance", sells = { ROUGH_ARROW, SHARP_ARROW }, side = ALLIANCE, pins = { [1437] = { 11.2, 58.4 } } }
 V[1461] = {
     name = "Murndan Derth",
     sells = { LIGHT_SHOT, HEAVY_SHOT, SOLID_SHOT, ACCURATE_SLUGS },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1437] = { 11.4, 59.4 } },
 }
 V[1462] = {
     name = "Edwina Monzor",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1437] = { 11, 58.4 } },
 }
 V[1469] = {
     name = "Vrok Blunderblast",
     sells = { LIGHT_SHOT, HEAVY_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1432] = { 35.2, 42.6 } },
 }
 V[1668] = {
     name = "William MacGregor",
     sells = { ROUGH_ARROW, SHARP_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1436] = { 57.4, 53.8 } },
 }
 V[1682] = {
     name = "Yanni Stoutheart",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1432] = { 34.8, 48.4 } },
 }
 V[1685] = {
     name = "Xandar Goodbeard",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1432] = { 82.4, 63.4 } },
 }
 V[1686] = {
     name = "Irene Sureshot",
     sells = { LIGHT_SHOT, HEAVY_SHOT, SOLID_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1432] = { 83, 63.4 } },
 }
 V[1687] =
-    { name = "Cliff Hadin", sells = { ROUGH_ARROW, SHARP_ARROW }, side = "Alliance", pins = { [1432] = { 83, 63 } } }
+    { name = "Cliff Hadin", sells = { ROUGH_ARROW, SHARP_ARROW }, side = ALLIANCE, pins = { [1432] = { 83, 63 } } }
 V[1691] =
-    { name = "Kreg Bilmn", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = "Alliance", pins = { [1426] = { 47.2, 52.4 } } }
+    { name = "Kreg Bilmn", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = ALLIANCE, pins = { [1426] = { 47.2, 52.4 } } }
 V[2084] = {
     name = "Natheril Raincaller",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1452] = { 51.4, 30.8 } },
 }
 V[2115] =
-    { name = "Joshua Kien", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = "Horde", pins = { [1420] = { 32.2, 65.4 } } }
-V[2134] =
-    { name = "Mrs. Winters", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = "Horde", pins = { [1420] = { 61, 52.4 } } }
+    { name = "Joshua Kien", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = HORDE, pins = { [1420] = { 32.2, 65.4 } } }
+V[2134] = { name = "Mrs. Winters", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = HORDE, pins = { [1420] = { 61, 52.4 } } }
 V[2140] = {
     name = "Edwin Harly",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT },
-    side = "Horde",
+    side = HORDE,
     pins = { [1421] = { 44, 40 } },
 }
 V[2401] = {
     name = "Kayren Soothallow",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1424] = { 62.4, 19.8 } },
 }
 V[2803] = {
     name = "Malygen",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1448] = { 62.2, 25.4 } },
 }
 V[2806] = {
     name = "Bale",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1448] = { 34.8, 53.2 } },
 }
 V[2808] = {
     name = "Vikki Lonsav",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1417] = { 46.4, 47.4 } },
 }
 V[2820] = {
     name = "Graud",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1417] = { 74, 32.4 } },
 }
 V[2839] = {
@@ -257,21 +247,20 @@ V[2839] = {
 V[2908] = {
     name = "Grawl",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1418] = { 3, 46 } },
 }
-V[2997] =
-    { name = "Jyn Stonehoof", sells = { LIGHT_SHOT, HEAVY_SHOT }, side = "Horde", pins = { [1456] = { 41.2, 62 } } }
+V[2997] = { name = "Jyn Stonehoof", sells = { LIGHT_SHOT, HEAVY_SHOT }, side = HORDE, pins = { [1456] = { 41.2, 62 } } }
 V[3015] = {
     name = "Kuna Thunderhorn",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1456] = { 46.4, 44.6, 46.4, 46.8 } },
 }
 V[3018] = {
     name = "Hogor Thunderhoof",
     sells = { LIGHT_SHOT, HEAVY_SHOT, SOLID_SHOT, ACCURATE_SLUGS },
-    side = "Horde",
+    side = HORDE,
     pins = { [1456] = { 55.4, 56.4 } },
 }
 V[3053] = {
@@ -279,70 +268,65 @@ V[3053] = {
     sells = { LIGHT_SHOT, HEAVY_SHOT, SOLID_SHOT, ACCURATE_SLUGS },
     pins = { [1441] = { 80.4, 76.8 } },
 }
-V[3072] = {
-    name = "Kawnie Softbreeze",
-    sells = { ROUGH_ARROW, LIGHT_SHOT },
-    side = "Horde",
-    pins = { [1412] = { 44.8, 77 } },
-}
+V[3072] =
+    { name = "Kawnie Softbreeze", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = HORDE, pins = { [1412] = { 44.8, 77 } } }
 V[3076] = {
     name = "Moorat Longstride",
     sells = { ROUGH_ARROW, LIGHT_SHOT },
-    side = "Horde",
+    side = HORDE,
     pins = { [1412] = { 45.2, 61.4, 45.8, 57.6 } },
 }
 V[3078] = {
     name = "Kennah Hawkseye",
     sells = { LIGHT_SHOT, HEAVY_SHOT },
-    side = "Horde",
+    side = HORDE,
     pins = { [1412] = { 45, 61.8, 45.4, 58.4 } },
 }
 V[3088] = {
     name = "Henry Chapal",
     sells = { LIGHT_SHOT, HEAVY_SHOT, SOLID_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1433] = { 18.6, 41.4, 23.6, 41.6 } },
 }
-V[3158] = { name = "Duokna", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = "Horde", pins = { [1411] = { 42.6, 67.4 } } }
-V[3164] = { name = "Jark", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = "Horde", pins = { [1411] = { 54.2, 42.2 } } }
-V[3165] = { name = "Ghrawt", sells = { ROUGH_ARROW, SHARP_ARROW }, side = "Horde", pins = { [1411] = { 53, 41 } } }
-V[3186] = { name = "K'waii", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = "Horde", pins = { [1411] = { 56.2, 73.4 } } }
+V[3158] = { name = "Duokna", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = HORDE, pins = { [1411] = { 42.6, 67.4 } } }
+V[3164] = { name = "Jark", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = HORDE, pins = { [1411] = { 54.2, 42.2 } } }
+V[3165] = { name = "Ghrawt", sells = { ROUGH_ARROW, SHARP_ARROW }, side = HORDE, pins = { [1411] = { 53, 41 } } }
+V[3186] = { name = "K'waii", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = HORDE, pins = { [1411] = { 56.2, 73.4 } } }
 V[3313] = {
     name = "Trak'gen",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1454] = { 48, 80.2 } },
 }
 V[3322] = {
     name = "Kaja",
     sells = { LIGHT_SHOT, HEAVY_SHOT, SOLID_SHOT, ACCURATE_SLUGS },
-    side = "Horde",
+    side = HORDE,
     pins = { [1454] = { 52.2, 62.4 } },
 }
 V[3350] = {
     name = "Asoran",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1454] = { 46, 40.4 } },
 }
-V[3409] =
-    { name = "Zendo'jian", sells = { ROUGH_ARROW, SHARP_ARROW }, side = "Horde", pins = { [1454] = { 81, 19.6 } } }
+V[3409] = { name = "Zendo'jian", sells = { ROUGH_ARROW, SHARP_ARROW }, side = HORDE, pins = { [1454] = { 81, 19.6 } } }
 V[3410] = {
     name = "Jin'sora",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1454] = { 77.4, 38.6 } },
 }
 V[3481] = {
     name = "Barg",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT },
-    side = "Horde",
+    side = HORDE,
     pins = { [1413] = { 51.6, 30 } },
 }
 V[3488] = {
     name = "Uthrok",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT },
-    side = "Horde",
+    side = HORDE,
     pins = { [1413] = { 51, 29 } },
 }
 V[3498] = {
@@ -353,155 +337,154 @@ V[3498] = {
 V[3541] = {
     name = "Sarah Raycroft",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1424] = { 49, 55.2 } },
 }
-V[3587] = { name = "Lyrai", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = "Alliance", pins = { [1438] = { 59.4, 41 } } }
-V[3589] =
-    { name = "Keina", sells = { ROUGH_ARROW, SHARP_ARROW }, side = "Alliance", pins = { [1438] = { 59.4, 41.2 } } }
-V[3608] = { name = "Aldia", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = "Alliance", pins = { [1438] = { 55.4, 57.2 } } }
+V[3587] = { name = "Lyrai", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = ALLIANCE, pins = { [1438] = { 59.4, 41 } } }
+V[3589] = { name = "Keina", sells = { ROUGH_ARROW, SHARP_ARROW }, side = ALLIANCE, pins = { [1438] = { 59.4, 41.2 } } }
+V[3608] = { name = "Aldia", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = ALLIANCE, pins = { [1438] = { 55.4, 57.2 } } }
 V[3610] = {
     name = "Jeena Featherbow",
     sells = { ROUGH_ARROW, SHARP_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1438] = { 55.8, 59.2 } },
 }
 V[3951] = {
     name = "Bhaldaran Ravenshade",
     sells = { ROUGH_ARROW, SHARP_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1440] = { 50.2, 67.2 } },
 }
 V[3962] = {
     name = "Haljan Oakheart",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1440] = { 34.8, 50.8 } },
 }
 V[4082] = {
     name = "Grawnal",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT },
-    side = "Horde",
+    side = HORDE,
     pins = { [1442] = { 45.8, 58.6 } },
 }
 V[4084] = {
     name = "Chylina",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1442] = { 35.4, 6.2 } },
 }
 V[4170] = {
     name = "Ellandrieth",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1457] = { 64.4, 53 } },
 }
 V[4173] = {
     name = "Landria",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1457] = { 63, 67.6 } },
 }
 V[4182] = {
     name = "Dalmond",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1439] = { 37.4, 40.4 } },
 }
 V[4203] = {
     name = "Ariyell Skyshadow",
     sells = { ROUGH_ARROW, SHARP_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1457] = { 58.4, 44.4 } },
 }
 V[4241] = {
     name = "Mydrannul",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1457] = { 70, 44.4 } },
 }
 V[4555] = {
     name = "Eleanor Rusk",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1458] = { 68.2, 48.4 } },
 }
 V[4602] = {
     name = "Benijah Fenner",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1458] = { 58.4, 32.4 } },
 }
 V[4603] = {
     name = "Nicholas Atwood",
     sells = { LIGHT_SHOT, HEAVY_SHOT, SOLID_SHOT, ACCURATE_SLUGS },
-    side = "Horde",
+    side = HORDE,
     pins = { [1458] = { 62, 27.6 } },
 }
 V[4604] = {
     name = "Abigail Sawyer",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1458] = { 54.8, 38 } },
 }
 V[4876] = {
     name = "Jawn Highmesa",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT },
-    side = "Horde",
+    side = HORDE,
     pins = { [1441] = { 46, 51.4 } },
 }
 V[4889] = {
     name = "Torq Ironblast",
     sells = { LIGHT_SHOT, HEAVY_SHOT, SOLID_SHOT, ACCURATE_SLUGS },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1445] = { 67.4, 48 } },
 }
 V[4892] = {
     name = "Jensen Farran",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1445] = { 67.8, 49.8 } },
 }
 V[4896] = {
     name = "Charity Mipsy",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1445] = { 67.4, 51.4 } },
 }
 V[5101] = {
     name = "Bryllia Ironbrand",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1455] = { 39, 73.4 } },
 }
 V[5122] = {
     name = "Skolmin Goldfury",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1455] = { 71.2, 67.6, 71.8, 65.4 } },
 }
 V[5123] = {
     name = "Bretta Goldfury",
     sells = { LIGHT_SHOT, HEAVY_SHOT, SOLID_SHOT, ACCURATE_SLUGS },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1455] = { 72.2, 65.8 } },
 }
 V[5510] = {
     name = "Thulman Flintcrag",
     sells = { LIGHT_SHOT, HEAVY_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1453] = { 54.4, 15.2, 61.8, 36.2 } },
 }
 V[7942] = {
     name = "Faralorn",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1444] = { 30.6, 43.4 } },
 }
 V[7976] = {
     name = "Thalgus Thunderfist",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1455] = { 60.8, 89.8 } },
 }
 V[8131] = {
@@ -517,38 +500,37 @@ V[8139] = {
 V[8362] = {
     name = "Kuruk",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1456] = { 39, 64.2 } },
 }
 V[9548] = {
     name = "Cawind Trueaim",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1444] = { 74.8, 45.4 } },
 }
-V[9549] = { name = "Borand", sells = { ROUGH_ARROW, SHARP_ARROW }, side = "Horde", pins = { [1442] = { 45.2, 59.2 } } }
+V[9549] = { name = "Borand", sells = { ROUGH_ARROW, SHARP_ARROW }, side = HORDE, pins = { [1442] = { 45.2, 59.2 } } }
 V[9551] = {
     name = "Starn",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1441] = { 45, 50.4 } },
 }
 V[9552] = {
     name = "Zanara",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1445] = { 35.4, 30.2 } },
 }
 V[9553] =
-    { name = "Nadia Vernon", sells = { ROUGH_ARROW, SHARP_ARROW }, side = "Horde", pins = { [1421] = { 45, 39.4 } } }
+    { name = "Nadia Vernon", sells = { ROUGH_ARROW, SHARP_ARROW }, side = HORDE, pins = { [1421] = { 45, 39.4 } } }
 V[9555] = {
     name = "Mu'uta",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1417] = { 72.4, 33.4 } },
 }
-V[10369] =
-    { name = "Trayexir", sells = { ROUGH_ARROW, SHARP_ARROW }, side = "Horde", pins = { [1411] = { 56.4, 73.2 } } }
+V[10369] = { name = "Trayexir", sells = { ROUGH_ARROW, SHARP_ARROW }, side = HORDE, pins = { [1411] = { 56.4, 73.2 } } }
 V[11038] = {
     name = "Caretaker Alen",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
@@ -567,7 +549,7 @@ V[12021] = {
 V[12027] = {
     name = "Tukk",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1443] = { 25, 71.8 } },
 }
 V[12029] = { name = "Narianna", sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW }, pins = { [1450] = { 53.2, 42.6 } } }
@@ -584,25 +566,25 @@ V[12959] = {
 V[12960] = {
     name = "Christi Galvanis",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1443] = { 66.4, 6.8 } },
 }
 V[13217] = {
     name = "Thanthaldis Snowgleam",
     sells = { ICE_THREADED_ARROW, ICE_THREADED_BULLET },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1416] = { 39.4, 81.4 } },
 }
 V[13219] = {
     name = "Jekyll Flandring",
     sells = { ICE_THREADED_ARROW, ICE_THREADED_BULLET },
-    side = "Horde",
+    side = HORDE,
     pins = { [1416] = { 62.8, 59.4 } },
 }
 V[14301] = {
     name = "Brinna Valanaar",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW, JAGGED_ARROW },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1447] = { 12, 78.2 } },
 }
 V[14624] = {
@@ -618,7 +600,7 @@ V[15174] = {
 V[17598] = {
     name = "Renn'az",
     sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [1425] = { 76.8, 81.2 } },
 }
 V[28989] = { name = "Aemara", sells = { ROUGH_ARROW, SHARP_ARROW, RAZOR_ARROW }, pins = { [1416] = { 17.2, 71.4 } } }
@@ -627,12 +609,8 @@ V[43411] = {
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
     pins = { [2482] = { 70.8, 50.8 } },
 }
-V[207743] = {
-    name = "Netali Proudwind",
-    sells = { ROUGH_ARROW, LIGHT_SHOT },
-    side = "Horde",
-    pins = { [1456] = { 28.4, 18.2 } },
-}
+V[207743] =
+    { name = "Netali Proudwind", sells = { ROUGH_ARROW, LIGHT_SHOT }, side = HORDE, pins = { [1456] = { 28.4, 18.2 } } }
 V[240654] =
     { name = "Fizzlefuse", sells = { THORIUM_SHELLS, THORIUM_HEADED_ARROW }, pins = { [1415] = { 62.8, 24.2 } } }
 V[244512] = { name = "Ortak Lomgok", sells = { ROUGH_ARROW, LIGHT_SHOT }, pins = { [2482] = { 12.8, 52.4 } } }
@@ -661,7 +639,7 @@ V[257421] = { name = "Tephri Thriceforged", sells = { ROUGH_ARROW, SHARP_ARROW }
 V[258380] = {
     name = "Caitir Flinthew",
     sells = { ROUGH_ARROW, LIGHT_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [2482] = { 15.6, 50.4 } },
 }
 V[259860] = {
@@ -672,7 +650,7 @@ V[259860] = {
 V[260343] = {
     name = "Maka",
     sells = { SHARP_ARROW, HEAVY_SHOT, RAZOR_ARROW, SOLID_SHOT, ACCURATE_SLUGS, JAGGED_ARROW },
-    side = "Horde",
+    side = HORDE,
     pins = { [2548] = { 58.2, 45.8 } },
 }
 V[260566] = {
@@ -683,6 +661,6 @@ V[260566] = {
 V[268238] = {
     name = "Nordun Steadysight",
     sells = { ROUGH_ARROW, SHARP_ARROW, LIGHT_SHOT, HEAVY_SHOT },
-    side = "Alliance",
+    side = ALLIANCE,
     pins = { [1429] = { 42, 66.4 } },
 }
