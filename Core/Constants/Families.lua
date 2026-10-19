@@ -32,19 +32,11 @@ Kennel.families = {
 }
 
 -- The specializations, as Wowhead sorts the families.
-Kennel.petSpecs = { ferocity = "ferocity", cunning = "cunning", tenacity = "tenacity" }
+Kennel.petSpecs = Kennel.SelfKeyedEnum({ "ferocity", "cunning", "tenacity" }) --[[@as KennelPetSpecs]]
 
 -- The kinds of food a family eats; upper-cased, each names a BEASTMAP_FOOD_* string, and the emote
 -- lines' food types use them as keys.
-Kennel.diets = {
-    meat = "meat",
-    fish = "fish",
-    cheese = "cheese",
-    bread = "bread",
-    fungus = "fungus",
-    fruit = "fruit",
-    rawFish = "rawFish",
-}
+Kennel.diets = Kennel.SelfKeyedEnum({ "meat", "fish", "cheese", "bread", "fungus", "fruit", "rawFish" }) --[[@as KennelDiets]]
 
 local F, S, D = Kennel.families, Kennel.petSpecs, Kennel.diets
 local ALL = { D.meat, D.fish, D.cheese, D.bread, D.fungus, D.fruit }

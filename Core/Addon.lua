@@ -120,6 +120,18 @@ function Kennel.RegisterEvents(owner, events, handler)
     end
 end
 
+---A string enum whose keys are its values: { "meat", "fish" } gives { meat = "meat", fish = "fish" },
+---so each value is written once (Core\Constants).
+---@param values string[]
+---@return table<string, string>
+function Kennel.SelfKeyedEnum(values)
+    local enum = {}
+    for _, value in ipairs(values) do
+        enum[value] = value
+    end
+    return enum
+end
+
 ---Whether the current profile has this module switched on.
 ---@param name string
 ---@return boolean

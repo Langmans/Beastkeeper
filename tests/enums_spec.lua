@@ -17,6 +17,10 @@ describe("Kennel's enums", function()
         assert.are.same({ unknown = 1, male = 2, female = 3 }, Kennel.sex)
     end)
 
+    it("makes a string enum from a list whose keys are its values", function()
+        assert.are.same({ a = "a", bCd = "bCd" }, Kennel.SelfKeyedEnum({ "a", "bCd" }))
+    end)
+
     it("names the pet specializations and diets each family's info uses", function()
         assert.are.same({ ferocity = "ferocity", cunning = "cunning", tenacity = "tenacity" }, Kennel.petSpecs)
         assert.are.equal(Kennel.petSpecs.ferocity, Kennel.familyInfo[Kennel.families.cat].spec)

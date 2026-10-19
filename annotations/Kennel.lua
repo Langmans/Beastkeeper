@@ -638,6 +638,22 @@
 ---@field tabs table<string, KennelWindowTabButton>
 ---@field panels table<string, Frame>
 
+---Kennel.petSpecs, a SelfKeyedEnum.
+---@class KennelPetSpecs
+---@field ferocity string
+---@field cunning string
+---@field tenacity string
+
+---Kennel.diets, a SelfKeyedEnum.
+---@class KennelDiets
+---@field meat string
+---@field fish string
+---@field cheese string
+---@field bread string
+---@field fungus string
+---@field fruit string
+---@field rawFish string
+
 ---What Kennel knows of a pet family (Core\Constants\Families.lua).
 ---@class KennelFamilyInfo
 ---@field name string English, when the client gives no name
@@ -747,8 +763,8 @@
 ---@field window KennelWindow? made the first time it opens
 ---@field WINDOW_PANEL_WIDTH number a window tab's panel width
 ---@field families table<string, number> CreatureFamily IDs by key: families.cat is 2
----@field petSpecs {ferocity: string, cunning: string, tenacity: string} the families' specializations
----@field diets {meat: string, fish: string, cheese: string, bread: string, fungus: string, fruit: string, rawFish: string} the kinds of food a family eats
+---@field petSpecs KennelPetSpecs the families' specializations
+---@field diets KennelDiets the kinds of food a family eats
 ---@field happiness {unhappy: number, content: number, happy: number} GetPetHappiness's values
 ---@field sex {unknown: number, male: number, female: number} UnitSex's values
 ---@field factions {alliance: string, horde: string} UnitFactionGroup's first return

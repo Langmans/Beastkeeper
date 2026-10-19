@@ -3,7 +3,8 @@
 
 ---@return table<number, KennelPetAbilityRank>, table<number, KennelBeast>, table<number, KennelFamilyInfo>
 local function Load()
-    local ns = { L = {} }
+    -- Core\Addon.lua's Kennel.SelfKeyedEnum, which needs the whole addon to load.
+    local ns = { L = {}, SelfKeyedEnum = NewClient().Kennel.SelfKeyedEnum }
     assert(loadfile("Core/Constants/Enums.lua"))("Kennel", ns)
     assert(loadfile("Core/Constants/Families.lua"))("Kennel", ns)
     assert(loadfile("Data/Beasts.lua"))("Kennel", ns)
