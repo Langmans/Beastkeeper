@@ -73,12 +73,34 @@ The full covered run takes seconds rather than minutes:
 - luacov's line hook runs in C (cluacov, pinned in the rockspec) instead of
   Lua, which on its own made a covered run dozens of times slower than a
   plain one;
-- the spec files are split by size over up to six busted processes at once
-  (fewer on a machine with fewer cores), each with its own luacov stats
-  file and JUnit report; `check.lua` sums the stats, merges the reports and
-  the counts, and prints each process's failures;
+- the spec files are split by size over up to eight busted processes at
+  once (one per processor on a machine with fewer), each with its own luacov
+  stats file and JUnit report; `check.lua` sums the stats, merges the
+  reports and the counts, and prints each process's failures;
 - a partial run (`test --filter=...`) stays one process, its output
   straight to the terminal.
+
+`TEST_WORKERS` sets the number of processes (`TEST_WORKERS=1` runs
+everything in one process). The default of eight comes from this table:
+`check.lua test` on a 20-processor machine, three runs each:
+
+| Processes | Seconds |
+|---|---|
+| 1 | 9.4 |
+| 2 | 5.9 |
+| 3 | 5.5 |
+| 4 | 4.5 |
+| 6 | 4.0 |
+| 8 | 3.5 |
+| 12 | 3.7 |
+| 16 | 3.6 |
+
+No spec file sets the pace: the slowest on its own (`abilitylearned_spec`,
+`carebutton_spec`, `beastmap_spec`) takes about 1.1 s including busted's
+start. What stays is about a second outside the tests (the lcov report
+0.55 s, the HTML attempt 0.2 s, merging the stats), and each process's own
+start of about 0.35 s, which past eight costs more than splitting further
+saves.
 
 With cluacov, luacov lists a file under its Windows path as well
 (`Core\Addon.lua`, no hits) next to the record the tests produced

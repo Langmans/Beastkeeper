@@ -133,8 +133,11 @@ local function htmlReport()
     end
 end
 
--- How many busted processes the full run splits the spec files over.
-local WORKERS = math.min(tonumber(os.getenv("NUMBER_OF_PROCESSORS") or "") or 4, 6)
+-- How many busted processes the full run splits the spec files over: TEST_WORKERS if set (1 runs
+-- everything in one process), else one per processor up to 8, where docs/07-development.md shows
+-- the run stops getting faster.
+local WORKERS = tonumber(os.getenv("TEST_WORKERS") or "")
+    or math.min(tonumber(os.getenv("NUMBER_OF_PROCESSORS") or "") or 4, 8)
 
 ---The spec files split into `count` groups of about the same size, the largest file first.
 ---@param count number
