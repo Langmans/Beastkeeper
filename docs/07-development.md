@@ -68,6 +68,23 @@ coverage (a file no test loads counts as 0%), and lint fails below 100% WoW
 Lua LS type coverage. A partial run (`test --filter=...`) is not held to
 the line coverage.
 
+The full covered run takes seconds rather than minutes:
+
+- luacov's line hook runs in C (cluacov, pinned in the rockspec) instead of
+  Lua, which on its own made a covered run dozens of times slower than a
+  plain one;
+- the spec files are split by size over up to six busted processes at once
+  (fewer on a machine with fewer cores), each with its own luacov stats
+  file and JUnit report; `check.lua` sums the stats, merges the reports and
+  the counts, and prints each process's failures;
+- a partial run (`test --filter=...`) stays one process, its output
+  straight to the terminal.
+
+With cluacov, luacov lists a file under its Windows path as well
+(`Core\Addon.lua`, no hits) next to the record the tests produced
+(`Core/Addon.lua`); the coverage report merges the two by name, a line hit
+when either hit it.
+
 WoW Lua LS is the binary in the `WOWLUA_LS` environment variable, else the
 newest installed copy of the `tradeskillmaster.wowlua-ls` VS Code extension.
 Without either, lint skips it with a warning, except under CI, where it

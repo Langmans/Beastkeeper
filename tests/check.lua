@@ -50,15 +50,40 @@ end
 ---@return number
 local function coverageReport()
     local text = sh.read("coverage/lcov.info")
+    -- A file can come twice: once as the tests ran it (Core/Addon.lua), once from
+    -- includeuntestedfiles under its Windows path (Core\Addon.lua, all zeros). Merged by name, a
+    -- line counts as hit when either record hit it.
+    ---@type string[], table<string, table<number, number>>
+    local files, counts = {}, {}
+    for record in text:gmatch("SF:.-end_of_record") do
+        local file = record:match("^SF:([^\r\n]+)"):gsub("\\", "/")
+        if not counts[file] then
+            files[#files + 1] = file
+            counts[file] = {}
+        end
+        local lines = counts[file]
+        for line, count in record:gmatch("DA:(%d+),(%d+)") do
+            local n = tonumber(line) --[[@as number]]
+            lines[n] = math.max(lines[n] or 0, tonumber(count) --[[@as number]])
+        end
+    end
     local hit, total = 0, 0
     local rows = {}
     print(bold("\nCoverage (lines hit / executable):"))
-    for record in text:gmatch("SF:.-end_of_record") do
-        local file = record:match("^SF:([^\r\n]+)"):gsub("\\", "/")
-        local lh, lf = tonumber(record:match("LH:(%d+)")), tonumber(record:match("LF:(%d+)"))
+    for _, file in ipairs(files) do
+        local numbers = {}
+        for n in pairs(counts[file]) do
+            numbers[#numbers + 1] = n
+        end
+        table.sort(numbers)
+        local lh, lf = 0, #numbers
         local missed = {}
-        for line, count in record:gmatch("DA:(%d+),(%d+)") do
-            if count == "0" then missed[#missed + 1] = line end
+        for _, n in ipairs(numbers) do
+            if counts[file][n] > 0 then
+                lh = lh + 1
+            else
+                missed[#missed + 1] = tostring(n)
+            end
         end
         local pct = lf > 0 and 100 * lh / lf or 100
         local color = pct >= 100 and green or pct >= 90 and yellow or red
@@ -108,18 +133,148 @@ local function htmlReport()
     end
 end
 
+-- How many busted processes the full run splits the spec files over.
+local WORKERS = math.min(tonumber(os.getenv("NUMBER_OF_PROCESSORS") or "") or 4, 6)
+
+---The spec files split into `count` groups of about the same size, the largest file first.
+---@param count number
+---@return string[][]
+local function specGroups(count)
+    local files = {}
+    for _, name in ipairs(sh.list("tests")) do
+        if name:match("_spec%.lua$") then
+            local path = "tests/" .. name
+            files[#files + 1] = { path = path, size = #sh.read(path) }
+        end
+    end
+    table.sort(files, function(a, b)
+        return a.size > b.size
+    end)
+    local groups, sizes = {}, {}
+    for i = 1, math.min(count, #files) do
+        groups[i], sizes[i] = {}, 0
+    end
+    for _, file in ipairs(files) do
+        local smallest = 1
+        for i = 2, #groups do
+            if sizes[i] < sizes[smallest] then smallest = i end
+        end
+        local group = groups[smallest]
+        group[#group + 1] = file.path
+        sizes[smallest] = sizes[smallest] + file.size
+    end
+    return groups
+end
+
+---Adds the hits of one luacov stats file to `data`.
+---@param data table<string, table> luacov's stats: per file, line to hits
+---@param path string
+local function addStats(data, path)
+    local loaded = require("luacov.stats").load(path) or {}
+    for file, lines in pairs(loaded) do
+        local into = data[file] or { max = 0, max_hits = 0 }
+        data[file] = into
+        into.max = math.max(into.max, lines.max)
+        for line = 1, lines.max do
+            if lines[line] then into[line] = (into[line] or 0) + lines[line] end
+        end
+    end
+end
+
+---The JUnit reports of the workers as one: their testsuites under one testsuites element.
+---@param paths string[]
+local function mergeJunit(paths)
+    local suites = {}
+    local totals = { tests = 0, failures = 0, errors = 0, skip = 0 }
+    for _, path in ipairs(paths) do
+        if sh.exists(path) then
+            local xml = sh.read(path)
+            for key in pairs(totals) do
+                totals[key] = totals[key] + (tonumber(xml:match("<testsuites[^>]-%s" .. key .. "='(%d+)'")) or 0)
+            end
+            for suite in xml:gmatch("<testsuite%s.-</testsuite>") do
+                suites[#suites + 1] = suite
+            end
+            os.remove(path)
+        end
+    end
+    sh.write(
+        "coverage/junit.xml",
+        ("<testsuites skip='%d' errors='%d' failures='%d' tests='%d'>\n%s\n</testsuites>\n"):format(
+            totals.skip,
+            totals.errors,
+            totals.failures,
+            totals.tests,
+            table.concat(suites, "\n")
+        )
+    )
+end
+
+---The full run: the spec files over several busted processes at once, each with coverage into its
+---own stats file and JUnit report, merged afterwards. Returns whether every worker passed.
+---@return boolean
+local function parallelTests()
+    local groups = specGroups(WORKERS)
+    local pipes, logs, junits = {}, {}, {}
+    for i, files in ipairs(groups) do
+        local config = ("coverage/luacov-%d.lua"):format(i)
+        sh.write(
+            config,
+            ('local c = dofile(".luacov")\nc.statsfile = "coverage/luacov.stats.%d.out"\nreturn c\n'):format(i)
+        )
+        os.remove(("coverage/luacov.stats.%d.out"):format(i))
+        logs[i], junits[i] = ("coverage/busted-%d.log"):format(i), ("coverage/junit-%d.xml"):format(i)
+        local argv = { tool("busted"), "--coverage", "--coverage-config-file", config, "--Xoutput", junits[i] }
+        for _, file in ipairs(files) do
+            argv[#argv + 1] = file
+        end
+        -- Started together: io.popen does not wait. The output goes to a log, the exit status to
+        -- the pipe, the same way in cmd.exe and sh.
+        local line = sh.commandLine(argv)
+        local tail = (' > "%s" 2>&1 && echo __exit:0 || echo __exit:1'):format(logs[i])
+        line = sh.windows and ('"' .. line:sub(2, -2) .. tail .. '"') or (line .. tail)
+        pipes[i] = assert(io.popen(line))
+    end
+    local ok, passed, failures, errors = true, 0, 0, 0
+    local data = {}
+    for i, pipe in ipairs(pipes) do
+        local status = pipe:read("*a")
+        pipe:close()
+        if not status:match("__exit:0") then ok = false end
+        local log = sh.read(logs[i])
+        local p, f, e = log:match("(%d+) successes? / (%d+) failures? / (%d+) errors?")
+        passed = passed + (tonumber(p) or 0)
+        failures, errors = failures + (tonumber(f) or 0), errors + (tonumber(e) or 0)
+        -- A worker's own failures and errors, as busted printed them; its dots and summary go.
+        local details = log:gsub("^[^\n]*\n", ""):gsub("%d+ successes? / [^\n]*\n?", "")
+        if details:match("%S") then io.write(details) end
+        addStats(data, ("coverage/luacov.stats.%d.out"):format(i))
+        os.remove(("coverage/luacov.stats.%d.out"):format(i))
+        os.remove(("coverage/luacov-%d.lua"):format(i))
+        os.remove(logs[i])
+    end
+    require("luacov.stats").save("coverage/luacov.stats.out", data)
+    mergeJunit(junits)
+    print(("%d successes / %d failures / %d errors, in %d processes"):format(passed, failures, errors, #groups))
+    return ok
+end
+
 local function test(extra)
     libs()
     sh.mkdir("coverage")
     os.remove("coverage/luacov.stats.out")
     local full = #extra == 0
-    -- The JUnit report goes to coverage/junit.xml for CI; the terminal gets the usual output.
-    local argv = { tool("busted"), "--Xoutput", "coverage/junit.xml" }
-    if full then argv[#argv + 1] = "--coverage" end
-    for _, a in ipairs(extra) do
-        argv[#argv + 1] = a
+    if full then
+        report(parallelTests(), "busted")
+    else
+        -- A partial run: one process, its output straight to the terminal. The JUnit report goes
+        -- to coverage/junit.xml for CI.
+        local argv = { tool("busted"), "--Xoutput", "coverage/junit.xml" }
+        for _, a in ipairs(extra) do
+            argv[#argv + 1] = a
+        end
+        report(sh.run(argv, true), "busted")
     end
-    report(sh.run(argv, true), "busted")
     fixJunit()
     -- Every executable line of Kennel's own files must run in some test. A partial run covers
     -- only part and is not held to it.
