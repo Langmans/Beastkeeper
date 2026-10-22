@@ -94,6 +94,7 @@ everything in one process). The default of eight comes from this table:
 | 8 | 3.5 |
 | 12 | 3.7 |
 | 16 | 3.6 |
+| 20 | 3.5 |
 
 No spec file sets the pace: the slowest on its own (`abilitylearned_spec`,
 `carebutton_spec`, `beastmap_spec`) takes about 1.1 s including busted's
