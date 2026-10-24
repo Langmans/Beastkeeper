@@ -7,7 +7,7 @@ local function Load()
     local ns = { L = {}, SelfKeyedEnum = NewClient().Kennel.SelfKeyedEnum }
     assert(loadfile("Core/Constants/Enums.lua"))("Kennel", ns)
     assert(loadfile("Core/Constants/Families.lua"))("Kennel", ns)
-    assert(loadfile("Data/Beasts.lua"))("Kennel", ns)
+    assert(loadfile("Data/Forever/Beasts.lua"))("Kennel", ns)
     return ns.data.petAbilityRanks, ns.data.beasts, ns.familyInfo
 end
 
@@ -103,7 +103,7 @@ describe("the beast data", function()
     it("has the pet trainers and stable masters, each with a faction it serves and its spots", function()
         local ns = {}
         assert(loadfile("Core/Constants/Enums.lua"))("Kennel", ns)
-        assert(loadfile("Data/Trainers.lua"))("Kennel", ns)
+        assert(loadfile("Data/Forever/Trainers.lua"))("Kennel", ns)
         local count = { trainer = 0, stable = 0 }
         for npc, trainer in pairs(ns.data.trainers) do
             count[trainer.kind] = count[trainer.kind] + 1

@@ -7,8 +7,6 @@ local _, ns = ...
 ---@type Kennel
 local Kennel = ns
 
--- The kinds of ammo by their Projectile item subclass, as GetItemInfoInstant gives it.
-Kennel.ammoKinds = { arrow = 2, bullet = 3 }
 local K = Kennel.ammoKinds
 
 local ALLIANCE, HORDE = Kennel.factions.alliance, Kennel.factions.horde

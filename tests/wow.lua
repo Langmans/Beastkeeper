@@ -1473,7 +1473,7 @@ function NewClient(opts)
     C_SettingsUtil = not opts.noSettingsPanel and { OpenSettingsPanel = noop } or nil
 
     local function getMetadata(name, key)
-        if name == "Kennel" then return TOC_METADATA[key] end
+        if name == "Kennel" then return (opts.era and ERA_TOC_METADATA or TOC_METADATA)[key] end
     end
     C_AddOns = {
         GetAddOnMetadata = getMetadata,
@@ -1652,7 +1652,7 @@ function NewClient(opts)
     -- LibStub keeps its libraries in a global; a fresh client starts without one.
     LibStub = nil
     local ns = {}
-    for _, file in ipairs(TOC_FILES) do
+    for _, file in ipairs(opts.era and ERA_TOC_FILES or TOC_FILES) do
         Chunk(file, opts.dev == true)("Kennel", ns)
         if opts.masque and file:find("LibStub.lua", 1, true) then AddMasque() end
     end

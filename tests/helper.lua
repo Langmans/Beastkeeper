@@ -24,29 +24,35 @@ local function expandXml(file)
     return files
 end
 
-local toc = sh.read("Kennel.toc")
-
--- The load order: every file the .toc names, .xml files expanded.
-TOC_FILES = {}
-for line in toc:gmatch("[^\r\n]+") do
-    line = line:match("^%s*(.-)%s*$")
-    if line ~= "" and not line:match("^#") then
-        line = line:gsub("\\", "/")
-        if line:match("%.xml$") then
-            for _, file in ipairs(expandXml(line)) do
-                TOC_FILES[#TOC_FILES + 1] = file
+---A .toc's load order (every file it names, .xml files expanded) and its "## Key: value" lines.
+---@param name string
+---@return string[] files
+---@return table<string, string> metadata
+local function readToc(name)
+    local toc = sh.read(name)
+    local files, metadata = {}, {}
+    for line in toc:gmatch("[^\r\n]+") do
+        line = line:match("^%s*(.-)%s*$")
+        if line ~= "" and not line:match("^#") then
+            line = line:gsub("\\", "/")
+            if line:match("%.xml$") then
+                for _, file in ipairs(expandXml(line)) do
+                    files[#files + 1] = file
+                end
+            else
+                files[#files + 1] = line
             end
-        else
-            TOC_FILES[#TOC_FILES + 1] = line
         end
     end
+    for key, value in toc:gmatch("## ([^:\r\n]+):%s*([^\r\n]-)%s*\r?\n") do
+        metadata[key] = value
+    end
+    return files, metadata
 end
 
--- The "## Key: value" lines, for GetAddOnMetadata, and the SavedVariables name.
-TOC_METADATA = {}
-for key, value in toc:gmatch("## ([^:\r\n]+):%s*([^\r\n]-)%s*\r?\n") do
-    TOC_METADATA[key] = value
-end
+-- WoW: Forever's Kennel.toc, and Classic Era's Kennel_Vanilla.toc (NewClient's `era` option).
+TOC_FILES, TOC_METADATA = readToc("Kennel.toc")
+ERA_TOC_FILES, ERA_TOC_METADATA = readToc("Kennel_Vanilla.toc")
 TOC_SAVED = TOC_METADATA.SavedVariables
 
 dofile("tests/wow.lua")

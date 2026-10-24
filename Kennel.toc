@@ -12,8 +12,8 @@
 embeds.xml
 Locales\Locales.xml
 Core\Core.xml
-Data\Beasts.lua
-Data\Trainers.lua
-Data\Ammo.lua
+Data\Forever\Beasts.lua
+Data\Forever\Trainers.lua
+Data\Forever\Ammo.lua
 Integrations\Integrations.xml
 Modules\Modules.xml
