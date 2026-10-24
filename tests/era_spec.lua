@@ -37,6 +37,25 @@ describe("Classic Era", function()
         assert.is_truthy(next(journal:Pets()), "the pet out")
     end)
 
+    it("feeds what the family eats by the item's kind of food, without CanPetEatItem", function()
+        local JERKY, BREAD, UNKNOWN = 117, 4540, 99999
+        local client = NewClient({ era = true }):login()
+        client.petLevel = 10
+        client:stock(BREAD, 4):stock(JERKY, 6):stock(UNKNOWN, 1)
+        local function fed()
+            local ids = {}
+            for _, food in ipairs(client.Kennel:GetModule("Feeding"):Scan()) do
+                ids[#ids + 1] = food.itemID
+            end
+            return ids
+        end
+        assert.are.same({ JERKY }, fed(), "a cat eats meat and fish")
+        client.familyID = client.Kennel.families.bear
+        local ids = fed()
+        table.sort(ids)
+        assert.are.same({ JERKY, BREAD }, ids, "a bear eats bread too")
+    end)
+
     it("reads the pet's spellbook through GetSpellBookItemName", function()
         local client = NewClient({ era = true }):login()
         local spells = client.Kennel.PetSpells()

@@ -95,14 +95,26 @@ local function Before(a, b)
     return a.bag * 1000 + a.slot < b.bag * 1000 + b.slot
 end
 
+---Whether the pet out eats an item: the client says so on WoW: Forever (C_PetInfo.CanPetEatItem);
+---elsewhere the item's kind of food (Data\Era\Food.lua) must be on its family's diet.
+---@param itemID number
+---@return boolean
+local function CanEat(itemID)
+    local canEat = C_PetInfo and C_PetInfo.CanPetEatItem
+    if canEat then return canEat(itemID) == true end
+    local kinds = Kennel.data.foodKinds
+    local kind = kinds and kinds[itemID]
+    local info = kind and Kennel.familyInfo[Kennel.PetFamilyID() or 0]
+    return info ~= nil and info.diet ~= nil and tContains(info.diet, kind)
+end
+
 ---Adds the food in one bag slot to `foods` when the pet eats it and it pleases the pet.
 ---@param bag number
 ---@param slot number
 ---@param petLevel number
 local function AddSlot(bag, slot, petLevel)
     local item = C_Container.GetContainerItemInfo(bag, slot)
-    local canEat = C_PetInfo.CanPetEatItem -- WoW: Forever's; elsewhere nothing counts as food
-    if not item or not canEat or not canEat(item.itemID) then return end
+    if not item or not CanEat(item.itemID) then return end
     local level = select(4, C_Item.GetItemInfo(item.itemID))
     local bite = level and Bite(level, petLevel) or 0
     if bite == 0 then return end
