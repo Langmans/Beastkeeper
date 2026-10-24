@@ -78,6 +78,38 @@ describe("Classic Era", function()
         assert.are.same({ { JERKY, false }, { WOLF, true } }, order(), "once loaded, Well Fed and last")
     end)
 
+    it("keeps the stabled pets the stable master shows, and one summoned later stays one pet", function()
+        local client = NewClient({ era = true }):login():advance(1)
+        local journal = client.Kennel:GetModule("PetJournal")
+        ---The journal's pets by name: their keys.
+        local function keysByName()
+            local out = {}
+            for key, entry in pairs(journal:Pets()) do
+                out[entry.name or "?"] = out[entry.name or "?"] or {}
+                table.insert(out[entry.name or "?"], key)
+            end
+            return out
+        end
+        client.stableOpen = true
+        client.eraStable.current = { "Fluffy", 15, "Cat", "Loyalty Level 4 (Dependable)" }
+        client.eraStable.stabled = { { "Kaldor", 16, "Boar", "Loyalty Level 6 (Best Friend)" } }
+        client:fire("PET_STABLE_SHOW")
+        local pets = keysByName()
+        assert.are.equal(1, #pets.Fluffy, "the pet out once")
+        assert.are.equal(1, #pets.Kaldor, "the stabled pet, from the stable")
+        local kaldor = journal:Pets()[pets.Kaldor[1]]
+        assert.are.equal(16, kaldor.level)
+        assert.are.equal("Boar", kaldor.family)
+        kaldor.deaths = 2
+        client.stableOpen = false
+        client.petGUID, client.familyName, client.familyID = "Pet-0-5250-0-1-3099-0100AABBCC", "Boar", 5
+        client:summon("Kaldor", {}):advance(1)
+        pets = keysByName()
+        assert.are.equal(1, #pets.Kaldor, "summoned: still one Kaldor")
+        assert.are.equal(2, journal:Pets()[pets.Kaldor[1]].deaths, "what the stable's entry held")
+        assert.are.equal(tostring(0xAABBCC), pets.Kaldor[1], "under its own number (the GUID's low 32 bits) now")
+    end)
+
     it("reads the pet's spellbook through GetSpellBookItemName", function()
         local client = NewClient({ era = true }):login()
         local spells = client.Kennel.PetSpells()

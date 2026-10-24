@@ -316,7 +316,7 @@ function NewClient(opts)
             }
         or nil
     function UnitCreatureFamily(unit)
-        if unit == "pet" and client.pet then return "Cat", client.familyID end
+        if unit == "pet" and client.pet then return client.familyName or "Cat", client.familyID end
     end
     function UnitIsDead(unit)
         return unit == "pet" and client.pet ~= nil and client.pet.dead
@@ -843,6 +843,21 @@ function NewClient(opts)
     client.cursorX = 0
     function GetCursorPosition()
         return client.cursorX, 0
+    end
+    -- Classic Era's stable: GetStablePetInfo(slot) gives icon, name, level, family and loyalty
+    -- while the stable master is open (client.stableOpen): slot 1 the current pet, slot 2 on
+    -- client.eraStable's stabled pets ({ name, level, family, loyalty } each).
+    client.stableOpen, client.eraStable = false, { current = nil, stabled = {} }
+    GetStablePetInfo, GetNumStableSlots = nil, nil
+    if opts.era then
+        function GetNumStableSlots()
+            return 2
+        end
+        function GetStablePetInfo(slot)
+            if not client.stableOpen then return nil end
+            local pet = slot == 1 and client.eraStable.current or client.eraStable.stabled[slot - 1]
+            if pet then return 132184, pet[1], pet[2], pet[3], pet[4] end
+        end
     end
     C_StableInfo = not opts.noStableInfo
             and {

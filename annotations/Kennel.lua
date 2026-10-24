@@ -561,11 +561,31 @@
 ---@field GetItemByID fun(itemID: number): KennelTooltipData
 ---@field GetHyperlink fun(link: string): KennelTooltipData?
 
+---A pet in the stable's lists, as C_StableInfo gives it; Classic Era gives no petNumber,
+---creatureID or displayID, and its loyalty as loyaltyText ("Loyalty Level 6 (Best Friend)").
+---@class KennelStablePet
+---@field slotID number?
+---@field petNumber GameValue
+---@field name string?
+---@field level number?
+---@field familyName string?
+---@field icon (number|string)?
+---@field creatureID number?
+---@field displayID number?
+---@field loyaltyLevel number?
+---@field loyaltyName string?
+---@field loyaltyText string?
+
+---@class KennelCompatStableInfo
+---@field GetActivePetList fun(): KennelStablePet[]
+---@field GetStabledPetList fun(): KennelStablePet[]
+
 ---Kennel.C (Core\Compat.lua): the modern API on every client, the classic way where it is missing.
 ---@class KennelCompat
 ---@field PetInfo KennelCompatPetInfo
 ---@field SpellBook KennelCompatSpellBook
 ---@field TooltipInfo KennelCompatTooltipInfo
+---@field StableInfo KennelCompatStableInfo
 ---@field Has fun(namespace: "PetInfo", name: string): boolean
 
 ---Generated game data (Data\*.lua).

@@ -10,7 +10,7 @@ local _, ns = ...
 local Kennel = ns
 
 ---@type KennelCompat
-local C = { PetInfo = {}, SpellBook = {}, TooltipInfo = {} } --[[@as KennelCompat]]
+local C = { PetInfo = {}, SpellBook = {}, TooltipInfo = {}, StableInfo = {} } --[[@as KennelCompat]]
 Kennel.C = C
 
 ---The client's C_PetInfo function `name`, nil without it.
@@ -212,6 +212,52 @@ function C.TooltipInfo.GetItemByID(itemID)
         end
     end
     return itemInfo
+end
+
+-- Classic Era's stable read into the modern lists' shape, reused from read to read: the current
+-- pet (slot 1, also while dismissed) and the stabled ones (slot 2 on). Without pet numbers.
+---@type KennelStablePet[], KennelStablePet[], KennelStablePet[]
+local activePets, stabledPets, petPool = {}, {}, {}
+
+---Fills `list` from Classic's GetStablePetInfo slots `first` to `last`.
+---@param list KennelStablePet[]
+---@param first number
+---@param last number
+---@return KennelStablePet[]
+local function ReadSlots(list, first, last)
+    wipe(list)
+    if not GetStablePetInfo then return list end
+    for slot = first, last do
+        local icon, name, level, family, loyalty = GetStablePetInfo(slot)
+        if name then
+            local pet = petPool[slot] or {}
+            petPool[slot] = pet
+            pet.slotID, pet.icon, pet.name, pet.level, pet.familyName = slot, icon, name, level, family
+            pet.loyaltyText = loyalty
+            list[#list + 1] = pet
+        end
+    end
+    return list
+end
+
+---The pets out or ready to call: C_StableInfo's anywhere on WoW: Forever; on Classic Era the
+---current pet while the stable master is open, without its number.
+---@return KennelStablePet[]
+function C.StableInfo.GetActivePetList()
+    ---@type (fun(): KennelStablePet[])?
+    local modern = C_StableInfo and C_StableInfo.GetActivePetList
+    if modern then return modern() end
+    return ReadSlots(activePets, 1, 1)
+end
+
+---The pets in the stable: C_StableInfo's anywhere on WoW: Forever; on Classic Era the stable's
+---slots while the stable master is open, without their numbers.
+---@return KennelStablePet[]
+function C.StableInfo.GetStabledPetList()
+    ---@type (fun(): KennelStablePet[])?
+    local modern = C_StableInfo and C_StableInfo.GetStabledPetList
+    if modern then return modern() end
+    return ReadSlots(stabledPets, 2, 1 + (GetNumStableSlots and GetNumStableSlots() or 0))
 end
 
 ---A hyperlink's tooltip data; nil on a client without C_TooltipInfo (Classic Era).

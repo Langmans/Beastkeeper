@@ -27,9 +27,13 @@ local BOOK_WAIT = 1 -- seconds for a new pet's spellbook to fill in
 -- Deaths, tames and growth come from the core's KENNEL_PET_DIED, _TAMED and _GROWTH.
 local EVENTS = {
     "UNIT_PET",
+    "PET_STABLE_SHOW",
     "PET_STABLE_UPDATE",
     "PLAYER_LOGOUT",
 }
+-- A stabled pet the stable gives no number for (Classic Era) is kept under this, its name and
+-- family, until it comes out and its number is known.
+local STABLE_KEY = "stable:%s|%s"
 
 ---This character's pets, by number (as a string).
 ---@return table<string, KennelJournalEntry>
@@ -147,10 +151,14 @@ function M:Entry(key, npc)
     return entry
 end
 
----A pet came out.
+---A pet came out. One the stable showed without a number (Classic Era) moves to its number.
 ---@param key string
 function M:Open(key)
     local pets = self:Pets()
+    local stableKey = STABLE_KEY:format(UnitName("pet") or "", UnitCreatureFamily("pet") or "")
+    if not pets[key] and pets[stableKey] then
+        pets[key], pets[stableKey] = pets[stableKey], nil
+    end
     if not pets[key] and not key:find("^Creature%-") then Adopt(pets, key) end
     self:Entry(key)
     self.current, self.outSince = key, GetTime()
@@ -178,21 +186,49 @@ end
 ---@type table<string, true>
 local stableKeys = {}
 
+---The journal key of a stable pet without a number (Classic Era): the one entry of the same name
+---and family, else its own under STABLE_KEY.
+---@param pets table<string, KennelJournalEntry>
+---@param name string
+---@param family string?
+---@return string
+local function NamedKey(pets, name, family)
+    ---@type string?
+    local found
+    for key, entry in pairs(pets) do
+        if entry.name == name and entry.family == family then
+            if found then return STABLE_KEY:format(name, family or "") end
+            found = key
+        end
+    end
+    return found or STABLE_KEY:format(name, family or "")
+end
+
 ---Takes what the stable's lists say of each pet: its name, level, family and loyalty, and the
 ---model it shows (displayID) and the beast it was tamed as (creatureID). A pet not in the journal
----yet gets an entry.
----@param list fun(): table[]
+---yet gets an entry. Classic Era's lists give no number (NamedKey) and the loyalty as text; a
+---number the client hides leaves the pet out.
+---@param list KennelStablePet[]
 function M:ReadStableList(list)
-    for _, info in ipairs(list()) do
-        local number = info.petNumber --[[@as GameValue]]
-        if type(number) == "number" and Kennel.Readable(number) and info.name then
-            local key = tostring(number)
+    for _, info in ipairs(list) do
+        local number = info.petNumber
+        ---@type string?
+        local key
+        if type(number) == "number" and Kennel.Readable(number) then
+            key = tostring(number)
+        elseif number == nil and info.name then
+            key = NamedKey(self:Pets(), info.name, info.familyName)
+        end
+        if key and info.name then
             stableKeys[key] = true
             local entry = self:Entry(key, info.creatureID)
             entry.first.npc = info.creatureID or entry.first.npc
             entry.name, entry.level, entry.family = info.name, info.level, info.familyName
-            entry.displayID = info.displayID
-            entry.loyalty, entry.loyaltyName = info.loyaltyLevel or entry.loyalty, info.loyaltyName or entry.loyaltyName
+            entry.displayID = info.displayID or entry.displayID
+            local text = info.loyaltyText
+            local level = info.loyaltyLevel or (text and tonumber(text:match("%d+")))
+            local name = info.loyaltyName or (text and text:match("%((.-)%)"))
+            entry.loyalty, entry.loyaltyName = level or entry.loyalty, name or entry.loyaltyName
         end
     end
 end
@@ -233,16 +269,15 @@ local function StableTwin(pets, entry)
     return found
 end
 
----Reads the stable's lists (WoW: Forever gives them anywhere), then merges an entry they do not
----know (kept under the GUID's number, which is not the pet's on Forever) into the stable's entry
----of the same name and family. A pet tamed this session (a Creature GUID key) waits for Adopt.
+---Reads the stable's lists (Kennel.C.StableInfo: WoW: Forever gives them anywhere, Classic Era
+---while the stable master is open), then merges an entry they do not know (kept under the GUID's
+---number, which is not the pet's on Forever) into the stable's entry of the same name and family.
+---A pet tamed this session (a Creature GUID key) waits for Adopt.
 function M:ReadStable()
-    -- Classic Era's C_StableInfo only counts the pets; its stable gives no pet numbers.
-    local stable = C_StableInfo
-    if not (stable and stable.GetActivePetList and stable.GetStabledPetList) then return end
+    local stable = Kennel.C.StableInfo
     wipe(stableKeys)
-    self:ReadStableList(stable.GetActivePetList)
-    self:ReadStableList(stable.GetStabledPetList)
+    self:ReadStableList(stable.GetActivePetList())
+    self:ReadStableList(stable.GetStabledPetList())
     local pets = self:Pets()
     for key, entry in pairs(pets) do
         local twin = not stableKeys[key] and not key:find("^Creature%-") and StableTwin(pets, entry)
@@ -254,11 +289,12 @@ function M:ReadStable()
     end
 end
 
--- The stable's lists changed (at the stable master): what they say goes into the journal.
+-- The stable master opened, or the stable's lists changed: what they say goes into the journal.
 function M:PET_STABLE_UPDATE()
     self:ReadStable()
     Kennel:RefreshWindow("pets")
 end
+M.PET_STABLE_SHOW = M.PET_STABLE_UPDATE
 
 -- The core's KENNEL_PET_GROWTH: the pet's level, points or loyalty changed.
 function M:OnGrowth()

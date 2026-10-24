@@ -152,17 +152,16 @@ function Kennel.PetFamilyID()
     return tonumber(familyID)
 end
 
----The stable's entry of the pet out (C_StableInfo's active pets, which WoW: Forever gives away from
----the stable master too): the one with the pet's name. Nil without a pet, the API, or exactly one
----entry of that name.
----@return table?
+---The stable's entry of the pet out (Kennel.C.StableInfo's active pets, which WoW: Forever gives
+---away from the stable master too): the one with the pet's name. Nil without a pet, or without
+---exactly one entry of that name.
+---@return KennelStablePet?
 function Kennel.PetStableInfo()
-    local getActive = C_StableInfo and C_StableInfo.GetActivePetList
-    if not UnitExists("pet") or not getActive then return nil end
+    if not UnitExists("pet") then return nil end
     local name = UnitName("pet")
-    ---@type table?
+    ---@type KennelStablePet?
     local found
-    for _, info in ipairs(getActive()) do
+    for _, info in ipairs(Kennel.C.StableInfo.GetActivePetList()) do
         if info.name == name then
             if found then return nil end
             found = info

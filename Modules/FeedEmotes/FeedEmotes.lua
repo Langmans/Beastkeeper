@@ -74,20 +74,20 @@ function M:ChoosePetSex(sex)
     return true
 end
 
----Drops the choices of pets this hunter no longer has: a released pet is in neither of
----C_StableInfo's lists. Nothing is dropped while both are empty (the client may not have the pets
----yet), when a number is hidden, or on a client without the lists.
+---Drops the choices of pets this hunter no longer has: a released pet is in neither of the
+---stable's lists (Kennel.C.StableInfo). Nothing is dropped while both are empty (the client may
+---not have the pets yet, or the stable master is closed on Classic Era), or when a pet has no
+---number to go by (hidden, or none on Classic Era).
 function M:PrunePetSex()
-    local getActive = C_StableInfo and C_StableInfo.GetActivePetList
-    local getStabled = C_StableInfo and C_StableInfo.GetStabledPetList
-    if not (getActive and getStabled) then return end
+    local stable = Kennel.C.StableInfo
     ---@type table<number, true>
     local owned = {}
     local any = false
-    for _, list in ipairs({ getActive(), getStabled() }) do
+    for _, list in ipairs({ stable.GetActivePetList(), stable.GetStabledPetList() }) do
         for _, pet in ipairs(list) do
-            if not Kennel.Readable(pet.petNumber) then return end
-            owned[pet.petNumber], any = true, true
+            local number = pet.petNumber
+            if type(number) ~= "number" or not Kennel.Readable(number) then return end
+            owned[number], any = true, true
         end
     end
     if not any then return end
