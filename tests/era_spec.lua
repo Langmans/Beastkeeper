@@ -56,6 +56,28 @@ describe("Classic Era", function()
         assert.are.same({ JERKY, BREAD }, ids, "a bear eats bread too")
     end)
 
+    it("feeds food that makes the hunter Well Fed last, read from a scanned tooltip", function()
+        local JERKY, WOLF = 117, 2680 -- Spiced Wolf Meat makes you Well Fed
+        local client = NewClient({ era = true }):login()
+        client.petLevel = 10
+        client.unloadedItems[WOLF] = true
+        client:stock(WOLF, 2):stock(JERKY, 6)
+        ---Per food in feeding order: its item ID and whether it makes the hunter Well Fed.
+        local function order()
+            local ids = {}
+            for _, food in ipairs(client.Kennel:GetModule("Feeding"):Scan()) do
+                ids[#ids + 1] = { food.itemID, food.wellFed }
+            end
+            return ids
+        end
+        local before = order()
+        for _, food in ipairs(before) do
+            assert.is_false(food[2], "not loaded yet: not known to make you Well Fed")
+        end
+        client.unloadedItems[WOLF] = nil
+        assert.are.same({ { JERKY, false }, { WOLF, true } }, order(), "once loaded, Well Fed and last")
+    end)
+
     it("reads the pet's spellbook through GetSpellBookItemName", function()
         local client = NewClient({ era = true }):login()
         local spells = client.Kennel.PetSpells()

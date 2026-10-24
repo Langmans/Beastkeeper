@@ -440,15 +440,10 @@ function NewClient(opts)
                     local name = id and client.creatureNames[id]
                     return { lines = name and { { leftText = name } } or {} }
                 end,
-                -- An item's tooltip: its name, and for food that makes the hunter well fed the line
-                -- saying so, worded as the client does.
                 GetItemByID = function(itemID)
-                    local lines = { { leftText = ITEM_NAMES[itemID] } }
-                    if WELL_FED[itemID] then
-                        lines[2] = {
-                            leftText = "Use: Restores 61 health over 18 sec. If you spend at least 10 seconds eating "
-                                .. "you will become well fed and gain 2 Stamina and Spirit for 15 min.",
-                        }
+                    local lines = {}
+                    for i, text in ipairs(client:itemTooltip(itemID)) do
+                        lines[i] = { leftText = text }
                     end
                     return { lines = lines }
                 end,
@@ -1370,8 +1365,21 @@ function NewClient(opts)
                 self.clicks = { ... }
             end
         end
-        -- A tooltip set to a trainer row knows that row's spell.
+        -- A tooltip set to a trainer row knows that row's spell; one set to an item has the item's
+        -- lines in its <name>TextLeft<n> font strings, as the client's GameTooltipTemplate does.
         if kind == "GameTooltip" then
+            function frame:SetItemByID(itemID)
+                self.lines = client:itemTooltip(itemID)
+                for i, text in ipairs(self.lines) do
+                    _G[(self.name or "") .. "TextLeft" .. i] = newRegion({ text = text })
+                end
+            end
+            function frame:NumLines()
+                return self.lines and #self.lines or 0
+            end
+            function frame:ClearLines()
+                self.lines = nil
+            end
             function frame:SetTrainerService(index)
                 self.row = client.trainer.rows[index]
             end
@@ -1928,6 +1936,23 @@ function NewClient(opts)
         end
         self.bag[#self.bag + 1] = { itemID = itemID, count = 0 }
         return #self.bag
+    end
+
+    -- Items the client has not loaded yet: their tooltip is empty until it has.
+    client.unloadedItems = {}
+
+    ---An item's tooltip lines: its name, and for food that makes the hunter well fed the line saying
+    ---so, worded as the client does; none while the item is not loaded.
+    ---@param itemID number
+    ---@return string[]
+    function client:itemTooltip(itemID)
+        if self.unloadedItems[itemID] then return {} end
+        local lines = { ITEM_NAMES[itemID] }
+        if WELL_FED[itemID] then
+            lines[2] = "Use: Restores 61 health over 18 sec. If you spend at least 10 seconds eating "
+                .. "you will become well fed and gain 2 Stamina and Spirit for 15 min."
+        end
+        return lines
     end
 
     ---Puts `count` of an item in the bags; the client then reports the change.

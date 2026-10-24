@@ -58,25 +58,57 @@ local function Bite(level, petLevel)
     return 0
 end
 
--- Per item, whether it makes the hunter Well Fed: its tooltip never changes.
+-- Per item, whether it makes the hunter Well Fed: its tooltip never changes once loaded.
 ---@type table<number, boolean>
 local wellFed = {}
 local NO_LINES = {}
+-- The lines of an item's tooltip, refilled for each item read.
+---@type string[]
+local lines = {}
+-- A tooltip of Kennel's own to read an item's lines from, where the client has no C_TooltipInfo
+-- item lookup (Classic Era); made the first time it is needed.
+---@type GameTooltip?
+local scanner
+
+---An item's tooltip lines: from C_TooltipInfo where the client has it, else read off a hidden
+---tooltip. Empty while the client has not loaded the item.
+---@param itemID number
+---@return string[]
+local function ItemLines(itemID)
+    wipe(lines)
+    local getItem = C_TooltipInfo and C_TooltipInfo.GetItemByID
+    if getItem then
+        local info = getItem(itemID)
+        for _, line in ipairs(info and info.lines or NO_LINES) do
+            if line.leftText and Kennel.Readable(line.leftText) then lines[#lines + 1] = line.leftText end
+        end
+        return lines
+    end
+    scanner = scanner or CreateFrame("GameTooltip", "KennelScanTooltip", nil, "GameTooltipTemplate") --[[@as GameTooltip]]
+    scanner:SetOwner(WorldFrame, "ANCHOR_NONE")
+    scanner:ClearLines()
+    scanner:SetItemByID(itemID)
+    for i = 1, scanner:NumLines() do
+        local region = _G["KennelScanTooltipTextLeft" .. i] --[[@as FontString?]]
+        local text = region and region:GetText()
+        if text then lines[#lines + 1] = text end
+    end
+    return lines
+end
 
 ---Whether an item's tooltip says it makes the eater Well Fed (any case: "you will become well fed").
+---Kept per item once the client has loaded it; asked again while it has not.
 ---@param itemID number
 ---@return boolean
 local function MakesWellFed(itemID)
     if wellFed[itemID] ~= nil then return wellFed[itemID] end
     local buff = (Kennel.SpellInfo(WELL_FED) or "Well Fed"):lower()
-    local getItem = C_TooltipInfo and C_TooltipInfo.GetItemByID
-    local info = getItem and getItem(itemID)
     local found = false
-    for _, line in ipairs(info and info.lines or NO_LINES) do
-        local text = line.leftText
-        if text and Kennel.Readable(text) and text:lower():find(buff, 1, true) then found = true end
+    local itemLines = ItemLines(itemID)
+    for _, text in ipairs(itemLines) do
+        if text:lower():find(buff, 1, true) then found = true end
     end
-    wellFed[itemID] = found
+    if #itemLines > 0 then wellFed[itemID] = found end
     return found
 end
 
