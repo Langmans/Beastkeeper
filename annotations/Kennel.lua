@@ -14,6 +14,7 @@
 ---@field title string? shown on its switch and its options page; the module name otherwise
 ---@field description string? the tooltip of its switch
 ---@field enabledByDefault boolean? false keeps it off until switched on; on otherwise
+---@field requires string[]? the parts of the game it needs (Kennel.features' keys); off without one
 ---@field defaults AceDB.Schema? AceDB defaults; the module then has db, its own namespace
 ---@field db AceDBObject-3.0? set by the core before the module's OnInitialize, when it has defaults
 ---@field command string? the word after /kennel that reaches its commands
@@ -756,6 +757,7 @@
 ---@field L table<string, string> the AceLocale strings
 ---@field db AceDBObject-3.0 KennelDB; profile.modules[name] holds each module's switch
 ---@field modules table<string, KennelModule> AceAddon's own module table, by name
+---@field features {happiness: boolean, ammo: boolean, beastTraining: boolean} what the client's game has (Core\Features.lua)
 ---@field optionsCategoryID string|number the settings page, for Settings.OpenToCategory
 ---@field moduleCategoryIDs table<string, string|number> each module's page, by module name
 ---@field PROFILE_OPTIONS string[] the keys of AceDBOptions' own Profiles entries, see Core\Options.lua

@@ -16,6 +16,7 @@ local L = Kennel.L
 local M = Kennel:NewModule("Ammo")
 M.title = L.AMMO_TITLE
 M.description = L.AMMO_DESC
+M.requires = { "ammo" }
 M.toastTypes = { low = L.AMMO_TOASTTYPE_LOW, critical = L.AMMO_TOASTTYPE_CRITICAL }
 M.defaults = { profile = { low = 500, critical = 250, toasts = true, buy = true, stacks = 1 } }
 

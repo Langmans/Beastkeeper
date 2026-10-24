@@ -19,6 +19,7 @@ local L = Kennel.L
 local M = Kennel:NewModule("Feeding")
 M.title = L.FEEDING_TITLE
 M.description = L.FEEDING_DESC
+M.requires = { "happiness" }
 M.toastTypes = {
     content = L.FEEDING_TOASTTYPE_CONTENT,
     unhappy = L.FEEDING_TOASTTYPE_UNHAPPY,

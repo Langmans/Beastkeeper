@@ -3,6 +3,7 @@
     <Script file="Addon.lua"/>
     <Include file="Constants\Constants.xml"/>
     <Script file="Families.lua"/>
+    <Script file="Features.lua"/>
     <Script file="Sounds.lua"/>
     <Script file="Pet.lua"/>
     <Script file="World.lua"/>

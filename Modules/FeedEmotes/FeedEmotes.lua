@@ -13,6 +13,7 @@ local L = Kennel.L
 local M = Kennel:NewModule("FeedEmotes")
 M.title = L.FEEDEMOTES_TITLE
 M.description = L.FEEDEMOTES_DESC
+M.requires = { "happiness" } -- Feed Pet went with happiness
 M.enabledByDefault = false
 M.defaults = {
     profile = { petName = false, customChance = 0, customFallback = true },

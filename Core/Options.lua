@@ -279,31 +279,40 @@ function Kennel:GetOptionsTable()
     }
 
     for name, module in pairs(self.modules) do
-        switches[name] = {
-            type = "toggle",
-            name = module.title or name,
-            desc = module.description,
-            width = "full",
-            get = function()
-                return self:IsModuleOn(name)
-            end,
-            ---@param _ table AceConfig's info about the option
-            ---@param on boolean
-            set = function(_, on)
-                self:SetModuleOn(name, on)
-            end,
-        }
-        if module.GetOptions then
-            local group = module:GetOptions()
-            group.type = "group"
-            group.name = group.name or module.title or name
-            group.disabled = function()
-                return not self:IsModuleOn(name)
-            end
-            options.args[name] = group
-        end
+        if self:IsModuleUsable(name) then self:AddModuleOptions(options, switches, name, module) end
     end
     return options
+end
+
+---A module's switch on Kennel's page and, when it has options, its own page.
+---@param options table
+---@param switches table
+---@param name string
+---@param module KennelModule
+function Kennel:AddModuleOptions(options, switches, name, module)
+    switches[name] = {
+        type = "toggle",
+        name = module.title or name,
+        desc = module.description,
+        width = "full",
+        get = function()
+            return self:IsModuleOn(name)
+        end,
+        ---@param _ table AceConfig's info about the option
+        ---@param on boolean
+        set = function(_, on)
+            self:SetModuleOn(name, on)
+        end,
+    }
+    if module.GetOptions then
+        local group = module:GetOptions()
+        group.type = "group"
+        group.name = group.name or module.title or name
+        group.disabled = function()
+            return not self:IsModuleOn(name)
+        end
+        options.args[name] = group
+    end
 end
 
 ---Registers the options with AceConfig and adds the pages to the settings window.

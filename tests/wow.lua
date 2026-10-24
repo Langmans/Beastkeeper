@@ -107,6 +107,8 @@ end
 ---@field oldChatAPI boolean? the global SendChatMessage instead of C_ChatInfo's
 ---@field noStableInfo boolean? no C_StableInfo
 ---@field era boolean? Classic Era 1.15 instead of WoW: Forever (see NewClient)
+---@field noHappinessAPI boolean? no pet happiness, as from Cataclysm on
+---@field noAmmoSlot boolean? no INVSLOT_AMMO, as from Cataclysm on
 ---@field unknownEvents string[]? events this client does not have (Forever: LEARNED_SPELL_IN_TAB)---@field noEventUtils boolean? no C_EventUtils.IsEventValid
 ---@field ranged number? the ranged weapon's item ID (none by default)
 ---@field ammo number? the item ID in the ammo slot (none by default)
@@ -240,7 +242,8 @@ function NewClient(opts)
     ACCEPT, CANCEL, CLOSE, OKAY, NOT_BOUND = "Accept", "Cancel", "Close", "Okay", "Not Bound"
     WOW_PROJECT_MAINLINE, WOW_PROJECT_CLASSIC = 1, 2
     WOW_PROJECT_ID = WOW_PROJECT_CLASSIC
-    INVSLOT_AMMO, INVSLOT_RANGED = 0, 18
+    -- opts.noAmmoSlot: a client from Cataclysm on, without ammo.
+    INVSLOT_AMMO, INVSLOT_RANGED = not opts.noAmmoSlot and 0 or nil, 18
     SOUNDKIT = setmetatable({ RAID_WARNING = 8959 }, {
         __index = function()
             return 1
@@ -701,7 +704,8 @@ function NewClient(opts)
         function C_PetInfo.CanPetEatItem(itemID)
             return client.petEats[itemID] == true
         end
-        C_PetInfo.GetPetHappiness = happiness
+        -- opts.noHappinessAPI: a client from Cataclysm on, without pet happiness.
+        C_PetInfo.GetPetHappiness = not opts.noHappinessAPI and happiness or nil
         function C_PetInfo.GetPetFoodTypes()
             return client.pet and client.petFoodTypes or {}
         end

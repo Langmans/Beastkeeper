@@ -46,6 +46,7 @@ Kennel:SetDefaultModulePrototype({
 function Kennel:OnInitialize()
     -- The client replays some values in the first seconds after login (Core\Listen.lua waits).
     self.loginTime = GetTime()
+    self:FindFeatures()
     -- A module is on unless it says otherwise; the saved file keeps only switches that differ.
     -- The same for the look a module gives a kind of toast.
     ---@type table<string, boolean>, table<string, string>
@@ -132,21 +133,23 @@ function Kennel.SelfKeyedEnum(values)
     return enum
 end
 
----Whether the current profile has this module switched on.
+---Whether the current profile has this module switched on; never for a module the client's game
+---lacks a part of (Kennel:IsModuleUsable).
 ---@param name string
 ---@return boolean
 function Kennel:IsModuleOn(name)
-    return self.db.profile.modules[name] == true
+    return self.db.profile.modules[name] == true and self:IsModuleUsable(name)
 end
 
----Switches a module on or off in the current profile and starts or stops it now.
+---Switches a module on or off in the current profile and starts or stops it now; a module the
+---client's game cannot run stays off.
 ---@param name string
 ---@param on boolean
 function Kennel:SetModuleOn(name, on)
     self.db.profile.modules[name] = on
     self:Log("info", on and "module {1} on" or "module {1} off", name)
     local module = self.modules[name]
-    if on then
+    if on and self:IsModuleUsable(name) then
         module:Enable()
     else
         module:Disable()

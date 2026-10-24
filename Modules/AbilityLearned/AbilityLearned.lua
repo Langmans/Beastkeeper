@@ -18,6 +18,7 @@ local L = Kennel.L
 local M = Kennel:NewModule("AbilityLearned")
 M.title = L.ABILITYLEARNED_TITLE
 M.description = L.ABILITYLEARNED_DESC
+M.requires = { "beastTraining" }
 M.toastTypes = {
     learned = L.ABILITYLEARNED_TOASTTYPE_LEARNED,
     points = L.ABILITYLEARNED_TOASTTYPE_POINTS,

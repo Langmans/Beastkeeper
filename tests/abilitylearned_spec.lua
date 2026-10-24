@@ -181,11 +181,6 @@ describe("AbilityLearned", function()
             assert.are.same({ kit = LEVEL_UP, channel = "Master" }, client.sounds[#client.sounds])
         end)
 
-        it("leaves the training points out when the client has no way to read them", function()
-            local client = settle(ready({ noTrainingAPI = true }):learnLine("Claw (Rank 2)"))
-            assert.are.equal("", client:toast().Hint.text)
-        end)
-
         it("is watched only on a hunter", function()
             local client = NewClient({ class = "MAGE" }):login():advance(5)
             settle(client:learnLine("Claw (Rank 2)"))
