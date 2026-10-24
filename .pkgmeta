@@ -64,7 +64,7 @@ externals:
   # The route library, Kennel's own (github.com/Langmans/LibGoThere-1.0); pinned to a commit.
   Libs/LibGoThere-1.0:
     url: https://github.com/Langmans/LibGoThere-1.0.git
-    commit: 217c0eeba7280bfb720fb2566b48e664c01bbe3e
+    commit: 510d0318645d1a2ce01d159c761d3b5da9567d53
 
 # Release notes come from this file instead of the commit log, so commit
 # bodies and trailers stay out of the CurseForge page.
