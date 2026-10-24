@@ -106,6 +106,7 @@ end
 ---@field oldLoyaltyAPI boolean? the global GetPetLoyalty instead of C_PetInfo's
 ---@field oldChatAPI boolean? the global SendChatMessage instead of C_ChatInfo's
 ---@field noStableInfo boolean? no C_StableInfo
+---@field era boolean? Classic Era 1.15 instead of WoW: Forever (see NewClient)
 ---@field unknownEvents string[]? events this client does not have (Forever: LEARNED_SPELL_IN_TAB)---@field noEventUtils boolean? no C_EventUtils.IsEventValid
 ---@field ranged number? the ranged weapon's item ID (none by default)
 ---@field ammo number? the item ID in the ammo slot (none by default)
@@ -178,6 +179,12 @@ end
 ---@param opts TestClientOptions?
 function NewClient(opts)
     opts = opts or {}
+    -- Classic Era (1.15, as its exported UI shows it): the pet's values through the old globals,
+    -- no C_StableInfo pet lists, C_SpellBook with HasPetSpells only, no C_TooltipInfo lookups,
+    -- no vignettes, and unit tooltips through GameTooltip's OnTooltipSetUnit.
+    if opts.era then
+        opts.oldTrainingAPI, opts.oldLoyaltyAPI, opts.noStableInfo = true, true, true
+    end
     local function noop() end
     local client = {
         time = 100,
@@ -298,11 +305,13 @@ function NewClient(opts)
         if unit == "pet" then return client.pet and client.petGUID or nil end
         return client.unitGUIDs[unit]
     end
-    C_VignetteInfo = {
-        GetVignetteInfo = function(vignetteGUID)
-            return client.vignettes[vignetteGUID]
-        end,
-    }
+    C_VignetteInfo = not opts.era
+            and {
+                GetVignetteInfo = function(vignetteGUID)
+                    return client.vignettes[vignetteGUID]
+                end,
+            }
+        or nil
     function UnitCreatureFamily(unit)
         if unit == "pet" and client.pet then return "Cat", client.familyID end
     end
@@ -421,25 +430,27 @@ function NewClient(opts)
     -- client.creatureNames holds the ones the client has cached, by NPC ID; any other comes back
     -- as a tooltip without lines, as the client gives it while it asks the server.
     client.creatureNames = {}
-    C_TooltipInfo = {
-        GetHyperlink = function(link)
-            local id = tonumber(link:match("^unit:Creature%-0%-0%-0%-0%-(%d+)%-"))
-            local name = id and client.creatureNames[id]
-            return { lines = name and { { leftText = name } } or {} }
-        end,
-        -- An item's tooltip: its name, and for food that makes the hunter well fed the line
-        -- saying so, worded as the client does.
-        GetItemByID = function(itemID)
-            local lines = { { leftText = ITEM_NAMES[itemID] } }
-            if WELL_FED[itemID] then
-                lines[2] = {
-                    leftText = "Use: Restores 61 health over 18 sec. If you spend at least 10 seconds eating "
-                        .. "you will become well fed and gain 2 Stamina and Spirit for 15 min.",
-                }
-            end
-            return { lines = lines }
-        end,
-    }
+    C_TooltipInfo = not opts.era
+            and {
+                GetHyperlink = function(link)
+                    local id = tonumber(link:match("^unit:Creature%-0%-0%-0%-0%-(%d+)%-"))
+                    local name = id and client.creatureNames[id]
+                    return { lines = name and { { leftText = name } } or {} }
+                end,
+                -- An item's tooltip: its name, and for food that makes the hunter well fed the line
+                -- saying so, worded as the client does.
+                GetItemByID = function(itemID)
+                    local lines = { { leftText = ITEM_NAMES[itemID] } }
+                    if WELL_FED[itemID] then
+                        lines[2] = {
+                            leftText = "Use: Restores 61 health over 18 sec. If you spend at least 10 seconds eating "
+                                .. "you will become well fed and gain 2 Stamina and Spirit for 15 min.",
+                        }
+                    end
+                    return { lines = lines }
+                end,
+            }
+        or nil
 
     -- The stance icons Blizzard's pet bar defines (Blizzard_ActionBar\Shared\PetActionBar.lua).
     PET_PASSIVE_TEXTURE = "Interface\\Icons\\Ability_Seal"
@@ -467,8 +478,28 @@ function NewClient(opts)
         ItemClass = { Weapon = 2, Projectile = 6 },
         ItemWeaponSubclass = { Bows = 2, Guns = 3, Sword1H = 7, Crossbow = 18 },
     }
-    C_SpellBook = nil
-    if not opts.noSpellBookAPI then
+    C_SpellBook, GetSpellBookItemName, GetSpellAutocast, BOOKTYPE_PET = nil, nil, nil, nil
+    if opts.era then
+        -- Classic Era: the count in C_SpellBook, the entries through the globals, by book type.
+        BOOKTYPE_PET = "pet"
+        C_SpellBook = {
+            HasPetSpells = function()
+                if client.pet then return #client.petBook, "PET" end
+            end,
+        }
+        function GetSpellBookItemName(index, bookType)
+            assert(bookType == BOOKTYPE_PET, "pet book type expected")
+            local entry = client.petBook[index]
+            if not entry or entry.noInfo then return nil end
+            local id = not entry.token and entry[1] or nil
+            return (bookEntry(index)), id and spellRank(id) or "", id
+        end
+        function GetSpellAutocast(index, bookType)
+            assert(bookType == BOOKTYPE_PET, "pet book type expected")
+            local _, allowed, on = bookEntry(index)
+            return allowed, on
+        end
+    elseif not opts.noSpellBookAPI then
         C_SpellBook = {
             HasPetSpells = not opts.noPetSpellCount and function()
                 if client.pet then return #client.petBook, "PET" end
@@ -654,16 +685,26 @@ function NewClient(opts)
     -- (client.happiness: 1 unhappy, 2 content, 3 happy) through C_PetInfo as on Forever.
     client.petEats = { [117] = true, [2287] = true, [3770] = true, [12037] = true, [2680] = true }
     client.happiness = 3
-    function C_PetInfo.CanPetEatItem(itemID)
-        return client.petEats[itemID] == true
-    end
-    function C_PetInfo.GetPetHappiness()
+    local function happiness()
         if client.pet then return client.happiness, 100, 0 end
     end
-    -- The food types the pet out eats, as the client names them (client.petFoodTypes).
+    -- The food types the pet out eats, as the client names them (client.petFoodTypes): a list
+    -- on Forever, separate returns from Classic Era's global.
     client.petFoodTypes = { "Meat", "Fish" }
-    function C_PetInfo.GetPetFoodTypes()
-        return client.pet and client.petFoodTypes or {}
+    GetPetHappiness, GetPetFoodTypes = nil, nil
+    if opts.era then
+        GetPetHappiness = happiness
+        function GetPetFoodTypes()
+            if client.pet then return unpack(client.petFoodTypes) end
+        end
+    else
+        function C_PetInfo.CanPetEatItem(itemID)
+            return client.petEats[itemID] == true
+        end
+        C_PetInfo.GetPetHappiness = happiness
+        function C_PetInfo.GetPetFoodTypes()
+            return client.pet and client.petFoodTypes or {}
+        end
     end
     -- Map and area names the client knows: a uiMapID's (C_Map.GetMapInfo) and an AreaTable
     -- ID's, as an instance has (C_Map.GetAreaInfo). Anything else is unknown (nil).
@@ -1374,6 +1415,14 @@ function NewClient(opts)
     client.actions, client.tooltipLines = {}, {}
     GameTooltip = newRegion()
     function GameTooltip:SetAction() end
+    -- Classic Era's tooltip has an OnTooltipSetUnit script; Forever's fills unit tooltips through
+    -- TooltipDataProcessor instead.
+    function GameTooltip:HasScript(script)
+        return opts.era == true and script == "OnTooltipSetUnit"
+    end
+    function GameTooltip:GetUnit()
+        if self.unit then return "Someone", self.unit end
+    end
     function GameTooltip:AddLine(text, r, g, b, wrap)
         client.tooltipLines[#client.tooltipLines + 1] = { text = text, color = { r, g, b }, wrap = wrap }
     end
@@ -1762,8 +1811,18 @@ function NewClient(opts)
     ---@return table[]
     function client:hoverUnit(guid, tooltip)
         self.tooltipLines = {}
+        tooltip = tooltip or GameTooltip
+        if opts.era then
+            -- Classic Era's tooltip runs its OnTooltipSetUnit script, the unit as its GetUnit says.
+            self.unitGUIDs.mouseover = guid
+            tooltip.unit = "mouseover"
+            for _, fn in ipairs(tooltip.hooks.OnTooltipSetUnit or {}) do
+                fn(tooltip)
+            end
+            return self.tooltipLines
+        end
         for _, fn in ipairs(self.tooltipPostCalls[Enum.TooltipDataType.Unit] or {}) do
-            fn(tooltip or GameTooltip, { type = Enum.TooltipDataType.Unit, guid = guid })
+            fn(tooltip, { type = Enum.TooltipDataType.Unit, guid = guid })
         end
         return self.tooltipLines
     end

@@ -6,6 +6,7 @@
     <Script file="Sounds.lua"/>
     <Script file="Pet.lua"/>
     <Script file="World.lua"/>
+    <Script file="Tooltip.lua"/>
     <Script file="Combat.lua"/>
     <Script file="Listen.lua"/>
     <Script file="Debug.lua"/>

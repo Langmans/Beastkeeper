@@ -2,8 +2,8 @@ local _, ns = ...
 
 -- A beast's tooltip says which pet ability ranks it teaches, from the beast data, and how the
 -- hunter stands to each: new (above the highest it knows), a lower rank it never learned, or
--- known. The client fills a unit's tooltip and then runs the post-calls added for unit tooltips;
--- the creature's NPC ID is its GUID's sixth field. Also without HandyNotes; only for a hunter.
+-- known (Kennel.OnUnitTooltip); the creature's NPC ID is its GUID's sixth field. Also without
+-- HandyNotes; only for a hunter.
 
 ---@type Kennel
 local Kennel = ns
@@ -30,10 +30,10 @@ end
 
 ---Adds the ranks a beast teaches to the game's tooltip of it.
 ---@param tooltip GameTooltip
----@param data {guid: GameValue}
-local function OnUnitTooltip(tooltip, data)
+---@param guid GameValue
+local function OnUnitTooltip(tooltip, guid)
     if tooltip ~= GameTooltip or not Wanted() then return end
-    local npc = Kennel.NPCFromGUID(data.guid, "Creature")
+    local npc = Kennel.NPCFromGUID(guid, "Creature")
     ---@type number[]
     local ranks = npc and M.TeachesOf(npc) or NOTHING
     for _, spellID in ipairs(ranks) do
@@ -46,6 +46,4 @@ local function OnUnitTooltip(tooltip, data)
     end
 end
 
-if TooltipDataProcessor and Enum.TooltipDataType then
-    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, OnUnitTooltip)
-end
+Kennel.OnUnitTooltip(OnUnitTooltip)

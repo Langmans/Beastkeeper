@@ -237,8 +237,9 @@ end
 ---know (kept under the GUID's number, which is not the pet's on Forever) into the stable's entry
 ---of the same name and family. A pet tamed this session (a Creature GUID key) waits for Adopt.
 function M:ReadStable()
+    -- Classic Era's C_StableInfo only counts the pets; its stable gives no pet numbers.
     local stable = C_StableInfo
-    if not stable then return end
+    if not (stable and stable.GetActivePetList and stable.GetStabledPetList) then return end
     wipe(stableKeys)
     self:ReadStableList(stable.GetActivePetList)
     self:ReadStableList(stable.GetStabledPetList)

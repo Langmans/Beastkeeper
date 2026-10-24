@@ -58,24 +58,63 @@ end
 ---@type table<string, KennelPetSpell>, table<string, KennelPetSpell>
 local petSpells, spellEntries = {}, {}
 
+---A pet spellbook entry's name, rank text and spell ID: C_SpellBook's on newer clients,
+---GetSpellBookItemName's by book type on Classic Era; nil for a command or an unreadable entry.
+---@param index number
+---@return string? name
+---@return string? subName
+---@return number? spellID
+function Kennel.PetBookEntry(index)
+    local book = C_SpellBook
+    if book and book.GetSpellBookItemInfo then
+        local ok, info = pcall(book.GetSpellBookItemInfo, index, Enum.SpellBookSpellBank.Pet)
+        if ok and info then return info.name, info.subName, info.spellID end
+    elseif GetSpellBookItemName then
+        local ok, name, subName, id = pcall(GetSpellBookItemName, index, BOOKTYPE_PET or "pet")
+        if ok then return name, subName, id end
+    end
+end
+
+---Whether a pet spellbook entry can autocast and whether it does: C_SpellBook's on newer
+---clients, GetSpellAutocast's on Classic Era; nil for an entry that cannot be read.
+---@param index number
+---@return GameValue allowed
+---@return GameValue enabled
+function Kennel.PetBookAutocast(index)
+    local book = C_SpellBook
+    local get = book and book.GetSpellBookItemAutoCast
+    if get then
+        local ok, allowed, enabled = pcall(get, index, Enum.SpellBookSpellBank.Pet)
+        if ok then return allowed, enabled end
+    elseif GetSpellAutocast then
+        local ok, allowed, enabled = pcall(GetSpellAutocast, index, BOOKTYPE_PET or "pet")
+        if ok then return allowed, enabled end
+    end
+end
+
+---How many entries the pet's spellbook has: C_SpellBook's count, or the old global's; 0 without a
+---pet or either.
+---@return number
+function Kennel.PetBookSize()
+    local count = (C_SpellBook and C_SpellBook.HasPetSpells) or HasPetSpells
+    return count and tonumber((count())) or 0
+end
+
 ---The spells in the active pet's spellbook by name, each with its ID, rank and icon; empty
----without a pet or without C_SpellBook. Pet commands (Attack, Follow) have no spell and are left
+---without a pet or a spellbook API. Pet commands (Attack, Follow) have no spell and are left
 ---out, as is an entry that cannot be read. The same table each time, refilled: read what is
 ---needed from it before the next call, and keep no entry.
 ---@return table<string, KennelPetSpell>
 function Kennel.PetSpells()
     wipe(petSpells)
-    local book = C_SpellBook
-    if not (book and book.GetSpellBookItemInfo and book.HasPetSpells) then return petSpells end
-    for index = 1, tonumber((book.HasPetSpells())) or 0 do
-        local ok, info = pcall(book.GetSpellBookItemInfo, index, Enum.SpellBookSpellBank.Pet)
-        local id = ok and info and info.name and info.spellID
-        if id then
+    for index = 1, Kennel.PetBookSize() do
+        local name, subName, id = Kennel.PetBookEntry(index)
+        if name and id then
             local _, icon, rank = Kennel.SpellInfo(id)
-            local entry = spellEntries[info.name] or {}
-            spellEntries[info.name] = entry
-            entry.id, entry.rank, entry.icon = id, info.subName ~= "" and info.subName or rank, icon
-            petSpells[info.name] = entry
+            local entry = spellEntries[name] or {}
+            spellEntries[name] = entry
+            entry.id, entry.rank, entry.icon = id, subName ~= "" and subName or rank, icon
+            petSpells[name] = entry
         end
     end
     return petSpells
@@ -177,8 +216,13 @@ end
 ---The pet's happiness, a Kennel.happiness value; nil without a pet, the API, or a readable answer.
 ---@return number?
 function Kennel.PetHappiness()
-    local happiness = C_PetInfo.GetPetHappiness and C_PetInfo.GetPetHappiness()
-    if type(happiness) == "number" and Kennel.Readable(happiness) then return happiness end
+    ---@type (fun(): GameValue)?
+    local get = (C_PetInfo and C_PetInfo.GetPetHappiness) or GetPetHappiness
+    ---@type GameValue
+    local happiness = get and get()
+    if type(happiness) == "number" and Kennel.Readable(happiness) then
+        return happiness --[[@as number]]
+    end
 end
 
 -- The loyalty name's colour runs from the friendly to the exalted reputation colour.

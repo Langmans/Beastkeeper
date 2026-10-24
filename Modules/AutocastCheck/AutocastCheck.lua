@@ -100,18 +100,14 @@ local function Add(name, allowed, enabled, icon)
     end
 end
 
----Reads the pet's spellbook, through C_SpellBook as Forever has it. A client without it is left
----to the pet bar. A command (Attack, Follow) is in the book too, with no autocast values; an entry
----that cannot be read is skipped.
+---Reads the pet's spellbook (Kennel.PetBookEntry and PetBookAutocast). A client without a
+---spellbook API is left to the pet bar. A command (Attack, Follow) is in the book too, with no
+---autocast values; an entry that cannot be read is skipped.
 local function ReadBook()
-    local book = C_SpellBook
-    if not (book and book.GetSpellBookItemAutoCast and book.GetSpellBookItemInfo and book.HasPetSpells) then return end
-    local bank = Enum.SpellBookSpellBank.Pet
-    -- The first value is the count; the client also returns the pet's type ("PET", "DEMON").
-    for index = 1, tonumber((book.HasPetSpells())) or 0 do
-        local okInfo, info = pcall(book.GetSpellBookItemInfo, index, bank)
-        local okCast, allowed, enabled = pcall(book.GetSpellBookItemAutoCast, index, bank)
-        if okInfo and okCast and type(info) == "table" then Add(info.name, allowed, enabled) end
+    for index = 1, Kennel.PetBookSize() do
+        local name = Kennel.PetBookEntry(index)
+        local allowed, enabled = Kennel.PetBookAutocast(index)
+        if name then Add(name, allowed, enabled) end
     end
 end
 
