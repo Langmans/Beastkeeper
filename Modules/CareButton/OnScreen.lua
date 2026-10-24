@@ -63,11 +63,14 @@ function M:PlaceButton()
     end
 end
 
----Shows the button while the module is on for a hunter and its switch is on; outside combat
----only (from ApplyButton).
+---Shows the button while the module is on for a hunter who knows Call Pet and its switch is on;
+---outside combat only (from ApplyButton).
 function M:ShowOnScreen()
     local _, class = UnitClass("player")
-    local shown = self:IsEnabled() and class == "HUNTER" and self:Settings().visible
+    local shown = self:IsEnabled()
+        and class == "HUNTER"
+        and self:Settings().visible
+        and Kennel.KnowsSpell(Kennel.CALL_PET)
     if shown then
         self:PlaceButton()
         self:UpdateLook()

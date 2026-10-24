@@ -36,6 +36,19 @@ function Kennel.CreatureName(npcID)
     return name
 end
 
+-- Call Pet: a hunter has a pet to care for only once it knows this (level 10 on the classic clients).
+Kennel.CALL_PET = 883
+
+---Whether the player knows a spell (C_SpellBook.IsSpellKnown, the old global elsewhere); true on
+---a client that cannot tell.
+---@param spellID number
+---@return boolean
+function Kennel.KnowsSpell(spellID)
+    local known = (C_SpellBook and C_SpellBook.IsSpellKnown) or IsSpellKnown
+    if not known then return true end
+    return known(spellID) == true
+end
+
 ---Spell name, icon and rank across client generations: C_Spell on newer clients, GetSpellInfo on
 ---older ones. All nil when the client knows neither.
 ---@param id number

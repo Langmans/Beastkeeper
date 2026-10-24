@@ -58,8 +58,19 @@ local offered = {}
 -- and GetMacroIndexByName do not know the player's macros yet.
 local macrosLoaded = false
 
----Makes the waiting modules' macros, now or once combat ends.
+-- Whether SPELLS_CHANGED is watched, for a hunter who does not know Call Pet yet.
+local waitingForPet = false
+
+---Makes the waiting modules' macros, now or once combat ends; every macro of Kennel's is for a pet,
+---so a hunter without Call Pet gets them once it learns it.
 function Kennel:MakeOfferedMacros()
+    if not self.KnowsSpell(self.CALL_PET) then
+        if not waitingForPet then self:RegisterEvent("SPELLS_CHANGED", "MakeOfferedMacros") end
+        waitingForPet = true
+        return
+    end
+    if waitingForPet then self:UnregisterEvent("SPELLS_CHANGED") end
+    waitingForPet = false
     self:OutOfCombat("macros", function()
         for name, module in pairs(offered) do
             offered[name] = nil

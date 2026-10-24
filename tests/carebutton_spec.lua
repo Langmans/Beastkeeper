@@ -154,6 +154,22 @@ describe("CareButton", function()
             assert.are.equal("Your pet is dead", client:toastTitle())
         end)
 
+        it("wait, with the button and the macros, until the hunter knows Call Pet", function()
+            local client = NewClient({ noPet = true })
+            client.unknownSpells[883] = true -- a hunter below level 10
+            client:login():enterCombat()
+            assert.is_nil(client:toastTitle(), "no pet to miss yet")
+            client:leaveCombat()
+            assert.is_false(_G.KennelCareButton:IsShown(), "no button on screen")
+            assert.are.equal(0, #client.charMacros, "no macros yet")
+            client.unknownSpells[883] = nil
+            client:fire("SPELLS_CHANGED")
+            assert.is_true(_G.KennelCareButton:IsShown())
+            assert.is_true(#client.charMacros > 0)
+            client:enterCombat()
+            assert.are.equal("You have no pet out", client:toastTitle())
+        end)
+
         it("say nothing at the pull with a pet out, or when switched off", function()
             assert.is_nil(NewClient():login():enterCombat():toastTitle())
             local client = NewClient({ noPet = true, saved = saved({ nopet = false }) }):login():enterCombat()

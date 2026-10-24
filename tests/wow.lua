@@ -482,6 +482,12 @@ function NewClient(opts)
         ItemWeaponSubclass = { Bows = 2, Guns = 3, Sword1H = 7, Crossbow = 18 },
     }
     C_SpellBook, GetSpellBookItemName, GetSpellAutocast, BOOKTYPE_PET = nil, nil, nil, nil
+    -- The player's spells: every one known but those in client.unknownSpells (a level 1 hunter
+    -- has no Call Pet yet).
+    client.unknownSpells = {}
+    local function isSpellKnown(spellID)
+        return not client.unknownSpells[spellID]
+    end
     if opts.era then
         -- Classic Era: the count in C_SpellBook, the entries through the globals, by book type.
         BOOKTYPE_PET = "pet"
@@ -489,6 +495,7 @@ function NewClient(opts)
             HasPetSpells = function()
                 if client.pet then return #client.petBook, "PET" end
             end,
+            IsSpellKnown = isSpellKnown,
         }
         function GetSpellBookItemName(index, bookType)
             assert(bookType == BOOKTYPE_PET, "pet book type expected")
@@ -504,6 +511,7 @@ function NewClient(opts)
         end
     elseif not opts.noSpellBookAPI then
         C_SpellBook = {
+            IsSpellKnown = isSpellKnown,
             HasPetSpells = not opts.noPetSpellCount and function()
                 if client.pet then return #client.petBook, "PET" end
             end or nil,

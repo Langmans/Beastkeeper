@@ -172,8 +172,10 @@ local function IsPetDeadError(message)
     return false
 end
 
--- Combat starts: the moment a missing pet, or one on Passive, costs something.
+-- Combat starts: the moment a missing pet, or one on Passive, costs something. A hunter without
+-- Call Pet has no pet to miss yet.
 function M:PLAYER_REGEN_DISABLED()
+    if not Kennel.KnowsSpell(Kennel.CALL_PET) then return end
     local settings = self:Settings()
     if UnitExists("pet") then
         if settings.passive and not UnitIsDead("pet") and OnPassive() then Kennel:ShowToast(self:Toast("passive")) end
@@ -221,6 +223,11 @@ function M:UNIT_SPELLCAST_FAILED(_, unit, castGUID, spellID)
     end
 end
 
+-- The spellbook changed: Call Pet learned, perhaps, and the button on screen with it.
+function M:SPELLS_CHANGED()
+    self:ApplyButton()
+end
+
 -- The pet bar changed, its stance perhaps: the Passive toast goes once the pet is off Passive.
 function M:PET_BAR_UPDATE()
     if not OnPassive() then Kennel:DropToast("CareButton:passive") end
@@ -245,6 +252,7 @@ function M:OnEnable()
     self:RegisterEvent("UNIT_HEALTH")
     self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEALTH")
     self:RegisterEvent("PET_BAR_UPDATE")
+    self:RegisterEvent("SPELLS_CHANGED")
     self:RegisterEvent("UPDATE_MACROS", "UpdateMacro")
     Kennel:OfferMacros(self)
     self:ApplyButton()
