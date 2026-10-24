@@ -14,6 +14,8 @@ function Kennel:FindFeatures()
         happiness = ((C_PetInfo and C_PetInfo.GetPetHappiness) or GetPetHappiness) ~= nil,
         ammo = INVSLOT_AMMO ~= nil,
         beastTraining = ((C_PetInfo and C_PetInfo.GetPetTrainingPoints) or GetPetTrainingPoints) ~= nil,
+        -- Kennel's own data of which beasts teach what (Data\<client>\Beasts.lua).
+        beastData = next(self.data.beasts) ~= nil,
     }
 end
 

@@ -12,6 +12,9 @@
 embeds.xml
 Locales\Locales.xml
 Core\Core.xml
+Data\Era\Beasts.lua
+Data\Era\Trainers.lua
+Data\Era\Ammo.lua
 Data\Era\Food.lua
 Integrations\Integrations.xml
 Modules\Modules.xml

@@ -1,0 +1,16 @@
+## Interface: 120105
+## Title: Kennel
+## Category: Hunter
+## Notes: Hunter pet tools in one addon. Each module can be turned on or off in the options.
+## Author: Langmans
+## Version: @project-version@
+## SavedVariables: KennelDB
+## OptionalDeps: Ace3, LibStub, EllesmereUI, ElvUI, Masque, MessageQueue, HandyNotes, OAPDebug
+## IconTexture: Interface\Icons\Ability_Hunter_BeastCall
+## X-License: MIT
+
+embeds.xml
+Locales\Locales.xml
+Core\Core.xml
+Integrations\Integrations.xml
+Modules\Modules.xml

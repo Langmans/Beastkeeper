@@ -1,4 +1,4 @@
-## Interface: 16001
+## Interface: 40402, 38002
 ## Title: Kennel
 ## Category: Hunter
 ## Notes: Hunter pet tools in one addon. Each module can be turned on or off in the options.
@@ -12,8 +12,5 @@
 embeds.xml
 Locales\Locales.xml
 Core\Core.xml
-Data\Forever\Beasts.lua
-Data\Forever\Trainers.lua
-Data\Forever\Ammo.lua
 Integrations\Integrations.xml
 Modules\Modules.xml

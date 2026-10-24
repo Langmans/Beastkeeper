@@ -117,10 +117,11 @@ fails. It knows the Ace3 types (`AceModule`, `AceDBObject-3.0`,
 
 ## How the tests work
 
-`tests/helper.lua` reads `Kennel.toc` the way the client does, with every
-`.xml` in it expanded to the files it loads. `NewClient()` (`tests/wow.lua`)
-is a simulated client: it resets the WoW API globals and loads every file in
-that order, the real Ace3 included, into a fresh namespace. Each file is
+`tests/helper.lua` reads `Kennel_Forever.toc` (and `Kennel_Vanilla.toc` for
+`NewClient({ era = true })`, a simulated Classic Era) the way the client does,
+with every `.xml` in it expanded to the files it loads. `NewClient()`
+(`tests/wow.lua`) is a simulated client: it resets the WoW API globals and loads
+every file in that order, the real Ace3 included, into a fresh namespace. Each file is
 compiled once per run and, unless the client asks for `dev`, has its
 `--@debug@` blocks commented out as in a release. A spec creates one client
 per test, so tests never share state:

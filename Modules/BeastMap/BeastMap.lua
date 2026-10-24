@@ -23,7 +23,7 @@ local L = Kennel.L
 local M = Kennel:NewModule("BeastMap")
 M.title = L.BEASTMAP_TITLE
 M.description = L.BEASTMAP_DESC
-M.requires = { "beastTraining" }
+M.requires = { "beastTraining", "beastData" }
 M.toastTypes = { reach = L.BEASTMAP_TOASTTYPE_REACH, rare = L.BEASTMAP_TOASTTYPE_RARE }
 M.defaults = {
     profile = {

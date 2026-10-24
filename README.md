@@ -4,6 +4,7 @@
 [![Release](https://img.shields.io/github/v/release/Langmans/Kennel?include_prereleases)](https://github.com/Langmans/Kennel/releases)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
 ![WoW: Forever](https://img.shields.io/badge/WoW-Forever%20%2816001%29-c79c6e)
+![Classic Era](https://img.shields.io/badge/WoW-Classic%20Era%20%2811509%29-c79c6e)
 ![Ace3](https://img.shields.io/badge/Ace3-yes-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](https://github.com/Langmans/Kennel/blob/main/LICENSE)
 
@@ -12,6 +13,18 @@ off on its own, in the game's settings window under **AddOns → Kennel**.
 
 Kennel is being put together from separate addons by the same author; the
 modules move in one at a time.
+
+## Clients
+
+| Client | What runs |
+|---|---|
+| WoW: Forever, Classic Era (Season of Discovery, Hardcore) | every module, with beast, trainer, ammo vendor and (Classic Era) food data of its own |
+| Burning Crusade Classic | every module but Beast Map, which has no beast data there yet |
+| Mists of Pandaria Classic, retail, and any other | Care Button, Autocast Check, Pet Journal, Data Broker: the game has no pet happiness, training points or ammo any more |
+
+A module whose part of the game the client lacks stays off and is left off the
+settings page. Classic Era's beasts that teach pet abilities come from the
+Tamed addon's data, its food kinds from the CMaNGOS classic-db.
 
 ## Use
 

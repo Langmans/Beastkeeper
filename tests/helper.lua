@@ -50,8 +50,9 @@ local function readToc(name)
     return files, metadata
 end
 
--- WoW: Forever's Kennel.toc, and Classic Era's Kennel_Vanilla.toc (NewClient's `era` option).
-TOC_FILES, TOC_METADATA = readToc("Kennel.toc")
+-- WoW: Forever's Kennel_Forever.toc, and Classic Era's Kennel_Vanilla.toc (NewClient's `era`
+-- option). The other clients' tocs load the same files without data.
+TOC_FILES, TOC_METADATA = readToc("Kennel_Forever.toc")
 ERA_TOC_FILES, ERA_TOC_METADATA = readToc("Kennel_Vanilla.toc")
 TOC_SAVED = TOC_METADATA.SavedVariables
 

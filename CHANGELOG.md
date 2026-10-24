@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Clients
+
+- WoW: Forever and Classic Era (Season of Discovery, Hardcore too), each with
+  its own data: the beasts that teach pet abilities, pet trainers, ammo
+  vendors, and on Classic Era each food's kind. Burning Crusade, Mists of
+  Pandaria Classic and retail load too, with the modules their game has.
+
 ### Kennel itself
 
 - A settings page under AddOns → Kennel with a switch per module, a page per

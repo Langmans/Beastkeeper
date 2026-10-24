@@ -11,14 +11,25 @@ describe("Features", function()
     it("are all there on WoW: Forever and Classic Era", function()
         for _, opts in ipairs({ {}, { era = true } }) do
             local features = NewClient(opts):login().Kennel.features
-            assert.are.same({ happiness = true, ammo = true, beastTraining = true }, features)
+            assert.are.same({ happiness = true, ammo = true, beastTraining = true, beastData = true }, features)
         end
+    end)
+
+    it("keep Beast Map off on a client without beast data of its own", function()
+        local client = NewClient({
+            modules = function(Kennel)
+                Kennel.data.beasts = {}
+            end,
+        }):login()
+        assert.is_false(client.Kennel.features.beastData)
+        assert.is_false(client.Kennel:GetModule("BeastMap"):IsEnabled())
+        assert.is_true(client.Kennel:GetModule("AbilityLearned"):IsEnabled())
     end)
 
     it("keep a module whose game part is missing off and off the settings page", function()
         local client = NewClient({ noHappinessAPI = true, noAmmoSlot = true, noTrainingAPI = true }):login()
         local Kennel = client.Kennel
-        assert.are.same({ happiness = false, ammo = false, beastTraining = false }, Kennel.features)
+        assert.are.same({ happiness = false, ammo = false, beastTraining = false, beastData = true }, Kennel.features)
         for _, name in ipairs({ "Feeding", "FeedEmotes", "Ammo", "AbilityLearned", "BeastMap" }) do
             assert.is_false(Kennel:GetModule(name):IsEnabled(), name)
             assert.is_false(Kennel:IsModuleOn(name), name)

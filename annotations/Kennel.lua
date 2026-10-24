@@ -541,6 +541,7 @@
 ---@field trainers table<number, KennelTrainer>? pet trainers and stable masters by NPC ID (Data\Trainers.lua)
 ---@field ammo table<number, KennelAmmoItem> the arrows and bullets vendors sell, by item ID (Data\Ammo.lua)
 ---@field ammoVendors table<number, KennelAmmoVendor> the vendors that sell them, by NPC ID
+---@field foodKinds table<number, string> Classic Era: each item's kind of pet food (a Kennel.diets value), by item ID (Data\Era\Food.lua)
 
 ---A kind of ammo: its Projectile item subclass, a Kennel.ammoKinds value (arrow 2, bullet 3).
 ---@alias KennelAmmoKind number
@@ -757,7 +758,7 @@
 ---@field L table<string, string> the AceLocale strings
 ---@field db AceDBObject-3.0 KennelDB; profile.modules[name] holds each module's switch
 ---@field modules table<string, KennelModule> AceAddon's own module table, by name
----@field features {happiness: boolean, ammo: boolean, beastTraining: boolean} what the client's game has (Core\Features.lua)
+---@field features {happiness: boolean, ammo: boolean, beastTraining: boolean, beastData: boolean} what the client's game has (Core\Features.lua)
 ---@field optionsCategoryID string|number the settings page, for Settings.OpenToCategory
 ---@field moduleCategoryIDs table<string, string|number> each module's page, by module name
 ---@field PROFILE_OPTIONS string[] the keys of AceDBOptions' own Profiles entries, see Core\Options.lua

@@ -1,16 +1,28 @@
 # Layout
 
 ```
-Kennel.toc        loads embeds.xml, then the folders' xml files and Data\
+Kennel_<Client>.toc  one per client, the same files but for the client's own Data\ folder:
+                  _Vanilla (Classic Era, Data\Era), _Forever (WoW: Forever,
+                  Data\Forever), _TBC, _Mists and _Mainline (retail) without
+                  data; Kennel.toc for any other client. Each loads embeds.xml,
+                  then the folders' xml files and its data
 embeds.xml        Ace3, loaded from Libs\ (not in the repository, see 06-libraries.md)
 Bindings.xml      the key bindings; each clicks a module's secure button
 Locales\          AceLocale strings: Locales.xml, enUS.lua as the source,
                   the other languages filled in by the packager (README.md there)
 Core\Core.xml     the core, in this order:
-  Addon.lua       the AceAddon object, KennelDB, the module switches, Print
+  Addon.lua       the AceAddon object, KennelDB, the module switches, Print,
+                  Kennel.data's empty tables
+  Constants\      names for the game's bare values (Enums.lua) and the pet
+                  families with their specialization and diet (Families.lua)
+  Families.lua    a family's ID, name and specialization
+  Features.lua    what the client's game has (happiness, ammo, beast training,
+                  beast data); a module's `requires` keeps it off without it
   Sounds.lua      pet sounds per family (Kennel.sounds.*_PER_FAMILY)
   Pet.lua         spells (name, icon, rank), the pet's spellbook, family, sound,
-                  training points and stable number
+                  training points and stable number, on every client
+  World.lua       places in the world, to measure across zone borders
+  Tooltip.lua     lines in unit tooltips, the same way on every client
   Combat.lua      what waits for combat to end
   Chat.lua        chat sent on the player's next key press or click
   Toast\          the toast (Toast.xml):
@@ -22,9 +34,13 @@ Core\Core.xml     the core, in this order:
   Macro.lua       macros a module makes for the player
   Options.lua     the AceConfig options and the pages in the settings window
   Commands.lua    /kennel
-Data\Beasts.lua   generated: pet ability ranks and the beasts that teach them
-                  (Tamed-LICENSE.txt next to it for the part from Tamed)
-Data\Trainers.lua generated: pet trainers and stable masters, with faction and spots
+Data\<Client>\    generated, per client (Forever, Era):
+  Beasts.lua      pet ability ranks and the beasts that teach them
+                  (Data\Tamed-LICENSE.txt for the part from Tamed)
+  Trainers.lua    pet trainers and stable masters, with faction and spots
+  Ammo.lua        arrows and bullets, and the vendors that sell them
+  Food.lua        (Era) each item's kind of pet food, from the CMaNGOS
+                  classic-db; WoW: Forever asks the client
 Integrations\     what Kennel does with other addons, a folder per addon; each
                   file does nothing unless its addon is loaded (OptionalDeps)
   EllesmereUI\Look.lua    the card, the splash, button and holder skins in
