@@ -15,6 +15,8 @@ Core\Core.xml     the core, in this order:
                   Kennel.data's empty tables
   Constants\      names for the game's bare values (Enums.lua) and the pet
                   families with their specialization and diet (Families.lua)
+  Compat.lua      Kennel.C: the modern pet, spellbook and tooltip API on every
+                  client (the classic way where the client lacks it)
   Families.lua    a family's ID, name and specialization
   Features.lua    what the client's game has (happiness, ammo, beast training,
                   beast data); a module's `requires` keeps it off without it

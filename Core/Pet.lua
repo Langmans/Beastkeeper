@@ -27,9 +27,9 @@ local creatureNames = {}
 ---@return string?
 function Kennel.CreatureName(npcID)
     if creatureNames[npcID] then return creatureNames[npcID] end
-    if not (C_TooltipInfo and C_TooltipInfo.GetHyperlink) then return nil end
-    local ok, data = pcall(C_TooltipInfo.GetHyperlink, ("unit:Creature-0-0-0-0-%d-0000000000"):format(npcID))
-    local line = ok and type(data) == "table" and data.lines and data.lines[1]
+    local ok, data = pcall(Kennel.C.TooltipInfo.GetHyperlink, ("unit:Creature-0-0-0-0-%d-0000000000"):format(npcID))
+    if not ok or type(data) ~= "table" then return nil end
+    local line = (data --[[@as KennelTooltipData]]).lines and data.lines[1]
     local name = line and line.leftText
     if type(name) ~= "string" or not Kennel.Readable(name) or name == "" then return nil end
     creatureNames[npcID] = name
@@ -39,14 +39,12 @@ end
 -- Call Pet: a hunter has a pet to care for only once it knows this (level 10 on the classic clients).
 Kennel.CALL_PET = 883
 
----Whether the player knows a spell (C_SpellBook.IsSpellKnown, the old global elsewhere); true on
----a client that cannot tell.
+---Whether the player knows a spell (Kennel.C.SpellBook.IsSpellKnown); true on a client that cannot
+---tell.
 ---@param spellID number
 ---@return boolean
 function Kennel.KnowsSpell(spellID)
-    local known = (C_SpellBook and C_SpellBook.IsSpellKnown) or IsSpellKnown
-    if not known then return true end
-    return known(spellID) == true
+    return Kennel.C.SpellBook.IsSpellKnown(spellID) ~= false
 end
 
 ---Spell name, icon and rank across client generations: C_Spell on newer clients, GetSpellInfo on
@@ -71,46 +69,34 @@ end
 ---@type table<string, KennelPetSpell>, table<string, KennelPetSpell>
 local petSpells, spellEntries = {}, {}
 
----A pet spellbook entry's name, rank text and spell ID: C_SpellBook's on newer clients,
----GetSpellBookItemName's by book type on Classic Era; nil for a command or an unreadable entry.
+---A pet spellbook entry's name, rank text and spell ID (Kennel.C.SpellBook); nil for a command
+---or an entry that cannot be read.
 ---@param index number
 ---@return string? name
 ---@return string? subName
 ---@return number? spellID
 function Kennel.PetBookEntry(index)
-    local book = C_SpellBook
-    if book and book.GetSpellBookItemInfo then
-        local ok, info = pcall(book.GetSpellBookItemInfo, index, Enum.SpellBookSpellBank.Pet)
-        if ok and info then return info.name, info.subName, info.spellID end
-    elseif GetSpellBookItemName then
-        local ok, name, subName, id = pcall(GetSpellBookItemName, index, BOOKTYPE_PET or "pet")
-        if ok then return name, subName, id end
-    end
+    local ok, info = pcall(Kennel.C.SpellBook.GetSpellBookItemInfo, index, Enum.SpellBookSpellBank.Pet)
+    if not ok or type(info) ~= "table" then return nil end
+    local name, subName, spellID = info.name, info.subName, info.spellID
+    if type(name) ~= "string" or not Kennel.Readable(name) then return nil end
+    return name, type(subName) == "string" and subName or nil, type(spellID) == "number" and spellID or nil
 end
 
----Whether a pet spellbook entry can autocast and whether it does: C_SpellBook's on newer
----clients, GetSpellAutocast's on Classic Era; nil for an entry that cannot be read.
+---Whether a pet spellbook entry can autocast and whether it does (Kennel.C.SpellBook); nil for an
+---entry that cannot be read.
 ---@param index number
 ---@return GameValue allowed
 ---@return GameValue enabled
 function Kennel.PetBookAutocast(index)
-    local book = C_SpellBook
-    local get = book and book.GetSpellBookItemAutoCast
-    if get then
-        local ok, allowed, enabled = pcall(get, index, Enum.SpellBookSpellBank.Pet)
-        if ok then return allowed, enabled end
-    elseif GetSpellAutocast then
-        local ok, allowed, enabled = pcall(GetSpellAutocast, index, BOOKTYPE_PET or "pet")
-        if ok then return allowed, enabled end
-    end
+    local ok, allowed, enabled = pcall(Kennel.C.SpellBook.GetSpellBookItemAutoCast, index, Enum.SpellBookSpellBank.Pet)
+    if ok then return allowed, enabled end
 end
 
----How many entries the pet's spellbook has: C_SpellBook's count, or the old global's; 0 without a
----pet or either.
+---How many entries the pet's spellbook has; 0 without a pet or a spellbook API.
 ---@return number
 function Kennel.PetBookSize()
-    local count = (C_SpellBook and C_SpellBook.HasPetSpells) or HasPetSpells
-    return count and tonumber((count())) or 0
+    return tonumber((Kennel.C.SpellBook.HasPetSpells())) or 0
 end
 
 ---The spells in the active pet's spellbook by name, each with its ID, rank and icon; empty
@@ -133,16 +119,13 @@ function Kennel.PetSpells()
     return petSpells
 end
 
----The active pet's free training points (total minus used) and its total, from C_PetInfo on
----WoW: Forever or the global on older clients; nil without a pet, without the API or when the
----client hides them.
+---The active pet's free training points (total minus used) and its total (Kennel.C.PetInfo); nil
+---without a pet, without the API or when the client hides them.
 ---@return number? free
 ---@return number? total
 function Kennel.PetTrainingPoints()
-    ---@type (fun(): GameValue, GameValue)?
-    local get = (C_PetInfo and C_PetInfo.GetPetTrainingPoints) or GetPetTrainingPoints
-    if not get or not UnitExists("pet") then return nil end
-    local total, used = get()
+    if not UnitExists("pet") then return nil end
+    local total, used = Kennel.C.PetInfo.GetPetTrainingPoints()
     if type(total) ~= "number" or not Kennel.Readable(total) then return nil end
     return math.max(0, total - (tonumber(used) or 0)), total
 end
@@ -198,17 +181,15 @@ function Kennel.PetNumberFromGUID(guid)
 end
 
 ---The pet's loyalty level and its name, as far as the client tells them. WoW: Forever gives the
----name alone ("Faithful", C_PetInfo.GetPetLoyalty), classic clients "Loyalty Level 5 (Faithful)"
----(the global), some a number. Without a number the level comes from the training points, which
----are level × (loyalty − 1), when they divide evenly; else it stays unknown.
+---name alone ("Faithful"), classic clients "Loyalty Level 5 (Faithful)", some a number
+---(Kennel.C.PetInfo.GetPetLoyalty). Without a number the level comes from the training points,
+---which are level × (loyalty − 1), when they divide evenly; else it stays unknown.
 ---@param total number the training points total
 ---@param petLevel GameValue
 ---@return number? loyalty
 ---@return string? name
 function Kennel.PetLoyalty(total, petLevel)
-    local get = (C_PetInfo and C_PetInfo.GetPetLoyalty) or GetPetLoyalty
-    ---@type GameValue
-    local value = get and get()
+    local value = Kennel.C.PetInfo.GetPetLoyalty()
     ---@type number?, string?
     local loyalty, name
     if not Kennel.Readable(value) then
@@ -229,10 +210,7 @@ end
 ---The pet's happiness, a Kennel.happiness value; nil without a pet, the API, or a readable answer.
 ---@return number?
 function Kennel.PetHappiness()
-    ---@type (fun(): GameValue)?
-    local get = (C_PetInfo and C_PetInfo.GetPetHappiness) or GetPetHappiness
-    ---@type GameValue
-    local happiness = get and get()
+    local happiness = Kennel.C.PetInfo.GetPetHappiness()
     if type(happiness) == "number" and Kennel.Readable(happiness) then
         return happiness --[[@as number]]
     end

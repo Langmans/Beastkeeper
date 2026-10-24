@@ -1,5 +1,16 @@
 # What the core offers modules
 
+- **One API on every client** (`Core\Compat.lua`): `Kennel.C.PetInfo`,
+  `Kennel.C.SpellBook` and `Kennel.C.TooltipInfo` have the modern names and
+  returns (`GetPetHappiness`, `CanPetEatItem`, `GetSpellBookItemInfo`,
+  `GetItemByID`, ...). Each calls the client's own `C_` function where it has
+  one, else the classic way: Classic Era's globals, a hidden tooltip read
+  line by line, the pet family's diet. Call these, never `C_PetInfo` and the
+  like directly; `Kennel.C.Has("PetInfo", name)` says whether a part exists.
+  Kennel never writes into the game's own `C_` tables.
+- **What the game has** (`Core\Features.lua`): `Kennel.features` (happiness,
+  ammo, beast training, beast data). A module that needs one names it in
+  `requires`; without it, it stays off and off the settings page.
 - **Toast** (`Core\Toast\`): `Kennel:ShowToast(info)` with a key, kind,
   source, title, text, hint, icon, accent colour and sound
   (`KennelToastInfo`). One toast per key is up or waiting; toasts for

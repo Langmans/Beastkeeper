@@ -2,6 +2,7 @@
     <!-- Addon.lua first: it makes the addon object every other file adds to. -->
     <Script file="Addon.lua"/>
     <Include file="Constants\Constants.xml"/>
+    <Script file="Compat.lua"/>
     <Script file="Families.lua"/>
     <Script file="Features.lua"/>
     <Script file="Sounds.lua"/>

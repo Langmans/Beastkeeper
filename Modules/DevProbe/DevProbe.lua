@@ -127,9 +127,8 @@ end
 
 ---Keeps what the pet out's family eats.
 local function NoteFoods()
-    local get = C_PetInfo and C_PetInfo.GetPetFoodTypes
     local _, family = UnitCreatureFamily("pet")
-    if get and family then Data().foods[family] = Copy({ list = get() }).list end
+    if family then Data().foods[family] = Copy({ list = Kennel.C.PetInfo.GetPetFoodTypes() }).list end
 end
 
 ---Keeps the client's name of every pet family.

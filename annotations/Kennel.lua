@@ -534,6 +534,40 @@
 ---@field [integer] number
 ---@field at table<number, integer>
 
+---A spellbook entry, as C_SpellBook gives it (Kennel.C.SpellBook.GetSpellBookItemInfo).
+---@class KennelBookItem
+---@field name GameValue
+---@field subName GameValue the rank text, "" without one
+---@field spellID GameValue none for a command
+
+---An item's or a link's tooltip data, as C_TooltipInfo gives it (Kennel.C.TooltipInfo).
+---@class KennelTooltipData
+---@field lines {leftText: GameValue}[]
+
+---@class KennelCompatPetInfo
+---@field GetPetHappiness fun(): GameValue
+---@field GetPetTrainingPoints fun(): GameValue, GameValue total and used
+---@field GetPetLoyalty fun(): GameValue
+---@field GetPetFoodTypes fun(): string[]
+---@field CanPetEatItem fun(itemID: number): boolean
+
+---@class KennelCompatSpellBook
+---@field HasPetSpells fun(): GameValue the entry count
+---@field IsSpellKnown fun(spellID: number): boolean? nil on a client that cannot tell
+---@field GetSpellBookItemInfo fun(index: number, bank: number): KennelBookItem?
+---@field GetSpellBookItemAutoCast fun(index: number, bank: number): GameValue, GameValue allowed and enabled
+
+---@class KennelCompatTooltipInfo
+---@field GetItemByID fun(itemID: number): KennelTooltipData
+---@field GetHyperlink fun(link: string): KennelTooltipData?
+
+---Kennel.C (Core\Compat.lua): the modern API on every client, the classic way where it is missing.
+---@class KennelCompat
+---@field PetInfo KennelCompatPetInfo
+---@field SpellBook KennelCompatSpellBook
+---@field TooltipInfo KennelCompatTooltipInfo
+---@field Has fun(namespace: "PetInfo", name: string): boolean
+
 ---Generated game data (Data\*.lua).
 ---@class KennelData
 ---@field petAbilityRanks table<number, KennelPetAbilityRank> by the rank's spell ID
@@ -759,6 +793,7 @@
 ---@field db AceDBObject-3.0 KennelDB; profile.modules[name] holds each module's switch
 ---@field modules table<string, KennelModule> AceAddon's own module table, by name
 ---@field features {happiness: boolean, ammo: boolean, beastTraining: boolean, beastData: boolean} what the client's game has (Core\Features.lua)
+---@field C KennelCompat the modern pet, spellbook and tooltip API on every client (Core\Compat.lua)
 ---@field optionsCategoryID string|number the settings page, for Settings.OpenToCategory
 ---@field moduleCategoryIDs table<string, string|number> each module's page, by module name
 ---@field PROFILE_OPTIONS string[] the keys of AceDBOptions' own Profiles entries, see Core\Options.lua

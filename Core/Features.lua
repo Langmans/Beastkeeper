@@ -11,9 +11,9 @@ local Kennel = ns
 ---Works out Kennel.features; at OnInitialize, when every file has loaded.
 function Kennel:FindFeatures()
     self.features = {
-        happiness = ((C_PetInfo and C_PetInfo.GetPetHappiness) or GetPetHappiness) ~= nil,
+        happiness = self.C.Has("PetInfo", "GetPetHappiness"),
         ammo = INVSLOT_AMMO ~= nil,
-        beastTraining = ((C_PetInfo and C_PetInfo.GetPetTrainingPoints) or GetPetTrainingPoints) ~= nil,
+        beastTraining = self.C.Has("PetInfo", "GetPetTrainingPoints"),
         -- Kennel's own data of which beasts teach what (Data\<client>\Beasts.lua).
         beastData = next(self.data.beasts) ~= nil,
     }
