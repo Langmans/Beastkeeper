@@ -36,6 +36,19 @@ function Kennel.CreatureName(npcID)
     return name
 end
 
+---Runs `fn` once the client has an item's data (its name, level, link): now when it has, else
+---when it has loaded it (Item:ContinueOnItemLoad, which also asks the server). On a client
+---without the Item object, now.
+---@param itemID number
+---@param fn fun()
+function Kennel.WhenItemLoaded(itemID, fn)
+    if not Item or (C_Item.IsItemDataCachedByID and C_Item.IsItemDataCachedByID(itemID)) then
+        fn()
+        return
+    end
+    Item:CreateFromItemID(itemID):ContinueOnItemLoad(fn)
+end
+
 -- Call Pet: a hunter has a pet to care for only once it knows this (level 10 on the classic clients).
 Kennel.CALL_PET = 883
 

@@ -380,6 +380,18 @@ describe("Ammo", function()
             assert.is_true(client:printedContains("Bought 200 Sharp Arrow."))
         end)
 
+        it("says what it bought once the client has loaded the ammo, in the client's name", function()
+            local client = hunter(0)
+            client.playerLevel = 12
+            client.unloadedItems[SHARP] = true
+            client.merchant = { SHARP }
+            client:fire("MERCHANT_SHOW")
+            assert.are.same({ { SHARP, 200 } }, client.bought)
+            assert.is_false(client:printedContains("Bought 200"), "not before the name is known")
+            client:loadItem(SHARP)
+            assert.is_true(client:printedContains("Bought 200 Sharp Arrow."))
+        end)
+
         it("fills the ammo bag's slots, minus what the hunter has", function()
             local client = hunter(0)
             client.playerLevel = 12

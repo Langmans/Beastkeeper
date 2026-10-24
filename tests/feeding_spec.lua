@@ -71,6 +71,22 @@ describe("Feeding", function()
             assert.is_false(GameTooltip:IsShown())
         end)
 
+        it("offers food the client has not loaded yet once it has", function()
+            local client = NewClient():login()
+            client.unloadedItems[MUTTON] = true
+            client:stock(MUTTON, 5):stock(JERKY, 2)
+            local function ids()
+                local out = {}
+                for _, food in ipairs(client.Kennel:GetModule("Feeding"):Foods()) do
+                    out[#out + 1] = food.itemID
+                end
+                return out
+            end
+            assert.are.same({ JERKY }, ids(), "no level to judge it by yet")
+            client:loadItem(MUTTON)
+            assert.are.same({ JERKY, MUTTON }, ids(), "scanned again once loaded")
+        end)
+
         it("puts the smaller stack first among food of one level", function()
             local client = NewClient():login():stock(MUTTON, 5)
             client.bag[#client.bag + 1] = { itemID = MUTTON, count = 2 }

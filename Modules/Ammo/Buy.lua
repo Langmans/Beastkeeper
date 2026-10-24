@@ -59,5 +59,8 @@ function M:MERCHANT_SHOW()
         BuyMerchantItem(index, quantity)
         need = need - quantity
     end
-    self:Print(L.AMMO_BOUGHT:format(bought, M.AmmoName(itemID)))
+    -- In the client's own name, once it has the item.
+    Kennel.WhenItemLoaded(itemID, function()
+        self:Print(L.AMMO_BOUGHT:format(bought, M.AmmoName(itemID)))
+    end)
 end

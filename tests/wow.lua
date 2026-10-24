@@ -866,9 +866,27 @@ function NewClient(opts)
     end
     -- Ranged weapons by item ID, with their subclass: a bow, a gun, a crossbow, a sword.
     local RANGED_KINDS = { [2504] = 2, [2508] = 3, [15808] = 18, [25] = 7 }
+    -- An item in client.unloadedItems is not loaded yet: GetItemInfo has nothing for it, and
+    -- Item:ContinueOnItemLoad waits until client:loadItem.
+    client.unloadedItems, client.itemWaiters = {}, {}
+    Item = {
+        CreateFromItemID = function(_, itemID)
+            return {
+                ContinueOnItemLoad = function(_, fn)
+                    if not client.unloadedItems[itemID] then return fn() end
+                    client.itemWaiters[itemID] = client.itemWaiters[itemID] or {}
+                    table.insert(client.itemWaiters[itemID], fn)
+                end,
+            }
+        end,
+    }
     C_Item = {
         GetItemInfo = function(itemID)
+            if client.unloadedItems[itemID] then return nil end
             if ITEM_NAMES[itemID] then return ITEM_NAMES[itemID], ItemLink(itemID), 1, ITEM_LEVELS[itemID] end
+        end,
+        IsItemDataCachedByID = function(itemID)
+            return not client.unloadedItems[itemID]
         end,
         GetItemIconByID = function(itemID)
             return 133000 + itemID
@@ -1938,8 +1956,17 @@ function NewClient(opts)
         return #self.bag
     end
 
-    -- Items the client has not loaded yet: their tooltip is empty until it has.
-    client.unloadedItems = {}
+    ---The client loads an item: what waited on it runs.
+    ---@param itemID number
+    function client:loadItem(itemID)
+        self.unloadedItems[itemID] = nil
+        local waiting = self.itemWaiters[itemID] or {}
+        self.itemWaiters[itemID] = nil
+        for _, fn in ipairs(waiting) do
+            fn()
+        end
+        return self
+    end
 
     ---An item's tooltip lines: its name, and for food that makes the hunter well fed the line saying
     ---so, worded as the client does; none while the item is not loaded.

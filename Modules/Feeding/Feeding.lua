@@ -96,14 +96,27 @@ local function Before(a, b)
     return a.bag * 1000 + a.slot < b.bag * 1000 + b.slot
 end
 
----Adds the food in one bag slot to `foods` when the pet eats it and it pleases the pet.
+-- Food the client has not loaded yet, by item ID: waited on once, then the bags are read again.
+---@type table<number, true>
+local waiting = {}
+
+---Adds the food in one bag slot to `foods` when the pet eats it and it pleases the pet. Food the
+---client has not loaded has no level to judge it by: once loaded, the bags are read again.
 ---@param bag number
 ---@param slot number
 ---@param petLevel number
 local function AddSlot(bag, slot, petLevel)
     local item = C_Container.GetContainerItemInfo(bag, slot)
     if not item or not Kennel.C.PetInfo.CanPetEatItem(item.itemID) then return end
-    local level = select(4, C_Item.GetItemInfo(item.itemID))
+    local itemID = item.itemID
+    local level = select(4, C_Item.GetItemInfo(itemID))
+    if not level and not waiting[itemID] then
+        waiting[itemID] = true
+        Kennel.WhenItemLoaded(itemID, function()
+            waiting[itemID] = nil
+            if M:IsEnabled() then M:Update() end
+        end)
+    end
     local bite = level and Bite(level, petLevel) or 0
     if bite == 0 then return end
     local food = pool[#foods + 1] or {}

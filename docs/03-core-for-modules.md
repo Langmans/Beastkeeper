@@ -8,6 +8,10 @@
   line by line, the pet family's diet. Call these, never `C_PetInfo` and the
   like directly; `Kennel.C.Has("PetInfo", name)` says whether a part exists.
   Kennel never writes into the game's own `C_` tables.
+- **Items the client has not loaded**: `Kennel.WhenItemLoaded(itemID, fn)`
+  runs `fn` now when the client has the item's data, else once it has loaded
+  it (`Item:ContinueOnItemLoad`, on every client). Use it before showing an
+  item's name or judging it by its level.
 - **What the game has** (`Core\Features.lua`): `Kennel.features` (happiness,
   ammo, beast training, beast data). A module that needs one names it in
   `requires`; without it, it stays off and off the settings page.
