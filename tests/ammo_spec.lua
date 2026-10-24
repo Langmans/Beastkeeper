@@ -234,11 +234,11 @@ describe("Ammo", function()
             local client = hunter(400)
             vendors(client)
             broker().OnClick(nil, "LeftButton")
-            assert.is_true(client:printedContains("|Hworldmap:1429:1000:1000|h"), "Arrow Al's pin link")
+            assert.is_true(client:printedContains("Arrow Al, Elwynn Forest 10.0, 10.0"), "Arrow Al's spot")
             client.ranged = GUN
             client:fire("PLAYER_EQUIPMENT_CHANGED", 18)
             broker().OnClick(nil, "LeftButton")
-            assert.is_true(client:printedContains("|Hworldmap:1429:5100:5100|h"), "Bullet Bob, for a gun")
+            assert.is_true(client:printedContains("Bullet Bob, Elwynn Forest 51.0, 51.0"), "Bullet Bob, for a gun")
         end)
 
         it("is named in the tooltip with the count and the ammo", function()
@@ -330,7 +330,7 @@ describe("Ammo", function()
                 local client = hunter(400)
                 many(client)
                 broker().OnClick(nil, "LeftButton")
-                assert.is_true(client:printedContains("|Hworldmap:1430:1000:5000|h"), "over the border")
+                assert.is_true(client:printedContains("Border Valley 10.0, 50.0"), "over the border")
             end)
 
             it("asks about every vendor when none is on the hunter's continent", function()
@@ -348,7 +348,7 @@ describe("Ammo", function()
                 client.worldPos, client.mapWorld = nil, {}
                 client.mapPos = { 0.95, 0.5 }
                 broker().OnClick(nil, "LeftButton")
-                assert.is_true(client:printedContains("|Hworldmap:1429:8000:5000|h"), "West 80")
+                assert.is_true(client:printedContains("West 80, Elwynn Forest 80.0, 50.0"), "West 80")
             end)
         end)
 

@@ -249,7 +249,7 @@ describe("Beast Map", function()
         assert.are.same({ 0, 1, 0 }, lines[2].color)
         assert.are.equal("Click to go there.", lines[#lines].text)
         client:clickPin(BARRENS, pin.coord)
-        assert.is_true(client:printedContains("|Hworldmap:1413:4600:3600|h"), "to the entrance")
+        assert.is_true(client:printedContains("46.0, 36.0"), "to the entrance")
         assert.is_true(client:printedContains("Wailing Caverns"))
     end)
 
@@ -602,7 +602,7 @@ describe("Beast Map", function()
             click(panel.rows[3])
             assert.are.equal("Late Cat in Border Valley, +2 more", panel.ranks[3].text.text)
             click(panel.ranks[3].go)
-            assert.is_true(client:printedContains("|Hworldmap:1430:1000:5000|h"), "its nearest pin")
+            assert.is_true(client:printedContains("Border Valley 10.0, 50.0"), "its nearest pin")
         end)
 
         it("asks the route addon about the 5 nearest beasts in reach only", function()
@@ -647,7 +647,7 @@ describe("Beast Map", function()
             local panel = tab(client)
             click(panel.rows[1])
             click(panel.ranks[1].go)
-            assert.is_true(client:printedContains("|Hworldmap:1429:2000:2000|h"), "Spider's pin at 20/20")
+            assert.is_true(client:printedContains("Elwynn Forest 20.0, 20.0"), "Spider's pin at 20/20")
         end)
 
         it("sends the hunter to the beast on a click, and makes it the tame key's", function()
@@ -655,7 +655,7 @@ describe("Beast Map", function()
             local panel = tab(client)
             click(panel.rows[3])
             click(panel.ranks[3].go)
-            assert.is_true(client:printedContains("|Hworldmap:1420:3000:3000|h"), "LibGoThere's pin link")
+            assert.is_true(client:printedContains("Tirisfal Glades 30.0, 30.0"), "LibGoThere's spot in chat")
             assert.is_true(client:printedContains("The tame key now targets Rare Cat."))
         end)
 
@@ -781,14 +781,12 @@ describe("Beast Map", function()
         local client = hunter(10)
         local low = client:mapPins(ELWYNN)[1]
         client:clickPin(ELWYNN, low.coord, "RightButton")
-        assert.is_false(client:printedContains("|Hworldmap:"), "a right click does nothing")
+        assert.is_false(client:printedContains("Elwynn Forest 40.0, 50.0"), "a right click does nothing")
         client:clickPin(ELWYNN, low.coord)
-        -- No route addon and no game waypoint in the simulated client: LibGoThere's pin link.
+        -- No route addon and no game waypoint in the simulated client: LibGoThere's spot in chat.
         local links = 0
         for _, line in ipairs(client.printed) do
-            if line:find("|Hworldmap:1429:4000:5000|h", 1, true) and line:find("Low Cat", 1, true) then
-                links = links + 1
-            end
+            if line:find("Low Cat, Elwynn Forest 40.0, 50.0", 1, true) then links = links + 1 end
         end
         assert.are.equal(1, links, "once, as the button comes up")
         assert.has_no.errors(function()
