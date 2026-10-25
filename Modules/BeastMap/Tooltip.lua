@@ -41,7 +41,10 @@ local function OnUnitTooltip(tooltip, guid)
         if rank then
             local standing = STANDING[M.Lacking(spellID) or "known"]
             local color = standing.color
-            tooltip:AddLine(L.BEASTMAP_TOOLTIP_TEACHES:format(rank, standing.text), color[1], color[2], color[3])
+            local _, icon = Kennel.SpellInfo(spellID)
+            local line = L.BEASTMAP_TOOLTIP_TEACHES:format(rank, standing.text)
+            if icon then line = ("|T%s:0|t %s"):format(icon, line) end
+            tooltip:AddLine(line, color[1], color[2], color[3])
         end
     end
 end

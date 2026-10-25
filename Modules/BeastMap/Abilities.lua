@@ -16,6 +16,8 @@ local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
 local LIST_WIDTH, ROW_HEIGHT, LIST_ROWS = 170, 18, 21
 local RANK_ROWS, RANK_HEIGHT, RANK_WIDTH, LEVEL_WIDTH, MORE_WIDTH = 12, 22, 64, 64, 30
 local RANKS_TOP, HEADER_TOP = 46, 26
+-- The pet level column, right-aligned, with room before the teacher.
+local LEVEL_COLUMN = LEVEL_WIDTH - 14
 local GO_ICON = "Interface\\Icons\\INV_Misc_Map_01"
 local KNOWN, MISSING, DIM, ABOVE = { 0.25, 1, 0.25 }, { 1, 1, 1 }, { 0.6, 0.6, 0.6 }, { 1, 0.6, 0.3 }
 local GOLD = { 1, 0.82, 0 }
@@ -59,6 +61,14 @@ end
 ---@return string
 local function AbilityName(ability)
     return Kennel.SpellInfo(ability) or "?"
+end
+
+---An ability's icon; the question mark when the client cannot say.
+---@param ability number
+---@return number|string
+local function AbilityIcon(ability)
+    local _, icon = Kennel.SpellInfo(ability)
+    return icon or 134400
 end
 
 ---@param a number
@@ -146,7 +156,26 @@ local function Text(parent, skin, justify)
     return text
 end
 
----A row of the abilities' list: the name, how many ranks are known, a bar when chosen.
+---An icon trimmed of its border, as the game's own buttons show icons.
+---@param icon Texture
+local function Crop(icon)
+    icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+end
+
+---An ability's icon, cropped as the look crops icons.
+---@param parent Frame
+---@param skin KennelButtonHolderSkin
+---@param size number
+---@return Texture
+local function Icon(parent, skin, size)
+    local icon = parent:CreateTexture(nil, "ARTWORK")
+    icon:SetSize(size, size)
+    local crop = skin.CropIcon or Crop
+    crop(icon)
+    return icon
+end
+
+---A row of the abilities' list: its icon and name, how many ranks are known, a bar when chosen.
 ---@param panel KennelAbilitiesPanel
 ---@param skin KennelButtonHolderSkin
 ---@param index number
@@ -159,8 +188,10 @@ local function AbilityRow(panel, skin, index)
     row.selected = row:CreateTexture(nil, "BACKGROUND")
     row.selected:SetAllPoints()
     row.selected:SetColorTexture(accent[1], accent[2], accent[3], 0.2)
+    row.icon = Icon(row, skin, ROW_HEIGHT - 4)
+    row.icon:SetPoint("LEFT", 4, 0)
     row.label = Text(row, skin)
-    row.label:SetPoint("LEFT", 6, 0)
+    row.label:SetPoint("LEFT", row.icon, "RIGHT", 5, 0)
     row.count = Text(row, skin, "RIGHT")
     row.count:SetPoint("RIGHT", -6, 0)
     row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
@@ -182,24 +213,20 @@ local function Header(panel, skin)
     header:SetPoint("RIGHT")
     ---@param x number
     ---@param label string
+    ---@param justify string?
     ---@return FontString
-    local function Head(x, label)
-        local text = Text(header, skin)
+    local function Head(x, label, justify)
+        local text = Text(header, skin, justify)
         text:SetPoint("LEFT", x, 0)
         text:SetText(label)
         text:SetTextColor(GOLD[1], GOLD[2], GOLD[3])
         return text
     end
     header.rank = Head(4, L.BEASTMAP_COLUMN_RANK)
-    header.level = Head(RANK_WIDTH, L.BEASTMAP_COLUMN_LEVEL)
+    header.level = Head(RANK_WIDTH, L.BEASTMAP_COLUMN_LEVEL, "RIGHT")
+    header.level:SetWidth(LEVEL_COLUMN)
     header.text = Head(RANK_WIDTH + LEVEL_WIDTH, L.BEASTMAP_COLUMN_TEACHER)
     return header
-end
-
----An icon trimmed of its border, as the game's own buttons show icons.
----@param icon Texture
-local function Crop(icon)
-    icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 end
 
 ---A rank's row: rank, pet level, the teacher on one line, how many more, the go button.
@@ -218,7 +245,8 @@ local function RankRow(panel, skin, index)
     row.stripe:SetShown(index % 2 == 0)
     row.rank = Text(row, skin)
     row.rank:SetPoint("LEFT", 4, 0)
-    row.level = Text(row, skin)
+    row.level = Text(row, skin, "RIGHT")
+    row.level:SetWidth(LEVEL_COLUMN)
     row.level:SetPoint("LEFT", RANK_WIDTH, 0)
     row.go = CreateFrame("Button", nil, row) --[[@as KennelGoButton]]
     row.go:SetSize(RANK_HEIGHT - 4, RANK_HEIGHT - 4)
@@ -253,8 +281,10 @@ local function Create(panel, skin)
     for index = 1, LIST_ROWS do
         panel.rows[index] = AbilityRow(panel, skin, index)
     end
+    panel.titleIcon = Icon(panel, skin, 20)
+    panel.titleIcon:SetPoint("TOPLEFT", LIST_WIDTH + 20, 0)
     panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    panel.title:SetPoint("TOPLEFT", LIST_WIDTH + 20, 0)
+    panel.title:SetPoint("LEFT", panel.titleIcon, "RIGHT", 6, 0)
     skin.Font(panel.title, 16)
     panel.header = Header(panel, skin)
     for index = 1, RANK_ROWS do
@@ -307,6 +337,7 @@ local function Refresh(panel)
         if ability then
             local known, total = Counts(ability)
             row.label:SetText(AbilityName(ability))
+            row.icon:SetTexture(AbilityIcon(ability))
             row.count:SetText(L.BEASTMAP_ABILITY_COUNT:format(known, total))
             local chosen = ability == panel.chosen
             local colour = chosen and MISSING or DIM
@@ -318,6 +349,7 @@ local function Refresh(panel)
     end
     local spells = Groups()[panel.chosen] or {}
     panel.title:SetText(panel.chosen and AbilityName(panel.chosen) or "")
+    panel.titleIcon:SetTexture(panel.chosen and AbilityIcon(panel.chosen))
     for index, row in ipairs(panel.ranks) do
         local spellID = spells[index]
         if spellID then

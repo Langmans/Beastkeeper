@@ -751,6 +751,7 @@
 ---@field rows KennelAbilityRow[]
 ---@field ranks KennelRankRow[]
 ---@field title FontString
+---@field titleIcon Texture the chosen ability's icon
 ---@field header KennelRankHeader
 ---@field chosen number? the ability shown, by its rank 1's spell ID
 
@@ -765,6 +766,7 @@
 ---@field text FontString
 
 ---@class KennelAbilityRow: Button
+---@field icon Texture the ability's
 ---@field label FontString the ability
 ---@field count FontString how many of its ranks the hunter knows
 ---@field selected Texture the bar behind the chosen one

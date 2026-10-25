@@ -41,14 +41,15 @@ L.BEASTMAP_OPTION_TOAST_DESC = "When a new level brings a beast in reach that te
 
 -- Settings: the lines on a beast's tooltip.
 L.BEASTMAP_OPTION_TOOLTIP = "Say on a beast's tooltip what it teaches"
-L.BEASTMAP_OPTION_TOOLTIP_DESC = "Hover a beast: a line per pet ability rank it teaches, green when you lack it, yellow for a lower rank you never learned, grey when you know it. Works without HandyNotes."
+L.BEASTMAP_OPTION_TOOLTIP_DESC = "Hover a beast: a line per pet ability rank it teaches, green and \"new\" when you lack it, yellow and \"skipped\" for a lower rank you never learned, grey and \"known\" when you know it. Works without HandyNotes."
 
--- A beast's tooltip, a line per rank it teaches. First %s: the ability with its rank, such as
--- "Claw (Rank 3)"; second: one of the three endings below.
+-- A beast's tooltip, a line per rank it teaches, after the ability's icon. First %s: the ability
+-- with its rank, such as "Claw (Rank 3)"; second: one of the three short endings below (a rank the
+-- hunter lacks; a lower rank the hunter skipped; a rank the hunter knows).
 L.BEASTMAP_TOOLTIP_TEACHES = "Teaches %s: %s"
-L.BEASTMAP_TOOLTIP_NEW = "new for you"
-L.BEASTMAP_TOOLTIP_GAP = "below your highest, never learned"
-L.BEASTMAP_TOOLTIP_KNOWN = "you know it"
+L.BEASTMAP_TOOLTIP_NEW = "new"
+L.BEASTMAP_TOOLTIP_GAP = "skipped"
+L.BEASTMAP_TOOLTIP_KNOWN = "known"
 
 -- Settings: pins for the hunter's other NPCs.
 L.BEASTMAP_OPTION_TRAINERS = "Pet trainers"
