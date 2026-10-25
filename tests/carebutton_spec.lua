@@ -506,6 +506,24 @@ describe("CareButton", function()
             assert.are.equal(134400, client:macro("KennelCare").icon)
         end)
 
+        it("holds only the spells the hunter knows, and grows as the hunter learns them", function()
+            local client = NewClient()
+            client.unknownSpells[136] = true -- Mend Pet: trained at 12
+            client.unknownSpells[982] = true -- Revive Pet: the quest Training the Beast
+            client:login()
+            local alive = "#showtooltip\n/use [mod:ctrl][nopet] Call Pet"
+            assert.are.equal(alive, client:macroBody("KennelCare"))
+            assert.are.equal("/use [mod:ctrl][nopet] Call Pet", _G.KennelCareButton.attributes.macrotext)
+            client.unknownSpells[982] = nil
+            client:fire("SPELLS_CHANGED")
+            local withRevive = "/use [mod:shift][@pet,dead] Revive Pet; [mod:ctrl][nopet] Call Pet"
+            assert.are.equal("#showtooltip\n" .. withRevive, client:macroBody("KennelCare"))
+            assert.are.equal(withRevive, _G.KennelCareButton.attributes.macrotext)
+            client.unknownSpells[136] = nil
+            client:fire("SPELLS_CHANGED")
+            assert.are.equal(ALIVE, client:macroBody("KennelCare"), "the whole line once all are known")
+        end)
+
         it("shows Revive Pet when made while the pet counts as dead", function()
             local client = NewClient({ noPet = true, saved = saved(nil, { petDead = true }) }):login()
             assert.are.equal(DEAD, client:macroBody("KennelCare"))
@@ -553,9 +571,18 @@ describe("CareButton", function()
 
         it("keeps the player's own lines and only rewrites its cast line", function()
             local client = NewClient():login()
-            client:macro("KennelCare").body = "#ShowTooltip Old\n/petattack\n" .. ALIVE_CAST .. "\n/say hi"
+            local own = "/use [mod:alt] Hearthstone; Call Pet"
+            client:macro("KennelCare").body = "#ShowTooltip Old\n/petattack\n"
+                .. ALIVE_CAST
+                .. "\n"
+                .. own
+                .. "\n/say hi"
             client:petDies()
-            assert.are.equal("#showtooltip\n/petattack\n" .. DEAD_CAST .. "\n/say hi", client:macroBody("KennelCare"))
+            assert.are.equal(
+                "#showtooltip\n/petattack\n" .. DEAD_CAST .. "\n" .. own .. "\n/say hi",
+                client:macroBody("KennelCare"),
+                "a /use line with another spell is the player's own"
+            )
         end)
 
         it("is left alone when its first line is no #showtooltip, or when it is gone", function()

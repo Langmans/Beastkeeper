@@ -39,14 +39,65 @@ local header = CreateFrame("Frame", "KennelCareButtonHeader", UIParent, "SecureH
 -- For its look on screen (OnScreen.lua).
 M.button = button
 
----The macro the button runs. Without a remembered death: Revive Pet on a dead pet still there, Call
----Pet without a pet, Mend Pet otherwise. With one: Revive Pet whenever there is no living pet.
+-- The macro's parts, refilled for each text.
+---@type string[]
+local clauses = {}
+
+---A spell's name when the hunter knows it, else nil: a low hunter learns Call Pet at 10, Revive Pet
+---with the quest Training the Beast, Mend Pet at 12.
+---@param spellID number
+---@return string?
+local function Known(spellID)
+    return Kennel.KnowsSpell(spellID) and M.SpellName(spellID) or nil
+end
+
+---The macro the button runs, with only the spells the hunter knows. Without a remembered death:
+---Revive Pet on a dead pet still there, Call Pet without a pet, Mend Pet otherwise. With one:
+---Revive Pet whenever there is no living pet.
 ---@param petDead boolean
 ---@return string
 function M:MacroText(petDead)
-    local mend, revive, call = M.SpellName(M.MEND_PET), M.SpellName(M.REVIVE_PET), M.SpellName(M.CALL_PET)
-    if petDead then return ("/use [mod:ctrl] %s; [mod:shift][@pet,dead][nopet] %s; %s"):format(call, revive, mend) end
-    return ("/use [mod:shift][@pet,dead] %s; [mod:ctrl][nopet] %s; %s"):format(revive, call, mend)
+    local mend, revive, call = Known(M.MEND_PET), Known(M.REVIVE_PET), Known(M.CALL_PET)
+    wipe(clauses)
+    if petDead then
+        clauses[#clauses + 1] = call and "[mod:ctrl] " .. call
+        clauses[#clauses + 1] = revive and "[mod:shift][@pet,dead][nopet] " .. revive
+    else
+        clauses[#clauses + 1] = revive and "[mod:shift][@pet,dead] " .. revive
+        clauses[#clauses + 1] = call and "[mod:ctrl][nopet] " .. call
+    end
+    clauses[#clauses + 1] = mend
+    return "/use " .. table.concat(clauses, "; ")
+end
+
+---Whether a macro line is one the button could have written: /use of the care spells alone, under
+---their conditions (any of them, as the hunter knew them then).
+---@param line string
+---@return boolean
+function M:IsCareLine(line)
+    local spells = line:match("^/use (.*)$")
+    if not spells then return false end
+    for clause in (spells .. ";"):gmatch("([^;]*);") do
+        local name = clause:gsub("%b[]", ""):match("^%s*(.-)%s*$")
+        if
+            name ~= M.SpellName(M.MEND_PET)
+            and name ~= M.SpellName(M.REVIVE_PET)
+            and name ~= M.SpellName(M.CALL_PET)
+        then
+            return false
+        end
+    end
+    return true
+end
+
+---The spellbook changed: the button's macro texts again, and the macro's line.
+function M:ApplyMacroTexts()
+    Kennel:OutOfCombat("CareButton:texts", function()
+        header:SetAttribute("textAlive", M:MacroText(false))
+        header:SetAttribute("textDead", M:MacroText(true))
+        SecureHandlerExecute(header, RUN_APPLY)
+        M:UpdateMacro()
+    end)
 end
 
 ---Whether the button counts the pet as dead.

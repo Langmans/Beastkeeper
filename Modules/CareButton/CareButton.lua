@@ -223,9 +223,11 @@ function M:UNIT_SPELLCAST_FAILED(_, unit, castGUID, spellID)
     end
 end
 
--- The spellbook changed: Call Pet learned, perhaps, and the button on screen with it.
+-- The spellbook changed: Call Pet learned, perhaps, and the button on screen with it; Revive Pet
+-- or Mend Pet, and the macro texts with them.
 function M:SPELLS_CHANGED()
     self:ApplyButton()
+    self:ApplyMacroTexts()
 end
 
 -- The pet bar changed, its stance perhaps: the Passive toast goes once the pet is off Passive.

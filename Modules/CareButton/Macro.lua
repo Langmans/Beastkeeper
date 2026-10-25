@@ -41,7 +41,7 @@ function M:UpdatedBody(body, petDead)
     for i = 2, #lines do
         -- The same line with /cast does the same, so it counts as its own too.
         local line = lines[i]:gsub("^/cast ", "/use ")
-        if line == self:MacroText(false) or line == self:MacroText(true) then lines[i] = self:MacroText(petDead) end
+        if self:IsCareLine(line) then lines[i] = self:MacroText(petDead) end
     end
     return table.concat(lines, "\n")
 end

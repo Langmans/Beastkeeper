@@ -299,6 +299,8 @@
 
 ---@class KennelCareButton: KennelMacroModule, KennelSettingsModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
+---@field ApplyMacroTexts fun(self: KennelCareButton) the button's macro texts again, for the spells known now
+---@field IsCareLine fun(self: KennelCareButton, line: string): boolean a /use line of the care spells alone
 ---@field lowShown boolean the low toast was given and health has not been above the line since
 ---@field deadAfterCombat boolean a failed cast in combat showed the pet is dead
 ---@field reviveCasts table<string, true> Revive Pet casts that started, by cast GUID
