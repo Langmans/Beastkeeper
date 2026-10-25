@@ -14,7 +14,7 @@ local L = Kennel.L
 local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
 
 local LIST_WIDTH, ROW_HEIGHT, LIST_ROWS = 170, 18, 21
-local RANK_ROWS, RANK_HEIGHT, RANK_WIDTH, LEVEL_WIDTH, MORE_WIDTH = 15, 22, 64, 64, 30
+local RANK_ROWS, RANK_HEIGHT, RANK_WIDTH, LEVEL_WIDTH, MORE_WIDTH = 15, 22, 64, 80, 30
 local TOGGLE_SIZE, TEACHER_INDENT = 12, 14
 local PLUS, MINUS = "Interface\\Buttons\\UI-PlusButton-Up", "Interface\\Buttons\\UI-MinusButton-Up"
 local RANKS_TOP, HEADER_TOP = 46, 26

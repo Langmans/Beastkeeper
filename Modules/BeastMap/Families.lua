@@ -210,8 +210,16 @@ local function FillBeasts(panel, familyID)
         end
     end
     panel.none:SetText(#list == 0 and L.BEASTMAP_NO_BEASTS or "")
-    if list[1] then
-        panel.model:SetCreature(list[1])
+    -- By display ID the model shows at once; by NPC ID only once the client has the creature in its
+    -- cache, else the old model stays: so cleared first.
+    local first = list[1] and Kennel.data.beasts[list[1]]
+    if first then
+        panel.model:ClearModel()
+        if first.display then
+            panel.model:SetDisplayInfo(first.display)
+        else
+            panel.model:SetCreature(list[1])
+        end
         panel.model:Show()
     else
         panel.model:Hide()
@@ -242,7 +250,9 @@ local function Refresh(panel)
     local info = Kennel.familyInfo[familyID]
     panel.title:SetText(Kennel.FamilyName(familyID) or "?")
     panel.titleIcon:SetTexture(Kennel.FamilyIcon(familyID))
-    panel.spec:SetText(Kennel.SpecName(familyID) or "")
+    -- Pet specializations came with Wrath; WoW: Forever has them, the classic clients not.
+    local hasSpecs = (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient() == "forever"
+    panel.spec:SetText(hasSpecs and Kennel.SpecName(familyID) or "")
     panel.diet:SetText(DietText(info))
     panel.abilities:SetText(AbilitiesText(familyID))
     FillBeasts(panel, familyID)

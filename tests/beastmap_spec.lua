@@ -1058,6 +1058,22 @@ describe("Beast Map", function()
             assert.are.equal("Claw: ranks 1-3, you know 1", panel.abilities.text)
         end)
 
+        it("says no specialization where pets have none (before Wrath, but on WoW: Forever)", function()
+            local panel = tab(hunter(10, { era = true }))
+            assert.are.equal("", panel.spec.text)
+            assert.are.equal("Eats: Meat, Fish", panel.diet.text)
+        end)
+
+        it("shows the nearest beast's model by its display ID, else by its NPC ID", function()
+            local client = hunter(10)
+            client.Kennel.data.beasts[101].display = 892
+            local panel = tab(client)
+            assert.are.same({ displayID = 892 }, panel.model.shownModel)
+            client.Kennel.data.beasts[101].display = nil
+            client.Kennel:RefreshWindow("families")
+            assert.are.same({ creature = 101 }, panel.model.shownModel)
+        end)
+
         it("names the beasts of the family the hunter can tame, nearest first, and goes there", function()
             local client = hunter(10)
             local panel = tab(client)
