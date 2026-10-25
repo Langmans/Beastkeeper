@@ -113,7 +113,12 @@ local function Returns(fn, ...)
     for i = 2, results.n do
         ---@type GameValue
         local value = results[i]
-        out[i - 1] = Kennel.Readable(value) and value or "secret"
+        if type(value) == "table" and value.GetXY then
+            -- A vector (a map position): its numbers.
+            local x, y = (value --[[@as Vector2DMixin]]):GetXY()
+            value = { x = x, y = y }
+        end
+        if value ~= nil then out[i - 1] = Kennel.Readable(value) and value or "secret" end
     end
     return out
 end
@@ -163,6 +168,7 @@ end
 function M:PLAYER_REGEN_DISABLED()
     if Data().combat then return end
     Data().combat = {
+        petOut = UnitExists("pet") == true,
         petHealth = Returns(UnitHealth, "pet"),
         unitPosition = Returns(UnitPosition, "player"),
         mapPosition = Returns(C_Map.GetPlayerMapPosition, C_Map.GetBestMapForUnit("player"), "player"),

@@ -195,7 +195,7 @@ function Kennel.PetNumberFromGUID(guid)
 end
 
 ---The pet's loyalty level and its name, as far as the client tells them. WoW: Forever gives the
----name alone ("Faithful"), classic clients "Loyalty Level 5 (Faithful)", some a number
+---name alone ("Faithful"), Classic Era "(Loyalty Level 5) Faithful", some a number
 ---(Kennel.C.PetInfo.GetPetLoyalty). Without a number the level comes from the training points,
 ---which are level × (loyalty − 1), when they divide evenly; else it stays unknown.
 ---@param total number the training points total
@@ -212,7 +212,10 @@ function Kennel.PetLoyalty(total, petLevel)
         loyalty = value
     elseif type(value) == "string" and value ~= "" then
         loyalty = tonumber(value:match("%d+"))
-        name = value:match("%((.-)%)") or (not loyalty and value or nil)
+        -- Classic Era: "(Loyalty Level 1) Rebellious", the name after the brackets; else the name in
+        -- them, "Loyalty Level 4 (Dependable)"; Forever: the bare name.
+        local level, after = value:match("^%((.-)%)%s*(.+)$")
+        name = level and after or value:match("%((.-)%)") or (not loyalty and value or nil)
     end
     if not loyalty and type(petLevel) == "number" and Kennel.Readable(petLevel) and petLevel > 0 then
         local derived = total / petLevel + 1

@@ -81,8 +81,8 @@ function C.PetInfo.GetPetTrainingPoints()
     return nil, nil
 end
 
----The pet's loyalty as the client words it: WoW: Forever the bare name, Classic "Loyalty Level 4
----(Dependable)"; nil without the API.
+---The pet's loyalty as the client words it: WoW: Forever the bare name, Classic Era "(Loyalty Level
+---1) Rebellious"; nil without the API.
 ---@return GameValue loyalty
 function C.PetInfo.GetPetLoyalty()
     ---@type (fun(): GameValue)?

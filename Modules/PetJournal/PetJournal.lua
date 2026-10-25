@@ -48,7 +48,11 @@ local function Key()
     local number = Kennel.PetNumber()
     if number then return tostring(number) end
     local guid = UnitGUID("pet")
-    if Kennel.NPCFromGUID(guid, "Creature") then
+    -- A Creature GUID is a fresh tame's on WoW: Forever, until the next login. On the classic
+    -- clients a tamed pet's GUID is a Pet's at once; a Creature there is the beast a hunter taming
+    -- quest lends through its Taming Rod, not a pet of the hunter's.
+    local forever = (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient() == "forever"
+    if forever and Kennel.NPCFromGUID(guid, "Creature") then
         return guid --[[@as string]]
     end
 end

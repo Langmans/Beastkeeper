@@ -30,6 +30,16 @@ describe("Kennel.C", function()
         end
     end)
 
+    it("reads the loyalty level and its name from Classic Era's words", function()
+        for kind, client in clients() do
+            -- As Classic Era says it (seen 2026-10-25 on Season of Discovery).
+            client.loyalty = "(Loyalty Level 1) Rebellious"
+            assert.are.same({ 1, "Rebellious" }, { client.Kennel.PetLoyalty(0, 5) }, kind)
+            client.loyalty = "Loyalty Level 4 (Dependable)"
+            assert.are.same({ 4, "Dependable" }, { client.Kennel.PetLoyalty(0, 5) }, kind)
+        end
+    end)
+
     it("tells whether the pet eats an item: the client's answer, else its family's diet", function()
         for kind, client in clients() do
             local C = client.Kennel.C

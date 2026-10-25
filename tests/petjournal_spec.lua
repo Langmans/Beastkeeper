@@ -39,6 +39,18 @@ describe("Pet Journal", function()
         )
     end)
 
+    it("leaves out a taming quest's beast on Classic Era, which stays a creature", function()
+        local client = NewClient({ era = true, noPet = true }):login()
+        -- The hunter's taming quests lend a beast through the Taming Rod: its GUID stays a
+        -- Creature's, where a tamed pet's is a Pet's at once (seen 2026-10-25 on Season of Discovery).
+        client.petGUID = "Creature-0-5211-1-143-1998-00005E1A20"
+        client:summon("Webwood Lurker", {}):advance(1)
+        assert.are.same({}, client.Kennel:GetModule("PetJournal"):Pets())
+        client.petGUID = "Pet-0-5211-1-143-1995-0101235792"
+        client:summon("Owl", { 17253 }):advance(1)
+        assert.is_not_nil(next(client.Kennel:GetModule("PetJournal"):Pets()), "the tamed one")
+    end)
+
     it("records a tame: when, where and as which beast", function()
         local client = NewClient({ noPet = true }):login()
         client:fire("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-1", TAME_BEAST)
