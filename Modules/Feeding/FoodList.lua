@@ -37,7 +37,9 @@ local function Row(index)
     local row = CreateFrame("Button", "KennelFeedChoice" .. index, list, "SecureActionButtonTemplate") --[[@as KennelFoodRow]]
     row:SetSize(WIDTH - 2 * PAD, ROW_HEIGHT)
     row:SetPoint("TOPLEFT", PAD, -PAD - (index - 1) * ROW_HEIGHT)
-    row:RegisterForClicks("AnyUp")
+    -- As the feed button: down and up registered, acting on the up (ActionButtonUseKeyDown).
+    row:RegisterForClicks("AnyUp", "AnyDown")
+    row:SetAttribute("useOnKeyDown", false)
     row:SetAttribute("type", "macro")
     row.icon = row:CreateTexture(nil, "ARTWORK")
     row.icon:SetSize(ROW_HEIGHT - 4, ROW_HEIGHT - 4)

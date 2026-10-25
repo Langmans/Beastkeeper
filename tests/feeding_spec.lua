@@ -130,6 +130,18 @@ describe("Feeding", function()
             assert.are.equal("/cast Feed Pet\n/use 0 2", _G.KennelFeedButton.attributes.macrotext)
         end)
 
+        it("acts on a click as it comes up, whatever ActionButtonUseKeyDown says, the list's rows too", function()
+            local client = stocked()
+            local button = _G.KennelFeedButton
+            assert.are.same({ "AnyUp", "AnyDown" }, button.clicks)
+            assert.is_false(button.attributes.useOnKeyDown)
+            rawget(button, "foodlist")(button)
+            local row = _G.KennelFeedChoice1
+            assert.are.same({ "AnyUp", "AnyDown" }, row.clicks)
+            assert.is_false(row.attributes.useOnKeyDown)
+            assert.is_not_nil(client)
+        end)
+
         it("waits for Feed Pet: no button, no toasts until the hunter knows it", function()
             local client = NewClient()
             client.unknownSpells[6991] = true -- Feed Pet comes with the quest Training the Beast

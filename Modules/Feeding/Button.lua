@@ -25,7 +25,10 @@ local SIZE = 36
 local button = CreateFrame("Button", "KennelFeedButton", UIParent, "SecureActionButtonTemplate")
 button:SetSize(SIZE, SIZE)
 button:SetFrameStrata("MEDIUM")
-button:RegisterForClicks("AnyUp")
+-- Down and up registered, acting on the up (useOnKeyDown false, set in ApplyButton, out of combat):
+-- a secure button registered for up alone does nothing while the game's ActionButtonUseKeyDown is
+-- on (Classic Era's default).
+button:RegisterForClicks("AnyUp", "AnyDown")
 button:RegisterForDrag("LeftButton")
 button:SetMovable(true)
 button:Hide()
@@ -64,6 +67,7 @@ function M:ApplyButton()
         -- Before Feed Pet (the quest Training the Beast) there is nothing to feed with.
         local active = self:IsEnabled() and class == "HUNTER" and Kennel.KnowsSpell(M.FEED_PET)
         local first = active and self:Foods()[1]
+        button:SetAttribute("useOnKeyDown", false)
         button:SetAttribute("type2", active and "foodlist" or nil)
         if first then
             button:SetAttribute("type", "macro")
