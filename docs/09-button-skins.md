@@ -39,8 +39,12 @@ end
 ## A holder skin
 
 What holds buttons: `name`, `priority`, `Style(frame)` for the panel (run
-once), `Font(text, size)` for a row's text, and optionally `CropIcon(icon)`
-for a row's icon (`KennelButtonHolderSkin`). Register it with
+once; the frame is made with `BackdropTemplate`), `Font(text, size)` for a
+row's text, and optionally `CropIcon(icon)` for a row's icon, `Accent()` for
+the colour that marks what is chosen (the window's tab, the chosen row; the
+game's gold without it) and `Close(button)` for a close button
+(`KennelButtonHolderSkin`). ElvUI's adds Eltruism's shadow to a panel when
+Eltruism is loaded with its shadows on. Register it with
 `Kennel:RegisterButtonHolderSkin(id, skin)`. Masque skins buttons only, so it
 has no holder skin; with Masque the list takes the next one.
 

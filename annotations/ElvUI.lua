@@ -7,6 +7,8 @@
 ---@field SetTemplate fun(self: ElvUIFrame, template: "Default"|"Transparent"?)
 ---@field SetBackdropBorderColor fun(self: ElvUIFrame, r: number, g: number, b: number, a: number?)
 ---@field StyleButton fun(self: ElvUIFrame, noHover: boolean?, noPushed: boolean?, noChecked: boolean?)
+---@field CreateShadow fun(self: ElvUIFrame, length: number?) a shadow frame in .shadow
+---@field shadow Frame? the frame's shadow, once made
 
 ---@class ElvUITexture: Texture
 ---@field SetTexCoords fun(self: ElvUITexture) ElvUI's icon crop
@@ -21,11 +23,23 @@
 ---ElvUI's engine (E), ElvUI[1].
 ---@class ElvUIEngine
 ---@field media ElvUIMedia?
+---@field db ElvUIProfile? the profile's settings, its plugins' among them
 ---@field GetModule fun(self: ElvUIEngine, name: string, silent: boolean?): ElvUISkins?
 
 ---ElvUI's Skins module (E:GetModule("Skins")), the part Kennel uses.
 ---@class ElvUISkins
 ---@field HandleCloseButton (fun(self: ElvUISkins, button: Button))?
+
+---ElvUI's profile (E.db), as far as Kennel reads it: Eltruism's shadow settings.
+---@class ElvUIProfile
+---@field ElvUI_EltreumUI {skins: {shadow: {enable: boolean, length: number}?}?}?
+
+---Eltruism, the ElvUI plugin; nil when it is not loaded.
+---@class EltruismAddon
+---@field ShadowColor fun(self: EltruismAddon, shadow: Frame) colours a shadow as Eltruism's own
+
+---@type EltruismAddon?
+ElvUI_EltreumUI = nil
 
 ---ElvUI's global: its engine in [1]; nil when it is not loaded.
 ---@type ElvUIEngine[]?

@@ -162,6 +162,25 @@ describe("button skins", function()
             assert.is_true(row.go.icon.texCoordsSet, "ElvUI's icon crop")
         end)
 
+        it("with Eltruism's shadows on, put its shadow around the window and the toast", function()
+            local client = NewClient({ elvui = true, eltruism = { enable = true, length = 4 } }):login()
+            client:slash("")
+            local shadow = _G.KennelWindow.shadow
+            assert.are.equal(4, shadow.length)
+            assert.is_true(shadow.eltruismColoured, "in Eltruism's shadow colour")
+            client.Kennel:ToastSettings().skin = "elvui"
+            client.Kennel:ShowToast({ key = "a", title = "t" })
+            assert.is_not_nil(client:toast().shadow)
+        end)
+
+        it("without Eltruism, or with its shadows off, put no shadow", function()
+            for _, eltruism in ipairs({ false, { enable = false, length = 4 } }) do
+                local client = NewClient({ elvui = true, eltruism = eltruism or nil }):login()
+                client:slash("")
+                assert.is_nil(rawget(_G.KennelWindow, "shadow"))
+            end
+        end)
+
         it("rank above EllesmereUI, below Masque", function()
             assert.are.equal("elvui", content({ elvui = true, ellesmere = true }).Kennel:ButtonSkinFor())
             assert.are.equal("masque", content({ elvui = true, masque = true }).Kennel:ButtonSkinFor())

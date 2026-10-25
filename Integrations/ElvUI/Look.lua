@@ -39,9 +39,24 @@ local function StyleButton(button, parts)
     return Recolour
 end
 
+---Eltruism's shadow around a panel, as Eltruism puts it around ElvUI's own: only with Eltruism
+---loaded and its shadows on (its settings in ElvUI's profile), in its length and colour.
+---@param frame ElvUIFrame
+local function EltruismShadow(frame)
+    local eltruism = ElvUI_EltreumUI
+    local db = E.db and E.db.ElvUI_EltreumUI
+    ---@type {enable: boolean, length: number}?
+    local shadow = db and db.skins and db.skins.shadow
+    if not eltruism or not shadow or not shadow.enable or frame.shadow then return end
+    frame:CreateShadow(shadow.length)
+    eltruism:ShadowColor(frame.shadow --[[@as Frame]])
+end
+
 ---@param frame Frame
 local function StyleHolder(frame)
-    (frame --[[@as ElvUIFrame]]):SetTemplate("Transparent")
+    local elv = frame --[[@as ElvUIFrame]]
+    elv:SetTemplate("Transparent")
+    EltruismShadow(elv)
 end
 
 ---ElvUI's font, outline and shadow, at `size`.

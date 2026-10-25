@@ -94,6 +94,7 @@ end
 ---@field noMacroConsts boolean? no Constants.MacroConsts (the addon's own limits apply)
 ---@field ellesmere boolean|table? EllesmereUI loaded before Kennel (a table: fields to leave out, set to false)
 ---@field elvui boolean? ElvUI loaded before Kennel
+---@field eltruism table? Eltruism loaded too, with these shadow settings ({ enable, length })
 ---@field masque boolean? Masque loaded before Kennel
 ---@field messageQueue boolean? MessageQueue loaded before Kennel
 ---@field handyNotes boolean? HandyNotes loaded before Kennel
@@ -1703,6 +1704,20 @@ function NewClient(opts)
         function Region:SetTexCoords()
             self.texCoordsSet = true
         end
+        function Region:CreateShadow(length)
+            self.shadow = newRegion({ length = length })
+        end
+    end
+    -- Eltruism, an ElvUI plugin, when opts.eltruism gives its shadow settings ({ enable, length }):
+    -- its settings in ElvUI's profile, and ShadowColor marking the shadow it coloured.
+    ElvUI_EltreumUI = nil
+    if opts.elvui and opts.eltruism then
+        ElvUI[1].db = { ElvUI_EltreumUI = { skins = { shadow = opts.eltruism } } }
+        ElvUI_EltreumUI = {
+            ShadowColor = function(_, shadow)
+                shadow.eltruismColoured = true
+            end,
+        }
     end
 
     -- Masque, when opts.masque says it is loaded: a LibStub library whose groups record the
