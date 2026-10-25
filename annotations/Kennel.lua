@@ -699,6 +699,12 @@
 ---@field families table<number, string> the client's family names
 ---@field lowerRanks table[] { name, rank, highest, t }
 ---@field guids table[] { event, guid, name, t }
+---@field client table at each login: build, project, season, tameable, api, unitPosition, mapPosition, ammo, rangedSpeed, bags
+---@field combat table? the first fight's: petHealth, unitPosition, mapPosition
+---@field pet table happiness, loyalty, trainingPoints, each { modern, old }
+---@field trainer (table|string)[] the trainer's first rows, raw
+---@field tames table[] { npc, family, knows, expected, match, t }
+---@field beasts table<number, table> per NPC its first sighting: { name, map, x, y, onDataMap, dataMaps, t }
 
 ---A tab of Kennel's window (Core\Window.lua), added by Kennel:RegisterWindowTab.
 ---@class KennelWindowTab

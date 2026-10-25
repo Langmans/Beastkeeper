@@ -3,6 +3,8 @@
 -- stable's lists hold, when and how a pet gets a new spell, what each family eats, the client's
 -- family names, a lower rank learned after a higher one, and the pet's GUID around a tame.
 
+local TAME_BEAST = 1515
+
 ---A development copy with the probe switched on.
 ---@param opts TestClientOptions?
 ---@return table client
@@ -106,6 +108,71 @@ describe("the Dev Probe", function()
         end
         assert.is_truthy(tContains(events, "LOCALPLAYER_PET_RENAMED Creature-0-1-1-1-3825-00000ABCDE"))
         assert.is_truthy(tContains(events, "UNIT_PET Creature-0-1-1-1-3825-00000ABCDE"))
+    end)
+
+    it("keeps what the client is: its build, project, the library's client, the APIs Kennel leans on", function()
+        local client, probe = probing()
+        client:fire("PLAYER_ENTERING_WORLD")
+        local found = probe.client
+        assert.are.same({ "1.16.0", "60000", "Oct 1 2026", 11600 }, found.build)
+        assert.are.equal(18, found.project)
+        assert.are.equal("forever", found.tameable)
+        assert.is_true(found.api.GetPlayerFacing)
+        assert.is_true(found.api.OnMapChanged)
+        assert.is_table(found.unitPosition, "its returns, or why there are none")
+        assert.is_table(found.ammo)
+    end)
+
+    it("keeps whether the client hides the pet's health and the player's place in combat", function()
+        local client, probe = probing()
+        client:enterCombat()
+        assert.is_table(probe.combat.petHealth)
+        assert.is_table(probe.combat.unitPosition)
+        local first = probe.combat
+        client:leaveCombat():enterCombat()
+        assert.are.equal(first, probe.combat, "the first fight only")
+    end)
+
+    it("keeps what the pet's happiness, loyalty and training points say, both ways", function()
+        local client, probe = probing()
+        client:summon("Whiskers", {})
+        local pet = probe.pet
+        assert.is_table(pet.happiness)
+        assert.is_table(pet.loyalty)
+        assert.is_table(pet.trainingPoints)
+    end)
+
+    it("keeps the trainer's first rows as the client gives them", function()
+        local client, probe = probing()
+        client:advance(5)
+        client:openTrainer({ { "Claw", "used", CLAW_3 } })
+        assert.are.same({ "Claw", "used" }, probe.trainer[1])
+    end)
+
+    it("keeps after a tame what the pet knows beside what LibTameable says the beast teaches", function()
+        local client, probe = probing({ noPet = true })
+        client:fire("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-1", TAME_BEAST)
+        client.petGUID = "Pet-0-5250-0-1-3825-0100ABCDEF"
+        client:summon("Whiskers", { 17253 }):advance(3)
+        local tame = probe.tames[1]
+        assert.are.equal(3825, tame.npc)
+        assert.are.same({ "Bite 1" }, tame.knows)
+        -- Ghostpaw Alpha teaches Bite 4, Cower 3 and Furious Howl 2 (named as the client names them).
+        assert.are.equal(3, #tame.expected)
+        assert.is_false(tame.match)
+    end)
+
+    it("keeps where a beast in the data was seen, and whether the data has it on that map", function()
+        local client, probe = probing()
+        client:hoverUnit("Creature-0-5250-0-12-3825-0000ABCDEF")
+        local seen = probe.beasts[3825]
+        assert.are.equal(1429, seen.map)
+        assert.are.same({ 50, 50 }, { seen.x, seen.y })
+        assert.is_false(seen.onDataMap)
+        assert.are.same({ 1440 }, seen.dataMaps)
+        client.mapPos = { 0.1, 0.1 }
+        client:hoverUnit("Creature-0-5250-0-12-3825-0000ABCDEF")
+        assert.are.equal(50, probe.beasts[3825].x, "the first sighting only")
     end)
 
     it("forgets everything from its page", function()
