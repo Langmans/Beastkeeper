@@ -10,9 +10,9 @@
 ## X-License: MIT
 
 embeds.xml
+Libs\LibTameable-1.0\Data\Era.lua
 Locales\Locales.xml
 Core\Core.xml
-Data\Era\Beasts.lua
 Data\Era\Trainers.lua
 Data\Era\Ammo.lua
 Data\Era\Food.lua

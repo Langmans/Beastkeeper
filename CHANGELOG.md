@@ -8,6 +8,10 @@
   its own data: the beasts that teach pet abilities, pet trainers, ammo
   vendors, and on Classic Era each food's kind. Burning Crusade, Mists of
   Pandaria Classic and retail load too, with the modules their game has.
+- The beasts that teach pet abilities come from LibTameable-1.0, for Classic
+  Era, Burning Crusade and WoW: Forever; Burning Crusade gets Beast Map and
+  its families (Dragonhawk, Ravager, Warp Stalker, Sporebat, Nether Ray,
+  Serpent). Each client loads only its own beast data.
 
 ### Kennel itself
 

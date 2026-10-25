@@ -715,6 +715,7 @@
 ---@field name string English, when the client gives no name
 ---@field spec string? a Kennel.petSpecs value
 ---@field diet string[]? Kennel.diets values
+---@field client string? the only client it is on, as LibTameable names it ("tbc", "forever"); nil for every client
 
 ---Kennel's window's settings (profile.window): where it was dragged to.
 ---@class KennelWindowSettings

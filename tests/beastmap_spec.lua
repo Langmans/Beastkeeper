@@ -720,7 +720,7 @@ describe("Beast Map", function()
             client.familyNames[2] = "Cat"
             local panel = tab(client)
             local rows = shown(panel.rows)
-            assert.are.equal(18, #rows)
+            assert.are.equal(18, #rows, "WoW: Forever's: the Fox, no Burning Crusade families")
             assert.are.equal("Bat", rows[1])
             assert.is_truthy(tContains(rows, "Cat (1)"), "Fluffy")
             assert.are.equal("Cat", panel.title.text)

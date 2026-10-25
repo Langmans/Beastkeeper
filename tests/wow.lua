@@ -240,8 +240,8 @@ function NewClient(opts)
     FONT_COLOR_CODE_CLOSE, NORMAL_FONT_COLOR_CODE = "|r", "|cffffd200"
     NORMAL_FONT_COLOR = { r = 1, g = 0.82, b = 0 }
     ACCEPT, CANCEL, CLOSE, OKAY, NOT_BOUND = "Accept", "Cancel", "Close", "Okay", "Not Bound"
-    WOW_PROJECT_MAINLINE, WOW_PROJECT_CLASSIC = 1, 2
-    WOW_PROJECT_ID = WOW_PROJECT_CLASSIC
+    WOW_PROJECT_MAINLINE, WOW_PROJECT_CLASSIC, WOW_PROJECT_CAMELOT = 1, 2, 18
+    WOW_PROJECT_ID = opts.era and WOW_PROJECT_CLASSIC or WOW_PROJECT_CAMELOT
     -- opts.noAmmoSlot: a client from Cataclysm on, without ammo.
     INVSLOT_AMMO, INVSLOT_RANGED = not opts.noAmmoSlot and 0 or nil, 18
     SOUNDKIT = setmetatable({ RAID_WARNING = 8959 }, {

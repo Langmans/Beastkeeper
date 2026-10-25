@@ -76,10 +76,12 @@
   one). A binding clicks a module's secure button itself
   (`CLICK KennelCareButton:LeftButton`); a module that is off takes the
   button's macro away, so the key does nothing.
-- **Beast data** (`Data\Beasts.lua`): `Kennel.data.petAbilityRanks` (per rank
-  spell: ability, rank, pet level, families, teaching beasts) and
+- **Beast data** (LibTameable-1.0, in `Libs\`): `Kennel.data.petAbilityRanks`
+  (per rank spell: ability, rank, pet level, families, teaching beasts) and
   `Kennel.data.beasts` (per NPC ID: name, family, levels, rare/elite, pins per
-  uiMapID or the zone of an instance). Generated; `KennelData` in
+  uiMapID or the zone of an instance) are the library's own tables: read them,
+  never change them. Its API (`GetTeachers` with only rares or only the rest,
+  `GetTeaches`, `GetAbilityRanks`, ...) is in its README; `KennelData` in
   `annotations/Kennel.lua`.
 - **Messages**: the core and the modules tell each other and other addons
   what happens through KENNEL_* messages ([04-hooking.md](04-hooking.md)). A

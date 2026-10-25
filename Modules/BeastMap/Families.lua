@@ -27,12 +27,14 @@ local function ByName(a, b)
     return (Kennel.FamilyName(a) or "") < (Kennel.FamilyName(b) or "")
 end
 
----The families, by name.
+---The families on this client, by name: one Kennel has for one client only (the Fox on WoW:
+---Forever, Burning Crusade's on Burning Crusade) only there.
 ---@return number[]
 local function Order()
     wipe(order)
-    for familyID in pairs(Kennel.familyInfo) do
-        order[#order + 1] = familyID
+    local client = (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient()
+    for familyID, info in pairs(Kennel.familyInfo) do
+        if not info.client or info.client == client then order[#order + 1] = familyID end
     end
     table.sort(order, ByName)
     return order

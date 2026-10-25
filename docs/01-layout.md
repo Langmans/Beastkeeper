@@ -36,9 +36,8 @@ Core\Core.xml     the core, in this order:
   Macro.lua       macros a module makes for the player
   Options.lua     the AceConfig options and the pages in the settings window
   Commands.lua    /kennel
-Data\<Client>\    generated, per client (Forever, Era):
-  Beasts.lua      pet ability ranks and the beasts that teach them
-                  (Data\Tamed-LICENSE.txt for the part from Tamed)
+Data\<Client>\    generated, per client (Forever, Era); the pet ability ranks and
+                  the beasts that teach them are LibTameable-1.0's (Libs\):
   Trainers.lua    pet trainers and stable masters, with faction and spots
   Ammo.lua        arrows and bullets, and the vendors that sell them
   Food.lua        (Era) each item's kind of pet food, from the CMaNGOS

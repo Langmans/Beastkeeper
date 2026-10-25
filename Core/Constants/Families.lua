@@ -4,7 +4,8 @@ local _, ns = ...
 -- client language), both ways: Kennel.families.cat is 2, so code says families.cat instead of a
 -- bare number; Kennel.familyInfo[2] is what Kennel knows of the Cat. Its specialization and diet
 -- are as Wowhead's Forever hunter pet pages give them; the Fox, new in Forever, is on none of
--- them yet. The name shown is the client's (Kennel.FamilyName in Core\Families.lua), English as
+-- them yet. Burning Crusade's families eat what that client's CreatureFamily.PetFoodMask says
+-- (raw meat counting as meat). The name shown is the client's (Kennel.FamilyName in Core\Families.lua), English as
 -- fallback.
 
 ---@type Kennel
@@ -28,6 +29,12 @@ Kennel.families = {
     hyena = 25,
     birdOfPrey = 26,
     windSerpent = 27,
+    dragonhawk = 30,
+    ravager = 31,
+    warpStalker = 32,
+    sporebat = 33,
+    netherRay = 34,
+    serpent = 35,
     fox = 40,
 }
 
@@ -60,5 +67,12 @@ Kennel.familyInfo = {
     [F.hyena] = { name = "Hyena", spec = S.cunning, diet = { D.meat, D.fruit } },
     [F.birdOfPrey] = { name = "Bird of Prey", spec = S.cunning, diet = { D.meat } },
     [F.windSerpent] = { name = "Wind Serpent", spec = S.ferocity, diet = { D.fish, D.cheese, D.bread } },
-    [F.fox] = { name = "Fox" },
+    -- Burning Crusade's families, without a specialization (pet talents came with Wrath).
+    [F.dragonhawk] = { name = "Dragonhawk", diet = { D.meat, D.fish, D.fruit, D.rawFish }, client = "tbc" },
+    [F.ravager] = { name = "Ravager", diet = { D.meat }, client = "tbc" },
+    [F.warpStalker] = { name = "Warp Stalker", diet = { D.fish, D.fruit, D.rawFish }, client = "tbc" },
+    [F.sporebat] = { name = "Sporebat", diet = { D.cheese, D.bread, D.fungus, D.fruit }, client = "tbc" },
+    [F.netherRay] = { name = "Nether Ray", diet = { D.meat }, client = "tbc" },
+    [F.serpent] = { name = "Serpent", diet = { D.meat, D.fish, D.rawFish }, client = "tbc" },
+    [F.fox] = { name = "Fox", client = "forever" },
 }

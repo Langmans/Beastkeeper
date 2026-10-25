@@ -14,9 +14,20 @@ local addonName, ns = ...
 local Kennel = LibStub("AceAddon-3.0"):NewAddon(ns, addonName, "AceConsole-3.0", "AceEvent-3.0")
 Kennel.L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
--- The generated game data, empty until a client's Data folder fills it (its .toc lists them): a
--- client without data of its own (Burning Crusade, Mists, retail) keeps these.
-Kennel.data = { petAbilityRanks = {}, beasts = {}, trainers = {}, ammo = {}, ammoVendors = {}, foodKinds = {} } --[[@as KennelData]]
+-- The game data. The pet ability ranks and the beasts that teach them are LibTameable-1.0's tables
+-- (read only; empty on a client without Beast Training). The rest is generated into Kennel's own
+-- Data folder, empty until the client's one fills it (its .toc lists them): a client without data
+-- of its own (Burning Crusade, Mists, retail) keeps these.
+---@type LibTameable
+local Tameable = LibStub("LibTameable-1.0")
+Kennel.data = {
+    petAbilityRanks = Tameable.ranks,
+    beasts = Tameable.beasts,
+    trainers = {},
+    ammo = {},
+    ammoVendors = {},
+    foodKinds = {},
+} --[[@as KennelData]]
 
 -- Every module can register events; anything else it embeds it lists itself.
 Kennel:SetDefaultModuleLibraries("AceEvent-3.0")

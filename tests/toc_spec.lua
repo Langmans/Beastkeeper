@@ -1,6 +1,6 @@
 -- The .toc per client: each client loads the one with its suffix (Kennel_Vanilla.toc on Classic Era,
 -- Kennel_Forever.toc on WoW: Forever, ...), Kennel.toc where none fits. They differ only in the
--- Interface line and in the client's own Data files.
+-- Interface line and in the client's own Data files (LibTameable's among them).
 
 local sh = require("tests.sh")
 
@@ -25,7 +25,7 @@ local function read(name)
             end
         elseif line:match("^##") then
             meta[#meta + 1] = line
-        elseif line:match("^Data\\") then
+        elseif line:match("^Data\\") or line:match("^Libs\\LibTameable%-1%.0\\Data\\") then
             data[#data + 1] = line
         elseif line ~= "" then
             files[#files + 1] = line
@@ -49,17 +49,20 @@ describe("The .toc files", function()
             assert.are.same(meta, otherMeta, name)
             assert.are.same(files, otherFiles, name)
         end
+        local tameable = "Libs\\LibTameable-1.0\\Data\\"
         local _, _, _, forever = read("Kennel_Forever.toc")
         local _, _, _, era = read("Kennel_Vanilla.toc")
+        local _, _, _, tbc = read("Kennel_TBC.toc")
         assert.are.same(
-            { "Data\\Forever\\Beasts.lua", "Data\\Forever\\Trainers.lua", "Data\\Forever\\Ammo.lua" },
+            { tameable .. "Forever.lua", "Data\\Forever\\Trainers.lua", "Data\\Forever\\Ammo.lua" },
             forever
         )
         assert.are.same(
-            { "Data\\Era\\Beasts.lua", "Data\\Era\\Trainers.lua", "Data\\Era\\Ammo.lua", "Data\\Era\\Food.lua" },
+            { tameable .. "Era.lua", "Data\\Era\\Trainers.lua", "Data\\Era\\Ammo.lua", "Data\\Era\\Food.lua" },
             era
         )
-        for _, name in ipairs({ "Kennel.toc", "Kennel_TBC.toc", "Kennel_Mists.toc", "Kennel_Mainline.toc" }) do
+        assert.are.same({ tameable .. "TBC.lua" }, tbc)
+        for _, name in ipairs({ "Kennel.toc", "Kennel_Mists.toc", "Kennel_Mainline.toc" }) do
             assert.are.same({}, select(4, read(name)), name .. " has no data")
         end
     end)

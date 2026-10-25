@@ -1,14 +1,27 @@
--- The generated beast data: pet ability ranks and the beasts that teach them, loaded here on its
--- own after the family table it names families by (the module specs use a small data set instead).
+-- The beast data Kennel gets from LibTameable-1.0: pet ability ranks and the beasts that teach
+-- them, loaded here on its own per client, with the family table Kennel shows them by (the module
+-- specs use a small data set instead).
 
+-- WOW_PROJECT_ID of each client the library has data for.
+local PROJECTS = { era = 2, tbc = 5, forever = 18 }
+
+---@param client string? a PROJECTS key, WoW: Forever by default
 ---@return table<number, KennelPetAbilityRank>, table<number, KennelBeast>, table<number, KennelFamilyInfo>
-local function Load()
+local function Load(client)
     -- Core\Addon.lua's Kennel.SelfKeyedEnum, which needs the whole addon to load.
     local ns = { L = {}, SelfKeyedEnum = NewClient().Kennel.SelfKeyedEnum }
     assert(loadfile("Core/Constants/Enums.lua"))("Kennel", ns)
     assert(loadfile("Core/Constants/Families.lua"))("Kennel", ns)
-    assert(loadfile("Data/Forever/Beasts.lua"))("Kennel", ns)
-    return ns.data.petAbilityRanks, ns.data.beasts, ns.familyInfo
+    -- The loaded files read these from _G, not from the spec's own environment.
+    _G.WOW_PROJECT_ID = PROJECTS[client or "forever"]
+    _G.LibStub = nil
+    assert(loadfile("Libs/LibStub/LibStub.lua"))()
+    assert(loadfile("Libs/LibTameable-1.0/LibTameable-1.0.lua"))()
+    for _, file in ipairs({ "Era", "TBC", "Forever" }) do
+        assert(loadfile("Libs/LibTameable-1.0/Data/" .. file .. ".lua"))()
+    end
+    local lib = LibStub("LibTameable-1.0")
+    return lib.ranks, lib.beasts, ns.familyInfo
 end
 
 ---@param list number[]
@@ -28,16 +41,20 @@ local ELWYNN, TIRISFAL, SPIDER, CAT, BEAR = 1429, 1420, 3, 2, 4
 describe("the beast data", function()
     local ranks, beasts, families = Load()
 
-    it("names only families Kennel's family table has", function()
-        for npc, beast in pairs(beasts) do
-            assert.is_truthy(families[beast.family], npc .. " " .. beast.name)
-        end
-        for spellID, rank in pairs(ranks) do
-            for _, family in ipairs(rank.families) do
-                assert.is_truthy(families[family], spellID)
+    for client in pairs(PROJECTS) do
+        it("names only families Kennel's family table has (" .. client .. ")", function()
+            local clientRanks, clientBeasts = Load(client)
+            assert.is_not_nil(next(clientBeasts))
+            for npc, beast in pairs(clientBeasts) do
+                assert.is_truthy(families[beast.family], npc .. " " .. beast.name)
             end
-        end
-    end)
+            for spellID, rank in pairs(clientRanks) do
+                for _, family in ipairs(rank.families) do
+                    assert.is_truthy(families[family], spellID)
+                end
+            end
+        end)
+    end
 
     it("gives a beast one rank of each ability", function()
         ---@type table<number, table<number, true>>

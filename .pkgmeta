@@ -65,6 +65,11 @@ externals:
   Libs/LibGoThere-1.0:
     url: https://github.com/Langmans/LibGoThere-1.0.git
     commit: 510d0318645d1a2ce01d159c761d3b5da9567d53
+  # The pet ability ranks and the beasts that teach them, Kennel's own
+  # (github.com/Langmans/LibTameable-1.0, GPL-3.0); pinned to a commit.
+  Libs/LibTameable-1.0:
+    url: https://github.com/Langmans/LibTameable-1.0.git
+    commit: 2b075498e8a292e63e8fab3f1db0985ea2f57071
 
 # Release notes come from this file instead of the commit log, so commit
 # bodies and trailers stay out of the CurseForge page.

@@ -19,12 +19,14 @@ modules move in one at a time.
 | Client | What runs |
 |---|---|
 | WoW: Forever, Classic Era (Season of Discovery, Hardcore) | every module, with beast, trainer, ammo vendor and (Classic Era) food data of its own |
-| Burning Crusade Classic | every module but Beast Map, which has no beast data there yet |
+| Burning Crusade Classic | every module; Beast Map has the beasts but no trainer pins yet |
 | Mists of Pandaria Classic, retail, and any other | Care Button, Autocast Check, Pet Journal, Data Broker: the game has no pet happiness, training points or ammo any more |
 
 A module whose part of the game the client lacks stays off and is left off the
-settings page. Classic Era's beasts that teach pet abilities come from the
-Tamed addon's data, its food kinds from the CMaNGOS classic-db.
+settings page. The beasts that teach pet abilities come from
+[LibTameable-1.0](https://github.com/Langmans/LibTameable-1.0) (GPL-3.0; for
+Classic Era and Burning Crusade from the CMaNGOS databases), Classic Era's
+food kinds from the CMaNGOS classic-db.
 
 ## Use
 
@@ -288,9 +290,9 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
   brings a beast in reach that teaches a rank you lack and no lower beast
   taught ("Now in reach: Charge (Rank 1)", "Cave Boar in Wailing Caverns
   teaches it"), several ranks in one toast. It has its own switch.
-- 106 ranks and 423 beasts, from Wowhead's WoW: Forever database and the
-  Tamed addon's list (MIT, notice in `Data/Tamed-LICENSE.txt`), kept only
-  where Wowhead has the beast as tameable on Forever. Beast names come from
+- The ranks and the beasts that teach them come from LibTameable-1.0: on WoW:
+  Forever 106 ranks and 409 beasts, on Classic Era 59 and 302, on Burning
+  Crusade 97 and 357. Beast names come from
   your game, in its language, once it knows the beast; English before that.
   Beasts in a dungeon share one pin at its entrance; hover it for which
   beasts are inside.
