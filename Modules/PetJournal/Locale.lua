@@ -48,5 +48,7 @@ L.PETJOURNAL_NEXT_UNKNOWN = "Next loyalty level: not enough seen yet."
 L.PETJOURNAL_ABILITIES = "Abilities: %s."
 -- The ranks of those it could still teach the hunter (above the highest the hunter knows). %s: a list as above.
 L.PETJOURNAL_TEACH = "Can teach you: %s."
+-- The same before the hunter knows Beast Training, which the last hunter taming quest brings.
+L.PETJOURNAL_TEACH_LATER = "Can teach you once you know Beast Training: %s."
 
 -- stylua: ignore end

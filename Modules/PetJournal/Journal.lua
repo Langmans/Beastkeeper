@@ -60,7 +60,9 @@ local function CanTeachLine(entry)
     end
     if #teach == 0 then return nil end
     table.sort(teach)
-    return L.PETJOURNAL_TEACH:format(table.concat(teach, ", "))
+    -- Without Beast Training (the quest Training the Beast) no pet can teach yet.
+    local line = Kennel.KnowsSpell(Kennel.BEAST_TRAINING) and L.PETJOURNAL_TEACH or L.PETJOURNAL_TEACH_LATER
+    return line:format(table.concat(teach, ", "))
 end
 
 ---The line on the pet's level, family and loyalty.

@@ -188,6 +188,16 @@ describe("Pet Journal", function()
         assert.is_false(says(client, "Can teach you"), "without Ability Learned's ranks")
     end)
 
+    it("says a pet can teach only once the hunter knows Beast Training", function()
+        local client = NewClient()
+        client.unknownSpells[5149] = true -- Beast Training comes with the quest Training the Beast
+        client:login():advance(1)
+        assert.is_true(
+            says(client, "Can teach you once you know Beast Training: Bite (Rank 1), Claw (Rank 2), Cower (Rank 1)."),
+            journal(client)
+        )
+    end)
+
     describe("in the pet's tooltip", function()
         ---The texts of the lines the journal adds to a tooltip of the unit with `guid`.
         local function tooltip(client, guid, frame)

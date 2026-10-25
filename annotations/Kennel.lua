@@ -265,6 +265,8 @@
 ---@class KennelFeeding: KennelSettingsModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field happiness number? the pet's happiness at the last check; nil for a new pet
+---@field canFeed boolean? whether the hunter knew Feed Pet at the last look
+---@field SPELLS_CHANGED fun(self: KennelFeeding)
 ---@field button Button the feed button (KennelFeedButton)
 ---@field FEED_PET number
 ---@field FeedMacro fun(food: KennelFood): string

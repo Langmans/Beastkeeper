@@ -61,7 +61,8 @@ end
 function M:ApplyButton()
     Kennel:OutOfCombat("Feeding:button", function()
         local _, class = UnitClass("player")
-        local active = self:IsEnabled() and class == "HUNTER"
+        -- Before Feed Pet (the quest Training the Beast) there is nothing to feed with.
+        local active = self:IsEnabled() and class == "HUNTER" and Kennel.KnowsSpell(M.FEED_PET)
         local first = active and self:Foods()[1]
         button:SetAttribute("type2", active and "foodlist" or nil)
         if first then
@@ -74,7 +75,7 @@ function M:ApplyButton()
         self:PlaceButton()
         local _, feedIcon = Kennel.SpellInfo(M.FEED_PET)
         icon:SetTexture(first and C_Item.GetItemIconByID(first.itemID) or feedIcon)
-        local watching = self:IsEnabled() and class == "HUNTER" and UnitExists("pet")
+        local watching = active and UnitExists("pet")
         local happiness = watching and M.Happiness() or H.happy
         local mood = HAPPINESS[happiness]
         SetBorderColor = SetBorderColor or Kennel:StyleButton(button, { icon = icon, group = "Feeding" })

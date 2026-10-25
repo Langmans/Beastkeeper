@@ -130,6 +130,23 @@ describe("Feeding", function()
             assert.are.equal("/cast Feed Pet\n/use 0 2", _G.KennelFeedButton.attributes.macrotext)
         end)
 
+        it("waits for Feed Pet: no button, no toasts until the hunter knows it", function()
+            local client = NewClient()
+            client.unknownSpells[6991] = true -- Feed Pet comes with the quest Training the Beast
+            client:login():stock(MUTTON, 5)
+            local seen = toasts(client)
+            client:setHappiness(2)
+            assert.is_false(_G.KennelFeedButton.shown, "the pet is content, yet nothing to feed with")
+            assert.is_nil(_G.KennelFeedButton.attributes.macrotext)
+            assert.are.same({}, seen, "no content toast")
+            client:eat(MUTTON):eat(MUTTON):eat(MUTTON):eat(MUTTON):eat(MUTTON)
+            assert.are.same({}, seen, "no out-of-food toast")
+            client.unknownSpells[6991] = nil
+            client:fire("SPELLS_CHANGED"):stock(MUTTON, 1)
+            assert.is_true(_G.KennelFeedButton.shown, "learned: the button for the content pet")
+            assert.are.equal("/cast Feed Pet\n/use 0 1", _G.KennelFeedButton.attributes.macrotext)
+        end)
+
         it("has nothing to do without food", function()
             NewClient():login()
             assert.is_nil(_G.KennelFeedButton.attributes.macrotext)

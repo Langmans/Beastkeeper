@@ -27,7 +27,7 @@ M.toastTypes = {
 }
 M.defaults = { profile = { content = true, unhappy = true, noFood = true } }
 
-M.FEED_PET = 6991
+M.FEED_PET = Kennel.FEED_PET
 local FEED_PET_NAME = "Feed Pet" -- for a client that cannot name the spell itself
 local FEED_PET_ICON = 132165
 local WELL_FED = 19705 -- a Well Fed buff: its name is what a food's tooltip says
@@ -212,7 +212,7 @@ function M:CheckHappiness()
     local settings = self:Settings()
     if happiness > UNHAPPY then Kennel:DropToast("Feeding:unhappy") end
     if happiness > CONTENT then Kennel:DropToast("Feeding:content") end
-    if happiness >= last then return end
+    if happiness >= last or not Kennel.KnowsSpell(M.FEED_PET) then return end
     if happiness == CONTENT and settings.content then Kennel:ShowToast(self:Toast("content")) end
     if happiness == UNHAPPY and settings.unhappy then Kennel:ShowToast(self:Toast("unhappy")) end
 end
@@ -225,7 +225,7 @@ function M:Update()
     self:ApplyButton()
     if #foods > 0 then
         Kennel:DropToast("Feeding:nofood")
-    elseif had and UnitExists("pet") and self:Settings().noFood then
+    elseif had and UnitExists("pet") and self:Settings().noFood and Kennel.KnowsSpell(M.FEED_PET) then
         Kennel:ShowToast(self:Toast("nofood"))
     end
 end
@@ -257,7 +257,15 @@ function M:OnHappiness()
 end
 
 -- Not every client has every one; a missing one is skipped.
-local EVENTS = { "BAG_UPDATE_DELAYED", "UNIT_PET", "UNIT_LEVEL" }
+local EVENTS = { "BAG_UPDATE_DELAYED", "UNIT_PET", "UNIT_LEVEL", "SPELLS_CHANGED" }
+
+---Feed Pet learned (or the spellbook changed otherwise): the button again when that changed.
+function M:SPELLS_CHANGED()
+    local canFeed = Kennel.KnowsSpell(M.FEED_PET)
+    if canFeed == self.canFeed then return end
+    self.canFeed = canFeed
+    self:Update()
+end
 
 function M:OnEnable()
     local _, class = UnitClass("player")
@@ -265,6 +273,7 @@ function M:OnEnable()
     Kennel.RegisterEvents(self, EVENTS)
     Kennel:Listen(self, "KENNEL_PET_HAPPINESS", "OnHappiness")
     self.happiness = nil
+    self.canFeed = Kennel.KnowsSpell(M.FEED_PET)
     wipe(foods)
     self:Update()
 end

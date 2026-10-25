@@ -22,7 +22,7 @@ M.defaults = {
     global = { customLines = {} },
 }
 
-M.FEED_PET = 6991
+M.FEED_PET = Kennel.FEED_PET
 
 ---The settings of the profile in use.
 ---@return KennelFeedEmotesSettings

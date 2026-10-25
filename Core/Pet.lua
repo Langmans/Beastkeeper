@@ -50,8 +50,9 @@ function Kennel.WhenItemLoaded(itemID, fn)
 end
 
 -- Call Pet: a hunter has a pet to care for only once it knows this (level 10 on the classic clients).
--- Tame Beast: learned at the same level.
-Kennel.CALL_PET, Kennel.TAME_BEAST = 883, 1515
+-- Tame Beast: learned at the same level. Beast Training and Feed Pet: from the quest that ends the
+-- hunter's taming quests at 10 (Training the Beast), with Revive Pet.
+Kennel.CALL_PET, Kennel.TAME_BEAST, Kennel.BEAST_TRAINING, Kennel.FEED_PET = 883, 1515, 5149, 6991
 
 ---Whether the player knows a spell (Kennel.C.SpellBook.IsSpellKnown); true on a client that cannot
 ---tell.
