@@ -14,7 +14,9 @@ local L = Kennel.L
 local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
 
 local LIST_WIDTH, ROW_HEIGHT, LIST_ROWS = 170, 18, 21
-local RANK_ROWS, RANK_HEIGHT, RANK_WIDTH, LEVEL_WIDTH, MORE_WIDTH = 12, 22, 64, 64, 30
+local RANK_ROWS, RANK_HEIGHT, RANK_WIDTH, LEVEL_WIDTH, MORE_WIDTH = 15, 22, 64, 64, 30
+local TOGGLE_SIZE, TEACHER_INDENT = 12, 14
+local PLUS, MINUS = "Interface\\Buttons\\UI-PlusButton-Up", "Interface\\Buttons\\UI-MinusButton-Up"
 local RANKS_TOP, HEADER_TOP = 46, 26
 -- The pet level column, right-aligned, with room before the teacher.
 local LEVEL_COLUMN = LEVEL_WIDTH - 14
@@ -246,8 +248,11 @@ local function RankRow(panel, skin, index)
     row.stripe:SetAllPoints()
     row.stripe:SetColorTexture(1, 1, 1, 0.05)
     row.stripe:SetShown(index % 2 == 0)
+    row.toggle = row:CreateTexture(nil, "ARTWORK")
+    row.toggle:SetSize(TOGGLE_SIZE, TOGGLE_SIZE)
+    row.toggle:SetPoint("LEFT", 2, 0)
     row.rank = Text(row, skin)
-    row.rank:SetPoint("LEFT", 4, 0)
+    row.rank:SetPoint("LEFT", TOGGLE_SIZE + 4, 0)
     row.level = Text(row, skin, "RIGHT")
     row.level:SetWidth(LEVEL_COLUMN)
     row.level:SetPoint("LEFT", RANK_WIDTH, 0)
@@ -277,11 +282,25 @@ local function RankRow(panel, skin, index)
     row.more:SetWidth(MORE_WIDTH)
     row.more:SetPoint("RIGHT", row.go, "LEFT", -6, 0)
     row.text = Text(row, skin)
-    row.text:SetPoint("LEFT", RANK_WIDTH + LEVEL_WIDTH, 0)
-    row.text:SetPoint("RIGHT", row.more, "LEFT", -4, 0)
+    -- A rank with more than one teacher folds open to them all, and closed again.
+    row:SetScript("OnClick", function()
+        if not row.npc and row.teachers and #row.teachers > 1 then
+            panel.expanded[row.spellID] = not panel.expanded[row.spellID] or nil
+            Kennel:RefreshWindow("abilities")
+        end
+    end)
     row:SetScript("OnEnter", OnEnter)
     row:SetScript("OnLeave", OnLeave)
     return row
+end
+
+---Lays out a row's text column: a teacher's sits in a little under its rank.
+---@param row KennelRankRow
+---@param teacher boolean
+local function PlaceText(row, teacher)
+    row.text:ClearAllPoints()
+    row.text:SetPoint("LEFT", RANK_WIDTH + LEVEL_WIDTH + (teacher and TEACHER_INDENT or 0), 0)
+    row.text:SetPoint("RIGHT", row.more, "LEFT", -4, 0)
 end
 
 ---Builds the panel: the abilities' rows, the title, the column heads, the ranks' rows.
@@ -298,20 +317,34 @@ local function Create(panel, skin)
     panel.title:SetPoint("LEFT", panel.titleIcon, "RIGHT", 6, 0)
     skin.Font(panel.title, 16)
     panel.header = Header(panel, skin)
+    panel.expanded, panel.offset, panel.lineSpells, panel.lineBeasts = {}, 0, {}, {}
     for index = 1, RANK_ROWS do
         panel.ranks[index] = RankRow(panel, skin, index)
     end
+    panel:EnableMouseWheel(true)
+    ---@param _ Frame
+    ---@param delta number 1 up, -1 down
+    panel:SetScript("OnMouseWheel", function(_, delta)
+        local last = math.max(0, #panel.lineSpells - RANK_ROWS)
+        panel.offset = math.min(last, math.max(0, panel.offset - delta))
+        Kennel:RefreshWindow("abilities")
+    end)
 end
 
 ---Fills one rank's row.
 ---@param row KennelRankRow
 ---@param spellID number
-local function FillRank(row, spellID)
+---@param expanded boolean? its teachers show below it
+local function FillRank(row, spellID, expanded)
     local rank = Kennel.data.petAbilityRanks[spellID] --[[@as KennelPetAbilityRank]]
-    row.spellID = spellID
+    row.spellID, row.npc = spellID, nil
     row.rank:SetText(L.BEASTMAP_RANK:format(rank.rank))
     row.level:SetText(tostring(rank.level))
     row.more:SetText("")
+    PlaceText(row, false)
+    local folds = M.Lacking(spellID) ~= nil and #rank.teachers > 1
+    row.toggle:SetShown(folds)
+    row.toggle:SetTexture(expanded and MINUS or PLUS)
     if M.Lacking(spellID) and #rank.teachers == 0 then
         row.teachers, row.best = nil, nil
         row.text:SetText(L.BEASTMAP_NO_TEACHER)
@@ -337,11 +370,60 @@ local function FillRank(row, spellID)
     row:Show()
 end
 
+---Fills a row with one of a rank's teachers: its levels, its place and travel time, its own hunt
+---button.
+---@param row KennelRankRow
+---@param spellID number
+---@param npc number
+local function FillTeacher(row, spellID, npc)
+    local beast = Kennel.data.beasts[npc]
+    row.spellID, row.npc, row.best, row.teachers = spellID, npc, npc, nil
+    row.toggle:Hide()
+    row.rank:SetText("")
+    local levels = beast.minLevel == beast.maxLevel and tostring(beast.minLevel)
+        or ("%d-%d"):format(beast.minLevel, beast.maxLevel)
+    row.level:SetText(levels)
+    row.more:SetText("")
+    PlaceText(row, true)
+    local text = M.Place(npc)
+    local seconds = M.TravelTimeTo(npc)
+    if seconds then text = text .. ", " .. L.BEASTMAP_TRAVEL:format(math.max(1, math.floor(seconds / 60 + 0.5))) end
+    row.text:SetText(text)
+    local colour = beast.minLevel > M:PlayerLevel() and ABOVE or MISSING
+    row.text:SetTextColor(colour[1], colour[2], colour[3])
+    row.go:SetShown(beast.pins ~= nil)
+    row.go.active:SetShown(M:IsHunting(npc, spellID))
+    row:Show()
+end
+
+---The chosen ability's lines, in `panel.lineSpells` and `panel.lineBeasts`: each rank, and below
+---an unfolded one each of its teachers, nearest first (lineBeasts false on a rank's line).
+---@param panel KennelAbilitiesPanel
+---@param spells number[]
+local function Lines(panel, spells)
+    local lineSpells, lineBeasts = panel.lineSpells, panel.lineBeasts
+    wipe(lineSpells)
+    wipe(lineBeasts)
+    for _, spellID in ipairs(spells) do
+        lineSpells[#lineSpells + 1], lineBeasts[#lineSpells + 1] = spellID, false
+        local rank = Kennel.data.petAbilityRanks[spellID]
+        if panel.expanded[spellID] and M.Lacking(spellID) then
+            for _, npc in ipairs(M.Nearest(rank.teachers)) do
+                lineSpells[#lineSpells + 1], lineBeasts[#lineSpells + 1] = spellID, npc
+            end
+        end
+    end
+end
+
 ---Fills the list and the chosen ability's ranks.
 ---@param panel KennelAbilitiesPanel
 local function Refresh(panel)
     local abilities = Order()
     if not panel.chosen or not Groups()[panel.chosen] then panel.chosen = abilities[1] end
+    if panel.chosen ~= panel.shownAbility then
+        panel.shownAbility, panel.offset = panel.chosen, 0
+        wipe(panel.expanded)
+    end
     for index, row in ipairs(panel.rows) do
         local ability = abilities[index]
         row.ability = ability
@@ -362,10 +444,15 @@ local function Refresh(panel)
     local spells = Groups()[panel.chosen] or {}
     panel.title:SetText(panel.chosen and AbilityName(panel.chosen) or "")
     panel.titleIcon:SetTexture(panel.chosen and AbilityIcon(panel.chosen))
+    Lines(panel, spells)
+    panel.offset = math.min(panel.offset, math.max(0, #panel.lineSpells - RANK_ROWS))
     for index, row in ipairs(panel.ranks) do
-        local spellID = spells[index]
-        if spellID then
-            FillRank(row, spellID)
+        local line = index + panel.offset
+        local spellID, npc = panel.lineSpells[line], panel.lineBeasts[line]
+        if npc then
+            FillTeacher(row, spellID, npc)
+        elseif spellID then
+            FillRank(row, spellID, panel.expanded[spellID])
         else
             row:Hide()
         end

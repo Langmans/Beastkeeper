@@ -771,6 +771,11 @@
 ---@field titleIcon Texture the chosen ability's icon
 ---@field header KennelRankHeader
 ---@field chosen number? the ability shown, by its rank 1's spell ID
+---@field shownAbility number? the ability the lines below were made for
+---@field expanded table<number, true?> the ranks unfolded to their teachers
+---@field offset number how many lines the list is scrolled down
+---@field lineSpells number[] per line its rank
+---@field lineBeasts (number|false)[] per line its teacher, false on a rank's own line
 
 ---A rank's button that sends the hunter to the beast.
 ---@class KennelGoButton: Button
@@ -796,6 +801,8 @@
 ---@field text FontString the nearest teacher, or known
 ---@field more FontString how many more teach it
 ---@field stripe Texture every other row's background
+---@field toggle Texture plus or minus, on a rank that folds open to its teachers
+---@field npc number? on a teacher's line, the beast
 ---@field go KennelGoButton
 ---@field spellID number?
 ---@field teachers number[]? the beasts that teach it, in the window's order; nil when known

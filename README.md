@@ -280,8 +280,10 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
 - **In Kennel's window**, also without HandyNotes: the Abilities tab lists
   every ability beasts teach and how many ranks you know; per rank the
   nearest beast that teaches it (in a straight line, across zone borders; the
-  five nearest by travel time with a route addon), a button that goes to its
-  nearest spot, and every teacher in its tooltip. The Families tab shows
+  five nearest by travel time with a route addon), a button that starts the
+  hunt for it, and every teacher in its tooltip; a click on the rank unfolds
+  it to every beast that teaches it, each with its own hunt button (scroll
+  with the mouse wheel). The Families tab shows
   per family its specialization, diet, what it can learn and where to tame
   one.
 - **Rare alarm**, also without HandyNotes: a toast with the raid warning

@@ -741,6 +741,61 @@ describe("Beast Map", function()
             assert.is_true(panel.ranks[2].stripe.shown)
         end)
 
+        it("unfolds a rank to every beast that teaches it, each with its own hunt button", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            click(panel.rows[3])
+            local claw3 = panel.ranks[3]
+            assert.is_true(claw3.toggle.shown, "three beasts teach Claw 3")
+            assert.is_false(panel.ranks[1].toggle.shown, "one teaches Claw 1")
+            assert.is_false(panel.ranks[4].shown)
+            click(claw3)
+            assert.are.same({ "Rank 1", "Rank 2", "Rank 3", "", "", "" }, texts(panel.ranks, "rank"))
+            assert.are.same(
+                { "Rare Cat in Tirisfal Glades", "Late Cat", "High Cat in Elwynn Forest" },
+                { panel.ranks[4].text.text, panel.ranks[5].text.text, panel.ranks[6].text.text },
+                "nearest first"
+            )
+            assert.are.same({ "10", "11", "65-66" }, {
+                panel.ranks[4].level.text,
+                panel.ranks[5].level.text,
+                panel.ranks[6].level.text,
+            }, "the beasts' levels")
+            assert.are.same({ 1, 0.6, 0.3 }, panel.ranks[6].text.textColor, "above the hunter's level")
+            click(panel.ranks[6].go)
+            assert.are.same({ npc = 102, spellID = CLAW_3 }, client.Kennel:GetModule("BeastMap").db.char.hunt)
+            assert.is_true(panel.ranks[6].go.active.shown)
+            click(panel.ranks[3])
+            assert.is_false(panel.ranks[4].shown, "folded again")
+        end)
+
+        it("scrolls a long list with the mouse wheel", function()
+            local client = hunter(70)
+            local beasts, teachers = client.Kennel.data.beasts, {}
+            for i = 1, 20 do
+                beasts[400 + i] =
+                    { name = "Cat " .. i, family = 2, minLevel = 10, maxLevel = 10, pins = { [ELWYNN] = { i, 50 } } }
+                teachers[i] = 400 + i
+            end
+            client.Kennel.data.petAbilityRanks[CLAW].teachers = teachers
+            local panel = tab(client)
+            click(panel.rows[3])
+            click(panel.ranks[1])
+            assert.are.equal("Rank 1", panel.ranks[1].rank.text)
+            local wheel = panel:GetScript("OnMouseWheel")
+            wheel(panel, -1)
+            assert.are.equal("", panel.ranks[1].rank.text, "one line down: a beast of Claw 1")
+            for _ = 1, 30 do
+                wheel(panel, -1)
+            end
+            assert.are.equal("Rank 3", panel.ranks[#panel.ranks].rank.text, "no further than the last line")
+            wheel(panel, 1)
+            for _ = 1, 30 do
+                wheel(panel, 1)
+            end
+            assert.are.equal("Rank 1", panel.ranks[1].rank.text)
+        end)
+
         it("names a rank's go button in its tooltip", function()
             local client = hunter(10)
             local panel = tab(client)
