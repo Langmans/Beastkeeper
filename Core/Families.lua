@@ -40,3 +40,11 @@ function Kennel.FamilyName(familyID)
     local known = Kennel.familyInfo[familyID]
     return known and known.name
 end
+
+---A family's portrait as the client gives it; the question mark when it gives none.
+---@param familyID number
+---@return number|string
+function Kennel.FamilyIcon(familyID)
+    local info = C_CreatureInfo and C_CreatureInfo.GetCreatureFamilyInfo(familyID)
+    return info and info.iconFile or 134400
+end

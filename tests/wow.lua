@@ -824,12 +824,13 @@ function NewClient(opts)
         end
         return infos
     end
-    -- Pet family names as the client gives them (client.familyNames by ID); none by default.
-    client.familyNames = {}
+    -- Pet family names and icons as the client gives them (client.familyNames, client.familyIcons
+    -- by ID); none by default.
+    client.familyNames, client.familyIcons = {}, {}
     C_CreatureInfo = {
         GetCreatureFamilyInfo = function(familyID)
             local name = client.familyNames[familyID]
-            return name and { name = name } or nil
+            return name and { name = name, iconFile = client.familyIcons[familyID] } or nil
         end,
         GetCreatureFamilyIDs = function()
             local ids = {}

@@ -827,6 +827,7 @@
 ---@field beasts KennelFamilyBeastRow[]
 ---@field model PlayerModel
 ---@field title FontString
+---@field titleIcon Texture the chosen family's portrait
 ---@field spec FontString
 ---@field diet FontString
 ---@field abilities FontString
@@ -834,6 +835,7 @@
 ---@field chosen number? the family shown
 
 ---@class KennelFamilyRow: Button
+---@field icon Texture the family's portrait
 ---@field label FontString
 ---@field familyID number?
 

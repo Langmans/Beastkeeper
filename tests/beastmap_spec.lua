@@ -1036,6 +1036,19 @@ describe("Beast Map", function()
             assert.are.equal("Cat", panel.title.text)
         end)
 
+        it("shows each family's portrait beside its name, and the chosen one's by the title", function()
+            local client = hunter(10)
+            client.familyNames[2], client.familyIcons[2] = "Cat", 132185
+            local panel = tab(client)
+            local cat
+            for _, row in ipairs(panel.rows) do
+                if row.shown and row.familyID == 2 then cat = row end
+            end
+            assert.are.equal(132185, cat.icon.texture)
+            assert.are.equal(132185, panel.titleIcon.texture, "Fluffy's family is chosen")
+            assert.are.equal(134400, panel.rows[1].icon.texture, "the question mark without the client's icon")
+        end)
+
         it("says its specialization, diet and what it can learn", function()
             local client = hunter(10)
             client:openTrainer({ { "Claw", "used", CLAW } }):closeTrainer()

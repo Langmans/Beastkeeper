@@ -128,6 +128,25 @@ local function Text(parent, skin, template, size)
     return text
 end
 
+---An icon trimmed of its border, as the game's own buttons show icons.
+---@param icon Texture
+local function Crop(icon)
+    icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+end
+
+---A family's portrait, cropped as the look crops icons.
+---@param parent Frame
+---@param skin KennelButtonHolderSkin
+---@param size number
+---@return Texture
+local function Portrait(parent, skin, size)
+    local icon = parent:CreateTexture(nil, "ARTWORK")
+    icon:SetSize(size, size)
+    local crop = skin.CropIcon or Crop
+    crop(icon)
+    return icon
+end
+
 ---Builds the panel: the families' rows, the card's texts, the beasts' rows and the model.
 ---@param panel KennelFamiliesPanel
 ---@param skin KennelButtonHolderSkin
@@ -137,8 +156,10 @@ local function Create(panel, skin)
         local row = CreateFrame("Button", nil, panel) --[[@as KennelFamilyRow]]
         row:SetSize(LIST_WIDTH, ROW_HEIGHT)
         row:SetPoint("TOPLEFT", 0, -(index - 1) * ROW_HEIGHT)
+        row.icon = Portrait(row, skin, ROW_HEIGHT - 4)
+        row.icon:SetPoint("LEFT", 4, 0)
         row.label = Text(row, skin)
-        row.label:SetPoint("LEFT", 6, 0)
+        row.label:SetPoint("LEFT", row.icon, "RIGHT", 5, 0)
         row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
         row:SetScript("OnClick", function()
             panel.chosen = row.familyID
@@ -150,8 +171,10 @@ local function Create(panel, skin)
     panel.model = CreateFrame("PlayerModel", nil, panel)
     panel.model:SetSize(MODEL_SIZE, MODEL_SIZE)
     panel.model:SetPoint("TOPRIGHT")
+    panel.titleIcon = Portrait(panel, skin, 20)
+    panel.titleIcon:SetPoint("TOPLEFT", left, 0)
     panel.title = Text(panel, skin, "GameFontNormalLarge", 16)
-    panel.title:SetPoint("TOPLEFT", left, 0)
+    panel.title:SetPoint("LEFT", panel.titleIcon, "RIGHT", 6, 0)
     panel.spec = Text(panel, skin, "GameFontNormal")
     panel.spec:SetPoint("TOPLEFT", panel.title, "BOTTOMLEFT", 0, -4)
     panel.diet = Text(panel, skin)
@@ -217,6 +240,7 @@ local function Refresh(panel)
         if familyID then
             local name, count = Kennel.FamilyName(familyID) or "?", PetCount(familyID)
             row.label:SetText(count > 0 and L.BEASTMAP_FAMILY_ROW:format(name, count) or name)
+            row.icon:SetTexture(Kennel.FamilyIcon(familyID))
             local colour = familyID == panel.chosen and CHOSEN or OTHER
             row.label:SetTextColor(colour[1], colour[2], colour[3])
         end
@@ -224,6 +248,7 @@ local function Refresh(panel)
     local familyID = panel.chosen --[[@as number]]
     local info = Kennel.familyInfo[familyID]
     panel.title:SetText(Kennel.FamilyName(familyID) or "?")
+    panel.titleIcon:SetTexture(Kennel.FamilyIcon(familyID))
     panel.spec:SetText(Kennel.SpecName(familyID) or "")
     panel.diet:SetText(DietText(info))
     panel.abilities:SetText(AbilitiesText(familyID))
