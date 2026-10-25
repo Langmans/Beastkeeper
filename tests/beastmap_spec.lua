@@ -26,6 +26,7 @@ local function SmallData(Kennel)
                 minLevel = 5,
                 maxLevel = 5,
                 pins = { [ELWYNN] = { 10, 10, 20, 20 } },
+                radii = { [ELWYNN] = { 3, 5 } },
             },
             [104] = {
                 name = "Rare Cat",
@@ -372,6 +373,181 @@ describe("Beast Map", function()
         end)
     end)
 
+    describe("the hunt", function()
+        ---The Abilities tab on `ability`'s row (its index in the list).
+        local function abilities(client, index)
+            client.Kennel:OpenWindow("abilities")
+            local panel = client.Kennel.window.panels.abilities
+            local row = panel.rows[index]
+            row:GetScript("OnClick")(row, "LeftButton")
+            return panel
+        end
+
+        ---Clicks a button by its script.
+        local function click(button)
+            button:GetScript("OnClick")(button, "LeftButton")
+        end
+
+        ---What KENNEL_HUNT_STARTED and KENNEL_HUNT_ENDED told, in order.
+        local function heard(client)
+            local events = {}
+            local listener = {}
+            for _, message in ipairs({ "KENNEL_HUNT_STARTED", "KENNEL_HUNT_ENDED" }) do
+                client.Kennel:Listen(listener, message, function(_, event)
+                    events[#events + 1] = { message, event }
+                end)
+            end
+            return events
+        end
+
+        it("starts from a rank's button: the route, the tame key, a line in chat, a message", function()
+            local client = hunter(10)
+            local events = heard(client)
+            local panel = abilities(client, 3)
+            click(panel.ranks[3].go)
+            local M = client.Kennel:GetModule("BeastMap")
+            assert.are.same({ npc = 104, spellID = CLAW_3 }, M.db.char.hunt, "kept for the character")
+            assert.is_true(client:printedContains("Hunting Rare Cat for Claw (Rank 3)."))
+            assert.is_true(client:printedContains("Tirisfal Glades 30.0, 30.0"), "the route")
+            assert.are.equal("Rare Cat", M.tameTarget)
+            assert.are.equal("KENNEL_HUNT_STARTED", events[1][1])
+            assert.are.same({ module = "BeastMap", npc = 104, spellID = CLAW_3, name = "Rare Cat" }, events[1][2])
+            assert.is_true(panel.ranks[3].go.active.shown, "the hunted rank's button lit")
+        end)
+
+        it("stops on that button again, or with /kennel hunt stop", function()
+            local client = hunter(10)
+            local events = heard(client)
+            local panel = abilities(client, 3)
+            click(panel.ranks[3].go)
+            click(panel.ranks[3].go)
+            local M = client.Kennel:GetModule("BeastMap")
+            assert.is_nil(M.db.char.hunt)
+            assert.is_true(client:printedContains("Stopped hunting Rare Cat."))
+            assert.are.same(
+                { module = "BeastMap", npc = 104, spellID = CLAW_3, name = "Rare Cat", reason = "stopped" },
+                events[2][2]
+            )
+            assert.is_false(panel.ranks[3].go.active.shown)
+            client:advance(1) -- the minimap's redraws stop with the hunt
+            click(panel.ranks[3].go)
+            client:slash("hunt stop")
+            assert.is_nil(M.db.char.hunt)
+            client.printed = {}
+            client:slash("hunt stop")
+            assert.is_true(client:printedContains("Not hunting a beast."))
+        end)
+
+        it("ends the hunt on when another starts", function()
+            local client = hunter(10)
+            local events = heard(client)
+            local panel = abilities(client, 3)
+            click(panel.ranks[3].go) -- Rare Cat, Claw 3
+            click(abilities(client, 1).ranks[1].go) -- Spider, Bite 1
+            assert.are.same({ "KENNEL_HUNT_STARTED", "KENNEL_HUNT_ENDED", "KENNEL_HUNT_STARTED" }, {
+                events[1][1],
+                events[2][1],
+                events[3][1],
+            })
+            assert.are.equal("Rare Cat", events[2][2].name)
+            assert.are.same({ npc = 103, spellID = BITE }, client.Kennel:GetModule("BeastMap").db.char.hunt)
+        end)
+
+        it("ends once the hunter knows the rank", function()
+            local client = hunter(10)
+            local events = heard(client)
+            click(abilities(client, 3).ranks[3].go)
+            client:openTrainer({ { "Claw", "used", CLAW_3 } }):closeTrainer()
+            assert.is_nil(client.Kennel:GetModule("BeastMap").db.char.hunt)
+            assert.is_true(client:printedContains("Learned Claw (Rank 3): the hunt for Rare Cat is over."))
+            assert.are.equal("learned", events[2][2].reason)
+        end)
+
+        it("starts from a beast's pin, for the rank its pin shows, going to that pin", function()
+            local client = hunter(10)
+            local spider = client:mapPins(ELWYNN)
+            local pin
+            for _, p in ipairs(spider) do
+                if p.x == 20 then pin = p end
+            end
+            client:clickPin(ELWYNN, pin.coord)
+            assert.are.same({ npc = 103, spellID = BITE }, client.Kennel:GetModule("BeastMap").db.char.hunt)
+            assert.is_true(client:printedContains("Elwynn Forest 20.0, 20.0"))
+        end)
+
+        ---The areas shown in one of Beast Map's pools (worldAreas, minimapAreas): where each sits
+        ---(its CENTER's offset) and its size.
+        local function shownAreas(client, pool)
+            local out = {}
+            for _, disc in ipairs(client.Kennel:GetModule("BeastMap")[pool] or {}) do
+                if disc.shown then
+                    local point = disc.points[#disc.points]
+                    out[#out + 1] = { x = point[4], y = point[5], width = disc.width, height = disc.height }
+                end
+            end
+            return out
+        end
+
+        ---@param actual number
+        ---@param expected number
+        local function near(actual, expected, what)
+            assert.is_true(math.abs(actual - expected) < 0.01, ("%s: %s, not %s"):format(what, actual, expected))
+        end
+
+        it("marks the hunted beast's areas on the world map, only on its own map", function()
+            local client = hunter(10)
+            client:showWorldMap(ELWYNN)
+            assert.are.same({}, shownAreas(client, "worldAreas"), "no hunt, no areas")
+            click(abilities(client, 1).ranks[1].go) -- Spider, Bite 1
+            local areas = shownAreas(client, "worldAreas")
+            -- Its two pins on a 1000 by 667 canvas, with radius 3 and 5 (percent).
+            assert.are.equal(2, #areas)
+            near(areas[1].x, 100, "x")
+            near(areas[1].y, -66.7, "y")
+            near(areas[1].width, 60, "width")
+            near(areas[1].height, 40.02, "height")
+            near(areas[2].width, 100, "width")
+            client:showWorldMap(TIRISFAL)
+            assert.are.same({}, shownAreas(client, "worldAreas"), "not on another map")
+            client:showWorldMap(ELWYNN)
+            client:slash("hunt stop")
+            assert.are.same({}, shownAreas(client, "worldAreas"))
+        end)
+
+        it("marks them on the minimap too, around where the hunter stands", function()
+            local client = hunter(10)
+            client.mapPos = { 0.15, 0.10 }
+            click(abilities(client, 1).ranks[1].go)
+            client:advance(1)
+            -- Elwynn is 3470 by 2314 yards; the minimap, 140 wide, shows 466.67 yards across.
+            local perYard = 140 / (1400 / 3)
+            local east, south = 34.7 * perYard, 23.14 * perYard
+            local across = (34.7 + 23.14) / 2 * perYard
+            local areas = shownAreas(client, "minimapAreas")
+            assert.are.equal(2, #areas)
+            near(areas[1].x, -5 * east, "5% west")
+            near(areas[1].y, 0, "level with the hunter")
+            near(areas[1].width, 2 * 3 * across, "radius 3%")
+            near(areas[2].x, 5 * east, "5% east")
+            near(areas[2].y, -10 * south, "10% south")
+            near(areas[2].width, 2 * 5 * across, "radius 5%")
+            client.cvars.rotateMinimap = "1"
+            client.facing = math.pi / 2 -- facing west: west is up
+            client:advance(1)
+            areas = shownAreas(client, "minimapAreas")
+            near(areas[1].x, 0, "rotated")
+            near(areas[1].y, 5 * east, "west is up")
+        end)
+
+        it("leaves the minimap when the hunter is on another map", function()
+            local client = hunter(10)
+            client.mapPos = nil
+            click(abilities(client, 1).ranks[1].go)
+            client:advance(1)
+            assert.are.same({}, shownAreas(client, "minimapAreas"))
+        end)
+    end)
+
     describe("pet trainers and stable masters", function()
         it("have a pin each, for the hunter's faction or both", function()
             local client = hunter(10)
@@ -571,7 +747,10 @@ describe("Beast Map", function()
             click(panel.rows[3])
             local go = panel.ranks[3].go
             go:GetScript("OnEnter")(go)
-            assert.are.equal("Show the way to Rare Cat", GameTooltip.text)
+            assert.are.equal("Hunt Rare Cat: the way there, the tame key, its areas on the map", GameTooltip.text)
+            click(go)
+            go:GetScript("OnEnter")(go)
+            assert.are.equal("Stop hunting Rare Cat", GameTooltip.text)
             go:GetScript("OnLeave")(go)
             assert.is_false(GameTooltip.shown)
         end)

@@ -513,13 +513,29 @@
 ---@field Place fun(npc: number): string the beast and its zone, "Rare Cat in Tirisfal Glades"
 ---@field Nearest fun(teachers: number[]): number[] the window's order, a new list
 ---@field TravelTimeTo fun(npc: number): number? seconds, when a route addon gives travel times
----@field GoToBeast fun(self: KennelBeastMap, npc: number): boolean
+---@field GoToBeast fun(self: KennelBeastMap, npc: number, pinMap: number?, pinX: number?, pinY: number?): boolean
+---@field PinSpell fun(npc: number): number? the rank a beast's pin shows
+---@field Hunt fun(self: KennelBeastMap): KennelHunt? the hunt on (Hunt.lua)
+---@field IsHunting fun(self: KennelBeastMap, npc: number?, spellID: number?): boolean
+---@field StartHunt fun(self: KennelBeastMap, npc: number, spellID: number, map: number?, x: number?, y: number?)
+---@field StopHunt fun(self: KennelBeastMap, reason: "learned"|"stopped"?)
+---@field OnRanksKnown fun(self: KennelBeastMap)
+---@field ShowHunt fun(self: KennelBeastMap) the hunted beast's areas (Areas.lua)
+---@field DrawWorldAreas fun(self: KennelBeastMap)
+---@field DrawMinimapAreas fun(self: KennelBeastMap)
+---@field worldAreas Texture[] the discs on the world map
+---@field minimapAreas Texture[] the discs on the minimap
 ---@field ApplyTameButton fun(self: KennelBeastMap)
 ---@field WatchRares fun(self: KennelBeastMap)
 ---@field CreateMapButton fun(self: KennelBeastMap)
 ---@field UpdateMapButton fun(self: KennelBeastMap)
 ---@field ToastReach fun(self: KennelBeastMap, level: number)
 ---@field GetOptions fun(self: KennelBeastMap): table
+
+---The beast the hunter hunts, to tame it for one rank (Beast Map's db.char.hunt).
+---@class KennelHunt
+---@field npc number
+---@field spellID number the rank
 
 ---@class KennelBeastMapSettings
 ---@field tooltip boolean a beast's tooltip says what it teaches
@@ -662,6 +678,7 @@
 ---@field elite true?
 ---@field rare true?
 ---@field pins table<number, number[]>? per uiMapID, pin positions as x1, y1, x2, y2, ... (percent)
+---@field radii table<number, number[]>? per uiMapID, each pin's area radius (percent)
 ---@field zones number[]? AreaTable IDs, for a beast Wowhead has no map of (in an instance)
 
 ---The Dev Probe (Modules\DevProbe, repository copies only).
@@ -758,6 +775,7 @@
 ---A rank's button that sends the hunter to the beast.
 ---@class KennelGoButton: Button
 ---@field icon Texture
+---@field active Texture lit while its rank is the one hunted
 
 ---The ranks' column heads.
 ---@class KennelRankHeader: Frame

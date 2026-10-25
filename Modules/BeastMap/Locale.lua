@@ -110,7 +110,16 @@ L.BEASTMAP_KNOWN = "Known"
 L.BEASTMAP_COLUMN_RANK = "Rank"
 L.BEASTMAP_COLUMN_LEVEL = "Pet level"
 L.BEASTMAP_COLUMN_TEACHER = "Nearest teacher"
-L.BEASTMAP_GO = "Show the way to %s"
+L.BEASTMAP_GO = "Hunt %s: the way there, the tame key, its areas on the map"
+L.BEASTMAP_GO_STOP = "Stop hunting %s"
+-- The hunt (one beast the hunter means to tame for one rank): its start (first %s the beast, second
+-- the rank, such as "Claw (Rank 3)"); its end when stopped (%s the beast); its end when the rank is
+-- learned (the rank, the beast); /kennel hunt stop without a hunt; that command in /kennel help.
+L.BEASTMAP_HUNT_START = "Hunting %s for %s."
+L.BEASTMAP_HUNT_STOPPED = "Stopped hunting %s."
+L.BEASTMAP_HUNT_LEARNED = "Learned %s: the hunt for %s is over."
+L.BEASTMAP_HUNT_NONE = "Not hunting a beast."
+L.BEASTMAP_CMD_STOP = "stop the hunt for a beast"
 -- A rank the hunter lacks that no beast in Kennel's data teaches (Forever's family abilities: the pet may get them itself).
 L.BEASTMAP_NO_TEACHER = "No beast teaches it"
 -- After the nearest beast that teaches a rank (BEASTMAP_REACH_PLACE), comma-separated: the travel

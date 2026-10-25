@@ -59,6 +59,17 @@
 ---@field guid string the creature's GUID
 ---@field ranks number[] the spell IDs of the ranks it would teach
 
+---KENNEL_HUNT_STARTED: the hunter picked a beast to tame for a rank (Beast Map's hunt).
+---@class KennelHuntStartedEvent
+---@field module string "BeastMap"
+---@field npc number
+---@field spellID number the rank hunted for
+---@field name string in the client's language once it knows the beast, else English
+
+---KENNEL_HUNT_ENDED: that hunt is over.
+---@class KennelHuntEndedEvent: KennelHuntStartedEvent
+---@field reason "learned"|"stopped" the hunter knows the rank now, or stopped the hunt
+
 ---KENNEL_AMMO: the hunter's ammo count crossed a line: low, critically low, or back to enough.
 ---@class KennelAmmoEvent
 ---@field module string "Ammo"

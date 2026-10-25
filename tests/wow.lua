@@ -1443,6 +1443,9 @@ function NewClient(opts)
     -- LibDBIcon puts its buttons on the minimap and works out their spot from its size.
     Minimap = newRegion()
     Minimap:SetSize(140, 140)
+    function Minimap:GetZoom()
+        return 0
+    end
     ClassTrainerFrame = newRegion()
     ClassTrainerFrame.shown = false
     PetFrame = newRegion()
@@ -1464,11 +1467,41 @@ function NewClient(opts)
             warn(text, color)
         end
     end
-    -- The world map; its canvas is what Blizzard anchors the map's corner buttons to.
-    WorldMapFrame = newRegion()
-    local canvas = newRegion()
+    -- The world map; its canvas container is what Blizzard anchors the map's corner buttons to,
+    -- its canvas (1000 by 667) what zooms with the map. client:showWorldMap shows a map, which
+    -- runs OnMapChanged as the client does.
+    WorldMapFrame = newRegion({ shown = false })
+    WorldMapFrame.shown = false
+    local container = newRegion()
+    local mapCanvas = newRegion()
+    mapCanvas:SetSize(1000, 667)
     function WorldMapFrame:GetCanvasContainer()
-        return canvas
+        return container
+    end
+    function WorldMapFrame:GetCanvas()
+        return mapCanvas
+    end
+    function WorldMapFrame:GetMapID()
+        return client.worldMapID
+    end
+    function WorldMapFrame:OnMapChanged() end
+    ---@param uiMapID number
+    function client:showWorldMap(uiMapID)
+        client.worldMapID = uiMapID
+        WorldMapFrame.shown = true
+        WorldMapFrame:OnMapChanged()
+    end
+    -- What the minimap shows: rotating with the player (client.cvars.rotateMinimap), the player's
+    -- facing in radians (0 north, counter-clockwise), indoors or out.
+    client.cvars, client.facing, client.indoors = {}, 0, false
+    function GetCVar(name)
+        return client.cvars[name]
+    end
+    function GetPlayerFacing()
+        return client.facing
+    end
+    function IsIndoors()
+        return client.indoors
     end
 
     -- The game's tooltip over an action button (client:hoverAction): client.tooltipLines holds the

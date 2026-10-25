@@ -74,6 +74,9 @@ local entrancesRead = {}
 -- The pin's icon per beast, or false for none; emptied when anything it depends on changes.
 ---@type table<number, number|string|false>
 local shown = {}
+-- The rank a beast's pin shows (its icon's), filled with shown.
+---@type table<number, number>
+local pinSpell = {}
 ---@type KennelBeastMapPins
 local NO_PINS = { at = {} } --[[@as KennelBeastMapPins]]
 
@@ -259,8 +262,17 @@ local function Icon(npc)
         return false
     end
     local _, icon = Kennel.SpellInfo(pick)
+    pinSpell[npc] = pick
     shown[npc] = icon or 134400 -- the question mark icon
     return shown[npc]
+end
+
+---The rank beast `npc`'s pin shows, nil for a beast without a pin.
+---@param npc number
+---@return number?
+function M.PinSpell(npc)
+    if not Icon(npc) then return nil end
+    return pinSpell[npc]
 end
 
 ---HandyNotes' iterator over a map's pins: the coord of the last pin returned leads to the next.
@@ -399,8 +411,9 @@ function handler.OnLeave()
     GameTooltip:Hide()
 end
 
----A left click (as the button comes up) sends the hunter to the beast, through LibGoThere-1.0:
----a route, an arrow or the game's waypoint, whichever addon the player has, else a pin link.
+---A left click (as the button comes up) sends the hunter to the pin, through LibGoThere-1.0: a
+---route, an arrow or the game's waypoint, whichever addon the player has, else a pin link. On a
+---beast's pin it starts the hunt for the rank the pin shows (Hunt.lua), which goes there too.
 ---@param _ Frame the pin
 ---@param button string
 ---@param down boolean
@@ -413,15 +426,19 @@ function handler.OnClick(_, button, down, uiMapID, coord)
     ---@type number
     local id = pins[at]
     local x, y = (HandyNotes --[[@as HandyNotesApi]]):getXY(coord)
-    GoThere:Navigate("Kennel", uiMapID, x, y, PinName(id))
-    -- A beast's pin also makes it the tame key's beast (Tame.lua).
-    if id > 0 and not Trainer(id) then M:SetTameTarget(BeastName(id)) end
+    local spellID = id > 0 and not Trainer(id) and M.PinSpell(id)
+    if spellID then
+        M:StartHunt(id, spellID, uiMapID, x, y)
+    else
+        GoThere:Navigate("Kennel", uiMapID, x, y, PinName(id))
+    end
 end
 
 ---Forgets the pins' icons and has HandyNotes draw them again; shows or hides the map button;
 ---fills the window's tabs again.
 function M:Refresh()
     wipe(shown)
+    wipe(pinSpell)
     self:UpdateMapButton()
     Kennel:RefreshWindow("abilities")
     if not HandyNotes then return end
@@ -591,12 +608,18 @@ function M.Nearest(teachers)
     return list
 end
 
----Sends the hunter to a beast's nearest pin through LibGoThere, and makes it the tame key's beast.
----False for a beast in an instance, which has no pin.
+---Sends the hunter to a beast's nearest pin (or the pin given) through LibGoThere, and makes it the
+---tame key's beast. False for a beast in an instance, which has no pin.
 ---@param npc number
+---@param pinMap number? a pin's map, with its x and y (0 to 1)
+---@param pinX number?
+---@param pinY number?
 ---@return boolean
-function M:GoToBeast(npc)
-    local map, x, y = NearestPin(npc)
+function M:GoToBeast(npc, pinMap, pinX, pinY)
+    local map, x, y = pinMap, pinX, pinY
+    if not map then
+        map, x, y = NearestPin(npc)
+    end
     if not map then return false end
     GoThere:Navigate("Kennel", map, x, y, BeastName(npc))
     self:SetTameTarget(BeastName(npc))
@@ -743,15 +766,17 @@ function M:OnEnable()
     self.canTame = Kennel.KnowsSpell(Kennel.TAME_BEAST)
     self:RegisterEvent("PLAYER_LEVEL_UP")
     self:RegisterEvent("SPELLS_CHANGED")
-    Kennel:Listen(self, "KENNEL_RANKS_KNOWN", "Refresh")
+    Kennel:Listen(self, "KENNEL_RANKS_KNOWN", "OnRanksKnown")
     Kennel:Listen(self, "KENNEL_RARE_SEEN", "OnRareSeen")
     self:WatchRares()
     self:ApplyTameButton()
     self:Refresh()
+    self:ShowHunt()
 end
 
 function M:OnDisable()
     Kennel:StopListening(self)
     self:ApplyTameButton()
     self:Refresh()
+    self:ShowHunt()
 end

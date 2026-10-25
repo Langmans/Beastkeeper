@@ -270,6 +270,11 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
   Map: target and mark the beast to tame"; on a bar: a macro with
   `/click KennelTameButton`) targets the beast the rare alarm named, or whose
   pin you clicked, and puts a skull on it; with Shift it casts Tame Beast.
+- **The hunt**: pick the beast you mean to tame for a rank, with a rank's
+  button in the Abilities tab or a click on the beast's pin. Kennel shows the
+  way there, gives it to the tame key, and marks the areas it lives in on the
+  world map and the minimap. The hunt ends once you know the rank, or with
+  the button again or `/kennel hunt stop`.
 - **Pet trainers and stable masters** of your faction get a pin too (Beast
   Training's and Call Pet's icons), each kind with its own switch.
 - **In Kennel's window**, also without HandyNotes: the Abilities tab lists

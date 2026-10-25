@@ -139,7 +139,10 @@ end
 local function OnGoEnter(go)
     local row = go:GetParent() --[[@as KennelRankRow]]
     GameTooltip:SetOwner(go, "ANCHOR_RIGHT")
-    GameTooltip:SetText(L.BEASTMAP_GO:format(M.BeastName(row.best --[[@as number]])))
+    local hunting = M:IsHunting(row.best, row.spellID)
+    GameTooltip:SetText(
+        (hunting and L.BEASTMAP_GO_STOP or L.BEASTMAP_GO):format(M.BeastName(row.best --[[@as number]]))
+    )
     GameTooltip:Show()
 end
 
@@ -257,8 +260,16 @@ local function RankRow(panel, skin, index)
     local crop = skin.CropIcon or Crop
     crop(row.go.icon)
     row.go:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+    row.go.active = row.go:CreateTexture(nil, "OVERLAY")
+    row.go.active:SetAllPoints()
+    row.go.active:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+    row.go.active:SetBlendMode("ADD")
     row.go:SetScript("OnClick", function()
-        M:GoToBeast(row.best --[[@as number]])
+        if M:IsHunting(row.best, row.spellID) then
+            M:StopHunt()
+        else
+            M:StartHunt(row.best --[[@as number]], row.spellID --[[@as number]])
+        end
     end)
     row.go:SetScript("OnEnter", OnGoEnter)
     row.go:SetScript("OnLeave", OnLeave)
@@ -316,6 +327,7 @@ local function FillRank(row, spellID)
         if #teachers > 1 then row.more:SetText(L.BEASTMAP_MORE:format(#teachers - 1)) end
         row.more:SetTextColor(DIM[1], DIM[2], DIM[3])
         row.go:SetShown(Kennel.data.beasts[teachers[1]].pins ~= nil)
+        row.go.active:SetShown(M:IsHunting(row.best, spellID))
     else
         row.teachers, row.best = nil, nil
         row.text:SetText(L.BEASTMAP_KNOWN)

@@ -76,6 +76,7 @@ flowchart LR
     al -- KENNEL_ABILITY_LEARNED --> other
     ac -- KENNEL_AUTOCAST_WANTED --> other
     bm -- KENNEL_RARE_SEEN --> tk & other
+    bm -- KENNEL_HUNT_STARTED / ENDED --> other
     am -- KENNEL_AMMO --> other
 
     al & ac & bm & fd & am --> toast
@@ -198,6 +199,21 @@ also with the rare toast off. Beast Map's tame key listens to it.
 | `name` | string | the client's name once it knows the beast, else English |
 | `guid` | string | the creature's GUID |
 | `ranks` | table | the spell IDs of the ranks it would teach |
+
+### `KENNEL_HUNT_STARTED` and `KENNEL_HUNT_ENDED`
+
+The hunter picked a beast to tame for one rank (Beast Map's hunt: a rank's
+button in the Abilities tab, or a beast's pin), and that hunt is over: the
+hunter knows the rank now, or stopped it (the button again, `/kennel hunt
+stop`, or a new hunt).
+
+| Field | Type | |
+|---|---|---|
+| `module` | string | `"BeastMap"` |
+| `npc` | number | |
+| `spellID` | number | the rank hunted for |
+| `name` | string | the client's name once it knows the beast, else English |
+| `reason` | string | ENDED only: `"learned"` or `"stopped"` |
 
 ### `KENNEL_AMMO`
 

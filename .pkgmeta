@@ -69,7 +69,7 @@ externals:
   # (github.com/Langmans/LibTameable-1.0, GPL-3.0); pinned to a commit.
   Libs/LibTameable-1.0:
     url: https://github.com/Langmans/LibTameable-1.0.git
-    commit: 03578cbd9663515da0e3ee26e3f02c7f76d8505f
+    commit: b9a10c8a5fb6963938f32681399e9ed86938723a
 
 # Release notes come from this file instead of the commit log, so commit
 # bodies and trailers stay out of the CurseForge page.

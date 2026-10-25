@@ -6,6 +6,8 @@
     <Script file="Tooltip.lua"/>
     <Script file="Rare.lua"/>
     <Script file="Tame.lua"/>
+    <Script file="Hunt.lua"/>
+    <Script file="Areas.lua"/>
     <Script file="Options.lua"/>
     <Script file="Abilities.lua"/>
     <Script file="Families.lua"/>
