@@ -185,6 +185,7 @@
 ---@field Style fun(frame: Frame) styles the panel once (a frame made with BackdropTemplate)
 ---@field Font fun(text: FontString, size: number) a row's text
 ---@field CropIcon (fun(icon: Texture))? a row's icon, as the UI trims its own
+---@field CropsIcons (fun(): boolean)? whether the UI's own setting crops icons; Kennel's switch follows it, greyed
 ---@field Accent (fun(): number[])? the colour that marks what is chosen (the tab that shows); the game's gold without one
 ---@field Close (fun(button: Button))? a close button (UIPanelCloseButton), in the UI's own look
 
@@ -192,6 +193,7 @@
 ---@class KennelButtonSettings
 ---@field skin string a button skin id, or "auto"
 ---@field holder string a holder skin id, or "auto"
+---@field crop boolean icons lose their border, unless the look's UI decides (CropsIcons)
 
 ---The Data Broker module: Kennel's LibDataBroker-1.1 data source.
 ---@class KennelBroker: KennelModule

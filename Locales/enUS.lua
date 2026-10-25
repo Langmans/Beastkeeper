@@ -75,6 +75,8 @@ L.BUTTONS = "Buttons"
 L.BUTTONS_DESC = "The look of Kennel's buttons, such as the feed button, and of its lists. Automatic takes Masque, ElvUI or EllesmereUI when one is loaded. Takes effect after /reload."
 L.BUTTONS_SKIN = "Button look"
 L.BUTTONS_HOLDER = "List look"
+L.BUTTONS_CROP = "Crop icons of their border"
+L.BUTTONS_CROP_DESC = "Trim the border off the game's icons in Kennel's window, lists and toasts. Switch it off for an icon pack whose icons have none, such as Clean Icons. With ElvUI's look, ElvUI's own Crop Icons setting decides."
 L.BUTTONS_AUTO = "Automatic"
 -- Button: shows an example toast.
 L.TOAST_TEST = "Show an example"

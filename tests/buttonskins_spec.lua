@@ -105,6 +105,20 @@ describe("button skins", function()
         assert.is_true(_G.KennelFeedList:IsShown())
     end)
 
+    it("crop icons of their border, or leave them whole for an icon pack without borders", function()
+        local client = NewClient():login()
+        local option = client.Kennel:GetButtonOptions().args.crop
+        assert.is_false(option.disabled())
+        assert.is_true(option.get(), "cropped by default")
+        client.Kennel:OpenWindow("abilities")
+        local panel = client.Kennel.window.panels.abilities
+        assert.are.same({ 0.08, 0.92, 0.08, 0.92 }, panel.rows[1].icon.texCoord)
+        client = NewClient():login()
+        client.Kennel:GetButtonOptions().args.crop.set(nil, false)
+        client.Kennel:OpenWindow("abilities")
+        assert.are.same({ 0, 1, 0, 1 }, client.Kennel.window.panels.abilities.rows[1].icon.texCoord)
+    end)
+
     describe("with Masque", function()
         it("put the feed button in Masque's Kennel group, with its icon and border", function()
             local client = content({ masque = true })
@@ -179,6 +193,23 @@ describe("button skins", function()
                 client:slash("")
                 assert.is_nil(rawget(_G.KennelWindow, "shadow"))
             end
+        end)
+
+        it("crop icons as ElvUI's own Crop Icons setting says, shown greyed on Kennel's page", function()
+            local client = NewClient({ elvui = true }):login()
+            local option = client.Kennel:GetButtonOptions().args.crop
+            assert.is_true(option.disabled(), "ElvUI's setting decides")
+            assert.is_true(option.get(), "ElvUI crops by default")
+            client.Kennel:OpenWindow("abilities")
+            assert.is_true(client.Kennel.window.panels.abilities.rows[1].icon.texCoordsSet)
+            client = NewClient({ elvui = true }):login()
+            ElvUI[1].db.general.cropIcon = 0
+            option = client.Kennel:GetButtonOptions().args.crop
+            assert.is_false(option.get())
+            client.Kennel:OpenWindow("abilities")
+            local icon = client.Kennel.window.panels.abilities.rows[1].icon
+            assert.is_nil(icon.texCoordsSet)
+            assert.are.same({ 0, 1, 0, 1 }, icon.texCoord, "whole")
         end)
 
         it("rank above EllesmereUI, below Masque", function()

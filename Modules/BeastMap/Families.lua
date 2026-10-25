@@ -128,13 +128,7 @@ local function Text(parent, skin, template, size)
     return text
 end
 
----An icon trimmed of its border, as the game's own buttons show icons.
----@param icon Texture
-local function Crop(icon)
-    icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-end
-
----A family's portrait, cropped as the look crops icons.
+---A family's portrait, cropped as the look crops icons (Kennel:CropIcon).
 ---@param parent Frame
 ---@param skin KennelButtonHolderSkin
 ---@param size number
@@ -142,8 +136,7 @@ end
 local function Portrait(parent, skin, size)
     local icon = parent:CreateTexture(nil, "ARTWORK")
     icon:SetSize(size, size)
-    local crop = skin.CropIcon or Crop
-    crop(icon)
+    Kennel:CropIcon(icon, skin.CropIcon)
     return icon
 end
 

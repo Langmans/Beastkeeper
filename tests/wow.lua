@@ -1179,6 +1179,9 @@ function NewClient(opts)
     function Region:SetColorTexture(r, g, b, a)
         self.color = { r, g, b, a }
     end
+    function Region:SetTexCoord(left, right, top, bottom)
+        self.texCoord = { left, right, top, bottom }
+    end
     function Region:SetWordWrap(wrap)
         self.wordWrap = wrap
     end
@@ -1718,6 +1721,8 @@ function NewClient(opts)
         ElvUI = {
             {
                 media = { normFont = "Fonts\\PTSansNarrow.ttf", rgbvaluecolor = { 0.1, 0.7, 1 } },
+                -- Its profile: Crop Icons (0 none, 1 or 2 more and more).
+                db = { general = { cropIcon = 2 } },
                 GetModule = function(_, name)
                     return name == "Skins" and skins or nil
                 end,
@@ -1746,7 +1751,7 @@ function NewClient(opts)
     -- its settings in ElvUI's profile, and ShadowColor marking the shadow it coloured.
     ElvUI_EltreumUI = nil
     if opts.elvui and opts.eltruism then
-        ElvUI[1].db = { ElvUI_EltreumUI = { skins = { shadow = opts.eltruism } } }
+        ElvUI[1].db.ElvUI_EltreumUI = { skins = { shadow = opts.eltruism } }
         ElvUI_EltreumUI = {
             ShadowColor = function(_, shadow)
                 shadow.eltruismColoured = true

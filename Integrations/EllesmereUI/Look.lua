@@ -52,7 +52,7 @@ end
 ---@param parts KennelButtonParts
 ---@return fun(r: number, g: number, b: number)
 local function StyleButton(button, parts)
-    CropIcon(parts.icon)
+    Kennel:CropIcon(parts.icon, CropIcon)
     local border = (
         MakeBorder --[[@as fun(parent: Frame, r: number, g: number, b: number, a: number): EllesmereUIBorder]]
     )(button, 0, 0, 0, 1)

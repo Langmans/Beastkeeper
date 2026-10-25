@@ -99,7 +99,7 @@ local function Build(style)
     frame.Inner:SetRotation(math.pi / 4)
     frame.Icon = frame:CreateTexture(nil, "OVERLAY")
     frame.Icon:SetPoint("CENTER", frame.Diamond, "CENTER")
-    frame.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    Kennel:CropIcon(frame.Icon)
     Kennel:AddToastPortrait(frame, frame.Diamond, PORTRAIT_SIZE)
 
     frame.Title = Line(frame, style, "GameFontNormalLarge", TITLE_SIZE)

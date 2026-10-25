@@ -79,7 +79,7 @@ function Kennel:OnInitialize()
             -- dragged. sink: LibSink's output choice (Integrations\LibSink\).
             toast = { duration = 6, scale = 1, skin = "card", skins = kindSkins, sink = {} },
             -- The look of Kennel's buttons and their holders (Core\Buttons.lua): a skin id or "auto".
-            buttons = { skin = "auto", holder = "auto" },
+            buttons = { skin = "auto", holder = "auto", crop = true },
             -- Kennel's window (Core\Window.lua): pos is set once it is dragged.
             window = {},
             -- How much goes to OAP Debug when it is installed (Core\Debug.lua).

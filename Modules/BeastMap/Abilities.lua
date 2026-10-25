@@ -161,13 +161,7 @@ local function Text(parent, skin, justify)
     return text
 end
 
----An icon trimmed of its border, as the game's own buttons show icons.
----@param icon Texture
-local function Crop(icon)
-    icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-end
-
----An ability's icon, cropped as the look crops icons.
+---An ability's icon, cropped as the look crops icons (Kennel:CropIcon).
 ---@param parent Frame
 ---@param skin KennelButtonHolderSkin
 ---@param size number
@@ -175,8 +169,7 @@ end
 local function Icon(parent, skin, size)
     local icon = parent:CreateTexture(nil, "ARTWORK")
     icon:SetSize(size, size)
-    local crop = skin.CropIcon or Crop
-    crop(icon)
+    Kennel:CropIcon(icon, skin.CropIcon)
     return icon
 end
 
@@ -262,8 +255,7 @@ local function RankRow(panel, skin, index)
     row.go.icon = row.go:CreateTexture(nil, "ARTWORK")
     row.go.icon:SetAllPoints()
     row.go.icon:SetTexture(GO_ICON)
-    local crop = skin.CropIcon or Crop
-    crop(row.go.icon)
+    Kennel:CropIcon(row.go.icon, skin.CropIcon)
     row.go:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
     row.go.active = row.go:CreateTexture(nil, "OVERLAY")
     row.go.active:SetAllPoints()

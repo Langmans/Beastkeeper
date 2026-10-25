@@ -32,6 +32,7 @@
 
 ---ElvUI's profile (E.db), as far as Kennel reads it: Eltruism's shadow settings.
 ---@class ElvUIProfile
+---@field general {cropIcon: number?}? its Crop Icons setting: 0 none, 1 or 2 more and more
 ---@field ElvUI_EltreumUI {skins: {shadow: {enable: boolean, length: number}?}?}?
 
 ---Eltruism, the ElvUI plugin; nil when it is not loaded.

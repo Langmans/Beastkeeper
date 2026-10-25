@@ -116,6 +116,30 @@ function Kennel:StyleButton(button, parts)
     return (result or NoBorder) --[[@as fun(r: number, g: number, b: number)]]
 end
 
+---Whether icons lose their border: as the chosen look's UI says when it has a setting for it
+---(ElvUI's Crop Icons), else Kennel's own switch (off for an icon pack without borders, such as
+---Clean Icons).
+---@return boolean
+function Kennel:CropsIcons()
+    local skin = holderSkins[self:ButtonHolderSkinFor()]
+    if skin.CropsIcons then return skin.CropsIcons() end
+    return self:ButtonSettings().crop ~= false
+end
+
+---Trims an icon's border, the look's way (`lookCrop`) or the game's; leaves it whole when icons
+---are not cropped (CropsIcons).
+---@param icon Texture
+---@param lookCrop (fun(icon: Texture))?
+function Kennel:CropIcon(icon, lookCrop)
+    if not self:CropsIcons() then
+        icon:SetTexCoord(0, 1, 0, 1)
+    elseif lookCrop then
+        lookCrop(icon)
+    else
+        icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    end
+end
+
 ---Styles a holder with the chosen skin, or Kennel's own when that one errors; gives the skin
 ---used, for the rows' text and icons.
 ---@param frame Frame

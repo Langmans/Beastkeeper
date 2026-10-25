@@ -46,7 +46,7 @@ local function Row(index)
     row.label:SetPoint("LEFT", row.icon, "RIGHT", 6, 0)
     local look = skin --[[@as KennelButtonHolderSkin]]
     look.Font(row.label, 12)
-    if look.CropIcon then look.CropIcon(row.icon) end
+    Kennel:CropIcon(row.icon, look.CropIcon)
     row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
     row:HookScript("OnClick", Close)
     rows[index] = row

@@ -257,6 +257,25 @@ function Kennel:GetButtonOptions()
             desc = { type = "description", name = L.BUTTONS_DESC, order = 0 },
             skin = ButtonSkinSelect("skin", L.BUTTONS_SKIN, self:ButtonSkins(), 1),
             holder = ButtonSkinSelect("holder", L.BUTTONS_HOLDER, self:ButtonHolderSkins(), 2),
+            crop = {
+                type = "toggle",
+                name = L.BUTTONS_CROP,
+                desc = L.BUTTONS_CROP_DESC,
+                order = 3,
+                width = "full",
+                get = function()
+                    return Kennel:CropsIcons()
+                end,
+                ---@param _ table AceConfig's info about the option
+                ---@param value boolean
+                set = function(_, value)
+                    Kennel:ButtonSettings().crop = value
+                end,
+                -- The look's own UI decides (ElvUI's Crop Icons); the box shows what it says.
+                disabled = function()
+                    return Kennel:ButtonHolderSkins()[Kennel:ButtonHolderSkinFor()].CropsIcons ~= nil
+                end,
+            },
         },
     }
 end

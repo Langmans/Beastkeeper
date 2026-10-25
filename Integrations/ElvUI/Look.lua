@@ -21,6 +21,19 @@ local function Accent()
     return color and { color[1], color[2], color[3] } or Kennel.TOAST_ACCENT
 end
 
+---Whether ElvUI crops icons: its Crop Icons setting (0 none, 1 or 2 more), on by default.
+---@return boolean
+local function CropsIcons()
+    local general = E.db and E.db.general
+    return (general and general.cropIcon or 2) ~= 0
+end
+
+---ElvUI's icon crop, as far as its Crop Icons setting goes.
+---@param icon Texture
+local function CropIcon(icon)
+    (icon --[[@as ElvUITexture]]):SetTexCoords()
+end
+
 ---@param button Button
 ---@param parts KennelButtonParts
 ---@return fun(r: number, g: number, b: number)
@@ -28,8 +41,7 @@ local function StyleButton(button, parts)
     local elv = button --[[@as ElvUIFrame]]
     elv:SetTemplate("Default")
     elv:StyleButton()
-    local icon = parts.icon --[[@as ElvUITexture]]
-    icon:SetTexCoords()
+    Kennel:CropIcon(parts.icon, CropIcon)
     ---@param r number
     ---@param g number
     ---@param b number
@@ -66,11 +78,6 @@ local function Font(text, size)
     (text --[[@as ElvUIFontString]]):FontTemplate(nil, size)
 end
 
----@param icon Texture
-local function CropIcon(icon)
-    (icon --[[@as ElvUITexture]]):SetTexCoords()
-end
-
 ---A close button as ElvUI's Skins module draws its own.
 ---@param button Button
 local function Close(button)
@@ -94,6 +101,7 @@ Kennel:RegisterButtonHolderSkin("elvui", {
     Style = StyleHolder,
     Font = Font,
     CropIcon = CropIcon,
+    CropsIcons = CropsIcons,
     Accent = Accent,
     Close = Close,
 })
