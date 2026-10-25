@@ -1674,7 +1674,20 @@ function NewClient(opts)
     -- Toolkit adds to every frame, recording what was asked of them.
     ElvUI = nil
     if opts.elvui then
-        ElvUI = { { media = { normFont = "Fonts\\PTSansNarrow.ttf", rgbvaluecolor = { 0.1, 0.7, 1 } } } }
+        -- Its Skins module, whose HandleCloseButton marks the button it styled.
+        local skins = {
+            HandleCloseButton = function(_, button)
+                button.elvSkinned = true
+            end,
+        }
+        ElvUI = {
+            {
+                media = { normFont = "Fonts\\PTSansNarrow.ttf", rgbvaluecolor = { 0.1, 0.7, 1 } },
+                GetModule = function(_, name)
+                    return name == "Skins" and skins or nil
+                end,
+            },
+        }
         function Region:SetTemplate(template)
             self.template = template or "Default"
         end

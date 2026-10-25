@@ -150,6 +150,18 @@ describe("button skins", function()
             assert.are.same({ 0.1, 0.7, 1, 1 }, client:toast().Accent.color)
         end)
 
+        it("draw Kennel's window in ElvUI's look: its backdrop, close button and value colour", function()
+            local client = NewClient({ elvui = true }):login()
+            client:slash("")
+            local window = _G.KennelWindow
+            assert.are.equal("Transparent", window.template)
+            assert.is_true(window.close.elvSkinned, "ElvUI's Skins module styles the close button")
+            assert.are.same({ 0.1, 0.7, 1, 1 }, client.Kennel.window.tabs.pets.selected.color)
+            client.Kennel:ShowWindowTab("abilities")
+            local row = client.Kennel.window.panels.abilities.ranks[1]
+            assert.is_true(row.go.icon.texCoordsSet, "ElvUI's icon crop")
+        end)
+
         it("rank above EllesmereUI, below Masque", function()
             assert.are.equal("elvui", content({ elvui = true, ellesmere = true }).Kennel:ButtonSkinFor())
             assert.are.equal("masque", content({ elvui = true, masque = true }).Kennel:ButtonSkinFor())

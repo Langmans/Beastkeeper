@@ -56,6 +56,13 @@ local function CropIcon(icon)
     (icon --[[@as ElvUITexture]]):SetTexCoords()
 end
 
+---A close button as ElvUI's Skins module draws its own.
+---@param button Button
+local function Close(button)
+    local skins = E:GetModule("Skins")
+    if skins and skins.HandleCloseButton then skins:HandleCloseButton(button) end
+end
+
 ---The look of a toast, for a frame of this name: ElvUI's transparent backdrop is its panel.
 ---@param frameName string
 ---@return KennelSkinStyle
@@ -66,7 +73,12 @@ end
 Kennel:RegisterToastSkin("elvui", Kennel:NewCardSkin("ElvUI", ToastStyle("KennelToastElvUI")))
 Kennel:RegisterToastSkin("elvuisplash", Kennel:NewSplashSkin("ElvUI (splash)", ToastStyle("KennelToastElvUISplash")))
 Kennel:RegisterButtonSkin("elvui", { name = "ElvUI", priority = 20, Style = StyleButton })
-Kennel:RegisterButtonHolderSkin(
-    "elvui",
-    { name = "ElvUI", priority = 20, Style = StyleHolder, Font = Font, CropIcon = CropIcon }
-)
+Kennel:RegisterButtonHolderSkin("elvui", {
+    name = "ElvUI",
+    priority = 20,
+    Style = StyleHolder,
+    Font = Font,
+    CropIcon = CropIcon,
+    Accent = Accent,
+    Close = Close,
+})

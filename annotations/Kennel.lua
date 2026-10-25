@@ -186,6 +186,7 @@
 ---@field Font fun(text: FontString, size: number) a row's text
 ---@field CropIcon (fun(icon: Texture))? a row's icon, as the UI trims its own
 ---@field Accent (fun(): number[])? the colour that marks what is chosen (the tab that shows); the game's gold without one
+---@field Close (fun(button: Button))? a close button (UIPanelCloseButton), in the UI's own look
 
 ---The button skin choices in the profile.
 ---@class KennelButtonSettings
@@ -693,6 +694,7 @@
 ---@field tabs table<string, KennelWindowTabButton>
 ---@field panels table<string, Frame>
 ---@field divider Texture the line under the tabs
+---@field close Button
 
 ---Kennel.petSpecs, a SelfKeyedEnum.
 ---@class KennelPetSpecs
@@ -748,6 +750,10 @@
 ---@field header KennelRankHeader
 ---@field chosen number? the ability shown, by its rank 1's spell ID
 
+---A rank's button that sends the hunter to the beast.
+---@class KennelGoButton: Button
+---@field icon Texture
+
 ---The ranks' column heads.
 ---@class KennelRankHeader: Frame
 ---@field rank FontString
@@ -766,7 +772,7 @@
 ---@field text FontString the nearest teacher, or known
 ---@field more FontString how many more teach it
 ---@field stripe Texture every other row's background
----@field go Button
+---@field go KennelGoButton
 ---@field spellID number?
 ---@field teachers number[]? the beasts that teach it, in the window's order; nil when known
 ---@field best number? the first of them

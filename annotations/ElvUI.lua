@@ -21,6 +21,11 @@
 ---ElvUI's engine (E), ElvUI[1].
 ---@class ElvUIEngine
 ---@field media ElvUIMedia?
+---@field GetModule fun(self: ElvUIEngine, name: string, silent: boolean?): ElvUISkins?
+
+---ElvUI's Skins module (E:GetModule("Skins")), the part Kennel uses.
+---@class ElvUISkins
+---@field HandleCloseButton (fun(self: ElvUISkins, button: Button))?
 
 ---ElvUI's global: its engine in [1]; nil when it is not loaded.
 ---@type ElvUIEngine[]?
