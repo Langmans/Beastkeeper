@@ -496,6 +496,8 @@
 ---@class KennelBeastMap: KennelSettingsModule
 ---@field db AceDBObject-3.0
 ---@field level number? the level PLAYER_LEVEL_UP gave, until UnitLevel catches up
+---@field canTame boolean? whether the hunter knows Tame Beast, as SPELLS_CHANGED last found
+---@field SPELLS_CHANGED fun(self: KennelBeastMap)
 ---@field Settings fun(self: KennelBeastMap): KennelBeastMapSettings
 ---@field PlayerLevel fun(self: KennelBeastMap): number
 ---@field Refresh fun(self: KennelBeastMap)
@@ -529,7 +531,9 @@
 ---@field usefulOnly boolean only beasts that teach a rank the hunter lacks
 ---@field gaps boolean a missing rank below the highest counts as lacking
 ---@field aboveLevel boolean beasts above the hunter's level too
+---@field untilTame boolean with usefulOnly: no beast pins before the hunter knows Tame Beast
 ---@field levelToast boolean a toast when a level-up brings a teaching beast in reach
+---@field levelChat boolean that toast's ranks and beasts in chat too
 
 ---A map's pins as npc, coord pairs, with the position of each coord's npc.
 ---@class KennelBeastMapPins

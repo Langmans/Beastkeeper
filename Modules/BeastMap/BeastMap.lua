@@ -32,7 +32,9 @@ M.defaults = {
         usefulOnly = true,
         gaps = false,
         aboveLevel = false,
+        untilTame = true,
         levelToast = true,
+        levelChat = false,
         tooltip = true,
         rareToast = true,
         trainers = true,
@@ -235,6 +237,11 @@ local function Icon(npc)
         local forUs = not trainer.side or trainer.side == UnitFactionGroup("player")
         shown[npc] = settings[kind.setting] and forUs and kind.icon or false
         return shown[npc]
+    end
+    -- Nothing to learn from a beast before the hunter can tame one.
+    if settings.usefulOnly and settings.untilTame and not M.canTame then
+        shown[npc] = false
+        return false
     end
     local beast = Data().beasts[npc]
     ---@type number?
@@ -693,6 +700,20 @@ function M:ToastReach(level)
         text = text,
         icon = icon,
     })
+    if settings.levelChat then
+        self:Print(title)
+        for line in text:gmatch("[^\n]+") do
+            self:Print(line)
+        end
+    end
+end
+
+---Redraws the pins once the hunter learns Tame Beast (or, on a respec of sorts, loses it).
+function M:SPELLS_CHANGED()
+    local canTame = Kennel.KnowsSpell(Kennel.TAME_BEAST)
+    if canTame == self.canTame then return end
+    self.canTame = canTame
+    self:Refresh()
 end
 
 ---@param _ string the event
@@ -719,7 +740,9 @@ function M:OnEnable()
         self:CreateMapButton()
     end
     self.level = nil
+    self.canTame = Kennel.KnowsSpell(Kennel.TAME_BEAST)
     self:RegisterEvent("PLAYER_LEVEL_UP")
+    self:RegisterEvent("SPELLS_CHANGED")
     Kennel:Listen(self, "KENNEL_RANKS_KNOWN", "Refresh")
     Kennel:Listen(self, "KENNEL_RARE_SEEN", "OnRareSeen")
     self:WatchRares()

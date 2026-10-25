@@ -32,6 +32,10 @@ L.BEASTMAP_OPTION_ABOVE = "Also beasts above my level"
 L.BEASTMAP_OPTION_ABOVE_DESC = "A hunter can only tame a beast up to its own level. Turn this on to see the ones for later too."
 
 -- Settings: the level-up toast.
+L.BEASTMAP_OPTION_UNTIL_TAME = "No beasts before I can tame"
+L.BEASTMAP_OPTION_UNTIL_TAME_DESC = "Until you know Tame Beast (level 10), no beast gets a pin: there is nothing to learn from one yet. Trainers and stable masters keep theirs."
+L.BEASTMAP_OPTION_CHAT = "Also in chat"
+L.BEASTMAP_OPTION_CHAT_DESC = "Say the level-up toast's ranks and beasts in chat too, so they are still there after the toast is gone."
 L.BEASTMAP_OPTION_TOAST = "Toast at a level-up"
 L.BEASTMAP_OPTION_TOAST_DESC = "When a new level brings a beast in reach that teaches a rank you lack, and no lower beast taught it, say which rank and where. Works without HandyNotes."
 

@@ -1,7 +1,7 @@
 -- Beast Map: a HandyNotes plugin with a pin for every beast that can teach the hunter a pet ability
 -- rank. The specs use a small data set of their own instead of the generated Data\Beasts.lua.
 
-local BITE, CHARGE = 17253, 7371
+local BITE, CHARGE, TAME_BEAST = 17253, 7371, 1515
 local ELWYNN, TIRISFAL, BARRENS, STORMWIND = 1429, 1420, 1413, 1453
 local BORDER = 1430 -- the simulated map right east of Elwynn Forest
 local TRAINER_ICON, STABLE_ICON = 132162, 132161
@@ -191,6 +191,39 @@ describe("Beast Map", function()
         assert.are.same({ ["40,50"] = CLAW_ICON, ["10,10"] = BITE_ICON, ["20,20"] = BITE_ICON }, pins(client, ELWYNN))
         set(client, "aboveLevel", true)
         assert.are.equal(CLAW_ICON, pins(client, ELWYNN)["60,60"])
+    end)
+
+    it("shows no beast before the hunter knows Tame Beast, unless asked to; trainers still", function()
+        local client = hunter(5)
+        client.unknownSpells[TAME_BEAST] = true
+        client:fire("SPELLS_CHANGED")
+        assert.are.same({}, pins(client, ELWYNN))
+        assert.is_true(next(pins(client, STORMWIND)) ~= nil, "the trainers and stable masters")
+        set(client, "untilTame", false)
+        assert.are.equal(CLAW_ICON, pins(client, ELWYNN)["40,50"])
+        set(client, "untilTame", true)
+        client.unknownSpells[TAME_BEAST] = nil
+        client:fire("SPELLS_CHANGED")
+        assert.are.equal(CLAW_ICON, pins(client, ELWYNN)["40,50"], "learned at 10")
+    end)
+
+    it("indents the options that refine another, greyed while that one is off", function()
+        local client = hunter(10)
+        local args = client.Kennel:GetModule("BeastMap"):GetOptions().args
+        for parent, children in pairs({
+            usefulOnly = { "gaps", "aboveLevel", "untilTame" },
+            levelToast = { "levelChat" },
+        }) do
+            for _, key in ipairs(children) do
+                local indent = args[key .. "Indent"]
+                assert.are.equal("description", indent.type, key)
+                assert.is_true(indent.order < args[key].order and args[key].order > args[parent].order, key)
+                set(client, parent, false)
+                assert.is_true(args[key].disabled(), key .. " greyed")
+                set(client, parent, true)
+                assert.is_false(args[key].disabled(), key)
+            end
+        end
     end)
 
     it("names the beast, its level and the ranks it teaches, green for one the hunter lacks", function()
@@ -919,6 +952,17 @@ describe("Beast Map", function()
             client.Kennel.data.beasts[104].minLevel = 11 -- Rare Cat now comes with Late Cat
             local _, text = levelUp(client, 11)
             assert.are.equal("Late Cat teaches it.", text)
+        end)
+
+        it("says it in chat too when asked to", function()
+            local client = hunter(11)
+            levelUp(client, 12)
+            assert.is_false(client:printedContains("Now in reach"), "off by default")
+            client = hunter(4)
+            set(client, "levelChat", true)
+            levelUp(client, 5)
+            assert.is_true(client:printedContains("3 pet ability ranks now in reach"))
+            assert.is_true(client:printedContains("Bite (Rank 1): Spider in Elwynn Forest"))
         end)
 
         it("stays quiet when switched off, also without HandyNotes", function()

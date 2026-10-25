@@ -9,7 +9,7 @@ local _, ns = ...
 ---@type Kennel
 local Kennel = ns
 
-local TAME_BEAST = 1515
+local TAME_BEAST = Kennel.TAME_BEAST
 
 -- Per message, who listens through Listen.
 ---@type table<string, table<table, true>>

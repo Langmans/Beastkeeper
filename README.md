@@ -264,7 +264,8 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
 - Switches on the module's page, also under HandyNotes' plugins: a missing
   lower rank too (Claw 2 when you know Claw 1, 3 and 4: it suits a young pet
   and costs fewer points), every beast in reach whatever it teaches, beasts
-  above your level.
+  above your level. Until you know Tame Beast no beast gets a pin (a switch
+  too); trainers and stable masters do.
 - **The tame key** (Esc > Options > Keybindings > AddOns > Kennel > "Beast
   Map: target and mark the beast to tame"; on a bar: a macro with
   `/click KennelTameButton`) targets the beast the rare alarm named, or whose
@@ -290,7 +291,8 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
 - **At a level-up**, also without HandyNotes: a toast when the new level
   brings a beast in reach that teaches a rank you lack and no lower beast
   taught ("Now in reach: Charge (Rank 1)", "Cave Boar in Wailing Caverns
-  teaches it"), several ranks in one toast. It has its own switch.
+  teaches it"), several ranks in one toast. It has its own switch, and one
+  to say it in chat too.
 - The ranks and the beasts that teach them come from LibTameable-1.0: on WoW:
   Forever 106 ranks and 409 beasts, on Classic Era 59 and 302, on Burning
   Crusade 97 and 357. Beast names come from
