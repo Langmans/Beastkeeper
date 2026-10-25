@@ -182,9 +182,10 @@
 ---@class KennelButtonHolderSkin
 ---@field name string
 ---@field priority number?
----@field Style fun(frame: Frame) styles the panel once
+---@field Style fun(frame: Frame) styles the panel once (a frame made with BackdropTemplate)
 ---@field Font fun(text: FontString, size: number) a row's text
 ---@field CropIcon (fun(icon: Texture))? a row's icon, as the UI trims its own
+---@field Accent (fun(): number[])? the colour that marks what is chosen (the tab that shows); the game's gold without one
 
 ---The button skin choices in the profile.
 ---@class KennelButtonSettings
@@ -691,6 +692,7 @@
 ---@field current string? the tab showing
 ---@field tabs table<string, KennelWindowTabButton>
 ---@field panels table<string, Frame>
+---@field divider Texture the line under the tabs
 
 ---Kennel.petSpecs, a SelfKeyedEnum.
 ---@class KennelPetSpecs
@@ -721,6 +723,7 @@
 
 ---@class KennelWindowTabButton: Button
 ---@field label FontString
+---@field selected Texture the underline of the tab that shows
 
 ---The Pets tab's panel (Modules\PetJournal\Window.lua).
 ---@class KennelPetsPanel: Frame
@@ -742,16 +745,27 @@
 ---@field rows KennelAbilityRow[]
 ---@field ranks KennelRankRow[]
 ---@field title FontString
+---@field header KennelRankHeader
 ---@field chosen number? the ability shown, by its rank 1's spell ID
 
+---The ranks' column heads.
+---@class KennelRankHeader: Frame
+---@field rank FontString
+---@field level FontString
+---@field text FontString
+
 ---@class KennelAbilityRow: Button
----@field label FontString
+---@field label FontString the ability
+---@field count FontString how many of its ranks the hunter knows
+---@field selected Texture the bar behind the chosen one
 ---@field ability number?
 
 ---@class KennelRankRow: Button
 ---@field rank FontString
 ---@field level FontString
----@field text FontString
+---@field text FontString the nearest teacher, or known
+---@field more FontString how many more teach it
+---@field stripe Texture every other row's background
 ---@field go Button
 ---@field spellID number?
 ---@field teachers number[]? the beasts that teach it, in the window's order; nil when known

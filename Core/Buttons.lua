@@ -130,7 +130,8 @@ function Kennel:StyleButtonHolder(frame)
     return skin
 end
 
--- Kennel's own: a frame of colour behind the button; a dark panel.
+-- Kennel's own: a frame of colour behind the button; a panel as the game draws its own, the dark
+-- dialog background inside a tooltip's border.
 
 ---@param button Button
 ---@return fun(r: number, g: number, b: number)
@@ -148,15 +149,34 @@ local function OwnButton(button)
     return Recolour
 end
 
+local OWN_BACKDROP = {
+    bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
+    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+    tile = true,
+    tileSize = 16,
+    edgeSize = 16,
+    insets = { left = 4, right = 4, top = 4, bottom = 4 },
+}
+local GOLD = { 1, 0.82, 0 }
+
+---A holder is made with BackdropTemplate (Kennel's window, the feed list).
 ---@param frame Frame
 local function OwnHolder(frame)
-    local background = frame:CreateTexture(nil, "BACKGROUND")
-    background:SetAllPoints()
-    background:SetColorTexture(0.05, 0.05, 0.05, 0.9)
+    local backdrop = frame --[[@as BackdropTemplate]]
+    backdrop:SetBackdrop(OWN_BACKDROP)
+    backdrop:SetBackdropBorderColor(0.6, 0.6, 0.6)
 end
 
 ---The rows keep the font their template gives.
 local function OwnFont() end
 
+---@return number[]
+local function OwnAccent()
+    return GOLD
+end
+
 Kennel:RegisterButtonSkin("kennel", { name = "Kennel", priority = 0, Style = OwnButton })
-Kennel:RegisterButtonHolderSkin("kennel", { name = "Kennel", priority = 0, Style = OwnHolder, Font = OwnFont })
+Kennel:RegisterButtonHolderSkin(
+    "kennel",
+    { name = "Kennel", priority = 0, Style = OwnHolder, Font = OwnFont, Accent = OwnAccent }
+)

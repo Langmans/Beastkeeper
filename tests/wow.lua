@@ -1177,6 +1177,13 @@ function NewClient(opts)
     function Region:SetColorTexture(r, g, b, a)
         self.color = { r, g, b, a }
     end
+    function Region:SetWordWrap(wrap)
+        self.wordWrap = wrap
+    end
+    -- A backdrop (BackdropTemplateMixin's), as set.
+    function Region:SetBackdrop(backdrop)
+        self.backdrop = backdrop
+    end
     function Region:SetTextColor(r, g, b)
         self.textColor = { r, g, b }
     end

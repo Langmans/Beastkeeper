@@ -11,7 +11,9 @@ local Kennel = ns
 local L = Kennel.L
 
 local WIDTH, HEIGHT, PAD, TAB_HEIGHT, TAB_WIDTH = 680, 460, 12, 24, 96
-local CURRENT, OTHER = { 1, 0.82, 0 }, { 0.6, 0.6, 0.6 }
+local CURRENT, OTHER = { 1, 1, 1 }, { 0.6, 0.6, 0.6 }
+-- The underline of the tab that shows, without an accent from the look: the game's gold.
+local GOLD = { 1, 0.82, 0 }
 -- A panel's width, for the tabs that lay out by it (a new frame may not have its size yet).
 Kennel.WINDOW_PANEL_WIDTH = WIDTH - 2 * PAD
 
@@ -93,7 +95,7 @@ end
 ---Builds the window: frame, title, close button, the place it was left.
 ---@return KennelWindow
 local function Build()
-    local frame = CreateFrame("Frame", "KennelWindow", UIParent) --[[@as KennelWindow]]
+    local frame = CreateFrame("Frame", "KennelWindow", UIParent, "BackdropTemplate") --[[@as KennelWindow]]
     frame:SetSize(WIDTH, HEIGHT)
     frame:SetFrameStrata("HIGH")
     frame:SetToplevel(true)
@@ -117,8 +119,20 @@ local function Build()
     frame.skin.Font(frame.title, 14)
     local close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", -2, -2)
+    frame.divider = frame:CreateTexture(nil, "ARTWORK")
+    frame.divider:SetHeight(1)
+    frame.divider:SetPoint("TOPLEFT", PAD, -PAD - TAB_HEIGHT - 2)
+    frame.divider:SetPoint("TOPRIGHT", -PAD, -PAD - TAB_HEIGHT - 2)
+    frame.divider:SetColorTexture(1, 1, 1, 0.15)
     frame.tabs, frame.panels = {}, {}
     return frame
+end
+
+---The look's accent colour, else the game's gold.
+---@param skin KennelButtonHolderSkin
+---@return number[]
+local function Accent(skin)
+    return skin.Accent and skin.Accent() or GOLD
 end
 
 ---The button of a tab, made the first time.
@@ -135,6 +149,12 @@ local function TabButton(window, tab)
     button.label:SetText(tab.title)
     window.skin.Font(button.label, 12)
     button:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
+    local accent = Accent(window.skin)
+    button.selected = button:CreateTexture(nil, "ARTWORK")
+    button.selected:SetHeight(2)
+    button.selected:SetPoint("BOTTOMLEFT", 8, -2)
+    button.selected:SetPoint("BOTTOMRIGHT", -8, -2)
+    button.selected:SetColorTexture(accent[1], accent[2], accent[3], 1)
     button:SetScript("OnClick", function()
         Kennel:ShowWindowTab(tab.id)
     end)
@@ -170,11 +190,12 @@ function Kennel:ShowWindowTab(id)
     for other, button in pairs(window.tabs) do
         local colour = other == id and CURRENT or OTHER
         button.label:SetTextColor(colour[1], colour[2], colour[3])
+        button.selected:SetShown(other == id)
     end
     local panel = window.panels[id]
     if not panel then
         panel = CreateFrame("Frame", nil, window)
-        panel:SetPoint("TOPLEFT", PAD, -PAD - TAB_HEIGHT - 8)
+        panel:SetPoint("TOPLEFT", PAD, -PAD - TAB_HEIGHT - 12)
         panel:SetPoint("BOTTOMRIGHT", -PAD, PAD)
         window.panels[id] = panel
         tab.Create(panel, window.skin)

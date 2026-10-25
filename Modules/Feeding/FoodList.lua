@@ -13,7 +13,7 @@ local M = Kennel:GetModule("Feeding") --[[@as KennelFeeding]]
 
 local ROW_HEIGHT, WIDTH, PAD = 24, 220, 4
 
-local list = CreateFrame("Frame", "KennelFeedList", UIParent)
+local list = CreateFrame("Frame", "KennelFeedList", UIParent, "BackdropTemplate")
 list:SetWidth(WIDTH)
 list:SetFrameStrata("DIALOG")
 list:Hide()

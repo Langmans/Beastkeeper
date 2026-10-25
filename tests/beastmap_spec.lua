@@ -498,8 +498,46 @@ describe("Beast Map", function()
             local client = hunter(10)
             client:openTrainer({ { "Claw", "used", CLAW } }):closeTrainer()
             local panel = tab(client)
-            assert.are.same({ "Bite  0/1", "Charge  0/1", "Claw  1/3" }, texts(panel.rows))
+            assert.are.same({ "Bite", "Charge", "Claw" }, texts(panel.rows))
+            assert.are.same({ "0/1", "0/1", "1/3" }, texts(panel.rows, "count"))
             assert.are.equal("Bite", panel.title.text, "the first is chosen")
+        end)
+
+        it("marks the chosen ability with a bar, and a fully known one in green", function()
+            local client = hunter(10)
+            client:openTrainer({ { "Bite", "used", BITE } }):closeTrainer()
+            local panel = tab(client)
+            click(panel.rows[3])
+            assert.is_false(panel.rows[1].selected.shown)
+            assert.is_true(panel.rows[3].selected.shown, "Claw")
+            assert.are.same({ 0.25, 1, 0.25 }, panel.rows[1].count.textColor, "Bite: every rank known")
+            assert.are.same({ 0.6, 0.6, 0.6 }, panel.rows[3].count.textColor)
+        end)
+
+        it("heads the ranks' columns, keeps each rank on one line, and stripes every other row", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            click(panel.rows[3])
+            assert.are.same(
+                { "Rank", "Pet level", "Nearest teacher" },
+                { panel.header.rank.text, panel.header.level.text, panel.header.text.text }
+            )
+            for _, row in ipairs(panel.ranks) do
+                assert.is_false(row.text.wordWrap)
+            end
+            assert.is_false(panel.ranks[1].stripe.shown)
+            assert.is_true(panel.ranks[2].stripe.shown)
+        end)
+
+        it("names a rank's go button in its tooltip", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            click(panel.rows[3])
+            local go = panel.ranks[3].go
+            go:GetScript("OnEnter")(go)
+            assert.are.equal("Show the way to Rare Cat", GameTooltip.text)
+            go:GetScript("OnLeave")(go)
+            assert.is_false(GameTooltip.shown)
         end)
 
         it("shows every rank: its pet level, known, or the nearest beast that teaches it", function()
@@ -513,8 +551,9 @@ describe("Beast Map", function()
             assert.are.same({
                 "Known",
                 "Low Cat in Elwynn Forest",
-                "Rare Cat in Tirisfal Glades, +2 more",
+                "Rare Cat in Tirisfal Glades",
             }, texts(panel.ranks, "text"), "Rare Cat: the one in reach, before Late Cat and High Cat")
+            assert.are.same({ "", "", "+2" }, texts(panel.ranks, "more"), "how many more teach it")
             assert.is_false(panel.ranks[1].go.shown, "nothing to go to for a known rank")
             assert.is_true(panel.ranks[3].go.shown)
         end)
@@ -552,7 +591,7 @@ describe("Beast Map", function()
             })
             local panel = tab(client)
             click(panel.rows[3])
-            assert.are.equal("High Cat in Elwynn Forest, ~2 min, +2 more", panel.ranks[3].text.text)
+            assert.are.equal("High Cat in Elwynn Forest, ~2 min", panel.ranks[3].text.text)
         end)
 
         it("asks the route addon once per beast, and again only after half a minute", function()
@@ -587,10 +626,10 @@ describe("Beast Map", function()
             local client = hunter(70)
             local panel = tab(client)
             click(panel.rows[3])
-            assert.are.equal("High Cat in Elwynn Forest, +2 more", panel.ranks[3].text.text)
+            assert.are.equal("High Cat in Elwynn Forest", panel.ranks[3].text.text)
             client.Kennel.data.beasts[102].pins = { [TIRISFAL] = { 1, 1 } }
             client.Kennel:RefreshWindow("abilities")
-            assert.are.equal("High Cat in Tirisfal Glades, +2 more", panel.ranks[3].text.text, "65 is closer to 70")
+            assert.are.equal("High Cat in Tirisfal Glades", panel.ranks[3].text.text, "65 is closer to 70")
         end)
 
         it("puts the beasts in reach in order of distance in a straight line, across zone borders", function()
@@ -600,7 +639,7 @@ describe("Beast Map", function()
             client.Kennel.data.beasts[106].pins = { [ELWYNN] = { 5, 50 }, [BORDER] = { 10, 50 } }
             local panel = tab(client)
             click(panel.rows[3])
-            assert.are.equal("Late Cat in Border Valley, +2 more", panel.ranks[3].text.text)
+            assert.are.equal("Late Cat in Border Valley", panel.ranks[3].text.text)
             click(panel.ranks[3].go)
             assert.is_true(client:printedContains("Border Valley 10.0, 50.0"), "its nearest pin")
         end)
@@ -639,7 +678,8 @@ describe("Beast Map", function()
             click(panel.rows[3])
             table.sort(asked)
             assert.are.same({ 0.3, 0.4, 0.5, 0.6, 0.7 }, asked, "the 5 nearest the middle")
-            assert.are.equal("Cat 5 in Elwynn Forest, ~1 min, +6 more", panel.ranks[3].text.text)
+            assert.are.equal("Cat 5 in Elwynn Forest, ~1 min", panel.ranks[3].text.text)
+            assert.are.equal("+6", panel.ranks[3].more.text)
         end)
 
         it("goes to the nearest of a beast's pins", function()
@@ -684,7 +724,7 @@ describe("Beast Map", function()
             local client = hunter(10)
             local panel = tab(client)
             client:openTrainer({ { "Bite", "used", BITE } }):closeTrainer()
-            assert.are.equal("Bite  1/1", panel.rows[1].label.text)
+            assert.are.equal("1/1", panel.rows[1].count.text)
         end)
 
         it("is a tab only while Beast Map is on", function()

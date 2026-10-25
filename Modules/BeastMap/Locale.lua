@@ -95,19 +95,25 @@ L.BEASTMAP_RARE = ", rare"
 L.BEASTMAP_ELITE = ", elite"
 L.BEASTMAP_RARE_ELITE = ", rare elite"
 
--- Kennel's window, the Abilities tab: its name; a row of the list (%s the ability, first %d the
--- ranks the hunter knows, second the ranks beasts teach); a rank (%d); a rank the hunter knows.
+-- Kennel's window, the Abilities tab: its name; beside an ability in the list, first %d the ranks
+-- the hunter knows, second the ranks beasts teach; a rank (%d); a rank the hunter knows; the heads
+-- of the ranks' columns; a rank's go button's tooltip (%s the beast).
 L.BEASTMAP_TAB_ABILITIES = "Abilities"
-L.BEASTMAP_ABILITY_ROW = "%s  %d/%d"
+L.BEASTMAP_ABILITY_COUNT = "%d/%d"
 L.BEASTMAP_RANK = "Rank %d"
 L.BEASTMAP_KNOWN = "Known"
+L.BEASTMAP_COLUMN_RANK = "Rank"
+L.BEASTMAP_COLUMN_LEVEL = "Pet level"
+L.BEASTMAP_COLUMN_TEACHER = "Nearest teacher"
+L.BEASTMAP_GO = "Show the way to %s"
 -- A rank the hunter lacks that no beast in Kennel's data teaches (Forever's family abilities: the pet may get them itself).
 L.BEASTMAP_NO_TEACHER = "No beast teaches it"
 -- After the nearest beast that teaches a rank (BEASTMAP_REACH_PLACE), comma-separated: the travel
--- time (%d minutes), that it is above the hunter's level, how many more beasts teach it (%d).
+-- time (%d minutes), that it is above the hunter's level. In a column of its own: how many more
+-- beasts teach it (%d).
 L.BEASTMAP_TRAVEL = "~%d min"
 L.BEASTMAP_ABOVE = "above your level"
-L.BEASTMAP_MORE = "+%d more"
+L.BEASTMAP_MORE = "+%d"
 -- Kennel's window, the Families tab: its name; a family in the list with how many of the hunter's
 -- pets are of it (%s the family, %d the count).
 L.BEASTMAP_TAB_FAMILIES = "Families"
