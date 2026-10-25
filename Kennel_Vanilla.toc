@@ -11,10 +11,10 @@
 
 embeds.xml
 Libs\LibTameable-1.0\Data\Era.lua
+Libs\LibTameable-1.0\Data\EraFood.lua
 Locales\Locales.xml
 Core\Core.xml
 Data\Era\Trainers.lua
 Data\Era\Ammo.lua
-Data\Era\Food.lua
 Integrations\Integrations.xml
 Modules\Modules.xml

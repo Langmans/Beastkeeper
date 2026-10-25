@@ -11,6 +11,7 @@
 
 embeds.xml
 Libs\LibTameable-1.0\Data\TBC.lua
+Libs\LibTameable-1.0\Data\TBCFood.lua
 Locales\Locales.xml
 Core\Core.xml
 Integrations\Integrations.xml

@@ -109,17 +109,16 @@ function C.PetInfo.GetPetFoodTypes()
     return foodTypes
 end
 
----Whether the pet out eats an item: the client says so on WoW: Forever; elsewhere the item's kind
----of food (Data\Era\Food.lua) must be on its family's diet (Kennel.familyInfo).
+---Whether the pet out eats an item: the client says so on WoW: Forever; elsewhere LibTameable
+---knows each item's kind of food and each family's diet (Classic Era, Burning Crusade).
 ---@param itemID number
 ---@return boolean
 function C.PetInfo.CanPetEatItem(itemID)
     ---@type (fun(itemID: number): GameValue)?
     local modern = PetInfo("CanPetEatItem")
     if modern then return modern(itemID) == true end
-    local kind = Kennel.data.foodKinds[itemID]
-    local info = kind and Kennel.familyInfo[Kennel.PetFamilyID() or 0]
-    return info ~= nil and info.diet ~= nil and tContains(info.diet, kind)
+    local family = Kennel.PetFamilyID()
+    return family ~= nil and (LibStub("LibTameable-1.0") --[[@as LibTameable]]):CanEat(family, itemID) == true
 end
 
 ---How many entries the pet's spellbook has; nil without the API.

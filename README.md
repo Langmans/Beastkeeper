@@ -23,10 +23,10 @@ modules move in one at a time.
 | Mists of Pandaria Classic, retail, and any other | Care Button, Autocast Check, Pet Journal, Data Broker: the game has no pet happiness, training points or ammo any more |
 
 A module whose part of the game the client lacks stays off and is left off the
-settings page. The beasts that teach pet abilities come from
+settings page. The beasts that teach pet abilities, and on Classic Era and Burning Crusade
+what a pet eats, come from
 [LibTameable-1.0](https://github.com/Langmans/LibTameable-1.0) (GPL-3.0; for
-Classic Era and Burning Crusade from the CMaNGOS databases), Classic Era's
-food kinds from the CMaNGOS classic-db.
+those two clients from the CMaNGOS databases).
 
 ## Use
 

@@ -12,6 +12,8 @@
   Era, Burning Crusade and WoW: Forever; Burning Crusade gets Beast Map and
   its families (Dragonhawk, Ravager, Warp Stalker, Sporebat, Nether Ray,
   Serpent). Each client loads only its own beast data.
+- What a pet eats on Classic Era and Burning Crusade comes from LibTameable
+  too, each family's diet from the client's own tables.
 
 ### Kennel itself
 

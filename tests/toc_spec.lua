@@ -58,10 +58,10 @@ describe("The .toc files", function()
             forever
         )
         assert.are.same(
-            { tameable .. "Era.lua", "Data\\Era\\Trainers.lua", "Data\\Era\\Ammo.lua", "Data\\Era\\Food.lua" },
+            { tameable .. "Era.lua", tameable .. "EraFood.lua", "Data\\Era\\Trainers.lua", "Data\\Era\\Ammo.lua" },
             era
         )
-        assert.are.same({ tameable .. "TBC.lua" }, tbc)
+        assert.are.same({ tameable .. "TBC.lua", tameable .. "TBCFood.lua" }, tbc)
         for _, name in ipairs({ "Kennel.toc", "Kennel_Mists.toc", "Kennel_Mainline.toc" }) do
             assert.are.same({}, select(4, read(name)), name .. " has no data")
         end

@@ -26,7 +26,6 @@ Kennel.data = {
     trainers = {},
     ammo = {},
     ammoVendors = {},
-    foodKinds = {},
 } --[[@as KennelData]]
 
 -- Every module can register events; anything else it embeds it lists itself.

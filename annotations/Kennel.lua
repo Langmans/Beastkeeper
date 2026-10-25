@@ -595,8 +595,6 @@
 ---@field trainers table<number, KennelTrainer>? pet trainers and stable masters by NPC ID (Data\Trainers.lua)
 ---@field ammo table<number, KennelAmmoItem> the arrows and bullets vendors sell, by item ID (Data\Ammo.lua)
 ---@field ammoVendors table<number, KennelAmmoVendor> the vendors that sell them, by NPC ID
----@field foodKinds table<number, string> Classic Era: each item's kind of pet food (a Kennel.diets value), by item ID (Data\Era\Food.lua)
-
 ---A kind of ammo: its Projectile item subclass, a Kennel.ammoKinds value (arrow 2, bullet 3).
 ---@alias KennelAmmoKind number
 
