@@ -204,9 +204,11 @@ function Addon.PetNumberFromGUID(guid)
     return spawnUID and tonumber(spawnUID:sub(-8), 16) or nil
 end
 
----A loyalty text's level and name, as the client words it for the pet out and in the stable:
----Classic Era "(Loyalty Level 1) Rebellious", the name after the brackets; Burning Crusade
----"Loyalty Level 4 (Dependable)", the name in them; WoW: Forever the bare name. Either may be nil.
+---A loyalty text's level and name, as the client words it for the pet out and in the stable. The
+---classic clients take it whole from their PetLoyalty table (one localized text per level, the
+---same for GetPetLoyalty and GetStablePetInfo): "(Loyalty Level 1) Rebellious", the name after the
+---brackets. A text with the name in brackets, "Loyalty Level 4 (Dependable)", is read too; WoW:
+---Forever gives the bare name. Either may be nil.
 ---@param text string
 ---@return number? level
 ---@return string? name
