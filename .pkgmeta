@@ -61,6 +61,12 @@ externals:
     url: https://repos.curseforge.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
     tag: v12.1.1
     type: svn
+  # The About page, from the .toc's fields (github.com/Myrroddin/libaboutpanel-2.0); pinned to
+  # the commit of its tag 1.0.90.
+  Libs/LibAboutPanel-2.0:
+    url: https://github.com/Myrroddin/libaboutpanel-2.0.git
+    commit: 3776b0ae122a0b2dcf8f268d859b32a5b043a47e
+    path: LibAboutPanel-2.0
   # The route library, Beastkeeper's own (github.com/Langmans/LibGoThere-1.0); pinned to a commit.
   Libs/LibGoThere-1.0:
     url: https://github.com/Langmans/LibGoThere-1.0.git

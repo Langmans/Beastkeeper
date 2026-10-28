@@ -13,11 +13,12 @@ local function expandXml(file)
     local files = {}
     for tag, path in text:gmatch('<(%a+)%s+file="([^"]+)"') do
         local target = dir .. "/" .. path:gsub("\\", "/")
-        if tag == "Include" then
+        -- The game also runs a .lua named by <Include> (LibAboutPanel's lib.xml does that).
+        if tag == "Include" and not target:match("%.lua$") then
             for _, f in ipairs(expandXml(target)) do
                 files[#files + 1] = f
             end
-        elseif tag == "Script" then
+        elseif tag == "Script" or tag == "Include" then
             files[#files + 1] = target
         end
     end

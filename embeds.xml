@@ -12,6 +12,7 @@
     <Include file="Libs\LibSink-2.0\lib.xml"/>
     <Script file="Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
     <Include file="Libs\LibDBIcon-1.0\lib.xml"/>
+    <Include file="Libs\LibAboutPanel-2.0\lib.xml"/>
     <Include file="Libs\LibGoThere-1.0\lib.xml"/>
     <!-- LibTameable without its data: each .toc names its client's own Data file. -->
     <Script file="Libs\LibTameable-1.0\LibTameable-1.0.lua"/>

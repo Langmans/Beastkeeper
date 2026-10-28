@@ -94,7 +94,7 @@ describe("the options", function()
 end)
 
 describe("the settings window", function()
-    it("gets Beastkeeper, a page per module with options and Profiles", function()
+    it("gets Beastkeeper, a page per module with options, Profiles and About", function()
         local client = NewClient({ modules = modules }):login()
         local names = {}
         for _, category in pairs(client.categories) do
@@ -105,6 +105,7 @@ describe("the settings window", function()
         assert.are.same({
             "- > Beastkeeper",
             "Beastkeeper > Ability Learned",
+            "Beastkeeper > About",
             "Beastkeeper > Alpha Title",
             "Beastkeeper > Ammo",
             "Beastkeeper > Autocast Check",
@@ -133,17 +134,51 @@ describe("the settings window", function()
             onShow(category.frame)
             shown = shown + 1
         end
-        assert.are.equal(13, shown)
+        assert.are.equal(14, shown)
         assert.are.same({}, client.errors)
     end)
 
     it("can also be drawn by AceConfigDialog in a window of its own", function()
         local client = NewClient({ modules = modules }):login()
         local dialog = LibStub("AceConfigDialog-3.0")
-        for _, path in ipairs({ "modules", "Alpha", "Beta", "AutocastCheck", "CareButton", "profiles" }) do
+        for _, path in ipairs({ "modules", "Alpha", "Beta", "AutocastCheck", "CareButton", "profiles", "about" }) do
             dialog:Open("Beastkeeper", path)
         end
         dialog:Close("Beastkeeper")
+        assert.are.same({}, client.errors)
+    end)
+end)
+
+describe("the About page", function()
+    ---The page's lines as AceConfig shows them: each field's name, an input's value after it.
+    ---@return string
+    local function about()
+        local client = NewClient():login()
+        local page = client.Addon:GetOptionsTable().args.about
+        assert.are.equal("group", page.type)
+        local lines = {}
+        for _, field in pairs(page.args) do
+            lines[#lines + 1] = field.name .. (field.get and field.get() or "")
+        end
+        return table.concat(lines, "\n"):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+    end
+
+    it("reads the title, notes, author and license from the .toc", function()
+        local text = about()
+        assert.truthy(text:find("Beastkeeper", 1, true))
+        assert.truthy(text:find("Hunter pet tools in one addon.", 1, true))
+        assert.truthy(text:find("Author: Langmans", 1, true))
+        assert.truthy(text:find("License: MIT", 1, true))
+    end)
+
+    it("gives the website to copy", function()
+        assert.truthy(about():find("github.com/Langmans/Beastkeeper", 1, true))
+    end)
+
+    it("is left out, and the rest works, where LibAboutPanel fails (its German strings)", function()
+        local client = NewClient({ locale = "deDE" }):login()
+        assert.is_nil(client.Addon:GetOptionsTable().args.about)
+        assert.is_table(client.Addon:GetOptionsTable().args.profiles)
         assert.are.same({}, client.errors)
     end)
 end)

@@ -1,6 +1,7 @@
 # Libraries
 
-Ace3, LibSink-2.0, LibDataBroker-1.1, LibDBIcon-1.0 and LibGoThere-1.0.
+Ace3, LibSink-2.0, LibDataBroker-1.1, LibDBIcon-1.0, LibAboutPanel-2.0,
+LibGoThere-1.0 and LibTameable-1.0.
 
 Ace3 is not committed. `.pkgmeta` lists each library as an external, pinned
 to a commit of the Ace3 GitHub mirror. The packager fetches them for a
@@ -24,6 +25,12 @@ address, which curl downloads.
 LibDataBroker-1.1 (tekkub's GitHub repository) has no release tags; its
 external is pinned to its last commit. The Data Broker module makes Beastkeeper's
 data object with it.
+
+LibAboutPanel-2.0 (Myrroddin's GitHub repository) makes the About page from
+the `.toc`'s fields (Title, Notes, Version, Author, X-License, X-Website); its
+external is pinned to the commit of a release tag. On a German, Spanish,
+French or Italian client some of its own strings are `true` instead of text
+and it fails; `Core\Options.lua` then leaves the page out.
 
 LibGoThere-1.0 is Beastkeeper's own route library, in a repository of its own
 ([github.com/Langmans/LibGoThere-1.0](https://github.com/Langmans/LibGoThere-1.0)),

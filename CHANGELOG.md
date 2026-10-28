@@ -120,6 +120,8 @@
   installed, the messages and chat lines in a Beastkeeper tab, sorted into
   categories. As much as the "Debug" setting on Beastkeeper's page says.
 - With LS: Toasts loaded: a toast look that hands Beastkeeper's toasts to it.
+- An About page in the settings: title, notes, version, author, license and
+  website (LibAboutPanel-2.0).
 - Messages with a table of details, heard through Beastkeeper:Listen:
   BEASTKEEPER_TOAST, BEASTKEEPER_PRINT, BEASTKEEPER_RANKS_KNOWN, BEASTKEEPER_ABILITY_LEARNED,
   BEASTKEEPER_AUTOCAST_WANTED, BEASTKEEPER_RARE_SEEN, BEASTKEEPER_AMMO, and from the core

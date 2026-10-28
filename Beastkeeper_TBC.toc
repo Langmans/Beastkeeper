@@ -8,6 +8,7 @@
 ## OptionalDeps: Ace3, LibStub, EllesmereUI, ElvUI, Masque, MessageQueue, HandyNotes, OAPDebug, _DebugLog, ls_Toasts, ls_Toasts_Classic
 ## IconTexture: Interface\Icons\Ability_Hunter_BeastCall
 ## X-License: MIT
+## X-Website: https://github.com/Langmans/Beastkeeper
 
 embeds.xml
 Libs\LibTameable-1.0\Data\TBC.lua

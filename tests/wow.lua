@@ -1638,6 +1638,8 @@ function NewClient(opts)
 
     SlashCmdList = {}
     hash_SlashCmdList = {}
+    -- GlobalStrings LibAboutPanel labels its fields with.
+    GAME_VERSION_LABEL, CATEGORY = "Version", "Category"
     _G[TOC_SAVED] = opts.saved
 
     -- EllesmereUI, as far as Beastkeeper uses it, when opts.ellesmere says it is loaded. client.eui
