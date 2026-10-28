@@ -731,6 +731,20 @@
 ---@field close Button
 
 ---Kennel.petSpecs, a SelfKeyedEnum.
+---Kennel.petCategories, a SelfKeyedEnum: a family's category before Wrath.
+---@class KennelPetCategories
+---@field offense string
+---@field defense string
+---@field general string
+
+---A family's category and modifiers to the pet's health, armor and damage, in percent, on the
+---classic clients (Kennel.familyMods).
+---@class KennelFamilyMods
+---@field category string a Kennel.petCategories value
+---@field health number
+---@field armor number
+---@field damage number
+
 ---@class KennelPetSpecs
 ---@field ferocity string
 ---@field cunning string
@@ -894,3 +908,6 @@
 ---@field raidMarks {star: number, circle: number, diamond: number, triangle: number, moon: number, square: number, cross: number, skull: number} SetRaidTarget's and /tm's indexes
 ---@field ammoKinds {arrow: KennelAmmoKind, bullet: KennelAmmoKind} Projectile item subclasses (Data\Ammo.lua)
 ---@field familyInfo table<number, KennelFamilyInfo> by CreatureFamily ID
+---@field petCategories KennelPetCategories the families' categories before Wrath
+---@field familyMods table<number, KennelFamilyMods> by CreatureFamily ID, the classic clients'
+---@field FamilyModsText fun(familyID: number?): string?

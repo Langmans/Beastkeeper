@@ -9,6 +9,29 @@ local L = Kennel.L
 local S = Kennel.petSpecs
 local SPEC_NAMES =
     { [S.ferocity] = L.FAMILY_FEROCITY, [S.cunning] = L.FAMILY_CUNNING, [S.tenacity] = L.FAMILY_TENACITY }
+local K = Kennel.petCategories
+local CATEGORY_NAMES =
+    { [K.offense] = L.FAMILY_OFFENSE, [K.defense] = L.FAMILY_DEFENSE, [K.general] = L.FAMILY_GENERAL }
+-- A family's modifiers in words, refilled for each one.
+---@type string[]
+local parts = {}
+
+---A family's category and modifiers before Wrath (Kennel.familyMods): "Offense: +10% damage, -2%
+---health", damage first; the category alone for a family without modifiers; nil for one Kennel has
+---none for.
+---@param familyID number?
+---@return string?
+function Kennel.FamilyModsText(familyID)
+    local mods = familyID and Kennel.familyMods[familyID]
+    if not mods then return nil end
+    wipe(parts)
+    if mods.damage ~= 0 then parts[#parts + 1] = L.FAMILY_DAMAGE:format(mods.damage) end
+    if mods.health ~= 0 then parts[#parts + 1] = L.FAMILY_HEALTH:format(mods.health) end
+    if mods.armor ~= 0 then parts[#parts + 1] = L.FAMILY_ARMOR:format(mods.armor) end
+    local category = CATEGORY_NAMES[mods.category]
+    if #parts == 0 then return category end
+    return L.FAMILY_MODS:format(category, table.concat(parts, ", "))
+end
 
 ---A family's ID from its name as Kennel.FamilyName gives it (a pet's UnitCreatureFamily, a stable
 ---list's familyName); nil for a name Kennel does not know.

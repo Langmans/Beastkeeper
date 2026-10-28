@@ -36,6 +36,15 @@ L.DEBUG_DETAILED = "Detailed"
 L.FAMILY_FEROCITY = "Ferocity"
 L.FAMILY_CUNNING = "Cunning"
 L.FAMILY_TENACITY = "Tenacity"
+-- Before Wrath instead: a family's category, then its modifiers, such as "Offense: +10% damage, -2%
+-- health" (%s the category, then the modifiers joined by ", "; each %+d a signed percentage).
+L.FAMILY_OFFENSE = "Offense"
+L.FAMILY_DEFENSE = "Defense"
+L.FAMILY_GENERAL = "General"
+L.FAMILY_MODS = "%s: %s"
+L.FAMILY_DAMAGE = "%+d%% damage"
+L.FAMILY_HEALTH = "%+d%% health"
+L.FAMILY_ARMOR = "%+d%% armor"
 
 -- Kennel's window: its title, and the name of its key binding (Esc > Options > Keybindings > AddOns).
 L.WINDOW_TITLE = "Kennel"

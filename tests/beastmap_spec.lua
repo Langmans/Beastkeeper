@@ -1058,10 +1058,17 @@ describe("Beast Map", function()
             assert.are.equal("Claw: ranks 1-3, you know 1", panel.abilities.text)
         end)
 
-        it("says no specialization where pets have none (before Wrath, but on WoW: Forever)", function()
-            local panel = tab(hunter(10, { era = true }))
-            assert.are.equal("", panel.spec.text)
+        it("says the family's category and modifiers where pets have no specialization", function()
+            -- Before Wrath (but on WoW: Forever) a family has a category and fixed modifiers.
+            local client = hunter(10, { era = true })
+            local panel = tab(client)
+            assert.are.equal("Offense: +10% damage, -2% health", panel.spec.text, "the Cat")
             assert.are.equal("Eats: Meat, Fish", panel.diet.text)
+            client.familyNames[21] = "Turtle"
+            for _, row in ipairs(panel.rows) do
+                if row.shown and row.familyID == 21 then row:GetScript("OnClick")(row, "LeftButton") end
+            end
+            assert.are.equal("Defense: -10% damage, +13% armor", panel.spec.text)
         end)
 
         it("shows the nearest beast's model by its display ID, else by its NPC ID", function()
