@@ -111,8 +111,10 @@
   channel (say, party, group, a custom channel); say, yell and channels go out
   on your next key press or click, as WoW: Forever requires.
 - With OAP Debug installed: Kennel's messages, chat lines, counts, the
-  window's timings and its Lua errors in OAP Debug's window, as much as the
-  "OAP Debug" setting on Kennel's page says.
+  window's timings and its Lua errors in OAP Debug's window; with DebugLog
+  installed, the messages and chat lines in a Kennel tab, sorted into
+  categories. As much as the "Debug" setting on Kennel's page says.
+- With LS: Toasts loaded: a toast look that hands Kennel's toasts to it.
 - Messages with a table of details, heard through Kennel:Listen:
   KENNEL_TOAST, KENNEL_PRINT, KENNEL_RANKS_KNOWN, KENNEL_ABILITY_LEARNED,
   KENNEL_AUTOCAST_WANTED, KENNEL_RARE_SEEN, KENNEL_AMMO, and from the core

@@ -78,7 +78,7 @@ describe("OAP Debug", function()
         client.Kennel:ShowToast({ key = "Test:one", title = "One" })
         local logged = only(calls, "Log")
         local last = logged[#logged]
-        assert.are.equal("KENNEL_TOAST {1}", last[3])
+        assert.are.equal("KENNEL_TOAST: {1}", last[3])
         assert.are.equal("info", last[4])
         assert.are.equal("One", last[5].toast.title)
         assert.are.same({ "Count", "Kennel", "KENNEL_TOAST" }, only(calls, "Count")[#only(calls, "Count")])
@@ -90,7 +90,7 @@ describe("OAP Debug", function()
         local client, calls = withOAP()
         client.Kennel:SetModuleOn("Feeding", false)
         local logged = only(calls, "Log")
-        assert.are.same({ "Log", "Kennel", "module {1} off", "info", "Feeding" }, logged[#logged])
+        assert.are.same({ "Log", "Kennel", "module: {1} off", "info", "Feeding" }, logged[#logged])
     end)
 
     it("times the window's tabs from Normal + metrics", function()
@@ -139,8 +139,111 @@ describe("OAP Debug", function()
         client.Kennel:OpenWindow("pets")
         local desc = option(client).desc
         assert.are.equal(
-            "How much goes to OAP Debug's window (metrics: timings and counts). Not installed: nothing is sent.",
+            "How much goes to OAP Debug and DebugLog (metrics: timings and counts, OAP Debug only). Neither is installed: nothing is sent.",
             desc()
+        )
+    end)
+end)
+
+---A client with DebugLog installed (and OAP Debug too when `oap`), logged in.
+---@param level string? the debug setting
+---@param oap boolean?
+---@return table client
+---@return string[][] lines each { tab, line } as DebugLog formatted it
+---@return table[] calls OAP Debug's, when there
+local function withDebugLog(level, oap)
+    local saved = {
+        profileKeys = { ["Langmans - Doomhowl"] = "Default" },
+        profiles = { Default = { oapDebug = level } },
+    }
+    local client = NewClient(level and { saved = saved } or nil)
+    local lines = {}
+    _G.DLAPI = {
+        DebugLog = function(tab, fmt, ...)
+            lines[#lines + 1] = { tab, fmt:format(...) }
+        end,
+    }
+    local calls = {}
+    if oap then
+        _G.OAPDebug, calls = fakeOAPDebug()
+    end
+    client:login()
+    return client, lines, calls
+end
+
+describe("DebugLog", function()
+    after_each(function()
+        _G.DLAPI, _G.OAPDebug = nil, nil
+    end)
+
+    it("gets Kennel's messages in a tab of its own, the message as category, the table written out", function()
+        local client, lines = withDebugLog()
+        client.Kennel:ShowToast({ key = "Test:one", title = "One" })
+        local last = lines[#lines]
+        assert.are.equal("Kennel", last[1])
+        assert.truthy(last[2]:find("^KENNEL_TOAST~{"))
+        assert.truthy(last[2]:find("title=One", 1, true))
+    end)
+
+    it("takes the word before a colon as the category", function()
+        local client, lines = withDebugLog()
+        client.Kennel:SetModuleOn("Feeding", false)
+        assert.are.equal("module~Feeding off", lines[#lines][2])
+        client.Kennel:Log("warn", "probe: odd {1}", 1)
+        assert.are.equal("WARN~probe~odd 1", lines[#lines][2])
+    end)
+
+    it("colours errors and warnings, marks detail, and leaves a plain line plain", function()
+        local client, lines = withDebugLog("detailed")
+        client.Kennel:Log("error", "broke {1}", 5)
+        client.Kennel:Log("warn", "odd {1} {2}", "a", true)
+        client.Kennel:Log("info", "fine")
+        client.Kennel:Log("debug", "deep")
+        local n = #lines
+        assert.are.same(
+            { "ERR~broke 5", "WARN~odd a true", "fine", "2~deep" },
+            { lines[n - 3][2], lines[n - 2][2], lines[n - 1][2], lines[n][2] }
+        )
+    end)
+
+    it("gets Kennel's chat lines, a % in them kept as it is", function()
+        local client, lines = withDebugLog()
+        client.Kennel:Print("100% fed")
+        assert.are.same({ "Kennel", "Chat~100% fed" }, lines[#lines])
+    end)
+
+    it("gets only what the level asks for", function()
+        local client, lines = withDebugLog("errors")
+        local before = #lines
+        client.Kennel:ShowToast({ key = "Test:one", title = "One" })
+        client.Kennel:Print("hello")
+        client.Kennel:Log("debug", "deep")
+        assert.are.equal(before, #lines)
+        client.Kennel:Log("error", "broke")
+        assert.are.equal("ERR~broke", lines[#lines][2])
+    end)
+
+    it("writes a table inside a table out too, keys in order, and stops one level further", function()
+        local client, lines = withDebugLog()
+        client.Kennel:Log("info", "{1}", { b = 2, a = { c = { d = 1 } } })
+        assert.are.equal("{a={c={...}}, b=2}", lines[#lines][2])
+    end)
+
+    it("goes with OAP Debug when both are installed, counts and timers to OAP Debug alone", function()
+        local client, lines, calls = withDebugLog(nil, true)
+        client.Kennel:ShowToast({ key = "Test:one", title = "One" })
+        client.Kennel:OpenWindow("pets")
+        assert.truthy(lines[#lines][2]:find("KENNEL_TOAST", 1, true))
+        assert.is_true(#only(calls, "Log") > 0)
+        assert.is_true(#only(calls, "Count") > 0)
+        assert.is_true(#only(calls, "Time") > 0)
+    end)
+
+    it("has the setting say no addon is missing", function()
+        local client = withDebugLog()
+        assert.are.equal(
+            "How much goes to OAP Debug and DebugLog (metrics: timings and counts, OAP Debug only).",
+            option(client).desc()
         )
     end)
 end)

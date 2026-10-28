@@ -161,7 +161,7 @@ end
 ---@param on boolean
 function Kennel:SetModuleOn(name, on)
     self.db.profile.modules[name] = on
-    self:Log("info", on and "module {1} on" or "module {1} off", name)
+    self:Log("info", on and "module: {1} on" or "module: {1} off", name)
     local module = self.modules[name]
     if on and self:IsModuleUsable(name) then
         module:Enable()

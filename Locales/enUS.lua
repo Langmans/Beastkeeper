@@ -21,12 +21,12 @@ L.HELP_HEADER = "Commands:"
 L.HELP_WINDOW = "/kennel - open or close Kennel's window"
 L.HELP_OPTIONS = "/kennel config - open the options"
 
--- Settings window, Kennel's page: the box for OAP Debug (an addon's name, a debug window), the
--- standard setting every OAP addon has: how much Kennel sends to it.
-L.DEBUG = "OAP Debug"
-L.DEBUG_LEVEL = "Send to OAP Debug"
-L.DEBUG_DESC = "How much goes to OAP Debug's window (metrics: timings and counts)."
-L.DEBUG_MISSING = "Not installed: nothing is sent."
+-- Settings window, Kennel's page: the box for the debug addons OAP Debug and DebugLog (addons'
+-- names, each a debug window): how much Kennel sends to them.
+L.DEBUG = "Debug"
+L.DEBUG_LEVEL = "Send to OAP Debug and DebugLog"
+L.DEBUG_DESC = "How much goes to OAP Debug and DebugLog (metrics: timings and counts, OAP Debug only)."
+L.DEBUG_MISSING = "Neither is installed: nothing is sent."
 L.DEBUG_ERRORS = "Errors only"
 L.DEBUG_NORMAL = "Normal"
 L.DEBUG_METRICS = "Normal + metrics"

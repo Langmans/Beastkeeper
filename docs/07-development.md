@@ -30,7 +30,7 @@ playing:
 - `guids`: the pet's GUID at UNIT_PET and LOCALPLAYER_PET_RENAMED.
 
 Each list keeps its last 200; a button on its page empties them. Each finding
-also goes to OAP Debug through `Kennel:Log`.
+also goes to OAP Debug and DebugLog through `Kennel:Log`.
 
 ## Tests
 

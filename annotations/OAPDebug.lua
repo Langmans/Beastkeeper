@@ -8,3 +8,9 @@
 ---@field Chat fun(source: string, msg: string)
 ---@field Count fun(source: string, name: string, n: number?)
 ---@field Time fun(source: string, name: string, fn: fun(...): ..., ...: any): ...
+
+-- _DebugLog's global table (DLAPI), as far as Kennel calls it (Core\Debug.lua). From its
+-- Modules\DLGUI_debuglog_api.lua and DLGUI_debuglog_tab.lua.
+
+---@class DebugLogApi
+---@field DebugLog fun(tab: string, fmt: string, ...: any) adds string.format(fmt, ...) to the tab, made on first use
