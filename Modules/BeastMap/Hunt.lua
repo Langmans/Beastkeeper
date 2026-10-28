@@ -1,20 +1,20 @@
 local _, ns = ...
 
 -- The hunt: the hunter picks one beast to tame for one rank ("I'm taming this one for Claw 3"),
--- from a rank's button in the Abilities tab or a beast's pin. Kennel then shows the way there,
+-- from a rank's button in the Abilities tab or a beast's pin. Beastkeeper then shows the way there,
 -- gives the beast to the tame key, and marks the beast's areas on the world map and the minimap
 -- (Areas.lua). The hunt is kept per character and ends once the hunter knows the rank, or on the
--- button again or /kennel hunt stop. KENNEL_HUNT_STARTED and KENNEL_HUNT_ENDED tell other addons.
+-- button again or /beastkeeper hunt stop. BEASTKEEPER_HUNT_STARTED and BEASTKEEPER_HUNT_ENDED tell other addons.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
 
 ---The hunt on, if any.
----@return KennelHunt?
+---@return BeastkeeperHunt?
 function M:Hunt()
-    return self.db.char.hunt --[[@as KennelHunt?]]
+    return self.db.char.hunt --[[@as BeastkeeperHunt?]]
 end
 
 ---Whether the hunt on is for beast `npc` and rank `spellID`.
@@ -39,9 +39,12 @@ function M:StartHunt(npc, spellID, map, x, y)
     local name = M.BeastName(npc)
     self:Print(L.BEASTMAP_HUNT_START:format(name, M.RankText(spellID) or "?"))
     self:GoToBeast(npc, map, x, y)
-    Kennel:SendMessage("KENNEL_HUNT_STARTED", { module = self:GetName(), npc = npc, spellID = spellID, name = name })
+    Addon:SendMessage(
+        Addon.messages.huntStarted,
+        { module = self:GetName(), npc = npc, spellID = spellID, name = name }
+    )
     self:ShowHunt()
-    Kennel:RefreshWindow("abilities")
+    Addon:RefreshWindow("abilities")
 end
 
 ---Ends the hunt on: "learned" when the hunter knows the rank now, else "stopped".
@@ -59,15 +62,15 @@ function M:StopHunt(reason)
     else
         self:Print(L.BEASTMAP_HUNT_STOPPED:format(name))
     end
-    Kennel:SendMessage(
-        "KENNEL_HUNT_ENDED",
+    Addon:SendMessage(
+        Addon.messages.huntEnded,
         { module = self:GetName(), npc = hunt.npc, spellID = hunt.spellID, name = name, reason = reason or "stopped" }
     )
     self:ShowHunt()
-    Kennel:RefreshWindow("abilities")
+    Addon:RefreshWindow("abilities")
 end
 
----KENNEL_RANKS_KNOWN: the pins again, and the hunt over once its rank is known.
+---BEASTKEEPER_RANKS_KNOWN: the pins again, and the hunt over once its rank is known.
 function M:OnRanksKnown()
     self:Refresh()
     local hunt = self:Hunt()
@@ -78,7 +81,7 @@ M.command = "hunt"
 M.commands = {
     stop = {
         desc = L.BEASTMAP_CMD_STOP,
-        ---@param self KennelBeastMap
+        ---@param self BeastkeeperBeastMap
         func = function(self)
             self:StopHunt()
         end,

@@ -1,4 +1,4 @@
--- Ammo: the hunter's ammo count as a data broker source ("Kennel Ammo"), orange when low, red when
+-- Ammo: the hunter's ammo count as a data broker source ("Beastkeeper Ammo"), orange when low, red when
 -- critically low, a toast at each; a click sends the hunter to the nearest vendor of its faction
 -- that sells its kind of ammo; at a vendor it buys the best ammo for its level to fill the ammo bag
 -- (or the stacks set without one). The hunter here has a bow (2504) and Rough Arrows (2512).
@@ -6,9 +6,9 @@
 local ROUGH, SHARP, LIGHT_SHOT = 2512, 2515, 2516
 local BOW, GUN, CROSSBOW, SWORD = 2504, 2508, 15808, 25
 
----Kennel's ammo data object.
+---Beastkeeper's ammo data object.
 local function broker()
-    return LibStub("LibDataBroker-1.1"):GetDataObjectByName("Kennel Ammo")
+    return LibStub("LibDataBroker-1.1"):GetDataObjectByName("Beastkeeper Ammo")
 end
 
 ---A hunter with `count` Rough Arrows in the bags.
@@ -23,10 +23,10 @@ local function hunter(count, opts)
     return client
 end
 
----The toasts shown from now on, as Kennel hands them to listeners.
+---The toasts shown from now on, as Beastkeeper hands them to listeners.
 local function toasts(client)
     local seen = {}
-    client.Kennel.RegisterMessage(seen, "KENNEL_TOAST", function(_, event)
+    client.Addon.RegisterMessage(seen, "BEASTKEEPER_TOAST", function(_, event)
         seen[#seen + 1] = event.toast
     end)
     return seen
@@ -34,7 +34,7 @@ end
 
 ---A few vendors around the hunter, who stands in the middle of Elwynn Forest (1429).
 local function vendors(client)
-    client.Kennel.data.ammoVendors = {
+    client.Addon.data.ammoVendors = {
         [1] = { name = "Arrow Al", sells = { ROUGH }, side = "Alliance", pins = { [1429] = { 10, 10 } } },
         [2] = { name = "Horde Hal", sells = { ROUGH }, side = "Horde", pins = { [1429] = { 50, 52 } } },
         [3] = { name = "Bullet Bob", sells = { LIGHT_SHOT }, pins = { [1429] = { 51, 51 } } },
@@ -77,8 +77,8 @@ end
 describe("Ammo", function()
     it("has data: arrows and bullets with their level, and vendors that sell them with a pin", function()
         local ns = {}
-        assert(loadfile("Core/Constants/Enums.lua"))("Kennel", ns)
-        assert(loadfile("Data/Forever/Ammo.lua"))("Kennel", ns)
+        assert(loadfile("Core/Constants/Enums.lua"))("Beastkeeper", ns)
+        assert(loadfile("Data/Forever/Ammo.lua"))("Beastkeeper", ns)
         local ammo, vendors = ns.data.ammo, ns.data.ammoVendors
         assert.are.same({ arrow = 2, bullet = 3 }, ns.ammoKinds, "the Projectile item subclasses")
         assert.are.same({ name = "Rough Arrow", kind = ns.ammoKinds.arrow, level = 1 }, ammo[ROUGH])
@@ -170,7 +170,7 @@ describe("Ammo", function()
 
         it("follows the lines set on its page, and the toasts' switch", function()
             local client = hunter(1000)
-            local args = client.Kennel:GetModule("Ammo"):GetOptions().args
+            local args = client.Addon:GetModule("Ammo"):GetOptions().args
             args.low.set(nil, 1200)
             assert.are.equal("|cffff80001000|r", broker().text)
             args.critical.set(nil, 1100)
@@ -184,13 +184,13 @@ describe("Ammo", function()
         it("tells other addons when it crosses a line", function()
             local client = hunter(1000)
             local heard = {}
-            client.Kennel:Listen(heard, "KENNEL_AMMO", function(_, event)
+            client.Addon:Listen(heard, "BEASTKEEPER_AMMO", function(_, event)
                 heard[#heard + 1] = event
             end)
             client:stock(ROUGH, 990)
             client:stock(ROUGH, 400)
             client:stock(ROUGH, 100)
-            local arrow = client.Kennel.ammoKinds.arrow
+            local arrow = client.Addon.ammoKinds.arrow
             assert.are.same({
                 { module = "Ammo", count = 400, state = "low", kind = arrow },
                 { module = "Ammo", count = 100, state = "critical", kind = arrow },
@@ -224,7 +224,7 @@ describe("Ammo", function()
 
         it("says Off while the module is off", function()
             local client = hunter(1000)
-            client.Kennel:SetModuleOn("Ammo", false)
+            client.Addon:SetModuleOn("Ammo", false)
             assert.are.equal("Off", broker().text)
         end)
     end)
@@ -252,7 +252,7 @@ describe("Ammo", function()
 
         it("says so when no vendor sells the hunter's kind", function()
             local client = hunter(400)
-            client.Kennel.data.ammoVendors = {}
+            client.Addon.data.ammoVendors = {}
             assert.are.equal("No ammo vendor known.", tooltip(client)[2])
             broker().OnClick(nil, "LeftButton")
             assert.is_true(client:printedContains("No ammo vendor known."))
@@ -314,7 +314,7 @@ describe("Ammo", function()
                     list[i] = { name = "West " .. x, sells = { ROUGH }, pins = { [1429] = { x, 50 } } }
                 end
                 list[#list + 1] = { name = "Over the border", sells = { ROUGH }, pins = { [1430] = { 10, 50 } } }
-                client.Kennel.data.ammoVendors = list
+                client.Addon.data.ammoVendors = list
                 client.worldPos = EDGE
             end
 
@@ -366,7 +366,7 @@ describe("Ammo", function()
         it("opens the module's settings on a right-click", function()
             local client = hunter(400)
             broker().OnClick(nil, "RightButton")
-            assert.are.same({ client.Kennel.moduleCategoryIDs.Ammo }, client.opened)
+            assert.are.same({ client.Addon.moduleCategoryIDs.Ammo }, client.opened)
         end)
     end)
 
@@ -406,7 +406,7 @@ describe("Ammo", function()
             local client = hunter(0)
             client.ranged = GUN
             client.merchant = { ROUGH, LIGHT_SHOT }
-            client.Kennel:GetModule("Ammo"):GetOptions().args.stacks.set(nil, 2)
+            client.Addon:GetModule("Ammo"):GetOptions().args.stacks.set(nil, 2)
             client:fire("MERCHANT_SHOW")
             assert.are.same({ { LIGHT_SHOT, 200 }, { LIGHT_SHOT, 200 } }, client.bought)
             client = hunter(0)
@@ -426,7 +426,7 @@ describe("Ammo", function()
             client.merchant, client.ranged = { ROUGH }, SWORD
             client:fire("MERCHANT_SHOW")
             client.ranged = BOW
-            client.Kennel:GetModule("Ammo"):GetOptions().args.buy.set(nil, false)
+            client.Addon:GetModule("Ammo"):GetOptions().args.buy.set(nil, false)
             client:stock(ROUGH, 0)
             client:fire("MERCHANT_SHOW")
             assert.are.same({}, client.bought)

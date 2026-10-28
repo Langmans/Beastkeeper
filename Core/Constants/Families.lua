@@ -1,22 +1,22 @@
 local _, ns = ...
 
 -- Hunter pet families by CreatureFamily ID (UnitCreatureFamily's second return, the same on every
--- client language), both ways: Kennel.families.cat is 2, so code says families.cat instead of a
--- bare number; Kennel.familyInfo[2] is what Kennel knows of the Cat. Its specialization and diet
+-- client language), both ways: Beastkeeper.families.cat is 2, so code says families.cat instead of a
+-- bare number; Beastkeeper.familyInfo[2] is what Beastkeeper knows of the Cat. Its specialization and diet
 -- are as Wowhead's Forever hunter pet pages give them; the Fox, new in Forever, is on none of
 -- them yet. Burning Crusade's families eat what that client's CreatureFamily.PetFoodMask says
--- (raw meat counting as meat). The name shown is the client's (Kennel.FamilyName in
+-- (raw meat counting as meat). The name shown is the client's (Beastkeeper.FamilyName in
 -- Core\Families.lua), English as fallback.
 --
 -- Before Wrath a family has no specialization but a category and fixed modifiers to the pet's
--- health, armor and damage, in percent (Kennel.familyMods, the classic clients): as Icy Veins'
+-- health, armor and damage, in percent (Beastkeeper.familyMods, the classic clients): as Icy Veins'
 -- Classic and TBC Classic pet tables give them, which Wowhead's Classic pet guide bears out
 -- (a Cat 1.10 damage and 2% less health, an Owl 1.07 damage).
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
-Kennel.families = {
+Addon.families = {
     wolf = 1,
     cat = 2,
     spider = 3,
@@ -44,17 +44,17 @@ Kennel.families = {
 }
 
 -- The specializations, as Wowhead sorts the families.
-Kennel.petSpecs = Kennel.SelfKeyedEnum({ "ferocity", "cunning", "tenacity" }) --[[@as KennelPetSpecs]]
+Addon.petSpecs = Addon.SelfKeyedEnum({ "ferocity", "cunning", "tenacity" }) --[[@as BeastkeeperPetSpecs]]
 
 -- The kinds of food a family eats; upper-cased, each names a BEASTMAP_FOOD_* string, and the emote
 -- lines' food types use them as keys.
-Kennel.diets = Kennel.SelfKeyedEnum({ "meat", "fish", "cheese", "bread", "fungus", "fruit", "rawFish" }) --[[@as KennelDiets]]
+Addon.diets = Addon.SelfKeyedEnum({ "meat", "fish", "cheese", "bread", "fungus", "fruit", "rawFish" }) --[[@as BeastkeeperDiets]]
 
-local F, S, D = Kennel.families, Kennel.petSpecs, Kennel.diets
+local F, S, D = Addon.families, Addon.petSpecs, Addon.diets
 local ALL = { D.meat, D.fish, D.cheese, D.bread, D.fungus, D.fruit }
 
----@type table<number, KennelFamilyInfo>
-Kennel.familyInfo = {
+---@type table<number, BeastkeeperFamilyInfo>
+Addon.familyInfo = {
     [F.wolf] = { name = "Wolf", spec = S.ferocity, diet = { D.meat } },
     [F.cat] = { name = "Cat", spec = S.ferocity, diet = { D.meat, D.fish } },
     [F.spider] = { name = "Spider", spec = S.ferocity, diet = { D.meat } },
@@ -83,13 +83,13 @@ Kennel.familyInfo = {
 }
 
 -- The categories a family has before Wrath.
-Kennel.petCategories = Kennel.SelfKeyedEnum({ "offense", "defense", "general" }) --[[@as KennelPetCategories]]
+Addon.petCategories = Addon.SelfKeyedEnum({ "offense", "defense", "general" }) --[[@as BeastkeeperPetCategories]]
 
-local K = Kennel.petCategories
+local K = Addon.petCategories
 
 -- Per family its category and modifiers in percent, on the classic clients (the comment above).
----@type table<number, KennelFamilyMods>
-Kennel.familyMods = {
+---@type table<number, BeastkeeperFamilyMods>
+Addon.familyMods = {
     [F.bat] = { category = K.offense, health = 0, armor = 0, damage = 7 },
     [F.bear] = { category = K.defense, health = 8, armor = 5, damage = -9 },
     [F.boar] = { category = K.defense, health = 4, armor = 9, damage = -10 },

@@ -4,9 +4,9 @@ local _, ns = ...
 -- food-type lines, the families from Bear onwards and the extra family lines were written for
 -- FeedPetEmotes.
 
----@type Kennel
-local Kennel = ns
-local M = Kennel:GetModule("FeedEmotes") --[[@as KennelFeedEmotes]]
+---@type Addon
+local Addon = ns
+local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
 local F = M.Family
 
 M.Lines.frFR = {
@@ -113,7 +113,7 @@ M.Lines.frFR = {
                 "On n'électrocute pas la main qui nourrit !",
                 "Aspiré d'un coup !",
             },
-            -- Written for Kennel: Fox is new in WoW: Forever.
+            -- Written for Beastkeeper: Fox is new in WoW: Forever.
             [F.FOX] = {
                 "Rusé comme un renard !",
                 "Pas une miette pour les poules.",

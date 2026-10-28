@@ -5,10 +5,10 @@ local _, ns = ...
 -- abilities and what it could still teach. The tooltip leaves out the level and the abilities,
 -- which the game's own tooltip and the page already show.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("PetJournal") --[[@as KennelPetJournal]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("PetJournal") --[[@as BeastkeeperPetJournal]]
 
 local HIGHEST_LOYALTY = 6
 
@@ -24,7 +24,7 @@ end
 
 ---The line about the next loyalty level: from the average time out between the rises it saw.
 ---@param key string
----@param entry KennelJournalEntry
+---@param entry BeastkeeperJournalEntry
 ---@return string?
 local function Forecast(key, entry)
     local loyalty = entry.loyalty
@@ -49,10 +49,10 @@ local lines, teach = {}, {}
 
 ---The line of ranks the pet could still teach this character, from Ability Learned's known ranks;
 ---nil when it teaches nothing new or Ability Learned is off.
----@param entry KennelJournalEntry
+---@param entry BeastkeeperJournalEntry
 ---@return string?
 local function CanTeachLine(entry)
-    local known = Kennel:GetModule("AbilityLearned", true) --[[@as KennelAbilityLearned?]]
+    local known = Addon:GetModule("AbilityLearned", true) --[[@as BeastkeeperAbilityLearned?]]
     if not known or not known:IsEnabled() or not entry.ranks then return nil end
     wipe(teach)
     for name, rank in pairs(entry.ranks) do
@@ -61,15 +61,15 @@ local function CanTeachLine(entry)
     if #teach == 0 then return nil end
     table.sort(teach)
     -- Without Beast Training (the quest Training the Beast) no pet can teach yet.
-    local line = Kennel.KnowsSpell(Kennel.BEAST_TRAINING) and L.PETJOURNAL_TEACH or L.PETJOURNAL_TEACH_LATER
+    local line = Addon.KnowsSpell(Addon.BEAST_TRAINING) and L.PETJOURNAL_TEACH or L.PETJOURNAL_TEACH_LATER
     return line:format(table.concat(teach, ", "))
 end
 
 ---The line on the pet's level, family and loyalty.
----@param entry KennelJournalEntry
+---@param entry BeastkeeperJournalEntry
 ---@return string
 function M.LevelLine(entry)
-    local loyalty = entry.loyalty and Kennel.LoyaltyLabel(entry.loyalty, entry.loyaltyName) or "?"
+    local loyalty = entry.loyalty and Addon.LoyaltyLabel(entry.loyalty, entry.loyaltyName) or "?"
     return L.PETJOURNAL_LEVEL:format(entry.level or 0, entry.family or "?", loyalty)
 end
 
@@ -79,14 +79,14 @@ local TEACH_COLOR = "|cff40ff40%s|r"
 local shown = {}
 
 ---Ability Learned, while it is on: it knows which ranks the hunter has.
----@return KennelAbilityLearned?
+---@return BeastkeeperAbilityLearned?
 local function Known()
-    local known = Kennel:GetModule("AbilityLearned", true) --[[@as KennelAbilityLearned?]]
+    local known = Addon:GetModule("AbilityLearned", true) --[[@as BeastkeeperAbilityLearned?]]
     if known and known:IsEnabled() then return known end
 end
 
 ---Whether one of the pet's abilities ("Claw (Rank 2)") could teach the hunter a rank.
----@param known KennelAbilityLearned?
+---@param known BeastkeeperAbilityLearned?
 ---@param ability string
 ---@return boolean
 local function Teaches(known, ability)
@@ -95,7 +95,7 @@ local function Teaches(known, ability)
 end
 
 ---The line of the pet's abilities; with `highlight`, those it could teach this character in green.
----@param entry KennelJournalEntry
+---@param entry BeastkeeperJournalEntry
 ---@param highlight boolean?
 ---@return string? nil without abilities
 function M.AbilitiesLine(entry, highlight)
@@ -109,7 +109,7 @@ function M.AbilitiesLine(entry, highlight)
 end
 
 ---How many of the pet's abilities could teach this character a rank; 0 while Ability Learned is off.
----@param entry KennelJournalEntry
+---@param entry BeastkeeperJournalEntry
 ---@return number
 function M.TeachCount(entry)
     local known, count = Known(), 0

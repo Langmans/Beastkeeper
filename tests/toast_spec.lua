@@ -18,22 +18,22 @@ local function info(key, fields)
 end
 
 describe("the toast", function()
-    local client, Kennel
+    local client, Addon
 
     before_each(function()
         client = quiet()
-        Kennel = client.Kennel
+        Addon = client.Addon
     end)
 
     it("is not made before the first toast", function()
         assert.is_nil(client:toast())
-        Kennel:HideToast() -- nothing to hide, nothing breaks
-        Kennel:DropToast("x")
-        Kennel:DropToasts("x:")
+        Addon:HideToast() -- nothing to hide, nothing breaks
+        Addon:DropToast("x")
+        Addon:DropToasts("x:")
     end)
 
     it("shows the title, text, hint and icon, in the accent colour", function()
-        Kennel:ShowToast(info("a", { icon = 132270, accent = { 0.2, 0.8, 0.4 } }))
+        Addon:ShowToast(info("a", { icon = 132270, accent = { 0.2, 0.8, 0.4 } }))
         local toast = client:toast()
         assert.are.equal("a title", toast.Title.text)
         assert.are.equal("a text", toast.Text.text)
@@ -44,7 +44,7 @@ describe("the toast", function()
     end)
 
     it("falls back to a question mark, amber and empty lines", function()
-        Kennel:ShowToast({ key = "b", title = "only a title" })
+        Addon:ShowToast({ key = "b", title = "only a title" })
         local toast = client:toast()
         assert.are.equal(134400, toast.Icon.texture)
         assert.are.same({ 1, 0.62, 0.18, 1 }, toast.Accent.color)
@@ -54,37 +54,37 @@ describe("the toast", function()
 
     for _, skin in ipairs({ "card", "splash" }) do
         it("in the " .. skin .. " look, puts a unit's portrait on the icon while that unit exists", function()
-            Kennel.db.profile.toast.skin = skin
+            Addon.db.profile.toast.skin = skin
             client.pet = { health = 100, max = 100, dead = false }
-            Kennel:ShowToast(info("a", { portrait = "pet" }))
+            Addon:ShowToast(info("a", { portrait = "pet" }))
             local toast = client:toast()
             assert.are.equal("pet", toast.Portrait.portrait)
             assert.is_true(toast.Portrait.shown)
-            Kennel:HideToast()
+            Addon:HideToast()
             client.pet = nil
-            Kennel:ShowToast(info("b", { portrait = "pet" }))
+            Addon:ShowToast(info("b", { portrait = "pet" }))
             assert.is_false(toast.Portrait.shown, "the pet went away")
-            Kennel:HideToast()
-            Kennel:ShowToast(info("c"))
+            Addon:HideToast()
+            Addon:ShowToast(info("c"))
             assert.is_false(toast.Portrait.shown, "no portrait asked")
         end)
     end
 
     it("takes one screenshot once it has faded in, when asked to", function()
-        Kennel:ShowToast(info("a", { screenshot = true }))
+        Addon:ShowToast(info("a", { screenshot = true }))
         assert.are.equal(0, client.screenshots, "not while it fades in")
         client:animate(0.5)
         assert.are.equal(1, client.screenshots)
         client:animate(3)
         assert.are.equal(1, client.screenshots, "once")
-        Kennel:HideToast()
-        Kennel:ShowToast(info("b"))
+        Addon:HideToast()
+        Addon:ShowToast(info("b"))
         client:animate(1)
         assert.are.equal(1, client.screenshots, "not unasked")
     end)
 
     it("slides in near the top of the screen and fades in", function()
-        Kennel:ShowToast(info("a"))
+        Addon:ShowToast(info("a"))
         local toast = client:toast()
         assert.are.equal(0, toast.alpha)
         assert.are.same({ "TOP", UIParent, "TOP", 0, -108 }, toast.points[1], "starts a little higher")
@@ -94,8 +94,8 @@ describe("the toast", function()
     end)
 
     it("stays for the set duration, its timer running down, then fades and hides", function()
-        Kennel.db.profile.toast.duration = 2
-        Kennel:ShowToast(info("a"))
+        Addon.db.profile.toast.duration = 2
+        Addon:ShowToast(info("a"))
         local toast = client:toast()
         client:animate(1)
         assert.is_true(toast.shown)
@@ -107,8 +107,8 @@ describe("the toast", function()
     end)
 
     it("holds while the mouse is over it", function()
-        Kennel.db.profile.toast.duration = 1
-        Kennel:ShowToast(info("a"))
+        Addon.db.profile.toast.duration = 1
+        Addon:ShowToast(info("a"))
         client.mouseOver = true
         client:animate(5)
         assert.is_true(client:toast().shown)
@@ -121,8 +121,8 @@ describe("the toast", function()
     end)
 
     it("closes on a right-click, and the next one follows", function()
-        Kennel:ShowToast(info("a"))
-        Kennel:ShowToast(info("b"))
+        Addon:ShowToast(info("a"))
+        Addon:ShowToast(info("b"))
         local toast = client:toast()
         toast.scripts.OnMouseUp(toast, "LeftButton")
         assert.are.equal("a title", client:toastTitle())
@@ -131,10 +131,10 @@ describe("the toast", function()
     end)
 
     it("shows toasts one after the other, and one key only once", function()
-        Kennel:ShowToast(info("a"))
-        Kennel:ShowToast(info("b"))
-        Kennel:ShowToast(info("a"))
-        Kennel:ShowToast(info("b"))
+        Addon:ShowToast(info("a"))
+        Addon:ShowToast(info("b"))
+        Addon:ShowToast(info("a"))
+        Addon:ShowToast(info("b"))
         client:animate(8)
         assert.are.equal("b title", client:toastTitle())
         client:animate(8)
@@ -142,63 +142,63 @@ describe("the toast", function()
     end)
 
     it("takes away a solved toast: the one up fades, a waiting one is dropped", function()
-        Kennel:ShowToast(info("a"))
-        Kennel:ShowToast(info("b"))
-        Kennel:ShowToast(info("c"))
-        Kennel:DropToast("b")
-        Kennel:DropToast("a")
-        Kennel:DropToast("a") -- already fading
+        Addon:ShowToast(info("a"))
+        Addon:ShowToast(info("b"))
+        Addon:ShowToast(info("c"))
+        Addon:DropToast("b")
+        Addon:DropToast("a")
+        Addon:DropToast("a") -- already fading
         client:animate(0.5)
         assert.are.equal("c title", client:toastTitle())
     end)
 
     it("takes away all of a module's toasts", function()
-        Kennel:ShowToast(info("M:a"))
-        Kennel:ShowToast(info("Other:b"))
-        Kennel:ShowToast(info("M:c"))
-        Kennel:DropToasts("M:")
+        Addon:ShowToast(info("M:a"))
+        Addon:ShowToast(info("Other:b"))
+        Addon:ShowToast(info("M:c"))
+        Addon:DropToasts("M:")
         client:animate(0.5)
         assert.are.equal("Other:b title", client:toastTitle())
-        Kennel:DropToasts("M:") -- the one up is another module's: it stays
+        Addon:DropToasts("M:") -- the one up is another module's: it stays
         assert.are.equal("Other:b title", client:toastTitle())
     end)
 
     it("plays its sound: a file, a sound kit, or none", function()
-        Kennel:ShowToast(info("a", { sound = { file = 562387 } }))
-        Kennel:HideToast()
-        Kennel:ShowToast(info("b", { sound = { kit = 8959 } }))
-        Kennel:HideToast()
-        Kennel:ShowToast(info("c"))
+        Addon:ShowToast(info("a", { sound = { file = 562387 } }))
+        Addon:HideToast()
+        Addon:ShowToast(info("b", { sound = { kit = 8959 } }))
+        Addon:HideToast()
+        Addon:ShowToast(info("c"))
         assert.are.same({ { file = 562387, channel = "Master" }, { kit = 8959, channel = "Master" } }, client.sounds)
     end)
 
     it("takes its size from the settings", function()
-        Kennel.db.profile.toast.scale = 1.5
-        Kennel:ShowToast(info("a"))
+        Addon.db.profile.toast.scale = 1.5
+        Addon:ShowToast(info("a"))
         assert.are.equal(1.5, client:toast().scale)
     end)
 
     it("is as high as the icon when the text is short", function()
-        Kennel:ShowToast(info("a"))
+        Addon:ShowToast(info("a"))
         assert.are.equal(40 + 24, client:toast().height)
     end)
 
     it("moves where it is dragged, keeps that spot, and goes back on a reset", function()
-        Kennel:ShowToast(info("a"))
+        Addon:ShowToast(info("a"))
         local toast = client:toast()
         toast.scripts.OnDragStart(toast)
         toast.scripts.OnDragStop(toast)
-        assert.are.same({ "TOPLEFT", "BOTTOMLEFT", 300, 700 }, Kennel.db.profile.toast.pos)
-        Kennel:HideToast()
-        Kennel:ShowToast(info("b"))
+        assert.are.same({ "TOPLEFT", "BOTTOMLEFT", 300, 700 }, Addon.db.profile.toast.pos)
+        Addon:HideToast()
+        Addon:ShowToast(info("b"))
         client:animate(0.3)
         assert.are.same({ "TOPLEFT", UIParent, "BOTTOMLEFT", 300, 700 }, toast.points[1])
-        Kennel:ResetToastPosition()
-        assert.is_nil(Kennel.db.profile.toast.pos)
+        Addon:ResetToastPosition()
+        assert.is_nil(Addon.db.profile.toast.pos)
     end)
 
     it("is left where the mouse takes it while dragged, during and after the slide in", function()
-        Kennel:ShowToast(info("a"))
+        Addon:ShowToast(info("a"))
         local toast = client:toast()
         toast.scripts.OnDragStart(toast)
         toast.points = { { "DRAGGED" } }
@@ -213,23 +213,23 @@ describe("the toast", function()
     end)
 
     it("keeps no spot from a drop the client cannot place", function()
-        Kennel:ShowToast(info("a"))
+        Addon:ShowToast(info("a"))
         local toast = client:toast()
         toast.StopMovingOrSizing = function(self)
             self.points = {}
         end
         toast.scripts.OnDragStop(toast)
-        assert.is_nil(Kennel.db.profile.toast.pos)
+        assert.is_nil(Addon.db.profile.toast.pos)
     end)
 end)
 
 describe("the toast settings", function()
-    local client, Kennel, args
+    local client, Addon, args
 
     before_each(function()
         client = quiet()
-        Kennel = client.Kennel
-        args = Kennel:GetOptionsTable().args.modules.args.toast.args
+        Addon = client.Addon
+        args = Addon:GetOptionsTable().args.modules.args.toast.args
     end)
 
     it("set how long it stays and its size", function()
@@ -237,14 +237,14 @@ describe("the toast settings", function()
         args.scale.set({}, 1.25)
         assert.are.equal(9, args.duration.get())
         assert.are.equal(1.25, args.scale.get())
-        assert.are.equal(9, Kennel.db.profile.toast.duration)
-        assert.are.equal(1.25, Kennel.db.profile.toast.scale)
+        assert.are.equal(9, Addon.db.profile.toast.duration)
+        assert.are.equal(1.25, Addon.db.profile.toast.scale)
     end)
 
     it("reset its spot and show an example", function()
-        Kennel.db.profile.toast.pos = { "TOP", "TOP", 0, 0 }
+        Addon.db.profile.toast.pos = { "TOP", "TOP", 0, 0 }
         args.reset.func()
-        assert.is_nil(Kennel.db.profile.toast.pos)
+        assert.is_nil(Addon.db.profile.toast.pos)
         args.test.func()
         assert.are.equal("This is a toast", client:toastTitle())
     end)

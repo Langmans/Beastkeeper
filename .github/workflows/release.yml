@@ -1,7 +1,7 @@
 # Pushing a tag (e.g. v1.0.0) runs the CI checks, then builds the zip with BigWigsMods/packager
 # (Ace3 from the .pkgmeta externals, translations from CurseForge), uploads it to CurseForge and
 # attaches it to a GitHub release. The CurseForge upload and the translations are skipped while
-# the CF_API_KEY secret or the project ID in Kennel.toc is missing.
+# the CF_API_KEY secret or the project ID in Beastkeeper.toc is missing.
 name: Release
 
 on:

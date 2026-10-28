@@ -10,12 +10,12 @@ local _, ns = ...
 -- The client replays known spells in the first seconds after login, and a trainer window lists
 -- ranks bought rather than learned; neither is news (self.ready, self.atTrainer).
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
+---@type Addon
+local Addon = ns
+local L = Addon.L
 
----@type KennelAbilityLearned
-local M = Kennel:NewModule("AbilityLearned")
+---@type BeastkeeperAbilityLearned
+local M = Addon:NewModule("AbilityLearned")
 M.title = L.ABILITYLEARNED_TITLE
 M.description = L.ABILITYLEARNED_DESC
 M.requires = { "beastTraining" }
@@ -54,28 +54,28 @@ local EVENTS = {
 }
 
 ---The settings of the profile in use.
----@return KennelAbilityLearnedSettings
+---@return BeastkeeperAbilityLearnedSettings
 function M:Settings()
-    return self.db.profile --[[@as KennelAbilityLearnedSettings]]
+    return self.db.profile --[[@as BeastkeeperAbilityLearnedSettings]]
 end
 
 ---The sound a sound setting asks for: the pet's own (the level-up sound when its family has none
 ---or it is not about the pet out), the level-up sound, or none.
 ---@param key "sound"|"pointsSound"|"loyaltySound" the setting of the kind of toast
 ---@param petSound "AGGRO"|"WOUND"|nil which of the pet's sounds; nil when it is not about the pet out
----@return KennelSound?
+---@return BeastkeeperSound?
 function M:Sound(key, petSound)
     local setting = self:Settings()[key]
     if setting == "off" then return nil end
-    return setting == "family" and petSound and Kennel.PetSound(petSound) or { kit = LEVEL_UP }
+    return setting == "family" and petSound and Addon.PetSound(petSound) or { kit = LEVEL_UP }
 end
 
 ---The toast for a learn.
----@param learn KennelLearn
----@return KennelToastInfo
+---@param learn BeastkeeperLearn
+---@return BeastkeeperToastInfo
 function M:Toast(learn)
     local teacher = learn.teacher
-    local points = teacher and Kennel.PetTrainingPoints()
+    local points = teacher and Addon.PetTrainingPoints()
     local ability = learn.rank and ("%s (%s)"):format(learn.name, learn.rank) or learn.name
     return {
         key = "AbilityLearned:" .. learn.name,
@@ -92,16 +92,16 @@ function M:Toast(learn)
 end
 
 ---Shows a learn and, unless it was simulated, keeps it in the history.
----@param learn KennelLearn
+---@param learn BeastkeeperLearn
 function M:ShowLearn(learn)
-    Kennel:ShowToast(self:Toast(learn))
+    Addon:ShowToast(self:Toast(learn))
     if learn.simulated then return end
     self:RecordLearn({
         name = learn.name,
         rank = learn.rank,
         pet = learn.teacher,
-        npc = learn.teacher and Kennel.PetNPC() or nil,
-        familyID = learn.teacher and Kennel.PetFamilyID() or nil,
+        npc = learn.teacher and Addon.PetNPC() or nil,
+        familyID = learn.teacher and Addon.PetFamilyID() or nil,
         zone = GetZoneText(),
         t = GetServerTime(),
     })
@@ -160,9 +160,9 @@ function M:OnEnable()
     self.ready, self.atTrainer = false, false
     local _, class = UnitClass("player")
     if class ~= "HUNTER" then return end
-    Kennel.RegisterEvents(self, EVENTS)
+    Addon.RegisterEvents(self, EVENTS)
     -- How the pet grew comes from the core, which waits out the login itself.
-    Kennel:Listen(self, "KENNEL_PET_GROWTH", "OnGrowth")
+    Addon:Listen(self, Addon.messages.petGrowth, "OnGrowth")
     C_Timer.After(LOGIN_WAIT, function()
         if not self:IsEnabled() then return end
         self.ready = true
@@ -173,6 +173,6 @@ end
 -- AceEvent drops the events by itself; the toasts and the message go here.
 function M:OnDisable()
     self.ready = false
-    Kennel:StopListening(self)
-    Kennel:DropToasts("AbilityLearned:")
+    Addon:StopListening(self)
+    Addon:DropToasts("AbilityLearned:")
 end

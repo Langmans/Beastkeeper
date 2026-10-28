@@ -4,12 +4,12 @@
 
 local _, ns = ...
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
-local K = Kennel.ammoKinds
+local K = Addon.ammoKinds
 
-local ALLIANCE, HORDE = Kennel.factions.alliance, Kennel.factions.horde
+local ALLIANCE, HORDE = Addon.factions.alliance, Addon.factions.horde
 
 -- The item IDs, by name.
 local ROUGH_ARROW = 2512
@@ -25,12 +25,12 @@ local THORIUM_HEADED_ARROW = 18042
 local ICE_THREADED_ARROW = 19316
 local ICE_THREADED_BULLET = 19317
 
----@type table<number, KennelAmmoItem>
+---@type table<number, BeastkeeperAmmoItem>
 local I = {}
----@type table<number, KennelAmmoVendor>
+---@type table<number, BeastkeeperAmmoVendor>
 local V = {}
-Kennel.data = Kennel.data or {}
-Kennel.data.ammo, Kennel.data.ammoVendors = I, V
+Addon.data = Addon.data or {}
+Addon.data.ammo, Addon.data.ammoVendors = I, V
 
 I[ROUGH_ARROW] = { name = "Rough Arrow", kind = K.arrow, level = 1 }
 I[SHARP_ARROW] = { name = "Sharp Arrow", kind = K.arrow, level = 10 }

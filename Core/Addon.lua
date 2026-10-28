@@ -2,62 +2,97 @@ local addonName, ns = ...
 
 -- The addon object, its saved settings and the module switches.
 --
--- Every feature is an AceAddon module (Kennel:NewModule). What a module may declare is described
--- by KennelModule in annotations\Kennel.lua. The core owns the switch: profile.modules[name] says
+-- Every feature is an AceAddon module (Beastkeeper:NewModule). What a module may declare is described
+-- by BeastkeeperModule in annotations\Beastkeeper.lua. The core owns the switch: profile.modules[name] says
 -- whether a module runs, and the options page and a profile change both go through
 -- SetModuleOn/ApplyModuleStates. A module therefore never enables itself, and its OnDisable must
 -- undo everything its OnEnable did (events, hooks, frames shown), because that is also how a
 -- profile change reaches it: every running module is disabled, then enabled again from the new
 -- profile, so OnEnable only has to read its settings once.
 
----@type Kennel
-local Kennel = LibStub("AceAddon-3.0"):NewAddon(ns, addonName, "AceConsole-3.0", "AceEvent-3.0")
-Kennel.L = LibStub("AceLocale-3.0"):GetLocale(addonName)
+---@type Addon
+local Addon = LibStub("AceAddon-3.0"):NewAddon(ns, addonName, "AceConsole-3.0", "AceEvent-3.0")
+Addon.L = LibStub("AceLocale-3.0"):GetLocale(addonName)
+
+-- The names the game and other addons see, all made from the folder's name: frames, macros and
+-- other addons' registries start with NAME, the slash command is NAME in lower case (and
+-- SLASH_ALIAS), messages start with NAME in upper case. What cannot be made from it is the
+-- folder, the .tocs and Bindings.xml (docs\10-renaming.md).
+Addon.NAME = addonName
+Addon.SLASH_ALIAS = "bk"
+
+-- The messages Beastkeeper sends (docs\04-hooking.md), by key: messages.petGrowth is
+-- "<NAME>_PET_GROWTH".
+Addon.messages = {} --[[@as BeastkeeperMessages]]
+for _, key in ipairs({
+    "print",
+    "toast",
+    "ranksKnown",
+    "abilityLearned",
+    "petGrowth",
+    "autocastWanted",
+    "rareSeen",
+    "huntStarted",
+    "huntEnded",
+    "petHappiness",
+    "petDied",
+    "petTamed",
+    "ammo",
+}) do
+    Addon.messages[key] = addonName:upper() .. "_" .. key:gsub("%u", "_%0"):upper()
+end
+
+---A global name of Beastkeeper's own: a frame's or a macro's, NAME first ("BeastkeeperWindow").
+---@param suffix string
+---@return string
+function Addon.Global(suffix)
+    return addonName .. suffix
+end
 
 -- The game data. The pet ability ranks and the beasts that teach them are LibTameable-1.0's tables
--- (read only; empty on a client without Beast Training). The rest is generated into Kennel's own
+-- (read only; empty on a client without Beast Training). The rest is generated into Beastkeeper's own
 -- Data folder, empty until the client's one fills it (its .toc lists them): a client without data
 -- of its own (Burning Crusade, Mists, retail) keeps these.
 ---@type LibTameable
 local Tameable = LibStub("LibTameable-1.0")
-Kennel.data = {
+Addon.data = {
     petAbilityRanks = Tameable.ranks,
     beasts = Tameable.beasts,
     trainers = {},
     ammo = {},
     ammoVendors = {},
-} --[[@as KennelData]]
+} --[[@as BeastkeeperData]]
 
 -- Every module can register events; anything else it embeds it lists itself.
-Kennel:SetDefaultModuleLibraries("AceEvent-3.0")
+Addon:SetDefaultModuleLibraries("AceEvent-3.0")
 
-local consolePrint = Kennel.Print
+local consolePrint = Addon.Print
 
----AceConsole's Print, then KENNEL_PRINT ({ module, line }) for whoever listens (docs\04-hooking.md).
+---AceConsole's Print, then BEASTKEEPER_PRINT ({ module, line }) for whoever listens (docs\04-hooking.md).
 ---@param module string? the module that says it; nil for the core
 ---@param ... any
 local function PrintFrom(module, ...)
-    consolePrint(Kennel, ...)
-    Kennel:SendMessage("KENNEL_PRINT", { module = module, line = strjoin(" ", tostringall(...)) })
+    consolePrint(Addon, ...)
+    Addon:SendMessage(Addon.messages.print, { module = module, line = strjoin(" ", tostringall(...)) })
 end
 
 ---A line in chat from the core.
 ---@param ... any
-function Kennel:Print(...)
+function Addon:Print(...)
     PrintFrom(nil, ...)
 end
 
--- What every module has: Print, naming the module in KENNEL_PRINT.
-Kennel:SetDefaultModulePrototype({
+-- What every module has: Print, naming the module in BEASTKEEPER_PRINT.
+Addon:SetDefaultModulePrototype({
     ---A line in chat from this module.
-    ---@param self KennelModule
+    ---@param self BeastkeeperModule
     ---@param ... any
     Print = function(self, ...)
         PrintFrom(self:GetName(), ...)
     end,
 })
 
-function Kennel:OnInitialize()
+function Addon:OnInitialize()
     -- The client replays some values in the first seconds after login (Core\Listen.lua waits).
     self.loginTime = GetTime()
     self:FindFeatures()
@@ -71,22 +106,22 @@ function Kennel:OnInitialize()
             kindSkins[name .. ":" .. kind] = skin
         end
     end
-    self.db = LibStub("AceDB-3.0"):New("KennelDB", {
+    self.db = LibStub("AceDB-3.0"):New(Addon.Global("DB"), {
         profile = {
             modules = switches,
             -- The toast every module shows (Core\Toast\): the skin for every toast, a skin per
             -- kind of toast where chosen or where its module gives one; pos is set once it is
             -- dragged. sink: LibSink's output choice (Integrations\LibSink\).
             toast = { duration = 6, scale = 1, skin = "card", skins = kindSkins, sink = {} },
-            -- The look of Kennel's buttons and their holders (Core\Buttons.lua): a skin id or "auto".
+            -- The look of Beastkeeper's buttons and their holders (Core\Buttons.lua): a skin id or "auto".
             buttons = { skin = "auto", holder = "auto", crop = true },
-            -- Kennel's window (Core\Window.lua): pos is set once it is dragged.
+            -- Beastkeeper's window (Core\Window.lua): pos is set once it is dragged.
             window = {},
             -- How much goes to OAP Debug when it is installed (Core\Debug.lua).
             oapDebug = "metrics",
         },
         -- Per character: which modules made their macros already (Core\Macro.lua); each pet's
-        -- training points total, level and loyalty as last seen, by name (KENNEL_PET_GROWTH,
+        -- training points total, level and loyalty as last seen, by name (BEASTKEEPER_PET_GROWTH,
         -- Core\Listen.lua).
         char = { macrosMade = {}, growth = {} },
     }, true)
@@ -126,11 +161,11 @@ end
 ---@param owner table
 ---@param events string[]
 ---@param handler (string|function)?
-function Kennel.RegisterEvents(owner, events, handler)
+function Addon.RegisterEvents(owner, events, handler)
     for _, event in ipairs(events) do
         -- AceEvent takes a method name too, and nil for the event's own name.
         if HasEvent(event) then
-            Kennel.RegisterEvent(owner, event, handler --[[@as fun(event: FrameEvent, ...)]])
+            Addon.RegisterEvent(owner, event, handler --[[@as fun(event: FrameEvent, ...)]])
         end
     end
 end
@@ -139,7 +174,7 @@ end
 ---so each value is written once (Core\Constants).
 ---@param values string[]
 ---@return table<string, string>
-function Kennel.SelfKeyedEnum(values)
+function Addon.SelfKeyedEnum(values)
     local enum = {}
     for _, value in ipairs(values) do
         enum[value] = value
@@ -148,10 +183,10 @@ function Kennel.SelfKeyedEnum(values)
 end
 
 ---Whether the current profile has this module switched on; never for a module the client's game
----lacks a part of (Kennel:IsModuleUsable).
+---lacks a part of (Beastkeeper:IsModuleUsable).
 ---@param name string
 ---@return boolean
-function Kennel:IsModuleOn(name)
+function Addon:IsModuleOn(name)
     return self.db.profile.modules[name] == true and self:IsModuleUsable(name)
 end
 
@@ -159,7 +194,7 @@ end
 ---client's game cannot run stays off.
 ---@param name string
 ---@param on boolean
-function Kennel:SetModuleOn(name, on)
+function Addon:SetModuleOn(name, on)
     self.db.profile.modules[name] = on
     self:Log("info", on and "module: {1} on" or "module: {1} off", name)
     local module = self.modules[name]
@@ -172,7 +207,7 @@ end
 
 ---After a profile change: stops every module, then starts the ones the new profile has on; the
 ---new profile's OAP Debug level.
-function Kennel:ApplyModuleStates()
+function Addon:ApplyModuleStates()
     for _, module in pairs(self.modules) do
         module:Disable()
     end

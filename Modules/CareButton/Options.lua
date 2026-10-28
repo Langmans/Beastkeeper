@@ -1,12 +1,12 @@
 local _, ns = ...
 
--- CareButton's page in the settings window (Kennel > Care Button): the toasts, the low-health
+-- CareButton's page in the settings window (Beastkeeper > Care Button): the toasts, the low-health
 -- line, the sound, whether the pet counts as dead, an example toast and the macro.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("CareButton") --[[@as KennelCareButton]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("CareButton") --[[@as BeastkeeperCareButton]]
 
 ---Checks the health again after the low line or the marker's switch changed.
 local function RecheckHealth()
@@ -23,12 +23,12 @@ end
 ---@type table<string, fun()>
 local CHANGED = { low = RecheckHealth, marker = RecheckHealth, visible = Reapply }
 
----A getter and setter for one profile setting (Kennel:Setting), with what its change sets off.
+---A getter and setter for one profile setting (Beastkeeper:Setting), with what its change sets off.
 ---@param key string
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set
 local function Setting(key)
-    return Kennel:Setting(M, key, CHANGED[key])
+    return Addon:Setting(M, key, CHANGED[key])
 end
 
 ---Counts the pet as dead or alive by hand; says so in combat, where it cannot.
@@ -149,7 +149,7 @@ function M:GetOptions()
                 func = function()
                     local info = M:Toast("dead")
                     info.key = info.key .. ":test"
-                    Kennel:ShowToast(info)
+                    Addon:ShowToast(info)
                 end,
             },
             macro = {
@@ -158,7 +158,7 @@ function M:GetOptions()
                 desc = L.CAREBUTTON_OPTION_MACRO_DESC,
                 order = 8,
                 func = function()
-                    Kennel:CreateMacros(M, true)
+                    Addon:CreateMacros(M, true)
                 end,
             },
         },

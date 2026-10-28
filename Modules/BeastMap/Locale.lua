@@ -1,7 +1,8 @@
 -- BeastMap's English strings: the "BeastMap" namespace on the CurseForge translation page (see
 -- Locales\README.md). Beast names come from the data in English; ability names and ranks come
 -- from the client.
-local L = LibStub("AceLocale-3.0"):NewLocale("Kennel", "enUS", true)
+local addonName = ...
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 
 -- One string per line, however long: see Locales\README.md.
 -- stylua: ignore start
@@ -69,7 +70,7 @@ L.BEASTMAP_TAME_NONE = "No beast to target yet: a rare alarm or a click on a bea
 L.BEASTMAP_OPTION_RARE = "Toast when a rare beast I could learn from is near"
 L.BEASTMAP_OPTION_RARE_DESC = "Once per spawn, when a rare beast that teaches a rank you lack shows on the minimap, as a nameplate, as your target or under the mouse. Follows the choices above (lower ranks, beasts above your level). Works without HandyNotes."
 
--- Settings window, Kennel's page: the kind of toast, for choosing its look. Shown after "Beast Map: ".
+-- Settings window, Beastkeeper's page: the kind of toast, for choosing its look. Shown after "Beast Map: ".
 L.BEASTMAP_TOASTTYPE_REACH = "pet ability rank in reach"
 L.BEASTMAP_TOASTTYPE_RARE = "rare beast nearby"
 
@@ -100,7 +101,7 @@ L.BEASTMAP_RARE = ", rare"
 L.BEASTMAP_ELITE = ", elite"
 L.BEASTMAP_RARE_ELITE = ", rare elite"
 
--- Kennel's window, the Abilities tab: its name; beside an ability in the list, first %d the ranks
+-- Beastkeeper's window, the Abilities tab: its name; beside an ability in the list, first %d the ranks
 -- the hunter knows, second the ranks beasts teach; a rank (%d); a rank the hunter knows; the heads
 -- of the ranks' columns; a rank's go button's tooltip (%s the beast).
 L.BEASTMAP_TAB_ABILITIES = "Abilities"
@@ -114,13 +115,13 @@ L.BEASTMAP_GO = "Hunt %s: the way there, the tame key, its areas on the map"
 L.BEASTMAP_GO_STOP = "Stop hunting %s"
 -- The hunt (one beast the hunter means to tame for one rank): its start (first %s the beast, second
 -- the rank, such as "Claw (Rank 3)"); its end when stopped (%s the beast); its end when the rank is
--- learned (the rank, the beast); /kennel hunt stop without a hunt; that command in /kennel help.
+-- learned (the rank, the beast); /beastkeeper hunt stop without a hunt; that command in /beastkeeper help.
 L.BEASTMAP_HUNT_START = "Hunting %s for %s."
 L.BEASTMAP_HUNT_STOPPED = "Stopped hunting %s."
 L.BEASTMAP_HUNT_LEARNED = "Learned %s: the hunt for %s is over."
 L.BEASTMAP_HUNT_NONE = "Not hunting a beast."
 L.BEASTMAP_CMD_STOP = "stop the hunt for a beast"
--- A rank the hunter lacks that no beast in Kennel's data teaches (Forever's family abilities: the pet may get them itself).
+-- A rank the hunter lacks that no beast in Beastkeeper's data teaches (Forever's family abilities: the pet may get them itself).
 L.BEASTMAP_NO_TEACHER = "No beast teaches it"
 -- After the nearest beast that teaches a rank (BEASTMAP_REACH_PLACE), comma-separated: the travel
 -- time (%d minutes), that it is above the hunter's level. In a column of its own: how many more
@@ -128,7 +129,7 @@ L.BEASTMAP_NO_TEACHER = "No beast teaches it"
 L.BEASTMAP_TRAVEL = "~%d min"
 L.BEASTMAP_ABOVE = "above your level"
 L.BEASTMAP_MORE = "+%d"
--- Kennel's window, the Families tab: its name; a family in the list with how many of the hunter's
+-- Beastkeeper's window, the Families tab: its name; a family in the list with how many of the hunter's
 -- pets are of it (%s the family, %d the count).
 L.BEASTMAP_TAB_FAMILIES = "Families"
 L.BEASTMAP_FAMILY_ROW = "%s (%d)"
@@ -143,8 +144,8 @@ L.BEASTMAP_FOOD_FRUIT = "Fruit"
 L.BEASTMAP_FOOD_RAWFISH = "Raw Fish"
 -- A line per ability beasts teach the family. %s: the ability; first %d its lowest rank, second its highest, third how many the hunter knows.
 L.BEASTMAP_FAMILY_ABILITY = "%s: ranks %d-%d, you know %d"
--- Under the family's beasts list when Kennel's data has none of that family.
-L.BEASTMAP_NO_BEASTS = "No beast of this family in Kennel's data."
+-- Under the family's beasts list when Beastkeeper's data has none of that family.
+L.BEASTMAP_NO_BEASTS = "No beast of this family in Beastkeeper's data."
 -- A rank's tooltip, a line per beast that teaches it. First %s: the beast and its place; second: its level (BEASTMAP_LEVEL).
 L.BEASTMAP_TEACHER_LINE = "%s: %s"
 

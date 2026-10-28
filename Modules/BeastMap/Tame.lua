@@ -4,31 +4,31 @@ local _, ns = ...
 -- pointed at last (the rare alarm's, or the one whose pin was clicked) and puts a skull on it;
 -- with Shift it casts Tame Beast instead. Only a secure button may target, so its macro text holds
 -- the beast's name, rewritten outside combat. For an action bar: a macro with
--- /click KennelTameButton.
+-- /click BeastkeeperTameButton.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
 
-local TAME_BEAST = Kennel.TAME_BEAST
-local SKULL = Kennel.raidMarks.skull
+local TAME_BEAST = Addon.TAME_BEAST
+local SKULL = Addon.raidMarks.skull
 
-local button = CreateFrame("Button", "KennelTameButton", UIParent, "SecureActionButtonTemplate")
+local button = CreateFrame("Button", Addon.Global("TameButton"), UIParent, "SecureActionButtonTemplate")
 button:RegisterForClicks("AnyUp", "AnyDown")
 
 ---The button's lines for a beast: Shift tames, else target it by name and mark it.
 ---@param name string
 ---@return string
 local function MacroText(name)
-    local tame = Kennel.SpellInfo(TAME_BEAST) or "Tame Beast"
+    local tame = Addon.SpellInfo(TAME_BEAST) or "Tame Beast"
     return ("/cast [mod:shift] %s\n/stopmacro [mod:shift]\n/targetexact %s\n/tm %d"):format(tame, name, SKULL)
 end
 
 ---Gives the button its lines for the beast to tame now, or none while there is none or the module
 ---is off; after combat when in it.
 function M:ApplyTameButton()
-    Kennel:OutOfCombat("BeastMap:tame", function()
+    Addon:OutOfCombat("BeastMap:tame", function()
         local name = self:IsEnabled() and self.tameTarget
         button:SetAttribute("useOnKeyDown", false)
         button:SetAttribute("type", name and "macro" or nil)
@@ -45,9 +45,9 @@ function M:SetTameTarget(name)
     self:ApplyTameButton()
 end
 
----KENNEL_RARE_SEEN, the rare alarm's message: that beast is the one to tame.
+---BEASTKEEPER_RARE_SEEN, the rare alarm's message: that beast is the one to tame.
 ---@param _ string the message
----@param event KennelRareSeenEvent
+---@param event BeastkeeperRareSeenEvent
 function M:OnRareSeen(_, event)
     self:SetTameTarget(event.name)
 end
@@ -60,4 +60,4 @@ button:HookScript("OnClick", function(_, _mouse, down)
     if not down and not M.tameTarget then M:Print(L.BEASTMAP_TAME_NONE) end
 end)
 
-_G["BINDING_NAME_CLICK KennelTameButton:LeftButton"] = L.BEASTMAP_TAME_BINDING
+_G["BINDING_NAME_CLICK " .. Addon.Global("TameButton") .. ":LeftButton"] = L.BEASTMAP_TAME_BINDING

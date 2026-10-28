@@ -4,14 +4,14 @@
 local MYSTERY_MEAT, WATERMELON, BREAD, JERKY = 12037, 4538, 4540, 117
 
 local function module(client)
-    return client.Kennel:GetModule("FeedEmotes")
+    return client.Addon:GetModule("FeedEmotes")
 end
 
 ---A hunter with FeedEmotes on; without `variety`, no openings or whole sentences.
 local function feeder(opts)
     opts = opts or {}
     local client = NewClient(opts):login()
-    client.Kennel:SetModuleOn("FeedEmotes", true)
+    client.Addon:SetModuleOn("FeedEmotes", true)
     if not opts.variety then
         local emotes = module(client):LinesInUse().emotes
         emotes.openings, emotes.whole, emotes.wholeFamily = nil, nil, nil

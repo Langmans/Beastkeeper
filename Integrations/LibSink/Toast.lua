@@ -7,25 +7,25 @@ local _, ns = ...
 local LibSink = LibStub("LibSink-2.0", true) --[[@as LibSinkLibrary?]]
 if not LibSink then return end
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
+---@type Addon
+local Addon = ns
+local L = Addon.L
 
 -- LibSink's methods on a table of its own: LibSink keeps each addon's output choice by that table.
 local output = LibSink:Embed({})
 
 ---Points LibSink at the profile in use, before it reads or writes the choice.
 local function UseProfile()
-    LibSink.SetSinkStorage(output, Kennel:ToastSettings().sink)
+    LibSink.SetSinkStorage(output, Addon:ToastSettings().sink)
 end
 
 -- Show and GetOptions follow.
-local skin = { name = L.TOAST_SKIN_LIBSINK, instant = true } --[[@as KennelToastSkin]]
+local skin = { name = L.TOAST_SKIN_LIBSINK, instant = true } --[[@as BeastkeeperToastSkin]]
 
----@param info KennelToastInfo
+---@param info BeastkeeperToastInfo
 function skin:Show(info)
     UseProfile()
-    local accent = info.accent or Kennel.DefaultToastAccent()
+    local accent = info.accent or Addon.DefaultToastAccent()
     local text = info.text and info.title .. ": " .. info.text or info.title
     output:Pour(text, accent[1], accent[2], accent[3], nil, nil, nil, nil, nil, info.icon)
 end
@@ -37,4 +37,4 @@ function skin:GetOptions()
     return output:GetSinkAce3OptionsDataTable()
 end
 
-Kennel:RegisterToastSkin("libsink", skin)
+Addon:RegisterToastSkin("libsink", skin)

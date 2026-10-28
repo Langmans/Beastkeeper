@@ -1,4 +1,4 @@
--- A simulated WoW client: the API Kennel and the Ace3 libraries touch, with every value a test
+-- A simulated WoW client: the API Beastkeeper and the Ace3 libraries touch, with every value a test
 -- may want to vary exposed on the client object. NewClient() resets the globals and loads the
 -- .toc's files (Ace3 included) into a fresh namespace, so tests never share state. The load order
 -- and the .toc's metadata come from tests/helper.lua (TOC_FILES, TOC_METADATA, TOC_SAVED).
@@ -79,8 +79,9 @@ end
 
 ---@class TestClientOptions
 ---@field locale string? the client's language, enUS by default
----@field saved table? KennelDB as the saved file left it
----@field modules fun(Kennel: Kennel)? creates test modules after the files load, before login
+---@field addonName string? the addon's folder name, Addon by default: every name it shows the game comes from it
+---@field saved table? BeastkeeperDB as the saved file left it
+---@field modules fun(Addon: Addon)? creates test modules after the files load, before login
 ---@field noSettingsPanel boolean? Settings without C_SettingsUtil.OpenSettingsPanel, like Forever
 ---@field class string? the player's class file, HUNTER by default
 ---@field oldSpellAPI boolean? GetSpellInfo instead of C_Spell
@@ -92,14 +93,14 @@ end
 ---@field noSpellBookAPI boolean? no C_SpellBook
 ---@field noPetSpellCount boolean? C_SpellBook without HasPetSpells
 ---@field noMacroConsts boolean? no Constants.MacroConsts (the addon's own limits apply)
----@field ellesmere boolean|table? EllesmereUI loaded before Kennel (a table: fields to leave out, set to false)
----@field elvui boolean? ElvUI loaded before Kennel
+---@field ellesmere boolean|table? EllesmereUI loaded before Addon (a table: fields to leave out, set to false)
+---@field elvui boolean? ElvUI loaded before Addon
 ---@field eltruism table? Eltruism loaded too, with these shadow settings ({ enable, length })
----@field masque boolean? Masque loaded before Kennel
----@field messageQueue boolean? MessageQueue loaded before Kennel
----@field lsToasts "classic"|"retail"|nil LS: Toasts loaded before Kennel, as ls_Toasts_Classic or ls_Toasts
+---@field masque boolean? Masque loaded before Addon
+---@field messageQueue boolean? MessageQueue loaded before Addon
+---@field lsToasts "classic"|"retail"|nil LS: Toasts loaded before Addon, as ls_Toasts_Classic or ls_Toasts
 ---@field lsToastColors boolean? LS: Toasts colours borders by the toast (its Colors settings); true by default
----@field handyNotes boolean? HandyNotes loaded before Kennel
+---@field handyNotes boolean? HandyNotes loaded before Addon
 ---@field noPet boolean? no pet unit at the start
 ---@field inCombat boolean? in combat from the start
 ---@field oldTrainingAPI boolean? GetPetTrainingPoints instead of C_PetInfo's
@@ -608,7 +609,7 @@ function NewClient(opts)
     -- The client's "Your pet is dead" error, under the name the addon checks first.
     ERR_PET_SPELL_DEAD, PETTAME_DEAD = "Your pet is dead.", nil
 
-    -- Macro conditions, as far as Kennel uses them: [@pet], dead, exists, nopet, mod:shift,
+    -- Macro conditions, as far as Beastkeeper uses them: [@pet], dead, exists, nopet, mod:shift,
     -- mod:ctrl. Brackets are alternatives, commas inside one all have to hold. client.mods: the
     -- modifier keys held ({ shift = true }).
     client.mods = {}
@@ -1268,7 +1269,7 @@ function NewClient(opts)
         self.events[event] = unit
     end
 
-    -- The secure side, closely enough to run Kennel's own snippets: state drivers report changes
+    -- The secure side, closely enough to run Beastkeeper's own snippets: state drivers report changes
     -- through `state-*` attributes, snippets run in an environment with nothing but `self` (a frame
     -- handle) and their arguments, and in combat an insecure SetAttribute on a protected frame is
     -- blocked and recorded in client.blocked, as the real client blocks it.
@@ -1582,8 +1583,9 @@ function NewClient(opts)
     }
     C_SettingsUtil = not opts.noSettingsPanel and { OpenSettingsPanel = noop } or nil
 
+    local addonName = opts.addonName or "Beastkeeper"
     local function getMetadata(name, key)
-        if name == "Kennel" then return (opts.era and ERA_TOC_METADATA or TOC_METADATA)[key] end
+        if name == addonName then return (opts.era and ERA_TOC_METADATA or TOC_METADATA)[key] end
     end
     C_AddOns = {
         GetAddOnMetadata = getMetadata,
@@ -1638,7 +1640,7 @@ function NewClient(opts)
     hash_SlashCmdList = {}
     _G[TOC_SAVED] = opts.saved
 
-    -- EllesmereUI, as far as Kennel uses it, when opts.ellesmere says it is loaded. client.eui
+    -- EllesmereUI, as far as Beastkeeper uses it, when opts.ellesmere says it is loaded. client.eui
     -- records what was asked of it: the fonts set, the borders made, the shadows primed.
     EllesmereUI, EllesmereUIUnitFrames_Pet = nil, nil
     -- MessageQueue, when opts.messageQueue says it is loaded: client.queued records what was
@@ -1831,10 +1833,10 @@ function NewClient(opts)
     LibStub = nil
     local ns = {}
     for _, file in ipairs(opts.era and ERA_TOC_FILES or TOC_FILES) do
-        Chunk(file, opts.dev == true)("Kennel", ns)
+        Chunk(file, opts.dev == true)(addonName, ns)
         if opts.masque and file:find("LibStub.lua", 1, true) then AddMasque() end
     end
-    client.Kennel = ns
+    client.Addon = ns
     if opts.modules then opts.modules(ns) end
 
     ---Delivers an event to every frame registered for it.
@@ -1854,7 +1856,7 @@ function NewClient(opts)
     ---What pressing the CareButton casts now, with the modifier keys in `mods`; nil when the button
     ---runs nothing.
     function client:press(mods)
-        local button = _G.KennelCareButton
+        local button = _G.BeastkeeperCareButton
         local text = button.attributes.type == "macro" and button.attributes.macrotext
         if not text then return nil end
         assert(button.attributes.useOnKeyDown == false, "the button acts on the key binding's release")
@@ -1931,7 +1933,7 @@ function NewClient(opts)
     ---loading; then the moment the modules wait before their first check.
     function client:login()
         self:fire("ADDON_LOADED", "SomeOtherAddon")
-        self:fire("ADDON_LOADED", "Kennel")
+        self:fire("ADDON_LOADED", addonName)
         self.loggedIn = true
         self:fire("PLAYER_LOGIN")
         self:fire("UPDATE_MACROS")
@@ -2046,13 +2048,13 @@ function NewClient(opts)
         return self.tooltipLines
     end
 
-    ---The pins Kennel's HandyNotes plugin gives for a map, as HandyNotes reads them: a list of
+    ---The pins Beastkeeper's HandyNotes plugin gives for a map, as HandyNotes reads them: a list of
     ---{ coord, x, y, icon }, x and y in percent.
     ---@param uiMapID number
     ---@param minimap boolean?
     ---@return table[]
     function client:mapPins(uiMapID, minimap)
-        local plugin = HandyNotes.plugins.Kennel
+        local plugin = HandyNotes.plugins[addonName]
         local pins = {}
         for coord, _, icon in plugin:GetNodes2(uiMapID, minimap == true) do
             local x, y = HandyNotes:getXY(coord)
@@ -2062,7 +2064,7 @@ function NewClient(opts)
         return pins
     end
 
-    ---The mouse over a pin of Kennel's plugin: HandyNotes calls OnEnter with the pin as self.
+    ---The mouse over a pin of Beastkeeper's plugin: HandyNotes calls OnEnter with the pin as self.
     ---Gives the tooltip's title and its lines.
     ---@param uiMapID number
     ---@param coord number
@@ -2072,19 +2074,19 @@ function NewClient(opts)
         self.tooltipLines = {}
         GameTooltip.text = nil
         local pin = newRegion()
-        HandyNotes.plugins.Kennel.OnEnter(pin, uiMapID, coord)
+        HandyNotes.plugins[addonName].OnEnter(pin, uiMapID, coord)
         return GameTooltip.text, self.tooltipLines
     end
 
-    ---A click on a pin of Kennel's plugin: HandyNotes calls OnClick with the pin as self, once as
+    ---A click on a pin of Beastkeeper's plugin: HandyNotes calls OnClick with the pin as self, once as
     ---the button goes down and once as it comes up.
     ---@param uiMapID number
     ---@param coord number
     ---@param button string?
     function client:clickPin(uiMapID, coord, button)
         local pin = newRegion()
-        HandyNotes.plugins.Kennel.OnClick(pin, button or "LeftButton", true, uiMapID, coord)
-        HandyNotes.plugins.Kennel.OnClick(pin, button or "LeftButton", false, uiMapID, coord)
+        HandyNotes.plugins[addonName].OnClick(pin, button or "LeftButton", true, uiMapID, coord)
+        HandyNotes.plugins[addonName].OnClick(pin, button or "LeftButton", false, uiMapID, coord)
     end
 
     ---The bag slot holding itemID, added (empty) if there is none.
@@ -2242,7 +2244,7 @@ function NewClient(opts)
 
     ---The toast frame, once a toast has shown.
     function client:toast()
-        return self.Kennel:ToastFrame()
+        return self.Addon:ToastFrame()
     end
 
     ---The title of the toast that is up, or nil.
@@ -2255,7 +2257,7 @@ function NewClient(opts)
     ---hidden frame gets no more updates.
     function client:animate(seconds, step)
         step = step or 0.05
-        local driver, elapsed = self.Kennel:ToastDriver(), 0
+        local driver, elapsed = self.Addon:ToastDriver(), 0
         while driver and elapsed < seconds - 1e-9 and driver.shown do
             driver.scripts.OnUpdate(driver, step)
             elapsed = elapsed + step
@@ -2278,9 +2280,10 @@ function NewClient(opts)
         return self
     end
 
-    ---Runs a /kennel line the way the chat box does.
-    function client:slash(message)
-        SlashCmdList.ACECONSOLE_KENNEL(message)
+    ---Runs a line of the addon's slash command the way the chat box does; `command` picks another
+    ---of its commands (an alias), the addon's own name by default.
+    function client:slash(message, command)
+        SlashCmdList["ACECONSOLE_" .. (command or addonName):upper()](message)
         return self
     end
 

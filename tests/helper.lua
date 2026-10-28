@@ -1,4 +1,4 @@
--- Loaded once by busted before the spec files (see .busted). Reads Kennel.toc the way the client
+-- Loaded once by busted before the spec files (see .busted). Reads Beastkeeper.toc the way the client
 -- does, every .xml in it expanded to the Lua files it names, and defines NewClient (tests/wow.lua).
 -- busted runs from the repository root, so paths are relative to it.
 
@@ -50,10 +50,10 @@ local function readToc(name)
     return files, metadata
 end
 
--- WoW: Forever's Kennel_Forever.toc, and Classic Era's Kennel_Vanilla.toc (NewClient's `era`
+-- WoW: Forever's Beastkeeper_Forever.toc, and Classic Era's Beastkeeper_Vanilla.toc (NewClient's `era`
 -- option). The other clients' tocs load the same files without data.
-TOC_FILES, TOC_METADATA = readToc("Kennel_Forever.toc")
-ERA_TOC_FILES, ERA_TOC_METADATA = readToc("Kennel_Vanilla.toc")
+TOC_FILES, TOC_METADATA = readToc("Beastkeeper_Forever.toc")
+ERA_TOC_FILES, ERA_TOC_METADATA = readToc("Beastkeeper_Vanilla.toc")
 TOC_SAVED = TOC_METADATA.SavedVariables
 
 dofile("tests/wow.lua")

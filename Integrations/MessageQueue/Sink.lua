@@ -11,9 +11,9 @@ local LibSink = LibStub("LibSink-2.0", true) --[[@as LibSinkLibrary?]]
 local MQ = MessageQueue --[[@as MessageQueueApi?]]
 if not LibSink or not MQ then return end
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
+---@type Addon
+local Addon = ns
+local L = Addon.L
 
 ---The chat channel names LibSink offers (Say, Party, Group, the custom channels), as scroll areas.
 ---@return string[]
@@ -51,4 +51,4 @@ local function Say(addon, text)
     MQ.SendChatMessage(text, chat or "SAY")
 end
 
-LibSink:RegisterSink("KennelMessageQueue", L.SINK_MESSAGEQUEUE, L.SINK_MESSAGEQUEUE_DESC, Say, Channels)
+LibSink:RegisterSink(Addon.Global("MessageQueue"), L.SINK_MESSAGEQUEUE, L.SINK_MESSAGEQUEUE_DESC, Say, Channels)

@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- A HandyNotes plugin ("Kennel"): a pin on the world map and the minimap for every beast that can
+-- A HandyNotes plugin ("Beastkeeper"): a pin on the world map and the minimap for every beast that can
 -- teach the hunter a pet ability rank, with the icon of the best rank it has to offer. The beasts
 -- and their pins come from Data\Beasts.lua; what the hunter knows from AbilityLearned (the ranks it
 -- learned, and the highest per ability). On another class than a hunter the module does nothing.
@@ -15,12 +15,12 @@ local _, ns = ...
 -- At a level-up, also without HandyNotes, a toast names the ranks the hunter lacks that a beast of
 -- just that level brings in reach, where no lower beast taught them already.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
+---@type Addon
+local Addon = ns
+local L = Addon.L
 
----@type KennelBeastMap
-local M = Kennel:NewModule("BeastMap")
+---@type BeastkeeperBeastMap
+local M = Addon:NewModule("BeastMap")
 M.title = L.BEASTMAP_TITLE
 M.description = L.BEASTMAP_DESC
 M.requires = { "beastTraining", "beastData" }
@@ -42,7 +42,7 @@ M.defaults = {
     },
 }
 
-local PLUGIN = "Kennel"
+local PLUGIN = Addon.NAME
 -- The route library (Libs\LibGoThere-1.0): sends the hunter to a beast.
 local GoThere = LibStub("LibGoThere-1.0") --[[@as LibGoThere]]
 local LACKING, KNOWN = { 0, 1, 0 }, { 0.5, 0.5, 0.5 }
@@ -54,14 +54,14 @@ local TRAINER_KINDS = {
     stable = { setting = "stables", icon = 132161, label = L.BEASTMAP_STABLE_MASTER },
 }
 
----@return KennelBeastMapSettings
+---@return BeastkeeperBeastMapSettings
 function M:Settings()
-    return self.db.profile --[[@as KennelBeastMapSettings]]
+    return self.db.profile --[[@as BeastkeeperBeastMapSettings]]
 end
 
 -- Built on first use from the data: per map, its pins as npc, coord pairs (pins.at: coord ->
 -- position, for the iterator); per beast, the ranks it teaches by ability and rank.
----@type table<number, KennelBeastMapPins>?
+---@type table<number, BeastkeeperBeastMapPins>?
 local byMap
 ---@type table<number, number[]>?
 local teaches
@@ -77,13 +77,13 @@ local shown = {}
 -- The rank a beast's pin shows (its icon's), filled with shown.
 ---@type table<number, number>
 local pinSpell = {}
----@type KennelBeastMapPins
-local NO_PINS = { at = {} } --[[@as KennelBeastMapPins]]
+---@type BeastkeeperBeastMapPins
+local NO_PINS = { at = {} } --[[@as BeastkeeperBeastMapPins]]
 
 ---The beast data (Data\Beasts.lua), read when used: the specs put a small set in its place.
----@return KennelData
+---@return BeastkeeperData
 local function Data()
-    return Kennel.data
+    return Addon.data
 end
 
 ---Two rank spells in order: by ability, then rank.
@@ -116,12 +116,12 @@ local function Teaches()
 end
 
 ---Adds a pin to a map's pins, unless the spot has one: a second there would make the iterator skip.
----@param maps table<number, KennelBeastMapPins>
+---@param maps table<number, BeastkeeperBeastMapPins>
 ---@param map number uiMapID
 ---@param id number a beast's NPC ID, or minus an instance's AreaTable ID
 ---@param coord number
 local function AddPin(maps, map, id, coord)
-    local pins = maps[map] or { at = {} } --[[@as KennelBeastMapPins]]
+    local pins = maps[map] or { at = {} } --[[@as BeastkeeperBeastMapPins]]
     maps[map] = pins
     if pins.at[coord] then return end
     pins[#pins + 1] = id
@@ -131,10 +131,10 @@ end
 
 ---Per map, its pins; built once. A beast in an instance waits in `inInstance` for its entrance.
 ---@param handyNotes HandyNotesApi
----@return table<number, KennelBeastMapPins>
+---@return table<number, BeastkeeperBeastMapPins>
 local function Pins(handyNotes)
     if byMap then return byMap end
-    ---@type table<number, KennelBeastMapPins>
+    ---@type table<number, BeastkeeperBeastMapPins>
     local maps = {}
     byMap = maps
     local beasts = Data().beasts
@@ -196,8 +196,8 @@ end
 ---@return "above"|"gap"|nil
 local function Lacking(spellID)
     local rank = Data().petAbilityRanks[spellID]
-    local name = Kennel.SpellInfo(rank.ability)
-    local known = Kennel:GetModule("AbilityLearned", true) --[[@as KennelAbilityLearned?]]
+    local name = Addon.SpellInfo(rank.ability)
+    local known = Addon:GetModule("AbilityLearned", true) --[[@as BeastkeeperAbilityLearned?]]
     if not name or not known then return "above" end
     if rank.rank > (known:HighestRank(name) or 0) then return "above" end
     if not known:HasRank(name, rank.rank) then return "gap" end
@@ -206,7 +206,7 @@ end
 
 ---A trainer's or stable master's entry, or nil for a beast.
 ---@param npc number
----@return KennelTrainer?
+---@return BeastkeeperTrainer?
 local function Trainer(npc)
     local trainers = Data().trainers
     return trainers and trainers[npc]
@@ -261,7 +261,7 @@ local function Icon(npc)
         shown[npc] = false
         return false
     end
-    local _, icon = Kennel.SpellInfo(pick)
+    local _, icon = Addon.SpellInfo(pick)
     pinSpell[npc] = pick
     shown[npc] = icon or 134400 -- the question mark icon
     return shown[npc]
@@ -276,7 +276,7 @@ function M.PinSpell(npc)
 end
 
 ---HandyNotes' iterator over a map's pins: the coord of the last pin returned leads to the next.
----@param pins KennelBeastMapPins
+---@param pins BeastkeeperBeastMapPins
 ---@param coord number?
 ---@return number? coord
 ---@return nil uiMapID the map asked for
@@ -297,7 +297,7 @@ end
 local handler = {}
 
 ---@param uiMapID number
----@return function, KennelBeastMapPins, nil
+---@return function, BeastkeeperBeastMapPins, nil
 function handler:GetNodes2(uiMapID)
     -- HandyNotes is loaded: it is the one asking.
     if not M:IsEnabled() or not M:Settings().pins then return NextPin, NO_PINS, nil end
@@ -307,7 +307,7 @@ function handler:GetNodes2(uiMapID)
 end
 
 ---"Level 5-6", "Level 10, rare elite".
----@param beast KennelBeast
+---@param beast BeastkeeperBeast
 ---@return string
 local function LevelText(beast)
     local level = beast.minLevel == beast.maxLevel and tostring(beast.minLevel)
@@ -323,14 +323,14 @@ end
 ---@param npc number
 ---@return string
 local function BeastName(npc)
-    return Kennel.CreatureName(npc) or Data().beasts[npc].name
+    return Addon.CreatureName(npc) or Data().beasts[npc].name
 end
 
 ---"Claw (Rank 2)" as the client names it; nil when it cannot name the spell.
 ---@param spellID number
 ---@return string?
 local function RankText(spellID)
-    local name, _, rank = Kennel.SpellInfo(spellID)
+    local name, _, rank = Addon.SpellInfo(spellID)
     return name and rank and ("%s (%s)"):format(name, rank) or name
 end
 
@@ -354,7 +354,7 @@ local function PinName(id)
         return C_Map.GetAreaInfo(-id) --[[@as string]]
     end
     local trainer = Trainer(id)
-    if trainer then return Kennel.CreatureName(id) or trainer.name end
+    if trainer then return Addon.CreatureName(id) or trainer.name end
     return BeastName(id)
 end
 
@@ -393,7 +393,7 @@ function handler.OnEnter(pin, uiMapID, coord)
     elseif Trainer(id) then
         GameTooltip:AddLine(
             TRAINER_KINDS[
-                (Trainer(id) --[[@as KennelTrainer]]).kind
+                (Trainer(id) --[[@as BeastkeeperTrainer]]).kind
             ].label,
             1,
             1,
@@ -430,7 +430,7 @@ function handler.OnClick(_, button, down, uiMapID, coord)
     if spellID then
         M:StartHunt(id, spellID, uiMapID, x, y)
     else
-        GoThere:Navigate("Kennel", uiMapID, x, y, PinName(id))
+        GoThere:Navigate(Addon.NAME, uiMapID, x, y, PinName(id))
     end
 end
 
@@ -440,14 +440,14 @@ function M:Refresh()
     wipe(shown)
     wipe(pinSpell)
     self:UpdateMapButton()
-    Kennel:RefreshWindow("abilities")
+    Addon:RefreshWindow("abilities")
     if not HandyNotes then return end
     HandyNotes:UpdateWorldMapPlugin(PLUGIN)
     HandyNotes:UpdateMinimapPlugin(PLUGIN)
 end
 
 ---A beast's first map by uiMapID; nil for a beast in an instance, which has only zones.
----@param beast KennelBeast
+---@param beast BeastkeeperBeast
 ---@return number?
 local function FirstMap(beast)
     ---@type number?
@@ -459,7 +459,7 @@ local function FirstMap(beast)
 end
 
 -- Where each beast's pins lie in the world, worked out once per beast (and again when its pins
--- change): flattened continent, x, y (Kennel.InWorld) per pin, in the order of `pinsOf`'s map, x,
+-- change): flattened continent, x, y (Beastkeeper.InWorld) per pin, in the order of `pinsOf`'s map, x,
 -- y; false for a pin the client cannot place.
 ---@type table<number, (number|false)[]>, table<number, number[]>, table<number, table>
 local worldOf, pinsOf, pinsFrom = {}, {}, {}
@@ -480,7 +480,7 @@ local function Spots(npc)
             for i = 1, #flat, 2 do
                 local x, y = flat[i] / 100, flat[i + 1] / 100
                 pins[#pins + 1], pins[#pins + 2], pins[#pins + 3] = map, x, y
-                local continent, wx, wy = Kennel.InWorld(map, x, y)
+                local continent, wx, wy = Addon.InWorld(map, x, y)
                 world[#world + 1], world[#world + 2], world[#world + 3] = continent or false, wx, wy
             end
         end
@@ -499,7 +499,7 @@ end
 ---@return number yards
 local function NearestPin(npc)
     local pins, world = Spots(npc)
-    local continent, px, py = Kennel.PlayerInWorld()
+    local continent, px, py = Addon.PlayerInWorld()
     ---@type integer?, number
     local best, bestYards = nil, math.huge
     for i = 1, #world, 3 do
@@ -621,7 +621,7 @@ function M:GoToBeast(npc, pinMap, pinX, pinY)
         map, x, y = NearestPin(npc)
     end
     if not map then return false end
-    GoThere:Navigate("Kennel", map, x, y, BeastName(npc))
+    GoThere:Navigate(Addon.NAME, map, x, y, BeastName(npc))
     self:SetTameTarget(BeastName(npc))
     return true
 end
@@ -649,7 +649,7 @@ end
 
 ---The beast of exactly `level` that teaches a rank, the better one when there are several; nil
 ---when a lower beast teaches it already, or none of that level does.
----@param rank KennelPetAbilityRank
+---@param rank BeastkeeperPetAbilityRank
 ---@param level number
 ---@return number?
 local function NewTeacher(rank, level)
@@ -714,8 +714,8 @@ function M:ToastReach(level)
         end
         text = table.concat(lines, "\n")
     end
-    local _, icon = Kennel.SpellInfo(found[1])
-    Kennel:ShowToast({
+    local _, icon = Addon.SpellInfo(found[1])
+    Addon:ShowToast({
         key = "BeastMap:reach",
         type = "BeastMap:reach",
         source = self.title,
@@ -733,7 +733,7 @@ end
 
 ---Redraws the pins once the hunter learns Tame Beast (or, on a respec of sorts, loses it).
 function M:SPELLS_CHANGED()
-    local canTame = Kennel.KnowsSpell(Kennel.TAME_BEAST)
+    local canTame = Addon.KnowsSpell(Addon.TAME_BEAST)
     if canTame == self.canTame then return end
     self.canTame = canTame
     self:Refresh()
@@ -763,11 +763,11 @@ function M:OnEnable()
         self:CreateMapButton()
     end
     self.level = nil
-    self.canTame = Kennel.KnowsSpell(Kennel.TAME_BEAST)
+    self.canTame = Addon.KnowsSpell(Addon.TAME_BEAST)
     self:RegisterEvent("PLAYER_LEVEL_UP")
     self:RegisterEvent("SPELLS_CHANGED")
-    Kennel:Listen(self, "KENNEL_RANKS_KNOWN", "OnRanksKnown")
-    Kennel:Listen(self, "KENNEL_RARE_SEEN", "OnRareSeen")
+    Addon:Listen(self, Addon.messages.ranksKnown, "OnRanksKnown")
+    Addon:Listen(self, Addon.messages.rareSeen, "OnRareSeen")
     self:WatchRares()
     self:ApplyTameButton()
     self:Refresh()
@@ -775,7 +775,7 @@ function M:OnEnable()
 end
 
 function M:OnDisable()
-    Kennel:StopListening(self)
+    Addon:StopListening(self)
     self:ApplyTameButton()
     self:Refresh()
     self:ShowHunt()

@@ -3,14 +3,14 @@ local _, ns = ...
 -- The key that sets Growl and Cower as fits. Only a macro or a secure button the player presses may
 -- change autocast, so this is a secure button whose macro text always holds the two lines for what
 -- fits now; the module rewrites them outside combat (a secure button cannot change in it). The
--- KennelAutocast macro clicks it, for an action bar.
+-- BeastkeeperAutocast macro clicks it, for an action bar.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("AutocastCheck") --[[@as KennelAutocastCheck]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("AutocastCheck") --[[@as BeastkeeperAutocastCheck]]
 
-local button = CreateFrame("Button", "KennelAutocastButton", UIParent, "SecureActionButtonTemplate")
+local button = CreateFrame("Button", Addon.Global("AutocastButton"), UIParent, "SecureActionButtonTemplate")
 button:RegisterForClicks("AnyUp", "AnyDown")
 -- The ability the button's lines put on autocast; nil while it has none.
 ---@type ("growl"|"cower")?
@@ -19,7 +19,7 @@ local on
 ---Puts the lines for what fits now on the button, or takes them away while the module is off or
 ---the character is no hunter; after combat when in it.
 function M:ApplyButton()
-    Kennel:OutOfCombat("AutocastCheck:button", function()
+    Addon:OutOfCombat("AutocastCheck:button", function()
         local _, class = UnitClass("player")
         if self:IsEnabled() and class == "HUNTER" then
             on = (self:Wanted())
@@ -46,4 +46,4 @@ button:HookScript("OnClick", function(_, _mouse, down)
     M:Print(L.AUTOCAST_SET:format(M.Spell(M.SPELLS[on]), M.Spell(M.SPELLS[off])))
 end)
 
-_G["BINDING_NAME_CLICK KennelAutocastButton:LeftButton"] = L.AUTOCAST_BINDING
+_G["BINDING_NAME_CLICK " .. Addon.Global("AutocastButton") .. ":LeftButton"] = L.AUTOCAST_BINDING

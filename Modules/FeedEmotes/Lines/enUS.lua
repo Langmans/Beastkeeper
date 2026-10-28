@@ -3,9 +3,9 @@ local _, ns = ...
 -- English emote lines, also used by a client language that has none of its own. From
 -- Feed-O-Matic unless marked otherwise.
 
----@type Kennel
-local Kennel = ns
-local M = Kennel:GetModule("FeedEmotes") --[[@as KennelFeedEmotes]]
+---@type Addon
+local Addon = ns
+local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
 local F = M.Family
 
 -- Head nouns that take "some": food you do not count (meat, bread, cheese
@@ -259,7 +259,7 @@ M.Lines.enUS = {
                 "throws {a} {food} into the wind. {pet} catches it with a crackle of lightning.",
                 "holds out {a} {food}. {pet} coils around the arm and takes it gently.",
             },
-            -- Written for Kennel: Fox is new in WoW: Forever.
+            -- Written for Beastkeeper: Fox is new in WoW: Forever.
             [F.FOX] = {
                 "holds out {a} {food}. {pet} does a little trickster's dance, then snatches it.",
                 "turns around for a moment. {pet} has already buried the {food} for later, and is digging it up again.",
@@ -479,7 +479,7 @@ M.Lines.enUS = {
                 "Don't wrap around me after dinner.",
                 "Hiss and sparkle.",
             },
-            -- Written for Kennel: Fox is new in WoW: Forever.
+            -- Written for Beastkeeper: Fox is new in WoW: Forever.
             [F.FOX] = {
                 "Sly fox!",
                 "What does the fox say? Nom.",

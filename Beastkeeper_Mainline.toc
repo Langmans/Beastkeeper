@@ -1,10 +1,10 @@
-## Interface: 40402, 38002
-## Title: Kennel
+## Interface: 120105
+## Title: Beastkeeper
 ## Category: Hunter
 ## Notes: Hunter pet tools in one addon. Each module can be turned on or off in the options.
 ## Author: Langmans
 ## Version: @project-version@
-## SavedVariables: KennelDB
+## SavedVariables: BeastkeeperDB
 ## OptionalDeps: Ace3, LibStub, EllesmereUI, ElvUI, Masque, MessageQueue, HandyNotes, OAPDebug, _DebugLog, ls_Toasts, ls_Toasts_Classic
 ## IconTexture: Interface\Icons\Ability_Hunter_BeastCall
 ## X-License: MIT

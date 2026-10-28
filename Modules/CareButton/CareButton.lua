@@ -11,12 +11,12 @@ local _, ns = ...
 -- Call Pet failing (or "Your pet is dead") without a pet means it is dead; Revive Pet failing
 -- before its cast started means there is none to revive.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
+---@type Addon
+local Addon = ns
+local L = Addon.L
 
----@type KennelCareButton
-local M = Kennel:NewModule("CareButton")
+---@type BeastkeeperCareButton
+local M = Addon:NewModule("CareButton")
 M.title = L.CAREBUTTON_TITLE
 M.description = L.CAREBUTTON_DESC
 M.toastTypes = {
@@ -49,45 +49,45 @@ local ALERTS = {
 }
 
 ---The settings of the profile in use.
----@return KennelCareButtonSettings
+---@return BeastkeeperCareButtonSettings
 function M:Settings()
-    return self.db.profile --[[@as KennelCareButtonSettings]]
+    return self.db.profile --[[@as BeastkeeperCareButtonSettings]]
 end
 
 ---A spell's name as the client calls it, for macros; the English name without one.
 ---@param id number
 ---@return string
 function M.SpellName(id)
-    return Kennel.SpellInfo(id) or FALLBACK_NAMES[id]
+    return Addon.SpellInfo(id) or FALLBACK_NAMES[id]
 end
 
 ---How to press the button: its key binding, or the macro.
 ---@return string
 local function PressHint()
-    local key = GetBindingKey("CLICK KennelCareButton:LeftButton")
+    local key = GetBindingKey("CLICK " .. Addon.Global("CareButton") .. ":LeftButton")
     return key and L.CAREBUTTON_HINT_KEY:format(GetBindingText(key)) or L.CAREBUTTON_HINT_MACRO
 end
 
 ---The sound for a toast: the pet's own, the raid warning, or none.
 ---@param kind "AGGRO"|"DEATH"|"WOUND"
----@return KennelSound?
+---@return BeastkeeperSound?
 function M:Sound(kind)
     local setting = self:Settings().sound
     if setting == "off" then return nil end
-    return setting == "family" and Kennel.PetSound(kind) or { kit = RAID_WARNING }
+    return setting == "family" and Addon.PetSound(kind) or { kit = RAID_WARNING }
 end
 
 ---The toast for `kind`.
 ---@param kind "dead"|"nopet"|"low"|"passive"
 ---@param reason string? instead of the toast's own text
 ---@param percent number? the pet's health, for low
----@return KennelToastInfo
+---@return BeastkeeperToastInfo
 function M:Toast(kind, reason, percent)
     local alert = ALERTS[kind]
     ---@type (number|string)?
     local icon = PET_PASSIVE_TEXTURE
     if alert.spell then
-        _, icon = Kennel.SpellInfo(alert.spell)
+        _, icon = Addon.SpellInfo(alert.spell)
     end
     return {
         key = "CareButton:" .. kind,
@@ -118,17 +118,17 @@ function M:CheckHealth()
     local line = self:Settings().low
     if line == 0 or not UnitExists("pet") or UnitIsDead("pet") then
         self.lowShown = false
-        return Kennel:DropToast("CareButton:low")
+        return Addon:DropToast("CareButton:low")
     end
     local health, max = UnitHealth("pet"), UnitHealthMax("pet")
     if not canaccessvalue(health) or not canaccessvalue(max) or max <= 0 then return end
     local percent = math.floor(health / max * 100)
     if percent > line then
         self.lowShown = false
-        Kennel:DropToast("CareButton:low")
+        Addon:DropToast("CareButton:low")
     elseif not self.lowShown then
         self.lowShown = true
-        Kennel:ShowToast(self:Toast("low", nil, percent))
+        Addon:ShowToast(self:Toast("low", nil, percent))
     end
 end
 
@@ -138,11 +138,11 @@ function M:OnPetState(state)
     self:UpdateLook()
     if state == "dead" then
         self:CheckHealth()
-        if self:Settings().died then Kennel:ShowToast(self:Toast("dead")) end
+        if self:Settings().died then Addon:ShowToast(self:Toast("dead")) end
     elseif state == "alive" then
         self.deadAfterCombat = false
-        Kennel:DropToast("CareButton:dead")
-        Kennel:DropToast("CareButton:nopet")
+        Addon:DropToast("CareButton:dead")
+        Addon:DropToast("CareButton:nopet")
         self:CheckHealth()
     end
 end
@@ -153,13 +153,13 @@ function M:LearnedDead()
     local switched = self:SetPetDead(true)
     if not switched then
         self.deadAfterCombat = true
-        Kennel:OutOfCombat("CareButton:learned", function()
+        Addon:OutOfCombat("CareButton:learned", function()
             if self.deadAfterCombat and not UnitExists("pet") then self:SetPetDead(true) end
             self.deadAfterCombat = false
         end)
     end
     local reason = switched and L.CAREBUTTON_REASON_LEARNED or L.CAREBUTTON_REASON_LEARNED_COMBAT
-    if self:Settings().died then Kennel:ShowToast(self:Toast("dead", reason)) end
+    if self:Settings().died then Addon:ShowToast(self:Toast("dead", reason)) end
 end
 
 ---Whether an error message is the client's "Your pet is dead".
@@ -175,16 +175,16 @@ end
 -- Combat starts: the moment a missing pet, or one on Passive, costs something. A hunter without
 -- Call Pet has no pet to miss yet; one taming a beast is in combat with it, and getting a pet.
 function M:PLAYER_REGEN_DISABLED()
-    if not Kennel.KnowsSpell(Kennel.CALL_PET) or Kennel.IsTaming() then return end
+    if not Addon.KnowsSpell(Addon.CALL_PET) or Addon.IsTaming() then return end
     local settings = self:Settings()
     if UnitExists("pet") then
-        if settings.passive and not UnitIsDead("pet") and OnPassive() then Kennel:ShowToast(self:Toast("passive")) end
+        if settings.passive and not UnitIsDead("pet") and OnPassive() then Addon:ShowToast(self:Toast("passive")) end
         return
     end
     if self:PetDead() then
-        if settings.died then Kennel:ShowToast(self:Toast("dead")) end
+        if settings.died then Addon:ShowToast(self:Toast("dead")) end
     elseif settings.nopet then
-        Kennel:ShowToast(self:Toast("nopet"))
+        Addon:ShowToast(self:Toast("nopet"))
     end
 end
 
@@ -192,7 +192,7 @@ end
 ---@param errorType number
 ---@param message GameValue
 function M:UI_ERROR_MESSAGE(_, errorType, message)
-    if type(message) == "string" and Kennel.Readable(message) and IsPetDeadError(message) then self:LearnedDead() end
+    if type(message) == "string" and Addon.Readable(message) and IsPetDeadError(message) then self:LearnedDead() end
 end
 
 ---@param _ string the event
@@ -200,7 +200,7 @@ end
 ---@param castGUID GameValue
 ---@param spellID GameValue
 function M:UNIT_SPELLCAST_START(_, unit, castGUID, spellID)
-    if unit == "player" and spellID == M.REVIVE_PET and Kennel.Readable(castGUID) then
+    if unit == "player" and spellID == M.REVIVE_PET and Addon.Readable(castGUID) then
         self.reviveCasts[castGUID] = true
     end
 end
@@ -210,7 +210,7 @@ end
 ---@param castGUID GameValue
 ---@param spellID GameValue
 function M:UNIT_SPELLCAST_FAILED(_, unit, castGUID, spellID)
-    if unit ~= "player" or not Kennel.Readable(spellID) or not Kennel.Readable(castGUID) then return end
+    if unit ~= "player" or not Addon.Readable(spellID) or not Addon.Readable(castGUID) then return end
     if spellID == M.CALL_PET then
         -- Mounted, Call Pet fails for that reason instead.
         if not IsMounted() then self:LearnedDead() end
@@ -232,7 +232,7 @@ end
 
 -- The pet bar changed, its stance perhaps: the Passive toast goes once the pet is off Passive.
 function M:PET_BAR_UPDATE()
-    if not OnPassive() then Kennel:DropToast("CareButton:passive") end
+    if not OnPassive() then Addon:DropToast("CareButton:passive") end
 end
 
 ---@param _ string the event
@@ -256,13 +256,13 @@ function M:OnEnable()
     self:RegisterEvent("PET_BAR_UPDATE")
     self:RegisterEvent("SPELLS_CHANGED")
     self:RegisterEvent("UPDATE_MACROS", "UpdateMacro")
-    Kennel:OfferMacros(self)
+    Addon:OfferMacros(self)
     self:ApplyButton()
 end
 
 -- AceEvent drops the events by itself; the toasts and the button go here.
 function M:OnDisable()
-    Kennel:DropToasts("CareButton:")
+    Addon:DropToasts("CareButton:")
     self:ApplyButton()
     self:UpdateMarker()
 end

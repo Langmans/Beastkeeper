@@ -4,8 +4,8 @@
     "ignore": ["tests/", "coverage/", ".release/", ".lua/", ".luarocks/", ".cache/", ".busted", ".luacov", "*.rockspec"],
     "globals": {
         "write": [
-            "KennelDB",
-            "BINDING_HEADER_KENNEL"
+            "BeastkeeperDB",
+            "BINDING_HEADER_BEASTKEEPER"
         ]
     },
     "diagnostics": {

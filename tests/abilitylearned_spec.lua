@@ -2,7 +2,7 @@
 -- those learns per character, and what a pet out can still teach.
 
 local LEVEL_UP = 888
-local CAT_CALL = 562387 -- Kennel.sounds.AGGRO_PER_FAMILY[2]
+local CAT_CALL = 562387 -- Beastkeeper.sounds.AGGRO_PER_FAMILY[2]
 
 ---A hunter past the login wait, with a cat named Fluffy that has Claw rank 2 and Bite; chat
 ---emptied of the hint said for it.
@@ -16,12 +16,12 @@ end
 
 ---The module's settings and per-character data.
 local function module(client)
-    return client.Kennel:GetModule("AbilityLearned")
+    return client.Addon:GetModule("AbilityLearned")
 end
 
----How the core last saw Fluffy grow (KENNEL_PET_GROWTH's saved state).
+---How the core last saw Fluffy grow (BEASTKEEPER_PET_GROWTH's saved state).
 local function fluffy(client)
-    return client.Kennel.db.char.growth.Fluffy
+    return client.Addon.db.char.growth.Fluffy
 end
 
 ---Lets the merge window pass, so the learn shows.
@@ -63,7 +63,7 @@ describe("AbilityLearned", function()
         it("keeps the spellbook's rank as it was at the learn, whatever reads the book meanwhile", function()
             local client = ready():learnLine("Claw")
             client.petBook = { { CLAW_3 } }
-            client.Kennel.PetSpells() -- a hint or another learn reading the book within the window
+            client.Addon.PetSpells() -- a hint or another learn reading the book within the window
             assert.are.equal("New pet ability: Claw (Rank 2)", settle(client):toastTitle())
         end)
 
@@ -212,10 +212,10 @@ describe("AbilityLearned", function()
             assert.are.equal(1, #module(relogged).db.char.history)
         end)
 
-        it("is told to other addons as KENNEL_ABILITY_LEARNED, a simulated learn not", function()
+        it("is told to other addons as BEASTKEEPER_ABILITY_LEARNED, a simulated learn not", function()
             local client = ready()
             local heard = {}
-            client.Kennel:Listen(heard, "KENNEL_ABILITY_LEARNED", function(_, event)
+            client.Addon:Listen(heard, "BEASTKEEPER_ABILITY_LEARNED", function(_, event)
                 heard[#heard + 1] = event
             end)
             settle(client:learnLine("Claw (Rank 2)"))
@@ -245,12 +245,12 @@ describe("AbilityLearned", function()
             assert.are.equal("Claw", history[200].name)
         end)
 
-        it("lists the learns from a beast Kennel's beast data does not have as a teacher", function()
+        it("lists the learns from a beast Beastkeeper's beast data does not have as a teacher", function()
             local client = ready()
             local M = module(client)
             local missing = M:GetOptions().args.teachers
             missing.func()
-            assert.is_true(client:printedContains("Every learn from a pet is in Kennel's beast data."))
+            assert.is_true(client:printedContains("Every learn from a pet is in Beastkeeper's beast data."))
             M.db.char.history = {
                 -- Greater Fleshripper (154) teaches Claw 3 in the data.
                 { name = "Claw", rank = "Rank 3", pet = "Scraps", npc = 154, zone = "Westfall", t = 1 },
@@ -370,7 +370,7 @@ describe("AbilityLearned", function()
         it("keeps every rank learned, not only the highest, and says when that changed", function()
             local client = ready()
             local M, heard = module(client), {}
-            client.Kennel.RegisterMessage({}, "KENNEL_RANKS_KNOWN", function(_, event)
+            client.Addon.RegisterMessage({}, "BEASTKEEPER_RANKS_KNOWN", function(_, event)
                 heard[#heard + 1] = event
             end)
             client:openTrainer({ { "Claw", "used", CLAW }, { "Claw", "used", CLAW_3 } })
@@ -418,7 +418,7 @@ describe("AbilityLearned", function()
             assert.are.equal("Interface\\Icons\\Ability_Hunter_BeastTraining", toast.Icon.texture)
             assert.are.equal("pet", toast.Portrait.portrait)
             assert.are.same({ file = CAT_CALL, channel = "Master" }, client.sounds[#client.sounds])
-            assert.are.equal("card", client.Kennel:ToastSkinFor("AbilityLearned:points"), "the look for every toast")
+            assert.are.equal("card", client.Addon:ToastSkinFor("AbilityLearned:points"), "the look for every toast")
         end)
 
         it("say nothing when points are spent, or the event comes without a change", function()
@@ -433,7 +433,7 @@ describe("AbilityLearned", function()
             local client = ready()
             client.trainingPoints = { 10, 0 }
             client:summon("Shadow", {}):advance(1)
-            assert.is_nil(client:toast(), "first time Kennel sees Shadow")
+            assert.is_nil(client:toast(), "first time Beastkeeper sees Shadow")
             client.trainingPoints = { 50, 7 }
             client:summon("Fluffy", {}):advance(1)
             assert.is_nil(client:toast(), "Fluffy as it was")
@@ -482,9 +482,9 @@ describe("AbilityLearned", function()
             assert.are.equal(count, #client.sounds)
         end)
 
-        it("are toasted from the core's KENNEL_PET_GROWTH", function()
+        it("are toasted from the core's BEASTKEEPER_PET_GROWTH", function()
             local client = ready()
-            client.Kennel:SendMessage("KENNEL_PET_GROWTH", {
+            client.Addon:SendMessage("BEASTKEEPER_PET_GROWTH", {
                 pet = "Shadow",
                 level = 30,
                 loyalty = 2,
@@ -497,7 +497,7 @@ describe("AbilityLearned", function()
 
         it("are not watched with the module off", function()
             local client = ready()
-            client.Kennel:SetModuleOn("AbilityLearned", false)
+            client.Addon:SetModuleOn("AbilityLearned", false)
             assert.is_nil(client:gainPoints(3):toast())
         end)
 
@@ -546,7 +546,7 @@ describe("AbilityLearned", function()
             assert.are.equal("-15 training |4point:points;, 28 free.", toast.Hint.text, "a lower loyalty costs points")
             assert.are.equal("pet", toast.Portrait.portrait)
             assert.are.same({ file = 562395, channel = "Master" }, client.sounds[#client.sounds])
-            assert.are.equal("card", client.Kennel:ToastSkinFor("AbilityLearned:loyalty"))
+            assert.are.equal("card", client.Addon:ToastSkinFor("AbilityLearned:loyalty"))
         end)
 
         it("is noted but not told with its toast off, and has a sound setting of its own", function()
@@ -676,12 +676,12 @@ describe("AbilityLearned", function()
     end)
 
     it("starts on the splash look", function()
-        assert.are.equal("splash", ready().Kennel:ToastSkinFor("AbilityLearned:learned"))
+        assert.are.equal("splash", ready().Addon:ToastSkinFor("AbilityLearned:learned"))
     end)
 
     it("does not show a learn still waiting to merge when switched off", function()
         local client = ready():learnLine("Claw (Rank 2)")
-        client.Kennel:SetModuleOn("AbilityLearned", false)
+        client.Addon:SetModuleOn("AbilityLearned", false)
         settle(client)
         assert.is_nil(client:toast())
     end)
@@ -689,7 +689,7 @@ describe("AbilityLearned", function()
     it("drops its toasts and stops watching when switched off", function()
         local client = ready():learnLine("Claw (Rank 2)")
         settle(client)
-        client.Kennel:SetModuleOn("AbilityLearned", false)
+        client.Addon:SetModuleOn("AbilityLearned", false)
         client:animate(1)
         assert.is_nil(client:toastTitle())
         settle(client:advance(10):learnLine("Bite (Rank 1)"))

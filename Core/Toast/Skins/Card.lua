@@ -2,11 +2,11 @@ local _, ns = ...
 
 -- The card: a card near the top of the screen, a coloured bar down its left side, a square icon
 -- (with a unit's portrait as a round badge, when the toast brings one), a title in that colour, a line of text, a grey hint and a timer bar along the bottom. It slides
--- in from a little higher. NewCardSkin makes one in any style (KennelSkinStyle), such as
+-- in from a little higher. NewCardSkin makes one in any style (BeastkeeperSkinStyle), such as
 -- EllesmereUI's (Integrations\EllesmereUI\).
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
 local WIDTH = 340
 local ICON_SIZE = 40
@@ -30,7 +30,7 @@ end
 
 ---A line of text, in the style's font when it has one.
 ---@param frame Frame
----@param style KennelSkinStyle
+---@param style BeastkeeperSkinStyle
 ---@param template string the game's font, without a style font
 ---@param size number the size in the style's font
 ---@return FontString
@@ -44,10 +44,10 @@ local function Line(frame, style, template, size)
 end
 
 ---Makes the frame, the first time it shows.
----@param style KennelSkinStyle
----@return KennelCardFrame
+---@param style BeastkeeperSkinStyle
+---@return BeastkeeperCardFrame
 local function Build(style)
-    local frame = Kennel:NewToastFrame(style.frameName) --[[@as KennelCardFrame]]
+    local frame = Addon:NewToastFrame(style.frameName) --[[@as BeastkeeperCardFrame]]
     frame:SetSize(WIDTH, ICON_SIZE + 2 * PAD)
 
     -- The edge: the frame filled in its colour with the panel one pixel inside, or drawn by the style.
@@ -58,7 +58,7 @@ local function Build(style)
     panel:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1)
     panel:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1)
 
-    frame.Accent = Solid(frame, "ARTWORK", Kennel.TOAST_ACCENT)
+    frame.Accent = Solid(frame, "ARTWORK", Addon.TOAST_ACCENT)
     frame.Accent:SetPoint("TOPLEFT", panel, "TOPLEFT")
     frame.Accent:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT")
     frame.Accent:SetWidth(ACCENT_WIDTH)
@@ -69,8 +69,8 @@ local function Build(style)
     frame.Icon = frame:CreateTexture(nil, "OVERLAY")
     frame.Icon:SetSize(ICON_SIZE, ICON_SIZE)
     frame.Icon:SetPoint("CENTER", iconEdge, "CENTER")
-    Kennel:CropIcon(frame.Icon)
-    Kennel:AddToastPortrait(frame, frame.Icon, PORTRAIT_SIZE)
+    Addon:CropIcon(frame.Icon)
+    Addon:AddToastPortrait(frame, frame.Icon, PORTRAIT_SIZE)
 
     frame.Title = Line(frame, style, "GameFontNormal", TITLE_SIZE)
     frame.Title:SetPoint("TOPLEFT", iconEdge, "TOPRIGHT", PAD, -1)
@@ -80,15 +80,15 @@ local function Build(style)
     frame.Hint:SetPoint("TOPLEFT", frame.Text, "BOTTOMLEFT", 0, -4)
     frame.Hint:SetTextColor(HINT_COLOR[1], HINT_COLOR[2], HINT_COLOR[3])
 
-    frame.Timer = Solid(frame, "OVERLAY", Kennel.TOAST_ACCENT)
+    frame.Timer = Solid(frame, "OVERLAY", Addon.TOAST_ACCENT)
     frame.Timer:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", ACCENT_WIDTH, 0)
     frame.Timer:SetHeight(2)
     return frame
 end
 
----@param self KennelCardSkin
----@param info KennelToastInfo
----@param settings KennelToastSettings
+---@param self BeastkeeperCardSkin
+---@param info BeastkeeperToastInfo
+---@param settings BeastkeeperToastSettings
 local function Show(self, info, settings)
     self.frame = self.frame or Build(self.style)
     local frame = self.frame
@@ -96,8 +96,8 @@ local function Show(self, info, settings)
     frame.Accent:SetColorTexture(accent[1], accent[2], accent[3], 1)
     frame.Timer:SetColorTexture(accent[1], accent[2], accent[3], 1)
     frame.Title:SetTextColor(accent[1], accent[2], accent[3])
-    frame.Icon:SetTexture(info.icon or Kennel.TOAST_ICON)
-    Kennel:ShowToastPortrait(frame, info.portrait, accent)
+    frame.Icon:SetTexture(info.icon or Addon.TOAST_ICON)
+    Addon:ShowToastPortrait(frame, info.portrait, accent)
     frame.Title:SetText(info.title)
     frame.Text:SetText(info.text or "")
     frame.Hint:SetText(info.hint or "")
@@ -109,16 +109,16 @@ local function Show(self, info, settings)
     frame:Show()
 end
 
----@param self KennelCardSkin
+---@param self BeastkeeperCardSkin
 ---@param intro number
 ---@param fade number
 ---@param left number
 local function Update(self, intro, fade, left)
-    local frame = self.frame --[[@as KennelCardFrame]]
+    local frame = self.frame --[[@as BeastkeeperCardFrame]]
     local slide = 1 - (1 - intro) * (1 - intro)
     -- Placed while it slides in only, so the mouse can drag it once it is there.
     if intro < 1 or not frame.placed then
-        Kennel:PlaceToast(frame, "TOP", 0, -120, SLIDE * (1 - slide))
+        Addon:PlaceToast(frame, "TOP", 0, -120, SLIDE * (1 - slide))
         frame.placed = intro >= 1
     end
     frame:SetAlpha(slide * (1 - fade))
@@ -127,20 +127,20 @@ end
 
 ---A card skin in `style`; register it with RegisterToastSkin.
 ---@param name string shown in the look choice
----@param style KennelSkinStyle
----@return KennelCardSkin
-function Kennel:NewCardSkin(name, style)
-    local skin = self:NewToastSkin(name) --[[@as KennelCardSkin]]
+---@param style BeastkeeperSkinStyle
+---@return BeastkeeperCardSkin
+function Addon:NewCardSkin(name, style)
+    local skin = self:NewToastSkin(name) --[[@as BeastkeeperCardSkin]]
     skin.style, skin.Show, skin.Update = style, Show, Update
     return skin
 end
 
-Kennel:RegisterToastSkin(
+Addon:RegisterToastSkin(
     "card",
-    Kennel:NewCardSkin(Kennel.L.TOAST_SKIN_CARD, {
-        frameName = "KennelToastCard",
+    Addon:NewCardSkin(Addon.L.TOAST_SKIN_CARD, {
+        frameName = Addon.Global("ToastCard"),
         panel = { 0.06, 0.07, 0.08, 0.94 },
         edge = { 0.28, 0.3, 0.33, 1 },
-        accent = Kennel.DefaultToastAccent,
+        accent = Addon.DefaultToastAccent,
     })
 )

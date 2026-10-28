@@ -1,15 +1,15 @@
--- Kennel's window: a frame of its own with a tab per part (modules add them), opened by /kennel,
+-- Beastkeeper's window: a frame of its own with a tab per part (modules add them), opened by /beastkeeper,
 -- the broker, a key binding; styled by the chosen holder skin. The Pets tab (Pet Journal): every
 -- pet of the character, the pet out first, and a card with its model and journal.
 
 local FLUFFY, SHADOW = "3069428", "77"
 
----The window, opened by /kennel.
+---The window, opened by /beastkeeper.
 ---@param client table
 ---@return table
 local function open(client)
     client:slash("")
-    return _G.KennelWindow
+    return _G.BeastkeeperWindow
 end
 
 ---Clicks a button by its OnClick script.
@@ -23,7 +23,7 @@ end
 ---@param client table
 ---@return table
 local function pets(client)
-    return client.Kennel.window.panels.pets
+    return client.Addon.window.panels.pets
 end
 
 ---The texts of the list's shown rows.
@@ -57,20 +57,20 @@ local function withStable()
     return client
 end
 
-describe("Kennel's window", function()
-    it("opens with /kennel on its first tab, and closes again; /kennel config opens the options", function()
+describe("Beastkeeper's window", function()
+    it("opens with /beastkeeper on its first tab, and closes again; /beastkeeper config opens the options", function()
         local client = NewClient():login()
         local window = open(client)
         assert.is_true(window.shown)
-        assert.are.equal("pets", client.Kennel.window.current)
-        assert.are.equal("Kennel", window.title.text)
+        assert.are.equal("pets", client.Addon.window.current)
+        assert.are.equal("Beastkeeper", window.title.text)
         open(client)
         assert.is_false(window.shown)
         client:slash("config")
-        assert.are.same({ client.Kennel.optionsCategoryID }, client.opened)
+        assert.are.same({ client.Addon.optionsCategoryID }, client.opened)
     end)
 
-    it("in Kennel's own look: the game's dark dialog background with a tooltip border", function()
+    it("in Beastkeeper's own look: the game's dark dialog background with a tooltip border", function()
         local client = NewClient():login()
         local window = open(client)
         assert.are.equal("Interface\\DialogFrame\\UI-DialogBox-Background-Dark", window.backdrop.bgFile)
@@ -80,10 +80,10 @@ describe("Kennel's window", function()
     it("underlines the tab that shows, in the look's accent, under a line across the window", function()
         local client = NewClient():login()
         local window = open(client)
-        local tabs = client.Kennel.window.tabs
+        local tabs = client.Addon.window.tabs
         assert.is_true(tabs.pets.selected.shown)
         assert.are.same({ 1, 0.82, 0, 1 }, tabs.pets.selected.color, "the game's gold")
-        client.Kennel:ShowWindowTab("abilities")
+        client.Addon:ShowWindowTab("abilities")
         assert.is_false(tabs.pets.selected.shown)
         assert.is_true(tabs.abilities.selected.shown)
         assert.is_true(window.divider.shown)
@@ -94,14 +94,14 @@ describe("Kennel's window", function()
         local window = open(client)
         local found = false
         for _, name in ipairs(UISpecialFrames) do
-            found = found or name == "KennelWindow"
+            found = found or name == "BeastkeeperWindow"
         end
         assert.is_true(found)
         window:GetScript("OnDragStart")(window)
         window:GetScript("OnDragStop")(window)
         assert.are.same(
             { point = "TOPLEFT", relativePoint = "BOTTOMLEFT", x = 300, y = 700 },
-            client.Kennel.db.profile.window.pos
+            client.Addon.db.profile.window.pos
         )
         client:logout()
         client = NewClient({ saved = Saved() }):login()
@@ -112,32 +112,35 @@ describe("Kennel's window", function()
     it("has the look of the chosen holder skin", function()
         local client = NewClient():login()
         open(client)
-        assert.are.equal("Kennel", client.Kennel.window.skin.name)
+        assert.are.equal("Beastkeeper", client.Addon.window.skin.name)
     end)
 
     it("shows a tab only while its module is on, and the options without any", function()
         local client = NewClient():login()
         local window = open(client)
-        assert.is_true(client.Kennel.window.tabs.pets.shown)
+        assert.is_true(client.Addon.window.tabs.pets.shown)
         window:Hide()
-        client.Kennel:SetModuleOn("PetJournal", false)
-        client.Kennel:SetModuleOn("BeastMap", false)
+        client.Addon:SetModuleOn("PetJournal", false)
+        client.Addon:SetModuleOn("BeastMap", false)
         open(client)
         assert.is_false(window.shown)
-        assert.are.same({ client.Kennel.optionsCategoryID }, client.opened)
+        assert.are.same({ client.Addon.optionsCategoryID }, client.opened)
     end)
 
     it("opens from the key binding's button and from the broker; the broker's right-click opens the options", function()
         local client = NewClient():login()
-        assert.are.equal("Kennel: open or close the window", _G["BINDING_NAME_CLICK KennelWindowButton:LeftButton"])
-        click(_G.KennelWindowButton)
-        assert.is_true(_G.KennelWindow.shown)
-        click(_G.KennelWindowButton)
-        local broker = LibStub("LibDataBroker-1.1"):GetDataObjectByName("Kennel")
+        assert.are.equal(
+            "Beastkeeper: open or close the window",
+            _G["BINDING_NAME_CLICK BeastkeeperWindowButton:LeftButton"]
+        )
+        click(_G.BeastkeeperWindowButton)
+        assert.is_true(_G.BeastkeeperWindow.shown)
+        click(_G.BeastkeeperWindowButton)
+        local broker = LibStub("LibDataBroker-1.1"):GetDataObjectByName("Beastkeeper")
         broker.OnClick(nil, "LeftButton")
-        assert.is_true(_G.KennelWindow.shown)
+        assert.is_true(_G.BeastkeeperWindow.shown)
         broker.OnClick(nil, "RightButton")
-        assert.are.same({ client.Kennel.optionsCategoryID }, client.opened)
+        assert.are.same({ client.Addon.optionsCategoryID }, client.opened)
     end)
 end)
 
@@ -153,7 +156,7 @@ describe("the Pets tab", function()
         assert.is_truthy(panel.journal.text:find("Out together: 0 min.", 1, true), panel.journal.text)
         assert.is_nil(panel.journal.text:find("Abilities", 1, true), "abilities have their own line")
         click(panel.rows[3])
-        assert.are.equal(SHADOW, client.Kennel:GetModule("PetJournal").picked)
+        assert.are.equal(SHADOW, client.Addon:GetModule("PetJournal").picked)
         assert.are.equal("Shadow", panel.name.text)
         assert.are.equal("Level 12 Wolf, loyalty ?.", panel.level.text)
         assert.are.equal("Ferocity", panel.spec.text)
@@ -170,7 +173,7 @@ describe("the Pets tab", function()
     it("switches between tabs, in their order", function()
         local client = NewClient():login()
         local made = 0
-        client.Kennel:RegisterWindowTab({
+        client.Addon:RegisterWindowTab({
             id = "test",
             title = "Test",
             order = 5,
@@ -180,7 +183,7 @@ describe("the Pets tab", function()
             Refresh = function() end,
         })
         open(client)
-        local window = client.Kennel.window
+        local window = client.Addon.window
         assert.are.equal("test", window.current, "the first in order")
         click(window.tabs.pets)
         assert.are.equal("pets", window.current)
@@ -199,8 +202,8 @@ describe("the Pets tab", function()
             pets(client).abilities.text,
             "Bite 1 and Cower 1 known; Great Stamina comes from a trainer"
         )
-        client.Kennel:SetModuleOn("AbilityLearned", false)
-        client.Kennel:RefreshWindow("pets")
+        client.Addon:SetModuleOn("AbilityLearned", false)
+        client.Addon:RefreshWindow("pets")
         assert.are.equal(
             "Abilities: Bite (Rank 1), Claw (Rank 2), Cower (Rank 1), Great Stamina (Rank 1), Growl.",
             pets(client).abilities.text,
@@ -215,11 +218,11 @@ describe("the Pets tab", function()
         assert.are.same({ unit = "pet" }, model.shownModel)
         click(pets(client).rows[3])
         assert.are.same({ displayID = 903 }, model.shownModel)
-        client.Kennel:GetModule("PetJournal"):Pets()[SHADOW].displayID = nil
-        client.Kennel:RefreshWindow("pets")
+        client.Addon:GetModule("PetJournal"):Pets()[SHADOW].displayID = nil
+        client.Addon:RefreshWindow("pets")
         assert.are.same({ creature = 1131 }, model.shownModel)
-        client.Kennel:GetModule("PetJournal"):Pets()[SHADOW].first.npc = nil
-        client.Kennel:RefreshWindow("pets")
+        client.Addon:GetModule("PetJournal"):Pets()[SHADOW].first.npc = nil
+        client.Addon:RefreshWindow("pets")
         assert.is_false(model.shown)
     end)
 
@@ -249,33 +252,33 @@ describe("the Pets tab", function()
 
     it("keeps a stabled pet's name, level, family and model, and the beast it was", function()
         local client = withStable()
-        local entry = client.Kennel:GetModule("PetJournal"):Pets()[SHADOW]
+        local entry = client.Addon:GetModule("PetJournal"):Pets()[SHADOW]
         assert.are.equal("Shadow", entry.name)
         assert.are.equal(12, entry.level)
         assert.are.equal("Wolf", entry.family)
         assert.are.equal(903, entry.displayID)
         assert.are.equal(1131, entry.first.npc)
         assert.is_nil(entry.specialization, 'Forever says "Default" for every pet')
-        assert.are.equal(FLUFFY, client.Kennel:GetModule("PetJournal").current)
+        assert.are.equal(FLUFFY, client.Addon:GetModule("PetJournal").current)
     end)
 
     it("reads no stable on a client without one", function()
         local client = NewClient({ noStableInfo = true }):login()
         client:fire("PET_STABLE_UPDATE")
-        assert.is_nil(client.Kennel:GetModule("PetJournal"):Pets()[SHADOW])
+        assert.is_nil(client.Addon:GetModule("PetJournal"):Pets()[SHADOW])
     end)
 end)
 
 describe("the Stable tab", function()
     ---The Stable panel, opened.
     local function stable(client)
-        client.Kennel:OpenWindow("stable")
-        return client.Kennel.window.panels.stable
+        client.Addon:OpenWindow("stable")
+        return client.Addon.window.panels.stable
     end
 
     it("shows every pet side by side, the pet out first, with what each could teach you", function()
         local client = withStable()
-        client.Kennel:GetModule("PetJournal"):Pets()[SHADOW].abilities = { "Bite (Rank 2)", "Dash (Rank 1)" }
+        client.Addon:GetModule("PetJournal"):Pets()[SHADOW].abilities = { "Bite (Rank 2)", "Dash (Rank 1)" }
         local panel = stable(client)
         local fluffy, shadow = panel.cards[1], panel.cards[3]
         assert.are.equal("Fluffy", fluffy.name.text)
@@ -296,7 +299,7 @@ describe("the Stable tab", function()
         local client = withStable()
         local card = stable(client).cards[3]
         click(card)
-        assert.are.equal("pets", client.Kennel.window.current)
+        assert.are.equal("pets", client.Addon.window.current)
         assert.are.equal("Shadow", pets(client).name.text)
     end)
 end)

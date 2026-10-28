@@ -14,11 +14,11 @@ Plus a `namespace="PetCare"` keyword line in every `Locales\<lang>.lua`, and
 its tests in `tests\<name>_spec.lua`. The module itself:
 
 ```lua
-local _, Kennel = ...
-local L = Kennel.L
+local _, Beastkeeper = ...
+local L = Beastkeeper.L
 
----@type KennelPetCare -- a class in annotations\Kennel.lua
-local M = Kennel:NewModule("PetCare", "AceTimer-3.0")
+---@type BeastkeeperPetCare -- a class in annotations\Beastkeeper.lua
+local M = Beastkeeper:NewModule("PetCare", "AceTimer-3.0")
 M.title = L.PETCARE_TITLE
 M.description = L.PETCARE_DESC
 M.defaults = { profile = { threshold = 40 } }
@@ -33,14 +33,14 @@ end
 
 function M:OnDisable()
     -- undo everything OnEnable did that AceEvent/AceTimer do not undo themselves
-    Kennel:DropToasts(self.moduleName .. ":")
+    Beastkeeper:DropToasts(self.moduleName .. ":")
 end
 ```
 
 `Modules\AutocastCheck\` is a complete example. What each field means is in
-`annotations/Kennel.lua` (`KennelModule`). The rules the core relies on:
+`annotations/Beastkeeper.lua` (`BeastkeeperModule`). The rules the core relies on:
 
-- **The core owns the switch.** `profile.modules[name]` in `KennelDB` says
+- **The core owns the switch.** `profile.modules[name]` in `BeastkeeperDB` says
   whether a module runs; a module never calls `Enable`/`Disable` on itself.
   A module is on unless it sets `enabledByDefault = false`.
 - **`OnDisable` undoes `OnEnable`.** A profile change disables every running
@@ -50,11 +50,11 @@ end
 - **`defaults`** gives the module its own AceDB namespace as `self.db`, set
   before the module's `OnInitialize`.
 - **`GetOptions`** returns an AceConfig group. It becomes a page of its own
-  under Kennel, greyed out while the module is off. The core sets `type`,
+  under Beastkeeper, greyed out while the module is off. The core sets `type`,
   `disabled`, and `name` when the group has none (the module's `title`).
-  `Kennel:Setting(module, key, changed)` gives an option's `get` and `set` for
+  `Beastkeeper:Setting(module, key, changed)` gives an option's `get` and `set` for
   `module:Settings()[key]`; `changed` runs after a set while the module is on.
 - **`self:Print(...)`** says a line in chat; it names the module in the
-  `KENNEL_PRINT` message ([04-hooking.md](04-hooking.md)).
+  `BEASTKEEPER_PRINT` message ([04-hooking.md](04-hooking.md)).
 - Every module embeds AceEvent-3.0; anything else it lists in `NewModule`
   and in `embeds.xml` / `.pkgmeta`.

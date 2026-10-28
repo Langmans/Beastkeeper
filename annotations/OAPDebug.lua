@@ -1,5 +1,5 @@
 ---@meta
--- OAP Debug's global table, as far as Kennel calls it (Core\Debug.lua). Every call catches its
+-- OAP Debug's global table, as far as Beastkeeper calls it (Core\Debug.lua). Every call catches its
 -- own errors. From its in-game Developer usage page.
 
 ---@class OAPDebugApi
@@ -9,7 +9,7 @@
 ---@field Count fun(source: string, name: string, n: number?)
 ---@field Time fun(source: string, name: string, fn: fun(...): ..., ...: any): ...
 
--- _DebugLog's global table (DLAPI), as far as Kennel calls it (Core\Debug.lua). From its
+-- _DebugLog's global table (DLAPI), as far as Beastkeeper calls it (Core\Debug.lua). From its
 -- Modules\DLGUI_debuglog_api.lua and DLGUI_debuglog_tab.lua.
 
 ---@class DebugLogApi

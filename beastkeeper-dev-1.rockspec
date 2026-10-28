@@ -1,11 +1,11 @@
--- Development dependencies only: the test tools, pinned. Kennel itself is not a rock.
--- `luarocks install --only-deps kennel-dev-1.rockspec` installs them, locally
+-- Development dependencies only: the test tools, pinned. Beastkeeper itself is not a rock.
+-- `luarocks install --only-deps beastkeeper-dev-1.rockspec` installs them, locally
 -- (tests/setup-lua.ps1) and in CI alike.
 rockspec_format = "3.0"
-package = "kennel"
+package = "beastkeeper"
 version = "dev-1"
-source = { url = "git+https://github.com/Langmans/Kennel.git" }
-description = { summary = "Kennel's test tooling", license = "MIT" }
+source = { url = "git+https://github.com/Langmans/Beastkeeper.git" }
+description = { summary = "Beastkeeper's test tooling", license = "MIT" }
 dependencies = {
     "lua ~> 5.1",
     "busted == 2.2.0",

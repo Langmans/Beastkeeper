@@ -1,4 +1,4 @@
-package-as: Kennel
+package-as: Beastkeeper
 
 # Ace3 is fetched at package time and never committed, pinned to a commit on master of its GitHub
 # mirror: the latest release (Release-r1403, 2026-08-12) lacks AceDB's WoW: Forever fixes of
@@ -61,11 +61,11 @@ externals:
     url: https://repos.curseforge.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
     tag: v12.1.1
     type: svn
-  # The route library, Kennel's own (github.com/Langmans/LibGoThere-1.0); pinned to a commit.
+  # The route library, Beastkeeper's own (github.com/Langmans/LibGoThere-1.0); pinned to a commit.
   Libs/LibGoThere-1.0:
     url: https://github.com/Langmans/LibGoThere-1.0.git
     commit: 510d0318645d1a2ce01d159c761d3b5da9567d53
-  # The pet ability ranks and the beasts that teach them, Kennel's own
+  # The pet ability ranks and the beasts that teach them, Beastkeeper's own
   # (github.com/Langmans/LibTameable-1.0, GPL-3.0); pinned to a commit.
   Libs/LibTameable-1.0:
     url: https://github.com/Langmans/LibTameable-1.0.git
@@ -82,7 +82,7 @@ ignore:
   - annotations
   - coverage
   - tests
-  - kennel-dev-1.rockspec
+  - beastkeeper-dev-1.rockspec
   - stylua.toml
   - tasks
   - Locales/README.md

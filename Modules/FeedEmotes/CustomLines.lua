@@ -4,33 +4,33 @@ local _, ns = ...
 -- brackets: "[cat,wolf,fish] Good hunter!". Tags of one group match if any holds (cat or wolf);
 -- every group named must match (and fish). The tags are English on every client language.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("FeedEmotes") --[[@as KennelFeedEmotes]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
 
 -- An emote is at most 255 bytes, and "feeds <pet> a <item link>. " in front can take about 100.
 -- The conditions are not sent, so they do not count.
 M.CUSTOM_LINE_MAX = 150
 
 ---Every condition, in the order a saved line lists them: sex, food type, family by ID.
----@type KennelFeedCondition[]
+---@type BeastkeeperFeedCondition[]
 M.Conditions = {
-    { tag = "male", group = "sex", value = Kennel.sex.male },
-    { tag = "female", group = "sex", value = Kennel.sex.female },
+    { tag = "male", group = "sex", value = Addon.sex.male },
+    { tag = "female", group = "sex", value = Addon.sex.female },
 }
-local D = Kennel.diets
+local D = Addon.diets
 for _, foodType in ipairs({ D.bread, D.meat, D.fish, D.cheese, D.fruit, D.fungus }) do
     M.Conditions[#M.Conditions + 1] = { tag = foodType, group = "foodType", value = foodType }
 end
----@type KennelFeedCondition[]
+---@type BeastkeeperFeedCondition[]
 local families = {}
 for name, id in pairs(M.Family) do
     families[#families + 1] = { tag = name:lower(), group = "family", value = id }
 end
 ---Families by ID: their values are numbers.
----@param a KennelFeedCondition
----@param b KennelFeedCondition
+---@param a BeastkeeperFeedCondition
+---@param b BeastkeeperFeedCondition
 ---@return boolean
 local function ByID(a, b)
     ---@type number, number
@@ -43,7 +43,7 @@ for _, condition in ipairs(families) do
 end
 
 ---Tag -> its condition.
----@type table<string, KennelFeedCondition>
+---@type table<string, BeastkeeperFeedCondition>
 M.ConditionByTag = {}
 for _, condition in ipairs(M.Conditions) do
     M.ConditionByTag[condition.tag] = condition
@@ -93,7 +93,7 @@ end
 
 ---Whether a line's conditions hold for one feeding.
 ---@param tags table<string, true>
----@param situation KennelFeedSituation
+---@param situation BeastkeeperFeedSituation
 ---@return boolean
 function M.ConditionsHold(tags, situation)
     ---@type table<string, true>, table<string, true>

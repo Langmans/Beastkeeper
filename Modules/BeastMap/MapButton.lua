@@ -6,10 +6,10 @@ local _, ns = ...
 -- Blizzard's own map buttons (WorldMapTrackingPinButtonTemplate). The button is a plain child of
 -- WorldMapFrame: nothing is added to Blizzard's own tables, which keeps the map's code untainted.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
 
 local ICON = "Interface\\Icons\\Ability_Hunter_BeastTraining"
 

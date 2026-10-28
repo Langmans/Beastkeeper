@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Renamed from Kennel to Beastkeeper (a 2008 addon already has the name on
+  CurseForge). The slash command is /beastkeeper, or /bk; the macros, the
+  messages (BEASTKEEPER_TOAST, ...) and the saved settings (BeastkeeperDB)
+  carry the new name.
+
 ### Clients
 
 - WoW: Forever and Classic Era (Season of Discovery, Hardcore too), each with
@@ -15,15 +20,15 @@
 - What a pet eats on Classic Era and Burning Crusade comes from LibTameable
   too, each family's diet from the client's own tables.
 
-### Kennel itself
+### Beastkeeper itself
 
-- A settings page under AddOns → Kennel with a switch per module, a page per
+- A settings page under AddOns → Beastkeeper with a switch per module, a page per
   module with options, and profiles.
-- `/kennel` opens Kennel's window, `/kennel config` the settings page;
-  `/kennel help` lists the module commands. The window has a tab per part,
+- `/beastkeeper` opens Beastkeeper's window, `/beastkeeper config` the settings page;
+  `/beastkeeper help` lists the module commands. The window has a tab per part,
   takes the button skin's look, moves by dragging, and opens from the data
   broker and a key binding too.
-- Kennel's macros say what they do in the tooltip of the action button they
+- Beastkeeper's macros say what they do in the tooltip of the action button they
   are on.
 
 ### Toasts
@@ -31,7 +36,7 @@
 - A toast for every module, in two looks: a small card near the top of the
   screen, or a large splash in the middle. Both have a timer bar; drag to
   move, right-click to close, hover to keep it up. Duration, size and look on
-  Kennel's page, and a look per kind of toast. Other addons can add looks.
+  Beastkeeper's page, and a look per kind of toast. Other addons can add looks.
 - A kind of toast can start on a look its module picks; the pet's portrait on
   the icon; an optional screenshot per toast.
 - A look that shows toasts as the game's raid warning, and one that sends
@@ -40,7 +45,7 @@
 
 ### Modules
 
-- Care Button (from Pet Care Button): one key and the KennelCare macro for
+- Care Button (from Pet Care Button): one key and the BeastkeeperCare macro for
   Mend Pet, Revive Pet and Call Pet that remember a dead pet, also once the
   body is gone; toasts when the pet dies, is missing at the pull or runs low,
   or combat starts with it on Passive; a low health marker beside the pet
@@ -50,7 +55,7 @@
   default, when your hunter learns a pet ability from a tamed beast, with the
   pet's portrait and free training points; a history per character of every
   rank learned and the beast it came from, with a list of learns from beasts
-  Kennel's data does not know as teachers; hints on what a summoned pet can
+  Beastkeeper's data does not know as teachers; hints on what a summoned pet can
   still teach, from what Beast Training shows; a toast when your pet gains
   training points, naming the level-up or loyalty level behind them, and one
   when its loyalty drops; a sound choice for each.
@@ -59,21 +64,21 @@
   sex per pet. Off until switched on. Lines for Forever's foxes in all six
   languages.
 - Autocast Check (from Pet Autocast Check): Growl or Cower on autocast as
-  fits, Cower in a dungeon group and Growl elsewhere; the KennelKite macro
-  (Cower, Distracting Shot) and KennelGrowl macro choose until a dungeon group
+  fits, Cower in a dungeon group and Growl elsewhere; the BeastkeeperKite macro
+  (Cower, Distracting Shot) and BeastkeeperGrowl macro choose until a dungeon group
   is entered or left. A toast when it does not fit, and one key or the
-  KennelAutocast macro that sets it right.
+  BeastkeeperAutocast macro that sets it right.
 - Feeding: a button beside the pet frame while the pet is not happy, feeding
   the food that keeps it happy cheapest (Well Fed food last), the order in
   its tooltip, a list to pick another food on a right-click; toasts when the
   pet becomes content or unhappy and when the last food it eats is gone.
-- Data Broker: Kennel as a LibDataBroker source (Titan Panel, ChocolateBar,
+- Data Broker: Beastkeeper as a LibDataBroker source (Titan Panel, ChocolateBar,
   ElvUI datatexts): the pet's name, happiness and free training points, more
-  in its tooltip, Kennel's window on a click; and as a minimap button.
+  in its tooltip, Beastkeeper's window on a click; and as a minimap button.
 - Pet Journal: a page per pet with when and where it was tamed, its level and
   loyalty, the time out together, its deaths, a forecast of the next loyalty
   level and its abilities, stabled pets included, with what each could still
-  teach you; the short version in the pet's tooltip. In Kennel's window a
+  teach you; the short version in the pet's tooltip. In Beastkeeper's window a
   Pets tab with a card per pet: its model, specialization, journal and
   abilities, and a Stable tab with every pet side by side. Stabled pets'
   models and names come from the stable master.
@@ -90,7 +95,7 @@
   toast when a rare beast that teaches a rank you lack comes in sight, and a
   tame key that targets and marks that beast (or the one whose pin you
   clicked), Shift for Tame Beast. Pins for the pet trainers and stable
-  masters of your faction. In Kennel's window an Abilities tab (every rank,
+  masters of your faction. In Beastkeeper's window an Abilities tab (every rank,
   known or the nearest beast that teaches it) and a Families tab
   (specialization, diet, what each family learns, where to tame one).
 - Ammo: your ammo count as a data broker source (EllesmereUI's data bars,
@@ -102,24 +107,24 @@
 
 ### Other addons
 
-- Button skins: Kennel's buttons and lists in the look of Masque, ElvUI or
-  EllesmereUI, chosen on Kennel's page (Automatic by default). Other addons
-  add theirs with Kennel:RegisterButtonSkin and RegisterButtonHolderSkin.
+- Button skins: Beastkeeper's buttons and lists in the look of Masque, ElvUI or
+  EllesmereUI, chosen on Beastkeeper's page (Automatic by default). Other addons
+  add theirs with Beastkeeper:RegisterButtonSkin and RegisterButtonHolderSkin.
 - With EllesmereUI loaded: the card and the splash in EllesmereUI's look;
   with ElvUI loaded, in ElvUI's.
 - With MessageQueue loaded: a LibSink output that says toasts in a chat
   channel (say, party, group, a custom channel); say, yell and channels go out
   on your next key press or click, as WoW: Forever requires.
-- With OAP Debug installed: Kennel's messages, chat lines, counts, the
+- With OAP Debug installed: Beastkeeper's messages, chat lines, counts, the
   window's timings and its Lua errors in OAP Debug's window; with DebugLog
-  installed, the messages and chat lines in a Kennel tab, sorted into
-  categories. As much as the "Debug" setting on Kennel's page says.
-- With LS: Toasts loaded: a toast look that hands Kennel's toasts to it.
-- Messages with a table of details, heard through Kennel:Listen:
-  KENNEL_TOAST, KENNEL_PRINT, KENNEL_RANKS_KNOWN, KENNEL_ABILITY_LEARNED,
-  KENNEL_AUTOCAST_WANTED, KENNEL_RARE_SEEN, KENNEL_AMMO, and from the core
-  KENNEL_PET_HAPPINESS, KENNEL_PET_DIED, KENNEL_PET_TAMED and
-  KENNEL_PET_GROWTH (training points, level and loyalty, up or down), which
-  it works out only while something listens. Kennel's own modules listen the
+  installed, the messages and chat lines in a Beastkeeper tab, sorted into
+  categories. As much as the "Debug" setting on Beastkeeper's page says.
+- With LS: Toasts loaded: a toast look that hands Beastkeeper's toasts to it.
+- Messages with a table of details, heard through Beastkeeper:Listen:
+  BEASTKEEPER_TOAST, BEASTKEEPER_PRINT, BEASTKEEPER_RANKS_KNOWN, BEASTKEEPER_ABILITY_LEARNED,
+  BEASTKEEPER_AUTOCAST_WANTED, BEASTKEEPER_RARE_SEEN, BEASTKEEPER_AMMO, and from the core
+  BEASTKEEPER_PET_HAPPINESS, BEASTKEEPER_PET_DIED, BEASTKEEPER_PET_TAMED and
+  BEASTKEEPER_PET_GROWTH (training points, level and loyalty, up or down), which
+  it works out only while something listens. Beastkeeper's own modules listen the
   same way. See docs/04-hooking.md, with an example addon, and
-  docs/KennelMessages.lua for their types.
+  docs/BeastkeeperMessages.lua for their types.

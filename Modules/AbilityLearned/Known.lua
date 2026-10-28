@@ -14,10 +14,10 @@ local _, ns = ...
 -- Beast Training is a rank the hunter has learned. GetTrainerServiceInfo gives the name, not the
 -- rank, so the row's spell comes from a hidden tooltip and the rank from that spell.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("AbilityLearned") --[[@as KennelAbilityLearned]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("AbilityLearned") --[[@as BeastkeeperAbilityLearned]]
 
 local HISTORY_MAX = 200
 local BEAST_TRAINING_ICON = "Interface\\Icons\\Ability_Hunter_BeastTraining"
@@ -26,12 +26,12 @@ local BEAST_TRAINING_ICON = "Interface\\Icons\\Ability_Hunter_BeastTraining"
 ---@type table<string, string>
 local lastSaid = {}
 
-local scanTip = CreateFrame("GameTooltip", "KennelScanTooltip", nil, "GameTooltipTemplate")
+local scanTip = CreateFrame("GameTooltip", Addon.Global("ScanTooltip"), nil, "GameTooltipTemplate")
 
 ---This character's data.
----@return KennelAbilityLearnedChar
+---@return BeastkeeperAbilityLearnedChar
 local function Char()
-    return M.db.char --[[@as KennelAbilityLearnedChar]]
+    return M.db.char --[[@as BeastkeeperAbilityLearnedChar]]
 end
 
 ---The number in a rank text, whatever the language calls it: "Rank 2", "Rang 2", "2 레벨" -> 2.
@@ -68,11 +68,11 @@ function M:HighestRank(name)
     return Char().known[name]
 end
 
----Sends KENNEL_RANKS_KNOWN with the ranks that were news (docs\04-hooking.md).
+---Sends BEASTKEEPER_RANKS_KNOWN with the ranks that were news (docs\04-hooking.md).
 ---@param source "learn"|"training"
----@param ranks KennelKnownRank[]
+---@param ranks BeastkeeperKnownRank[]
 local function RanksKnown(source, ranks)
-    Kennel:SendMessage("KENNEL_RANKS_KNOWN", { module = M:GetName(), source = source, ranks = ranks })
+    Addon:SendMessage(Addon.messages.ranksKnown, { module = M:GetName(), source = source, ranks = ranks })
 end
 
 ---Whether a pet with this ability at this rank could teach it to this character: an ability
@@ -95,8 +95,8 @@ function M:HasRank(name, rank)
 end
 
 ---Adds a learn to the history, keeping the last HISTORY_MAX, and to what is known; sends
----KENNEL_ABILITY_LEARNED (docs\04-hooking.md).
----@param entry KennelLearnEntry
+---BEASTKEEPER_ABILITY_LEARNED (docs\04-hooking.md).
+---@param entry BeastkeeperLearnEntry
 function M:RecordLearn(entry)
     local history = Char().history
     history[#history + 1] = entry
@@ -104,7 +104,7 @@ function M:RecordLearn(entry)
         table.remove(history, 1)
     end
     local rank = RankNumber(entry.rank)
-    Kennel:SendMessage("KENNEL_ABILITY_LEARNED", {
+    Addon:SendMessage(Addon.messages.abilityLearned, {
         module = M:GetName(),
         name = entry.name,
         rank = rank,
@@ -116,7 +116,7 @@ function M:RecordLearn(entry)
 end
 
 ---One history line: "2026-10-07 14:03  Claw (Rank 2), from Fluffy, Darkshore".
----@param entry KennelLearnEntry
+---@param entry BeastkeeperLearnEntry
 ---@return string
 local function HistoryLine(entry)
     ---@type string
@@ -127,15 +127,15 @@ local function HistoryLine(entry)
     return line
 end
 
----Whether Kennel's beast data (Data\Beasts.lua) has beast `npc` as a teacher of an ability's rank.
+---Whether Beastkeeper's beast data (Data\Beasts.lua) has beast `npc` as a teacher of an ability's rank.
 ---@param name string the ability's name in the client's language
 ---@param rank number
 ---@param npc number
 ---@return boolean
 local function KnownTeacher(name, rank, npc)
-    local data = Kennel.data --[[@as KennelData]]
+    local data = Addon.data --[[@as BeastkeeperData]]
     for _, info in pairs(data.petAbilityRanks) do
-        if info.rank == rank and Kennel.SpellInfo(info.ability) == name then
+        if info.rank == rank and Addon.SpellInfo(info.ability) == name then
             for _, teacher in ipairs(info.teachers) do
                 if teacher == npc then return true end
             end
@@ -188,13 +188,13 @@ end
 function M:ReadBeastTraining()
     if UnitExists("npc") then return end
     local read = 0
-    ---@type KennelKnownRank[]
+    ---@type BeastkeeperKnownRank[]
     local news = {}
     for index = 1, GetNumTrainerServices() do
         local ok, name, kind = pcall(GetTrainerServiceInfo, index)
         local spellID = ok and type(name) == "string" and kind ~= "header" and RowSpellID(index)
         if spellID then
-            local _, _, rankText = Kennel.SpellInfo(spellID)
+            local _, _, rankText = Addon.SpellInfo(spellID)
             local rank = RankNumber(rankText)
             if self:MarkKnown(name, rank) then news[#news + 1] = { name = name, rank = rank } end
             read = read + 1
@@ -213,7 +213,7 @@ local function Teachable()
     ---@type string[]
     local list = {}
     local unsure = false
-    for name, spell in pairs(Kennel.PetSpells()) do
+    for name, spell in pairs(Addon.PetSpells()) do
         if M:CanTeach(name, spell.rank) then
             list[#list + 1] = spell.rank and ("%s (%s)"):format(name, spell.rank) or name
             unsure = unsure or known[name] == nil
@@ -244,15 +244,15 @@ function M:CheckHints()
     Say(pet, list, unsure)
 end
 
-local LoyaltyLabel = Kennel.LoyaltyLabel
+local LoyaltyLabel = Addon.LoyaltyLabel
 
 ---A toast about the pet out's growth, of `kind` ("points" or "loyalty").
 ---@param kind string
 ---@param title string
 ---@param text string
 ---@param hint string?
----@param sound KennelSound?
----@return KennelToastInfo
+---@param sound BeastkeeperSound?
+---@return BeastkeeperToastInfo
 local function GrowthToast(kind, title, text, hint, sound)
     return {
         key = "AbilityLearned:" .. kind,
@@ -267,12 +267,12 @@ local function GrowthToast(kind, title, text, hint, sound)
     }
 end
 
----The core's KENNEL_PET_GROWTH (the pet's points total, level or loyalty changed since last seen):
+---The core's BEASTKEEPER_PET_GROWTH (the pet's points total, level or loyalty changed since last seen):
 ---a toast when its total rose, naming the cause when there is one (a level-up, a higher loyalty
 ---level), and one when its loyalty level dropped, with the points that cost. A level-up at loyalty
 ---level 1 brings no points and says nothing.
 ---@param _ string the message
----@param event KennelPetGrowthEvent
+---@param event BeastkeeperPetGrowthEvent
 function M:OnGrowth(_, event)
     local settings = self:Settings()
     local pet, level, loyalty, loyaltyName = event.pet, event.level, event.loyalty, event.loyaltyName
@@ -285,7 +285,7 @@ function M:OnGrowth(_, event)
         local text = L.ABILITYLEARNED_LOYALTY_DROP_TEXT:format(LoyaltyLabel(loyalty, loyaltyName))
         local lost = change < 0 and L.ABILITYLEARNED_POINTS_LOST:format(-change, free) or nil
         local sound = self:Sound("loyaltySound", "WOUND")
-        Kennel:ShowToast(GrowthToast("loyalty", L.ABILITYLEARNED_LOYALTY_DROP:format(pet), text, lost, sound))
+        Addon:ShowToast(GrowthToast("loyalty", L.ABILITYLEARNED_LOYALTY_DROP:format(pet), text, lost, sound))
         return
     end
     if change <= 0 or not settings.points then return end
@@ -303,7 +303,7 @@ function M:OnGrowth(_, event)
         title = L.ABILITYLEARNED_LOYALTY_UP:format(pet, LoyaltyLabel(loyalty --[[@as number]], loyaltyName))
         text = L.ABILITYLEARNED_POINTS_CAUSED:format(change, free)
     end
-    Kennel:ShowToast(GrowthToast("points", title, text, nil, self:Sound("pointsSound", "AGGRO")))
+    Addon:ShowToast(GrowthToast("points", title, text, nil, self:Sound("pointsSound", "AGGRO")))
 end
 
 ---The page's button: what the pet out can teach, whenever asked, also when that is nothing.

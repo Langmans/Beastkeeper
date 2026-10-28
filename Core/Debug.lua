@@ -1,25 +1,25 @@
 local addonName, ns = ...
 
--- The bridge to the debug addons, the only file that talks to them. Kennel sends to each one that
+-- The bridge to the debug addons, the only file that talks to them. Beastkeeper sends to each one that
 -- is installed:
 --
--- - OAP Debug (a debug window: log, inspector, metrics, Lua errors). Kennel registers with it under
---   its folder (so its Lua errors are filed under Kennel), sends its own KENNEL_* messages to the
+-- - OAP Debug (a debug window: log, inspector, metrics, Lua errors). Beastkeeper registers with it under
+--   its folder (so its Lua errors are filed under Beastkeeper), sends its own BEASTKEEPER_* messages to the
 --   log with their table, copies its chat lines and counts the messages; the window's tabs are
 --   timed.
--- - _DebugLog (DLAPI: a window of log tabs). The same lines go to a "Kennel" tab as text, a table
+-- - _DebugLog (DLAPI: a window of log tabs). The same lines go to a "Beastkeeper" tab as text, a table
 --   written out; flags before the text colour it (ERR~, WARN~), mark detail (2~, the verbosity
 --   column) or name a category (Chat~). It has no counters or timers.
 --
 -- How much goes is the setting every OAP addon has: errors only, normal, normal + metrics (the
 -- default), detailed; it is kept as profile.oapDebug. Without either addon nothing is sent and
--- Kennel listens to nothing for them.
+-- Beastkeeper listens to nothing for them.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
+---@type Addon
+local Addon = ns
+local L = Addon.L
 
-local SOURCE = "Kennel"
+local SOURCE = Addon.NAME
 local ICON = "Interface\\Icons\\Ability_Hunter_BeastCall"
 local ERRORS, NORMAL, METRICS, DETAILED = 1, 2, 3, 4
 local LEVELS = { errors = ERRORS, normal = NORMAL, metrics = METRICS, detailed = DETAILED }
@@ -29,33 +29,33 @@ local NEEDS = { error = ERRORS, warn = NORMAL, info = NORMAL, debug = DETAILED }
 local FLAGS = { error = "ERR~", warn = "WARN~", info = "", debug = "2~" }
 -- How deep a table is written out in a DebugLog line.
 local DEPTH = 2
--- Kennel's messages that go to the log; KENNEL_PRINT goes to its chat tab instead.
+-- Beastkeeper's messages that go to the log; BEASTKEEPER_PRINT goes to its chat tab instead.
 local MESSAGES = {
-    "KENNEL_TOAST",
-    "KENNEL_RANKS_KNOWN",
-    "KENNEL_ABILITY_LEARNED",
-    "KENNEL_PET_GROWTH",
-    "KENNEL_AUTOCAST_WANTED",
-    "KENNEL_RARE_SEEN",
-    "KENNEL_HUNT_STARTED",
-    "KENNEL_HUNT_ENDED",
-    "KENNEL_PET_HAPPINESS",
-    "KENNEL_PET_DIED",
-    "KENNEL_PET_TAMED",
+    Addon.messages.toast,
+    Addon.messages.ranksKnown,
+    Addon.messages.abilityLearned,
+    Addon.messages.petGrowth,
+    Addon.messages.autocastWanted,
+    Addon.messages.rareSeen,
+    Addon.messages.huntStarted,
+    Addon.messages.huntEnded,
+    Addon.messages.petHappiness,
+    Addon.messages.petDied,
+    Addon.messages.petTamed,
 }
 
 local level = METRICS
--- OAP Debug's table, found once when Kennel's settings load (OptionalDeps loads it first); nil
+-- OAP Debug's table, found once when Beastkeeper's settings load (OptionalDeps loads it first); nil
 -- without it.
 ---@type OAPDebugApi?
 local api
 -- DebugLog's table, found the same way; nil without it.
 ---@type DebugLogApi?
 local dl
--- The table Kennel listens with, to its own messages.
+-- The table Beastkeeper listens with, to its own messages.
 local listener = {}
 
----Finds the debug addons and registers Kennel with OAP Debug, once.
+---Finds the debug addons and registers Beastkeeper with OAP Debug, once.
 local function Connect()
     dl = dl or rawget(_G, "DLAPI") --[[@as DebugLogApi?]]
     if api then return end
@@ -65,7 +65,7 @@ end
 
 ---Whether a debug addon is installed.
 ---@return boolean
-function Kennel.HasDebugAddon()
+function Addon.HasDebugAddon()
     return api ~= nil or dl ~= nil
 end
 
@@ -88,7 +88,7 @@ local function Written(value, depth)
     return "{" .. table.concat(parts, ", ") .. "}"
 end
 
----A line to DebugLog's Kennel tab, as text: "%s" keeps a % in it from being read as a format.
+---A line to DebugLog's Beastkeeper tab, as text: "%s" keeps a % in it from being read as a format.
 ---@param line string
 local function ToDebugLog(line)
     if dl then dl.DebugLog(SOURCE, "%s", line) end
@@ -100,7 +100,7 @@ end
 ---@param kind "error"|"warn"|"info"|"debug"
 ---@param msg string
 ---@param ... any
-function Kennel:Log(kind, msg, ...)
+function Addon:Log(kind, msg, ...)
     if level < NEEDS[kind] then return end
     if api then api.Log(SOURCE, msg, kind, ...) end
     if not dl then return end
@@ -120,7 +120,7 @@ end
 
 ---Counts something that happens, from Normal + metrics.
 ---@param name string
-function Kennel:Count(name)
+function Addon:Count(name)
     if api and level >= METRICS then api.Count(SOURCE, name) end
 end
 
@@ -128,7 +128,7 @@ end
 ---@param name string
 ---@param fn fun(...)
 ---@param ... any
-function Kennel:Time(name, fn, ...)
+function Addon:Time(name, fn, ...)
     if api and level >= METRICS then
         api.Time(SOURCE, name, fn, ...)
     else
@@ -136,30 +136,30 @@ function Kennel:Time(name, fn, ...)
     end
 end
 
----A Kennel message: to the log with its table, and counted.
+---A Beastkeeper message: to the log with its table, and counted.
 ---@param message string
 ---@param event table
 local function OnMessage(message, event)
-    Kennel:Log("info", message .. ": {1}", event)
-    Kennel:Count(message)
+    Addon:Log("info", message .. ": {1}", event)
+    Addon:Count(message)
 end
 
----A chat line Kennel printed: to OAP Debug's chat tab, and to DebugLog as a Chat line.
+---A chat line Beastkeeper printed: to OAP Debug's chat tab, and to DebugLog as a Chat line.
 ---@param _ string the message
----@param event KennelPrintEvent
+---@param event BeastkeeperPrintEvent
 local function OnPrint(_, event)
     if api then api.Chat(SOURCE, event.line) end
     ToDebugLog("Chat~" .. event.line)
 end
 
----Takes the profile's level; listens to Kennel's messages while a debug addon is there and the
+---Takes the profile's level; listens to Beastkeeper's messages while a debug addon is there and the
 ---level logs them, stops otherwise.
-function Kennel:ApplyDebugLevel()
+function Addon:ApplyDebugLevel()
     Connect()
     level = LEVELS[self.db.profile.oapDebug] or METRICS
     self:StopListening(listener)
-    if level < NORMAL or not Kennel.HasDebugAddon() then return end
-    self:Listen(listener, "KENNEL_PRINT", OnPrint)
+    if level < NORMAL or not Addon.HasDebugAddon() then return end
+    self:Listen(listener, Addon.messages.print, OnPrint)
     for _, message in ipairs(MESSAGES) do
         self:Listen(listener, message, OnMessage)
     end
@@ -167,7 +167,7 @@ end
 
 ---The OAP Debug setting, as on every OAP addon's page.
 ---@return AceConfig.OptionsTable
-function Kennel:GetDebugOptions()
+function Addon:GetDebugOptions()
     return {
         type = "group",
         inline = true,
@@ -178,7 +178,7 @@ function Kennel:GetDebugOptions()
                 type = "select",
                 name = L.DEBUG_LEVEL,
                 desc = function()
-                    return Kennel.HasDebugAddon() and L.DEBUG_DESC or L.DEBUG_DESC .. " " .. L.DEBUG_MISSING
+                    return Addon.HasDebugAddon() and L.DEBUG_DESC or L.DEBUG_DESC .. " " .. L.DEBUG_MISSING
                 end,
                 order = 1,
                 values = {

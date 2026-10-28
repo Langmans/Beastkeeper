@@ -3,13 +3,13 @@ local _, ns = ...
 -- What the emote lines are picked by, the same in every language: food groups and types by item,
 -- pet families by ID. Each Lines\<locale>.lua adds its lines to M.Lines.
 
----@type Kennel
-local Kennel = ns
-local M = Kennel:GetModule("FeedEmotes") --[[@as KennelFeedEmotes]]
-local D = Kennel.diets
+---@type Addon
+local Addon = ns
+local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
+local D = Addon.diets
 
 ---Locale code ("enUS", "deDE", ...) -> that language's emote lines.
----@type table<string, KennelEmoteLines>
+---@type table<string, BeastkeeperEmoteLines>
 M.Lines = {}
 
 -- Item ID -> food group used as key in each locale's `emotes.food` table:

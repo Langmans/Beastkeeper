@@ -1,5 +1,5 @@
--- Kennel's bridge to OAP Debug (Core\Debug.lua): when that addon is installed, Kennel registers
--- with it, sends its own KENNEL_* messages to its log (each with its table), copies its chat lines
+-- Beastkeeper's bridge to OAP Debug (Core\Debug.lua): when that addon is installed, Beastkeeper registers
+-- with it, sends its own BEASTKEEPER_* messages to its log (each with its table), copies its chat lines
 -- and counts and times what the chosen level asks for. Without it nothing is sent.
 
 local ICON = "Interface\\Icons\\Ability_Hunter_BeastCall"
@@ -51,11 +51,11 @@ local function withOAP(level)
     return client, calls
 end
 
----Kennel's OAP Debug setting on its page.
+---Beastkeeper's OAP Debug setting on its page.
 ---@param client table
 ---@return table
 local function option(client)
-    return client.Kennel:GetOptionsTable().args.modules.args.debug.args.level
+    return client.Addon:GetOptionsTable().args.modules.args.debug.args.level
 end
 
 describe("OAP Debug", function()
@@ -63,59 +63,59 @@ describe("OAP Debug", function()
         _G.OAPDebug = nil
     end)
 
-    it("gets Kennel registered once, with its folder for Lua errors and its icon", function()
+    it("gets Beastkeeper registered once, with its folder for Lua errors and its icon", function()
         local client, calls = withOAP()
-        client.Kennel:ShowToast({ key = "Test:one", title = "One" })
-        client.Kennel:Print("hello")
+        client.Addon:ShowToast({ key = "Test:one", title = "One" })
+        client.Addon:Print("hello")
         assert.are.same(
-            { { "Register", "Kennel", { title = "Kennel", folder = "Kennel", icon = ICON } } },
+            { { "Register", "Beastkeeper", { title = "Beastkeeper", folder = "Beastkeeper", icon = ICON } } },
             only(calls, "Register")
         )
     end)
 
-    it("logs Kennel's messages with their table, counts them, and copies its chat lines", function()
+    it("logs Beastkeeper's messages with their table, counts them, and copies its chat lines", function()
         local client, calls = withOAP()
-        client.Kennel:ShowToast({ key = "Test:one", title = "One" })
+        client.Addon:ShowToast({ key = "Test:one", title = "One" })
         local logged = only(calls, "Log")
         local last = logged[#logged]
-        assert.are.equal("KENNEL_TOAST: {1}", last[3])
+        assert.are.equal("BEASTKEEPER_TOAST: {1}", last[3])
         assert.are.equal("info", last[4])
         assert.are.equal("One", last[5].toast.title)
-        assert.are.same({ "Count", "Kennel", "KENNEL_TOAST" }, only(calls, "Count")[#only(calls, "Count")])
-        client.Kennel:Print("hello")
-        assert.are.same({ "Chat", "Kennel", "hello" }, calls[#calls])
+        assert.are.same({ "Count", "Beastkeeper", "BEASTKEEPER_TOAST" }, only(calls, "Count")[#only(calls, "Count")])
+        client.Addon:Print("hello")
+        assert.are.same({ "Chat", "Beastkeeper", "hello" }, calls[#calls])
     end)
 
     it("logs a module switched on or off", function()
         local client, calls = withOAP()
-        client.Kennel:SetModuleOn("Feeding", false)
+        client.Addon:SetModuleOn("Feeding", false)
         local logged = only(calls, "Log")
-        assert.are.same({ "Log", "Kennel", "module: {1} off", "info", "Feeding" }, logged[#logged])
+        assert.are.same({ "Log", "Beastkeeper", "module: {1} off", "info", "Feeding" }, logged[#logged])
     end)
 
     it("times the window's tabs from Normal + metrics", function()
         local client, calls = withOAP()
-        client.Kennel:OpenWindow("pets")
-        assert.are.same({ "Time", "Kennel", "window: pets" }, only(calls, "Time")[1])
+        client.Addon:OpenWindow("pets")
+        assert.are.same({ "Time", "Beastkeeper", "window: pets" }, only(calls, "Time")[1])
     end)
 
     it("sends only what the level asks for", function()
         local client, calls = withOAP("errors")
-        client.Kennel:ShowToast({ key = "Test:one", title = "One" })
-        client.Kennel:Print("hello")
-        client.Kennel:OpenWindow("pets")
+        client.Addon:ShowToast({ key = "Test:one", title = "One" })
+        client.Addon:Print("hello")
+        client.Addon:OpenWindow("pets")
         assert.are.same({}, only(calls, "Log"))
         assert.are.same({}, only(calls, "Chat"))
         assert.are.same({}, only(calls, "Time"))
         client, calls = withOAP("normal")
-        client.Kennel:ShowToast({ key = "Test:one", title = "One" })
-        client.Kennel:OpenWindow("pets")
+        client.Addon:ShowToast({ key = "Test:one", title = "One" })
+        client.Addon:OpenWindow("pets")
         assert.is_true(#only(calls, "Log") > 0)
         assert.are.same({}, only(calls, "Count"))
         assert.are.same({}, only(calls, "Time"))
     end)
 
-    it("has its level on Kennel's page, Normal + metrics by default, taking effect at once", function()
+    it("has its level on Beastkeeper's page, Normal + metrics by default, taking effect at once", function()
         local client, calls = withOAP()
         local level = option(client)
         assert.are.equal("metrics", level.get())
@@ -124,19 +124,19 @@ describe("OAP Debug", function()
             level.values
         )
         level.set(nil, "errors")
-        assert.are.equal("errors", client.Kennel.db.profile.oapDebug)
+        assert.are.equal("errors", client.Addon.db.profile.oapDebug)
         local before = #calls
-        client.Kennel:Print("quiet")
+        client.Addon:Print("quiet")
         assert.are.equal(before, #calls)
         level.set(nil, "detailed")
-        client.Kennel:Print("loud")
-        assert.are.same({ "Chat", "Kennel", "loud" }, calls[#calls])
+        client.Addon:Print("loud")
+        assert.are.same({ "Chat", "Beastkeeper", "loud" }, calls[#calls])
     end)
 
     it("sends nothing and says so without OAP Debug", function()
         local client = NewClient():login()
-        client.Kennel:ShowToast({ key = "Test:one", title = "One" })
-        client.Kennel:OpenWindow("pets")
+        client.Addon:ShowToast({ key = "Test:one", title = "One" })
+        client.Addon:OpenWindow("pets")
         local desc = option(client).desc
         assert.are.equal(
             "How much goes to OAP Debug and DebugLog (metrics: timings and counts, OAP Debug only). Neither is installed: nothing is sent.",
@@ -176,29 +176,29 @@ describe("DebugLog", function()
         _G.DLAPI, _G.OAPDebug = nil, nil
     end)
 
-    it("gets Kennel's messages in a tab of its own, the message as category, the table written out", function()
+    it("gets Beastkeeper's messages in a tab of its own, the message as category, the table written out", function()
         local client, lines = withDebugLog()
-        client.Kennel:ShowToast({ key = "Test:one", title = "One" })
+        client.Addon:ShowToast({ key = "Test:one", title = "One" })
         local last = lines[#lines]
-        assert.are.equal("Kennel", last[1])
-        assert.truthy(last[2]:find("^KENNEL_TOAST~{"))
+        assert.are.equal("Beastkeeper", last[1])
+        assert.truthy(last[2]:find("^BEASTKEEPER_TOAST~{"))
         assert.truthy(last[2]:find("title=One", 1, true))
     end)
 
     it("takes the word before a colon as the category", function()
         local client, lines = withDebugLog()
-        client.Kennel:SetModuleOn("Feeding", false)
+        client.Addon:SetModuleOn("Feeding", false)
         assert.are.equal("module~Feeding off", lines[#lines][2])
-        client.Kennel:Log("warn", "probe: odd {1}", 1)
+        client.Addon:Log("warn", "probe: odd {1}", 1)
         assert.are.equal("WARN~probe~odd 1", lines[#lines][2])
     end)
 
     it("colours errors and warnings, marks detail, and leaves a plain line plain", function()
         local client, lines = withDebugLog("detailed")
-        client.Kennel:Log("error", "broke {1}", 5)
-        client.Kennel:Log("warn", "odd {1} {2}", "a", true)
-        client.Kennel:Log("info", "fine")
-        client.Kennel:Log("debug", "deep")
+        client.Addon:Log("error", "broke {1}", 5)
+        client.Addon:Log("warn", "odd {1} {2}", "a", true)
+        client.Addon:Log("info", "fine")
+        client.Addon:Log("debug", "deep")
         local n = #lines
         assert.are.same(
             { "ERR~broke 5", "WARN~odd a true", "fine", "2~deep" },
@@ -206,34 +206,34 @@ describe("DebugLog", function()
         )
     end)
 
-    it("gets Kennel's chat lines, a % in them kept as it is", function()
+    it("gets Beastkeeper's chat lines, a % in them kept as it is", function()
         local client, lines = withDebugLog()
-        client.Kennel:Print("100% fed")
-        assert.are.same({ "Kennel", "Chat~100% fed" }, lines[#lines])
+        client.Addon:Print("100% fed")
+        assert.are.same({ "Beastkeeper", "Chat~100% fed" }, lines[#lines])
     end)
 
     it("gets only what the level asks for", function()
         local client, lines = withDebugLog("errors")
         local before = #lines
-        client.Kennel:ShowToast({ key = "Test:one", title = "One" })
-        client.Kennel:Print("hello")
-        client.Kennel:Log("debug", "deep")
+        client.Addon:ShowToast({ key = "Test:one", title = "One" })
+        client.Addon:Print("hello")
+        client.Addon:Log("debug", "deep")
         assert.are.equal(before, #lines)
-        client.Kennel:Log("error", "broke")
+        client.Addon:Log("error", "broke")
         assert.are.equal("ERR~broke", lines[#lines][2])
     end)
 
     it("writes a table inside a table out too, keys in order, and stops one level further", function()
         local client, lines = withDebugLog()
-        client.Kennel:Log("info", "{1}", { b = 2, a = { c = { d = 1 } } })
+        client.Addon:Log("info", "{1}", { b = 2, a = { c = { d = 1 } } })
         assert.are.equal("{a={c={...}}, b=2}", lines[#lines][2])
     end)
 
     it("goes with OAP Debug when both are installed, counts and timers to OAP Debug alone", function()
         local client, lines, calls = withDebugLog(nil, true)
-        client.Kennel:ShowToast({ key = "Test:one", title = "One" })
-        client.Kennel:OpenWindow("pets")
-        assert.truthy(lines[#lines][2]:find("KENNEL_TOAST", 1, true))
+        client.Addon:ShowToast({ key = "Test:one", title = "One" })
+        client.Addon:OpenWindow("pets")
+        assert.truthy(lines[#lines][2]:find("BEASTKEEPER_TOAST", 1, true))
         assert.is_true(#only(calls, "Log") > 0)
         assert.is_true(#only(calls, "Count") > 0)
         assert.is_true(#only(calls, "Time") > 0)

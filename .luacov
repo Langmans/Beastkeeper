@@ -1,5 +1,5 @@
 -- luacov settings, used by `busted --coverage` and by tests/check.lua for the report.
--- Only Kennel's own files count; Ace3 (Libs/) and the tests do not. A file no test loads still
+-- Only Beastkeeper's own files count; Ace3 (Libs/) and the tests do not. A file no test loads still
 -- shows up, at 0%, so it cannot slip past the 100% check.
 return {
     statsfile = "coverage/luacov.stats.out",

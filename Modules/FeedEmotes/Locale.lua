@@ -1,7 +1,8 @@
 -- FeedEmotes' English strings: the "FeedEmotes" namespace on the CurseForge translation page (see
 -- Locales\README.md). The emote lines themselves are not here: they are in Lines\<locale>.lua,
 -- with the grammar each language needs.
-local L = LibStub("AceLocale-3.0"):NewLocale("Kennel", "enUS", true)
+local addonName = ...
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 
 -- One string per line, however long: see Locales\README.md.
 -- stylua: ignore start

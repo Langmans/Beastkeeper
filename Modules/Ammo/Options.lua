@@ -1,12 +1,12 @@
 local _, ns = ...
 
--- Ammo's page in the settings window (Kennel > Ammo): the low and critical lines, the toasts'
+-- Ammo's page in the settings window (Beastkeeper > Ammo): the low and critical lines, the toasts'
 -- switch, buying at a vendor and the stacks to keep without an ammo bag.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("Ammo") --[[@as KennelAmmo]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("Ammo") --[[@as BeastkeeperAmmo]]
 
 ---The count's look follows a changed line at once.
 local function Changed()
@@ -22,7 +22,7 @@ end
 ---@param step number
 ---@return table
 local function Slider(key, name, desc, order, max, step)
-    local get, set = Kennel:Setting(M, key, Changed)
+    local get, set = Addon:Setting(M, key, Changed)
     return {
         type = "range",
         name = name,
@@ -38,8 +38,8 @@ end
 
 ---@return table
 function M:GetOptions()
-    local toastsGet, toastsSet = Kennel:Setting(M, "toasts")
-    local buyGet, buySet = Kennel:Setting(M, "buy")
+    local toastsGet, toastsSet = Addon:Setting(M, "toasts")
+    local buyGet, buySet = Addon:Setting(M, "buy")
     return {
         args = {
             low = Slider("low", L.AMMO_OPTION_LOW, L.AMMO_OPTION_LOW_DESC, 1, 2000, 50),

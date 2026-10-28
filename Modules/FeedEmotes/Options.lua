@@ -1,27 +1,27 @@
 local _, ns = ...
 
--- FeedEmotes' page in the settings window (Kennel > Feed Emotes): the pet's name or he/she, the
+-- FeedEmotes' page in the settings window (Beastkeeper > Feed Emotes): the pet's name or he/she, the
 -- pet's sex, an example, and the player's own lines with their conditions, edited in place.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("FeedEmotes") --[[@as KennelFeedEmotes]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
 
 local MYSTERY_MEAT = 12037
-local SEX = { game = nil, male = Kennel.sex.male, female = Kennel.sex.female }
+local SEX = { game = nil, male = Addon.sex.male, female = Addon.sex.female }
 local EMOTE_COLOR = "|cffff8040"
 
 -- The conditions ticked for the next new line, by tag.
 ---@type table<string, true>
 local draft = {}
 
----A getter and setter for one profile setting (Kennel:Setting).
+---A getter and setter for one profile setting (Beastkeeper:Setting).
 ---@param key string
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set
 local function Setting(key)
-    return Kennel:Setting(M, key)
+    return Addon:Setting(M, key)
 end
 
 ---The condition boxes of one group, as a multiselect for the next new line. Families no hunter
@@ -69,12 +69,12 @@ end
 ---@return table
 local function SexChoice()
     ---@type table<string, string>
-    local names = { [Kennel.sex.male] = "male", [Kennel.sex.female] = "female" }
+    local names = { [Addon.sex.male] = "male", [Addon.sex.female] = "female" }
     return {
         type = "select",
         name = function()
             local pet = UnitName("pet")
-            return Kennel.PetNumber() and L.FEEDEMOTES_OPTION_SEX_FOR:format(pet) or L.FEEDEMOTES_OPTION_SEX_NONE
+            return Addon.PetNumber() and L.FEEDEMOTES_OPTION_SEX_FOR:format(pet) or L.FEEDEMOTES_OPTION_SEX_NONE
         end,
         desc = L.FEEDEMOTES_OPTION_SEX_DESC,
         order = 2,
@@ -85,10 +85,10 @@ local function SexChoice()
         },
         sorting = { "game", "male", "female" },
         disabled = function()
-            return Kennel.PetNumber() == nil
+            return Addon.PetNumber() == nil
         end,
         get = function()
-            local petNumber = Kennel.PetNumber()
+            local petNumber = Addon.PetNumber()
             return petNumber and names[M:Char().petSex[petNumber]] or "game"
         end,
         ---@param _ table

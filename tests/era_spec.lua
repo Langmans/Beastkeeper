@@ -1,4 +1,4 @@
--- Classic Era (1.15): the same Kennel on a client without WoW: Forever's pet APIs. The pet's
+-- Classic Era (1.15): the same Beastkeeper on a client without WoW: Forever's pet APIs. The pet's
 -- values come from the old globals, its spellbook from GetSpellBookItemName, unit tooltips from
 -- GameTooltip's OnTooltipSetUnit.
 
@@ -6,18 +6,18 @@ describe("Classic Era", function()
     it("logs in a hunter with every module on, without errors", function()
         local client = NewClient({ era = true }):login():advance(10)
         assert.are.same({}, client.errors or {})
-        assert.is_truthy(client.Kennel:GetModule("Feeding"):IsEnabled())
+        assert.is_truthy(client.Addon:GetModule("Feeding"):IsEnabled())
     end)
 
     it("reads the pet's happiness from the global", function()
         local client = NewClient({ era = true }):login()
         client:setHappiness(2)
-        assert.are.equal(2, client.Kennel.PetHappiness())
+        assert.are.equal(2, client.Addon.PetHappiness())
     end)
 
     it("reads autocast from the spellbook through GetSpellAutocast", function()
         local client = NewClient({ era = true, noPetBarAPI = true }):login()
-        local states = client.Kennel:GetModule("AutocastCheck"):PetAutocasts()
+        local states = client.Addon:GetModule("AutocastCheck"):PetAutocasts()
         assert.is_true(states.Growl.on)
         assert.is_false(states.Cower.on)
     end)
@@ -32,7 +32,7 @@ describe("Classic Era", function()
 
     it("keeps the journal without a stable list", function()
         local client = NewClient({ era = true }):login():advance(1)
-        local journal = client.Kennel:GetModule("PetJournal")
+        local journal = client.Addon:GetModule("PetJournal")
         client:fire("PET_STABLE_UPDATE")
         assert.is_truthy(next(journal:Pets()), "the pet out")
     end)
@@ -44,13 +44,13 @@ describe("Classic Era", function()
         client:stock(BREAD, 4):stock(JERKY, 6):stock(UNKNOWN, 1)
         local function fed()
             local ids = {}
-            for _, food in ipairs(client.Kennel:GetModule("Feeding"):Scan()) do
+            for _, food in ipairs(client.Addon:GetModule("Feeding"):Scan()) do
                 ids[#ids + 1] = food.itemID
             end
             return ids
         end
         assert.are.same({ JERKY }, fed(), "a cat eats meat and fish")
-        client.familyID = client.Kennel.families.bear
+        client.familyID = client.Addon.families.bear
         local ids = fed()
         table.sort(ids)
         assert.are.same({ JERKY, BREAD }, ids, "a bear eats bread too")
@@ -65,7 +65,7 @@ describe("Classic Era", function()
         ---Per food in feeding order: its item ID and whether it makes the hunter Well Fed.
         local function order()
             local ids = {}
-            for _, food in ipairs(client.Kennel:GetModule("Feeding"):Scan()) do
+            for _, food in ipairs(client.Addon:GetModule("Feeding"):Scan()) do
                 ids[#ids + 1] = { food.itemID, food.wellFed }
             end
             return ids
@@ -80,7 +80,7 @@ describe("Classic Era", function()
 
     it("keeps the stabled pets the stable master shows, and one summoned later stays one pet", function()
         local client = NewClient({ era = true }):login():advance(1)
-        local journal = client.Kennel:GetModule("PetJournal")
+        local journal = client.Addon:GetModule("PetJournal")
         ---The journal's pets by name: their keys.
         local function keysByName()
             local out = {}
@@ -112,7 +112,7 @@ describe("Classic Era", function()
 
     it("reads the pet's spellbook through GetSpellBookItemName", function()
         local client = NewClient({ era = true }):login()
-        local spells = client.Kennel.PetSpells()
+        local spells = client.Addon.PetSpells()
         assert.is_truthy(next(spells), "the pet's spells")
         for name, spell in pairs(spells) do
             assert.are.equal("string", type(name))

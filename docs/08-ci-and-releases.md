@@ -25,18 +25,18 @@ git branch wow main
 ```
 
 ```bash
-git worktree add "<WoW>/Interface/AddOns/Kennel" wow
+git worktree add "<WoW>/Interface/AddOns/Beastkeeper" wow
 ```
 
 `wow` has no upstream and is never pushed. A worktree has no `Libs\`, so
 copy it in once (and again after an Ace3 update):
 
 ```bash
-cp -r Libs "<WoW>/Interface/AddOns/Kennel/"
+cp -r Libs "<WoW>/Interface/AddOns/Beastkeeper/"
 ```
 
 To give the game a newer version, fast-forward it to `main`, then `/reload`:
 
 ```bash
-git -C "<WoW>/Interface/AddOns/Kennel" merge --ff-only main
+git -C "<WoW>/Interface/AddOns/Beastkeeper" merge --ff-only main
 ```

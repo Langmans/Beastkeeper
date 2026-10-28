@@ -2,13 +2,13 @@ local _, ns = ...
 
 -- A beast's tooltip says which pet ability ranks it teaches, from the beast data, and how the
 -- hunter stands to each: new (above the highest it knows), a lower rank it never learned, or
--- known (Kennel.OnUnitTooltip); the creature's NPC ID is its GUID's sixth field. Also without
+-- known (Beastkeeper.OnUnitTooltip); the creature's NPC ID is its GUID's sixth field. Also without
 -- HandyNotes; only for a hunter.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
 
 -- Per standing: the line's ending and its colour.
 ---@type table<string, {text: string, color: number[]}>
@@ -33,7 +33,7 @@ end
 ---@param guid GameValue
 local function OnUnitTooltip(tooltip, guid)
     if tooltip ~= GameTooltip or not Wanted() then return end
-    local npc = Kennel.NPCFromGUID(guid, "Creature")
+    local npc = Addon.NPCFromGUID(guid, "Creature")
     ---@type number[]
     local ranks = npc and M.TeachesOf(npc) or NOTHING
     for _, spellID in ipairs(ranks) do
@@ -41,7 +41,7 @@ local function OnUnitTooltip(tooltip, guid)
         if rank then
             local standing = STANDING[M.Lacking(spellID) or "known"]
             local color = standing.color
-            local _, icon = Kennel.SpellInfo(spellID)
+            local _, icon = Addon.SpellInfo(spellID)
             local line = L.BEASTMAP_TOOLTIP_TEACHES:format(rank, standing.text)
             if icon then line = ("|T%s:0|t %s"):format(icon, line) end
             tooltip:AddLine(line, color[1], color[2], color[3])
@@ -49,4 +49,4 @@ local function OnUnitTooltip(tooltip, guid)
     end
 end
 
-Kennel.OnUnitTooltip(OnUnitTooltip)
+Addon.OnUnitTooltip(OnUnitTooltip)

@@ -3,15 +3,15 @@
 
 local _, ns = ...
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
-local ALLIANCE, HORDE = Kennel.factions.alliance, Kennel.factions.horde
+local ALLIANCE, HORDE = Addon.factions.alliance, Addon.factions.horde
 
----@type table<number, KennelTrainer>
+---@type table<number, BeastkeeperTrainer>
 local T = {}
-Kennel.data = Kennel.data or {}
-Kennel.data.trainers = T
+Addon.data = Addon.data or {}
+Addon.data.trainers = T
 
 T[543] = { name = "Nalesette Wildbringer", kind = "trainer", side = ALLIANCE, pins = { [1448] = { 62.2, 24.2 } } }
 T[2878] = { name = "Peria Lamenur", kind = "trainer", side = ALLIANCE, pins = { [1426] = { 46.6, 53.8, 71, 38 } } }

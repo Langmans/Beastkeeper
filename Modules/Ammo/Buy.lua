@@ -5,18 +5,18 @@ local _, ns = ...
 -- slots times a stack), or the stacks the page sets without one, minus what the bags hold of it.
 -- Only with a bow, gun or crossbow, and while the page's switch is on.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("Ammo") --[[@as KennelAmmo]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("Ammo") --[[@as BeastkeeperAmmo]]
 
 local STACK = 200 -- ammo stacks to 200
-local K = Kennel.ammoKinds
+local K = Addon.ammoKinds
 -- The bag type flags of an ammo bag: a quiver holds arrows, an ammo pouch bullets.
 local BAG_TYPES = { [K.arrow] = 1, [K.bullet] = 2 }
 
 ---The slots of the hunter's ammo bag for `kind`, nil without one.
----@param kind KennelAmmoKind
+---@param kind BeastkeeperAmmoKind
 ---@return number?
 local function AmmoBagSlots(kind)
     for bag = 1, NUM_BAG_SLOTS do
@@ -27,7 +27,7 @@ end
 
 ---The vendor's best ammo of `kind` for the hunter's level: its index in the vendor's list and its
 ---item ID; nil when it sells none.
----@param kind KennelAmmoKind
+---@param kind BeastkeeperAmmoKind
 ---@return number? index
 ---@return number? itemID
 local function BestOnSale(kind)
@@ -36,7 +36,7 @@ local function BestOnSale(kind)
     local index, itemID, best
     for i = 1, GetMerchantNumItems() do
         local id = GetMerchantItemID(i)
-        local ammo = id and Kennel.data.ammo[id] --[[@as KennelAmmoItem?]]
+        local ammo = id and Addon.data.ammo[id] --[[@as BeastkeeperAmmoItem?]]
         if ammo and ammo.kind == kind and ammo.level <= level and (not best or ammo.level > best) then
             index, itemID, best = i, id, ammo.level
         end
@@ -60,7 +60,7 @@ function M:MERCHANT_SHOW()
         need = need - quantity
     end
     -- In the client's own name, once it has the item.
-    Kennel.WhenItemLoaded(itemID, function()
+    Addon.WhenItemLoaded(itemID, function()
         self:Print(L.AMMO_BOUGHT:format(bought, M.AmmoName(itemID)))
     end)
 end

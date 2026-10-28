@@ -1,20 +1,20 @@
 local _, ns = ...
 
--- Button skins: the look of Kennel's buttons and of what holds them, registered like toast skins
--- (Core\Toast\Skins.lua). A button skin styles one button (KennelButtonSkin) and gives back how
+-- Button skins: the look of Beastkeeper's buttons and of what holds them, registered like toast skins
+-- (Core\Toast\Skins.lua). A button skin styles one button (BeastkeeperButtonSkin) and gives back how
 -- to colour its border; a holder skin styles a panel of buttons and the text and icons in its
--- rows (KennelButtonHolderSkin). Kennel brings its own of both; integrations add another UI's
--- (Integrations\). The choice on Kennel's page is a skin, or "auto": the registered one with the
+-- rows (BeastkeeperButtonHolderSkin). Beastkeeper brings its own of both; integrations add another UI's
+-- (Integrations\). The choice on Beastkeeper's page is a skin, or "auto": the registered one with the
 -- highest priority. A module styles a button once, the first time it shows it, so a new choice
--- shows after /reload. A skin that errors is reported and Kennel's own takes over.
+-- shows after /reload. A skin that errors is reported and Beastkeeper's own takes over.
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
-Kennel.BUTTON_DEFAULT_SKIN = "kennel"
+Addon.BUTTON_DEFAULT_SKIN = Addon.NAME:lower()
 local AUTO = "auto"
 
----@type table<string, KennelButtonSkin>, table<string, KennelButtonHolderSkin>
+---@type table<string, BeastkeeperButtonSkin>, table<string, BeastkeeperButtonHolderSkin>
 local buttonSkins, holderSkins = {}, {}
 
 ---Checks a skin against its contract and keeps it; raises an error naming what is missing.
@@ -24,7 +24,7 @@ local buttonSkins, holderSkins = {}, {}
 ---@param skin table
 ---@param functions string[] what the skin must have
 local function Register(method, register, id, skin, functions)
-    if type(id) ~= "string" or id == "" then error("Kennel:" .. method .. ": id must be a non-empty string", 3) end
+    if type(id) ~= "string" or id == "" then error("Beastkeeper:" .. method .. ": id must be a non-empty string", 3) end
     ---@type string[]
     local missing = {}
     if type(skin.name) ~= "string" then missing[#missing + 1] = "name (a string)" end
@@ -32,52 +32,52 @@ local function Register(method, register, id, skin, functions)
         if type(skin[name]) ~= "function" then missing[#missing + 1] = name end
     end
     if #missing > 0 then
-        error(("Kennel:%s(%s): the skin has no %s"):format(method, id, table.concat(missing, ", ")), 3)
+        error(("Beastkeeper:%s(%s): the skin has no %s"):format(method, id, table.concat(missing, ", ")), 3)
     end
     register[id] = skin
 end
 
 local BUTTON_FUNCTIONS, HOLDER_FUNCTIONS = { "Style" }, { "Style", "Font" }
 
----Makes a button skin available. Another addon calls this on Kennel's addon object, before
----Kennel's modules show their buttons (at load, or from its OptionalDeps).
+---Makes a button skin available. Another addon calls this on Beastkeeper's addon object, before
+---Beastkeeper's modules show their buttons (at load, or from its OptionalDeps).
 ---@param id string kept in the saved settings; a short lowercase word
----@param skin KennelButtonSkin
-function Kennel:RegisterButtonSkin(id, skin)
+---@param skin BeastkeeperButtonSkin
+function Addon:RegisterButtonSkin(id, skin)
     Register("RegisterButtonSkin", buttonSkins, id, skin, BUTTON_FUNCTIONS)
 end
 
 ---Makes a holder skin available, as RegisterButtonSkin.
 ---@param id string
----@param skin KennelButtonHolderSkin
-function Kennel:RegisterButtonHolderSkin(id, skin)
+---@param skin BeastkeeperButtonHolderSkin
+function Addon:RegisterButtonHolderSkin(id, skin)
     Register("RegisterButtonHolderSkin", holderSkins, id, skin, HOLDER_FUNCTIONS)
 end
 
----@return table<string, KennelButtonSkin>
-function Kennel:ButtonSkins()
+---@return table<string, BeastkeeperButtonSkin>
+function Addon:ButtonSkins()
     return buttonSkins
 end
 
----@return table<string, KennelButtonHolderSkin>
-function Kennel:ButtonHolderSkins()
+---@return table<string, BeastkeeperButtonHolderSkin>
+function Addon:ButtonHolderSkins()
     return holderSkins
 end
 
 ---The button settings in the profile in use.
----@return KennelButtonSettings
-function Kennel:ButtonSettings()
-    return self.db.profile.buttons --[[@as KennelButtonSettings]]
+---@return BeastkeeperButtonSettings
+function Addon:ButtonSettings()
+    return self.db.profile.buttons --[[@as BeastkeeperButtonSettings]]
 end
 
 ---The id a choice comes to: the chosen skin while it is registered, else the one with the
 ---highest priority (by id when equal).
----@param register table<string, KennelButtonSkin|KennelButtonHolderSkin>
+---@param register table<string, BeastkeeperButtonSkin|BeastkeeperButtonHolderSkin>
 ---@param chosen string
 ---@return string
 local function Pick(register, chosen)
     if chosen ~= AUTO and register[chosen] then return chosen end
-    local best, bestPriority = Kennel.BUTTON_DEFAULT_SKIN, -math.huge
+    local best, bestPriority = Addon.BUTTON_DEFAULT_SKIN, -math.huge
     for id, skin in pairs(register) do
         local priority = skin.priority or 0
         if priority > bestPriority or (priority == bestPriority and id < best) then
@@ -87,26 +87,26 @@ local function Pick(register, chosen)
     return best
 end
 
----The id of the skin for Kennel's buttons.
+---The id of the skin for Beastkeeper's buttons.
 ---@return string
-function Kennel:ButtonSkinFor()
+function Addon:ButtonSkinFor()
     return Pick(buttonSkins, self:ButtonSettings().skin)
 end
 
----The id of the skin for what holds Kennel's buttons.
+---The id of the skin for what holds Beastkeeper's buttons.
 ---@return string
-function Kennel:ButtonHolderSkinFor()
+function Addon:ButtonHolderSkinFor()
     return Pick(holderSkins, self:ButtonSettings().holder)
 end
 
 ---For a skin whose buttons have no border to colour.
 local function NoBorder() end
 
----Styles a button with the chosen skin, or Kennel's own when that one errors.
+---Styles a button with the chosen skin, or Beastkeeper's own when that one errors.
 ---@param button Button
----@param parts KennelButtonParts
+---@param parts BeastkeeperButtonParts
 ---@return fun(r: number, g: number, b: number) recolour sets the border's colour
-function Kennel:StyleButton(button, parts)
+function Addon:StyleButton(button, parts)
     local skin = buttonSkins[self:ButtonSkinFor()]
     local ok, result = pcall(skin.Style, button, parts)
     if not ok then
@@ -117,10 +117,10 @@ function Kennel:StyleButton(button, parts)
 end
 
 ---Whether icons lose their border: as the chosen look's UI says when it has a setting for it
----(ElvUI's Crop Icons), else Kennel's own switch (off for an icon pack without borders, such as
+---(ElvUI's Crop Icons), else Beastkeeper's own switch (off for an icon pack without borders, such as
 ---Clean Icons).
 ---@return boolean
-function Kennel:CropsIcons()
+function Addon:CropsIcons()
     local skin = holderSkins[self:ButtonHolderSkinFor()]
     if skin.CropsIcons then return skin.CropsIcons() end
     return self:ButtonSettings().crop ~= false
@@ -130,7 +130,7 @@ end
 ---are not cropped (CropsIcons).
 ---@param icon Texture
 ---@param lookCrop (fun(icon: Texture))?
-function Kennel:CropIcon(icon, lookCrop)
+function Addon:CropIcon(icon, lookCrop)
     if not self:CropsIcons() then
         icon:SetTexCoord(0, 1, 0, 1)
     elseif lookCrop then
@@ -140,11 +140,11 @@ function Kennel:CropIcon(icon, lookCrop)
     end
 end
 
----Styles a holder with the chosen skin, or Kennel's own when that one errors; gives the skin
+---Styles a holder with the chosen skin, or Beastkeeper's own when that one errors; gives the skin
 ---used, for the rows' text and icons.
 ---@param frame Frame
----@return KennelButtonHolderSkin
-function Kennel:StyleButtonHolder(frame)
+---@return BeastkeeperButtonHolderSkin
+function Addon:StyleButtonHolder(frame)
     local skin = holderSkins[self:ButtonHolderSkinFor()]
     local ok, err = pcall(skin.Style, frame)
     if ok then return skin end
@@ -154,7 +154,7 @@ function Kennel:StyleButtonHolder(frame)
     return skin
 end
 
--- Kennel's own: a frame of colour behind the button; a panel as the game draws its own, the dark
+-- Beastkeeper's own: a frame of colour behind the button; a panel as the game draws its own, the dark
 -- dialog background inside a tooltip's border.
 
 ---@param button Button
@@ -183,7 +183,7 @@ local OWN_BACKDROP = {
 }
 local GOLD = { 1, 0.82, 0 }
 
----A holder is made with BackdropTemplate (Kennel's window, the feed list).
+---A holder is made with BackdropTemplate (Beastkeeper's window, the feed list).
 ---@param frame Frame
 local function OwnHolder(frame)
     local backdrop = frame --[[@as BackdropTemplate]]
@@ -199,8 +199,8 @@ local function OwnAccent()
     return GOLD
 end
 
-Kennel:RegisterButtonSkin("kennel", { name = "Kennel", priority = 0, Style = OwnButton })
-Kennel:RegisterButtonHolderSkin(
-    "kennel",
-    { name = "Kennel", priority = 0, Style = OwnHolder, Font = OwnFont, Accent = OwnAccent }
+Addon:RegisterButtonSkin(Addon.NAME:lower(), { name = Addon.NAME, priority = 0, Style = OwnButton })
+Addon:RegisterButtonHolderSkin(
+    Addon.NAME:lower(),
+    { name = Addon.NAME, priority = 0, Style = OwnHolder, Font = OwnFont, Accent = OwnAccent }
 )

@@ -44,7 +44,7 @@ local FOOD_LISTS = {
     ["forever-scan.lua"] = assert(loadfile("tests/data/forever-scan.lua"))(),
 }
 
-local M = NewClient().Kennel:GetModule("FeedEmotes")
+local M = NewClient().Addon:GetModule("FeedEmotes")
 
 ---How many %s a format has.
 local function formats(text)

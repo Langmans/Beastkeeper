@@ -1,6 +1,7 @@
 -- PetJournal's English strings: the "PetJournal" namespace on the CurseForge translation page (see
 -- Locales\README.md). Ability names, ranks, families and loyalty names come from the client.
-local L = LibStub("AceLocale-3.0"):NewLocale("Kennel", "enUS", true)
+local addonName = ...
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 
 -- One string per line, however long: see Locales\README.md.
 -- stylua: ignore start
@@ -17,12 +18,12 @@ L.PETJOURNAL_OPTION_TOOLTIP_DESC = "Hover your pet or its portrait: when it came
 L.PETJOURNAL_PET = "Pet"
 L.PETJOURNAL_PET_ENTRY = "%s (level %d %s)"
 
--- Kennel's window: the tab's name; a pet in its list (%s the name, %d the level, second %s the
+-- Beastkeeper's window: the tab's name; a pet in its list (%s the name, %d the level, second %s the
 -- family); the card when there is no pet in the journal yet.
 L.PETJOURNAL_TAB = "Pets"
 L.PETJOURNAL_ROW = "%s, %d %s"
 L.PETJOURNAL_NONE = "No pets yet: summon one."
--- Kennel's window, the Stable tab: its name; under a pet's card how many ranks it could still
+-- Beastkeeper's window, the Stable tab: its name; under a pet's card how many ranks it could still
 -- teach the hunter (%d; |4rank:ranks; is WoW's own plural), or that it has none.
 L.PETJOURNAL_TAB_STABLE = "Stable"
 L.PETJOURNAL_TEACHES = "Can teach you %d |4rank:ranks;"
@@ -30,7 +31,7 @@ L.PETJOURNAL_TEACHES_NONE = "Nothing new for you"
 
 -- The journal. %s: a date and time such as "2026-10-17 21:05"; second %s: the zone; %d: the NPC ID it was tamed as.
 L.PETJOURNAL_TAMED = "Tamed %s in %s, as NPC %d."
--- For a pet Kennel did not see tamed: when it was first out with Kennel loaded.
+-- For a pet Beastkeeper did not see tamed: when it was first out with Beastkeeper loaded.
 L.PETJOURNAL_FIRST = "First seen %s in %s."
 -- %d: its level; first %s: its family (Cat); second %s: its loyalty level, such as "4 (Dependable)".
 L.PETJOURNAL_LEVEL = "Level %d %s, loyalty %s."

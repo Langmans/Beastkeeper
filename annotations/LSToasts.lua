@@ -13,7 +13,7 @@
 ---@class LSToastsConfig
 ---@field db {profile: {colors: {border: boolean, icon_border: boolean}}}
 
----A toast frame from E:GetToast, the parts Kennel fills.
+---A toast frame from E:GetToast, the parts Beastkeeper fills.
 ---@class LSToast: Frame
 ---@field _data table its data, which GetToast matches on
 ---@field Title FontString

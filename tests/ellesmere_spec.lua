@@ -21,11 +21,11 @@ end
 
 describe("the EllesmereUI skin", function()
     it("is not there without EllesmereUI", function()
-        assert.is_nil(quiet().Kennel:ToastSkins().ellesmere)
+        assert.is_nil(quiet().Addon:ToastSkins().ellesmere)
     end)
 
     it("is there with EllesmereUI, named after it", function()
-        local skin = quiet(true).Kennel:ToastSkins().ellesmere
+        local skin = quiet(true).Addon:ToastSkins().ellesmere
         assert.is_table(skin)
         assert.are.equal("EllesmereUI", skin.name)
     end)
@@ -35,11 +35,11 @@ describe("the EllesmereUI skin", function()
 
         before_each(function()
             client = quiet(true)
-            client.Kennel:ToastSettings().skin = "ellesmere"
+            client.Addon:ToastSettings().skin = "ellesmere"
         end)
 
         local function show(info)
-            client.Kennel:ShowToast(info)
+            client.Addon:ShowToast(info)
             frame = client:toast()
         end
 
@@ -57,7 +57,7 @@ describe("the EllesmereUI skin", function()
         it("has EllesmereUI's border and dark panel", function()
             show({ key = "a", title = "t" })
             assert.are.same({ { frame, 0, 0, 0, 1 } }, bordersOf(client, frame), "made once")
-            client.Kennel:HideToast()
+            client.Addon:HideToast()
             show({ key = "b", title = "t" })
             assert.are.equal(1, #bordersOf(client, frame))
         end)
@@ -65,18 +65,18 @@ describe("the EllesmereUI skin", function()
         it("takes EllesmereUI's accent when the toast brings none", function()
             show({ key = "a", title = "t" })
             assert.are.same({ 0.05, 0.82, 0.62, 1 }, frame.Accent.color)
-            client.Kennel:HideToast()
+            client.Addon:HideToast()
             show({ key = "b", title = "t", accent = { 1, 0, 0 } })
             assert.are.same({ 1, 0, 0, 1 }, frame.Accent.color)
         end)
 
-        it("is a frame of its own, next to Kennel's card", function()
+        it("is a frame of its own, next to Beastkeeper's card", function()
             show({ key = "a", title = "t" })
-            assert.are.equal("KennelToastEllesmere", frame.name)
-            client.Kennel:ToastSettings().skin = "card"
-            client.Kennel:HideToast()
+            assert.are.equal("BeastkeeperToastEllesmere", frame.name)
+            client.Addon:ToastSettings().skin = "card"
+            client.Addon:HideToast()
             show({ key = "b", title = "t" })
-            assert.are.equal("KennelToastCard", frame.name)
+            assert.are.equal("BeastkeeperToastCard", frame.name)
             assert.is_nil(frame.font, "the card keeps the game's fonts")
         end)
     end)
@@ -86,14 +86,14 @@ describe("the EllesmereUI skin", function()
 
         before_each(function()
             client = quiet(true)
-            client.Kennel:ToastSettings().skin = "ellesmeresplash"
-            client.Kennel:ShowToast({ key = "a", source = "Autocast Check", title = "Title", text = "Text" })
+            client.Addon:ToastSettings().skin = "ellesmeresplash"
+            client.Addon:ShowToast({ key = "a", source = "Autocast Check", title = "Title", text = "Text" })
             frame = client:toast()
         end)
 
         it("is a skin of its own, named after EllesmereUI", function()
-            assert.are.equal("EllesmereUI (splash)", client.Kennel:ToastSkins().ellesmeresplash.name)
-            assert.are.equal("KennelToastEllesmereSplash", frame.name)
+            assert.are.equal("EllesmereUI (splash)", client.Addon:ToastSkins().ellesmeresplash.name)
+            assert.are.equal("BeastkeeperToastEllesmereSplash", frame.name)
         end)
 
         it("uses EllesmereUI's font for every line, its border, panel and accent", function()
@@ -106,11 +106,11 @@ describe("the EllesmereUI skin", function()
         end)
     end)
 
-    it("leaves Kennel's splash in its own look", function()
+    it("leaves Beastkeeper's splash in its own look", function()
         local client = quiet(true)
-        client.Kennel:ToastSettings().skin = "splash"
-        client.Kennel:ShowToast({ key = "a", title = "t" })
-        assert.are.equal("KennelToastSplash", client:toast().name)
+        client.Addon:ToastSettings().skin = "splash"
+        client.Addon:ShowToast({ key = "a", title = "t" })
+        assert.are.equal("BeastkeeperToastSplash", client:toast().name)
         assert.is_nil(client:toast().Title.font)
         assert.are.same({}, bordersOf(client, client:toast()))
     end)
@@ -118,25 +118,25 @@ describe("the EllesmereUI skin", function()
     describe("Feeding's button and food list", function()
         it("have EllesmereUI's border, the button's coloured by happiness, beside its pet frame", function()
             local client = NewClient({ ellesmere = true }):login():stock(12037, 2):setHappiness(2)
-            local button = _G.KennelFeedButton
+            local button = _G.BeastkeeperFeedButton
             assert.are.same({ { button, 1, 1, 0, 1 } }, bordersOf(client, button), "content: yellow")
             assert.are.equal(EllesmereUIUnitFrames_Pet, select(2, button:GetPoint()))
             rawget(button, "foodlist")(button)
-            assert.are.equal(1, #bordersOf(client, _G.KennelFeedList))
-            assert.are.equal("Fonts\\Expressway.ttf", _G.KennelFeedChoice1.label.font[1])
+            assert.are.equal(1, #bordersOf(client, _G.BeastkeeperFeedList))
+            assert.are.equal("Fonts\\Expressway.ttf", _G.BeastkeeperFeedChoice1.label.font[1])
         end)
 
-        it("keep Kennel's own look without EllesmereUI's border helper", function()
+        it("keep Beastkeeper's own look without EllesmereUI's border helper", function()
             local client = NewClient({ ellesmere = { MakeBorder = false } }):login():setHappiness(2)
             assert.are.same({}, client.eui.borders)
-            assert.is_true(_G.KennelFeedButton:IsShown())
+            assert.is_true(_G.BeastkeeperFeedButton:IsShown())
         end)
     end)
 
     it("still draws with an EllesmereUI that has no border or shadow helper", function()
         local client = quiet({ MakeBorder = false, PrimeFontShadow = false })
-        client.Kennel:ToastSettings().skin = "ellesmere"
-        client.Kennel:ShowToast({ key = "a", title = "Still here" })
+        client.Addon:ToastSettings().skin = "ellesmere"
+        client.Addon:ShowToast({ key = "a", title = "Still here" })
         assert.are.equal("Still here", client:toastTitle())
         assert.are.same({}, client.errors)
     end)

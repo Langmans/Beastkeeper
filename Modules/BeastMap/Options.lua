@@ -1,22 +1,22 @@
 local _, ns = ...
 
--- BeastMap's page (Kennel > Beast Map), also shown under HandyNotes' plugins: which beasts get a
+-- BeastMap's page (Beastkeeper > Beast Map), also shown under HandyNotes' plugins: which beasts get a
 -- pin. HandyNotes keeps the table for the session, so each toggle reads the profile in use when
 -- asked rather than holding on to one.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
 
----@alias KennelBeastMapSetting "pins"|"mapButton"|"usefulOnly"|"gaps"|"aboveLevel"|"untilTame"|"levelToast"|"levelChat"|"tooltip"|"rareToast"|"trainers"|"stables"
+---@alias BeastkeeperBeastMapSetting "pins"|"mapButton"|"usefulOnly"|"gaps"|"aboveLevel"|"untilTame"|"levelToast"|"levelChat"|"tooltip"|"rareToast"|"trainers"|"stables"
 
 -- How far a refining option sits in from the one it refines, and how wide it is then (AceConfig's
 -- widths, in units of its column).
 local INDENT, INDENTED_WIDTH = 0.15, 3
 
 ---A toggle for one setting; changing it redraws the pins.
----@param key KennelBeastMapSetting
+---@param key BeastkeeperBeastMapSetting
 ---@param name string
 ---@param desc string
 ---@param order number
@@ -43,8 +43,8 @@ end
 ---A toggle that refines `parent`'s: indented under it (an empty line part before it), greyed
 ---while `parent` is off. Adds the toggle and its indent to `args`.
 ---@param args table
----@param key KennelBeastMapSetting
----@param parent KennelBeastMapSetting
+---@param key BeastkeeperBeastMapSetting
+---@param parent BeastkeeperBeastMapSetting
 ---@param name string
 ---@param desc string
 ---@param order number

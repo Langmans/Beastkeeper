@@ -1,24 +1,24 @@
 local _, ns = ...
 
 -- Growl or Cower on autocast, as fits: who holds the mobs decides, someone else in a dungeon group
--- (Cower) or the pet elsewhere (Growl), unless the player chose (the KennelKite and KennelGrowl
+-- (Cower) or the pet elsewhere (Growl), unless the player chose (the BeastkeeperKite and BeastkeeperGrowl
 -- macros) until a dungeon group is entered or left. A problem toasts when it starts and its toast
 -- goes away when solved; Button.lua sets it right with one key. The pet's spellbook shows every
 -- ability (Cower is often not on the bar); names come from spell IDs, so any language and rank
 -- work. On another class the module registers nothing.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
+---@type Addon
+local Addon = ns
+local L = Addon.L
 
--- Its fields and settings are described in annotations\Kennel.lua (KennelAutocastCheck,
--- KennelAutocastSettings).
----@type KennelAutocastCheck
-local M = Kennel:NewModule("AutocastCheck")
+-- Its fields and settings are described in annotations\Beastkeeper.lua (BeastkeeperAutocastCheck,
+-- BeastkeeperAutocastSettings).
+---@type BeastkeeperAutocastCheck
+local M = Addon:NewModule("AutocastCheck")
 M.title = L.AUTOCAST_TITLE
 M.description = L.AUTOCAST_DESC
 M.command = "autocast"
--- Its one kind of toast, which can have a look of its own (Kennel's page).
+-- Its one kind of toast, which can have a look of its own (Beastkeeper's page).
 M.toastTypes = { problem = L.AUTOCAST_TOASTTYPE_PROBLEM }
 M.defaults = {
     profile = {
@@ -30,9 +30,9 @@ M.defaults = {
 }
 
 ---The settings of the profile in use.
----@return KennelAutocastSettings
+---@return BeastkeeperAutocastSettings
 function M:Settings()
-    return self.db.profile --[[@as KennelAutocastSettings]]
+    return self.db.profile --[[@as BeastkeeperAutocastSettings]]
 end
 
 local GROWL, COWER, DISTRACTING_SHOT = 2649, 1742, 20736
@@ -76,14 +76,14 @@ local PROBLEMS = {
 ---@return string name
 ---@return (number|string)? icon
 local function Spell(id)
-    local name, icon = Kennel.SpellInfo(id)
+    local name, icon = Addon.SpellInfo(id)
     return name or FALLBACK_NAMES[id], icon
 end
 M.Spell = Spell
 
 -- What the last read found: the pet's abilities that can autocast, by name. A check runs on every
 -- pet bar update, so the table and each ability's entry are kept and refilled, not built anew.
----@type table<string, KennelAutocastState>, table<string, KennelAutocastState>
+---@type table<string, BeastkeeperAutocastState>, table<string, BeastkeeperAutocastState>
 local states, entries = {}, {}
 
 ---Adds an ability that can autocast to `states`, unless its state is unreadable.
@@ -92,7 +92,7 @@ local states, entries = {}, {}
 ---@param enabled GameValue
 ---@param icon (number|string)?
 local function Add(name, allowed, enabled, icon)
-    if type(name) == "string" and allowed and Kennel.Readable(enabled) then
+    if type(name) == "string" and allowed and Addon.Readable(enabled) then
         local entry = entries[name] or {}
         entries[name] = entry
         entry.on, entry.icon = enabled and true or false, icon
@@ -100,13 +100,13 @@ local function Add(name, allowed, enabled, icon)
     end
 end
 
----Reads the pet's spellbook (Kennel.PetBookEntry and PetBookAutocast). A client without a
+---Reads the pet's spellbook (Beastkeeper.PetBookEntry and PetBookAutocast). A client without a
 ---spellbook API is left to the pet bar. A command (Attack, Follow) is in the book too, with no
 ---autocast values; an entry that cannot be read is skipped.
 local function ReadBook()
-    for index = 1, Kennel.PetBookSize() do
-        local name = Kennel.PetBookEntry(index)
-        local allowed, enabled = Kennel.PetBookAutocast(index)
+    for index = 1, Addon.PetBookSize() do
+        local name = Addon.PetBookEntry(index)
+        local allowed, enabled = Addon.PetBookAutocast(index)
         if name then Add(name, allowed, enabled) end
     end
 end
@@ -123,7 +123,7 @@ end
 
 ---The pet's abilities that can autocast, by name, with whether autocast is on. Empty without a
 ---pet. The same table each time, refilled: read it before the next call.
----@return table<string, KennelAutocastState>
+---@return table<string, BeastkeeperAutocastState>
 function M:PetAutocasts()
     wipe(states)
     if not UnitExists("pet") then return states end
@@ -152,7 +152,7 @@ function M:Wanted()
     return "growl", "solo"
 end
 
----The player chose an ability (the KennelKite or KennelGrowl macro, through /kennel); says so
+---The player chose an ability (the BeastkeeperKite or BeastkeeperGrowl macro, through /beastkeeper); says so
 ---when it changes what fits, and checks again once the macro's own autocast lines have landed.
 ---@param ability "growl"|"cower"
 function M:Choose(ability)
@@ -167,16 +167,16 @@ end
 ---How to set it right: the button's key binding, or the macro.
 ---@return string
 local function PressHint()
-    local key = GetBindingKey("CLICK KennelAutocastButton:LeftButton")
+    local key = GetBindingKey("CLICK " .. Addon.Global("AutocastButton") .. ":LeftButton")
     return key and L.AUTOCAST_HINT_KEY:format(GetBindingText(key)) or L.AUTOCAST_HINT_MACRO
 end
 
 ---The sound for a toast, as the sound setting asks: the pet's call, or the raid warning.
----@return KennelSound?
+---@return BeastkeeperSound?
 function M:Sound()
     local setting = self:Settings().sound
     if setting == "off" then return nil end
-    return setting == "family" and Kennel.PetSound("AGGRO") or { kit = RAID_WARNING }
+    return setting == "family" and Addon.PetSound("AGGRO") or { kit = RAID_WARNING }
 end
 
 ---The toast for a problem.
@@ -184,7 +184,7 @@ end
 ---@param reason string the toast's text: why
 ---@param name string? the ability's name; looked up when nil
 ---@param icon (number|string)? its icon; looked up when nil
----@return KennelToastInfo
+---@return BeastkeeperToastInfo
 function M:ProblemToast(key, reason, name, icon)
     local problem = PROBLEMS[key]
     local spellName, spellIcon = Spell(problem.spell)
@@ -218,7 +218,7 @@ local spare, problemName, problemIcon = {}, {}, {}
 ---@param ability "growl"|"cower"
 ---@param wanted boolean whether it belongs on autocast
 function M:Compare(found, ability, wanted)
-    local name = Kennel.SpellInfo(M.SPELLS[ability])
+    local name = Addon.SpellInfo(M.SPELLS[ability])
     local state = name and states[name]
     if not state or state.on == wanted then return end
     local key = ability .. (state.on and "On" or "Off")
@@ -238,7 +238,7 @@ function M:Problems(found)
     return found
 end
 
----Sends KENNEL_AUTOCAST_WANTED when what fits, or what decided it, changed since the last check.
+---Sends BEASTKEEPER_AUTOCAST_WANTED when what fits, or what decided it, changed since the last check.
 function M:TellWanted()
     local wanted, why = self:Wanted()
     if wanted == self.lastWanted and why == self.lastWhy then return end
@@ -246,8 +246,8 @@ function M:TellWanted()
     self.lastWanted, self.lastWhy = wanted, why
     -- The first check after the module started only takes note.
     if not before then return end
-    Kennel:SendMessage(
-        "KENNEL_AUTOCAST_WANTED",
+    Addon:SendMessage(
+        Addon.messages.autocastWanted,
         { module = self.moduleName, wanted = wanted, why = why, before = before }
     )
 end
@@ -261,9 +261,9 @@ function M:Check(remindAll)
     local found, active = self:Problems(spare), self.active
     for _, key in ipairs(ORDER) do
         if found[key] and (remindAll or not active[key]) then
-            Kennel:ShowToast(self:ProblemToast(key, self:Reason(), problemName[key], problemIcon[key]))
+            Addon:ShowToast(self:ProblemToast(key, self:Reason(), problemName[key], problemIcon[key]))
         elseif not found[key] and active[key] then
-            Kennel:DropToast(self.moduleName .. ":" .. key)
+            Addon:DropToast(self.moduleName .. ":" .. key)
         end
     end
     self.active, spare = found, active
@@ -312,27 +312,27 @@ function M:OnEnable()
     self:RegisterEvent("PLAYER_ENTERING_WORLD", "ScheduleCheck")
     self:RegisterEvent("UNIT_PET")
     self:RegisterEvent("PLAYER_REGEN_DISABLED")
-    Kennel:OfferMacros(self)
+    Addon:OfferMacros(self)
     self:ApplyButton()
     self:ScheduleCheck()
 end
 
 -- AceEvent drops the events by itself; the toasts and the button go here.
 function M:OnDisable()
-    Kennel:DropToasts(self.moduleName .. ":")
+    Addon:DropToasts(self.moduleName .. ":")
     self.active = {}
     self.lastWanted, self.lastWhy = nil, nil
     self:ApplyButton()
 end
 
----/kennel autocast growl: the KennelGrowl macro's line.
----@param module KennelAutocastCheck
+---/beastkeeper autocast growl: the BeastkeeperGrowl macro's line.
+---@param module BeastkeeperAutocastCheck
 local function ChooseGrowl(module)
     module:Choose("growl")
 end
 
----/kennel autocast cower: the KennelKite macro's line.
----@param module KennelAutocastCheck
+---/beastkeeper autocast cower: the BeastkeeperKite macro's line.
+---@param module BeastkeeperAutocastCheck
 local function ChooseCower(module)
     module:Choose("cower")
 end
@@ -352,28 +352,33 @@ end
 
 ---The macros, with their text as this client would write it now. Each sets autocast itself (the
 ---game lets only a macro or a button the player presses do that) and tells the module the choice.
----@return KennelMacro[]
+---@return BeastkeeperMacro[]
 function M:Macros()
     local shot = Spell(DISTRACTING_SHOT)
     local _, growlIcon = Spell(GROWL)
-    local kite = { "#showtooltip " .. shot, "/kennel autocast cower", M.AutocastLines("cower"), "/use " .. shot }
+    local kite = {
+        "#showtooltip " .. shot,
+        "/" .. Addon.NAME:lower() .. " autocast cower",
+        M.AutocastLines("cower"),
+        "/use " .. shot,
+    }
     return {
         {
-            name = "KennelKite",
+            name = Addon.Global("Kite"),
             icon = QUESTION_MARK,
             body = table.concat(kite, "\n"),
             desc = L.AUTOCAST_MACRO_KITE,
         },
         {
-            name = "KennelGrowl",
+            name = Addon.Global("Growl"),
             icon = growlIcon or QUESTION_MARK,
-            body = "/kennel autocast growl\n" .. M.AutocastLines("growl"),
+            body = "/" .. Addon.NAME:lower() .. " autocast growl\n" .. M.AutocastLines("growl"),
             desc = L.AUTOCAST_MACRO_GROWL,
         },
         {
-            name = "KennelAutocast",
+            name = Addon.Global("Autocast"),
             icon = BEAST_TRAINING_ICON,
-            body = "/click KennelAutocastButton",
+            body = "/click " .. Addon.Global("AutocastButton"),
             desc = L.AUTOCAST_MACRO_AUTOCAST,
         },
     }
@@ -384,7 +389,7 @@ end
 function M:TestToast()
     local info = self:ProblemToast(self:Wanted() .. "Off", self:Reason())
     info.key = info.key .. ":test"
-    Kennel:ShowToast(info)
+    Addon:ShowToast(info)
 end
 
-BINDING_HEADER_KENNEL = "Kennel"
+_G["BINDING_HEADER_" .. Addon.NAME:upper()] = Addon.NAME

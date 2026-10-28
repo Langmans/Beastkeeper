@@ -4,9 +4,9 @@ local _, ns = ...
 -- Feed-O-Matic; food-type lines, the families from Bear onwards and the extra family lines were
 -- written for FeedPetEmotes.
 
----@type Kennel
-local Kennel = ns
-local M = Kennel:GetModule("FeedEmotes") --[[@as KennelFeedEmotes]]
+---@type Addon
+local Addon = ns
+local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
 local F = M.Family
 
 M.Lines.ruRU = {
@@ -155,7 +155,7 @@ M.Lines.ruRU = {
                 "Не бей током руку, которая тебя кормит!",
                 "{Он} втягивает всё одним махом!",
             },
-            -- Written for Kennel: Fox is new in WoW: Forever.
+            -- Written for Beastkeeper: Fox is new in WoW: Forever.
             [F.FOX] = {
                 "Хитрая лиса!",
                 "Курам не осталось ни крошки.",

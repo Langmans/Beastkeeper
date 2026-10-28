@@ -3,9 +3,9 @@ local _, ns = ...
 -- Korean emote lines. Feed sentence and lines from Feed-O-Matic, except the families it never
 -- covered (Bear onwards).
 
----@type Kennel
-local Kennel = ns
-local M = Kennel:GetModule("FeedEmotes") --[[@as KennelFeedEmotes]]
+---@type Addon
+local Addon = ns
+local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
 local F = M.Family
 
 M.Lines.koKR = {
@@ -121,7 +121,7 @@ M.Lines.koKR = {
                 "먹이 주는 손에 전기 쏘지 마!",
                 "후루룩 삼켜버렸네!",
             },
-            -- Written for Kennel: Fox is new in WoW: Forever.
+            -- Written for Beastkeeper: Fox is new in WoW: Forever.
             [F.FOX] = {
                 "꾀 많은 여우!",
                 "닭들 몫은 하나도 안 남았네.",

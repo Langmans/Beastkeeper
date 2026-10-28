@@ -4,13 +4,13 @@
 local MYSTERY_MEAT, APPLE, MACKEREL = 12037, 4536, 787
 
 local function module(client)
-    return client.Kennel:GetModule("FeedEmotes")
+    return client.Addon:GetModule("FeedEmotes")
 end
 
 ---A hunter with FeedEmotes on and no variety, so emotes start with the plain feed sentence.
 local function feeder(opts)
     local client = NewClient(opts):login()
-    client.Kennel:SetModuleOn("FeedEmotes", true)
+    client.Addon:SetModuleOn("FeedEmotes", true)
     local emotes = module(client):LinesInUse().emotes
     emotes.openings, emotes.whole, emotes.wholeFamily = nil, nil, nil
     return client
@@ -215,7 +215,7 @@ describe("FeedEmotes' shared lines", function()
         local account = { namespaces = { FeedEmotes = { global = Saved().namespaces.FeedEmotes.global } } }
         local other = NewClient({ saved = account })
         other:login()
-        other.Kennel:SetModuleOn("FeedEmotes", true)
+        other.Addon:SetModuleOn("FeedEmotes", true)
         local M = module(other)
         assert.are.same({}, M:CustomLines(), "a character that does not share")
         M:Char().sharedLines = true

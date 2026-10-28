@@ -1,12 +1,12 @@
 local _, ns = ...
 
--- PetJournal's page (Kennel > Pet Journal): the tooltip switch, a choice of the character's pets
+-- PetJournal's page (Beastkeeper > Pet Journal): the tooltip switch, a choice of the character's pets
 -- (the pet out first chosen), and its journal below (Journal.lua).
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("PetJournal") --[[@as KennelPetJournal]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("PetJournal") --[[@as BeastkeeperPetJournal]]
 
 ---The pet chosen on the page: the one picked, else the pet out, else any.
 ---@return string?
@@ -18,7 +18,7 @@ function M:Chosen()
 end
 
 ---"Fluffy (level 15 Cat)", for the choice of pet.
----@param entry KennelJournalEntry
+---@param entry BeastkeeperJournalEntry
 ---@return string
 local function PetLabel(entry)
     return L.PETJOURNAL_PET_ENTRY:format(entry.name or "?", entry.level or 0, entry.family or "?")
@@ -26,7 +26,7 @@ end
 
 ---@return table
 function M:GetOptions()
-    local tooltipGet, tooltipSet = Kennel:Setting(M, "tooltip")
+    local tooltipGet, tooltipSet = Addon:Setting(M, "tooltip")
     return {
         args = {
             tooltip = {

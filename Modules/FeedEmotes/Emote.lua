@@ -3,10 +3,10 @@ local _, ns = ...
 -- Building the emote text: which lines apply, the placeholders in a line, and the sentence in
 -- front. No state of its own.
 
----@type Kennel
-local Kennel = ns
-local M = Kennel:GetModule("FeedEmotes") --[[@as KennelFeedEmotes]]
-local SEX = Kennel.sex
+---@type Addon
+local Addon = ns
+local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
+local SEX = Addon.sex
 
 ---Adds the lines of `list`, if there is one, to the end of `pool`.
 ---@param pool string[]
@@ -20,13 +20,13 @@ end
 ---What the lines are chosen by for one feeding: the pet's sex, the food's type and the pet's
 ---family ID (the same in every language, unlike the name); each nil when unknown or hidden.
 ---@param itemID number?
----@return KennelFeedSituation
+---@return BeastkeeperFeedSituation
 local function SituationOf(itemID)
     local _, familyID = UnitCreatureFamily("pet")
     return {
         sex = M:PetSex(),
         foodType = itemID and M.FoodTypes[itemID] or nil,
-        family = familyID and Kennel.Readable(familyID) and familyID or nil,
+        family = familyID and Addon.Readable(familyID) and familyID or nil,
     }
 end
 
@@ -177,7 +177,7 @@ end
 ---@return string?
 function M:BuildEmote(itemID)
     local pet = UnitName("pet")
-    if not pet or not Kennel.Readable(pet) then return nil end
+    if not pet or not Addon.Readable(pet) then return nil end
     ---@type string?, string?
     local name, link
     if itemID then

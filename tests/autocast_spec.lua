@@ -3,7 +3,7 @@
 -- right, its commands, macros, settings and key binding. The simulated pet starts as solo wants
 -- it: Growl on, Cower off.
 
-local HINT = "Press your KennelAutocast macro."
+local HINT = "Press your BeastkeeperAutocast macro."
 
 ---A saved file with these AutocastCheck settings in the Default profile.
 local function savedWith(settings)
@@ -14,7 +14,7 @@ local DUNGEON_TEXT = "Growl off, Cower on."
 
 ---@param client table
 local function module(client)
-    return client.Kennel:GetModule("AutocastCheck")
+    return client.Addon:GetModule("AutocastCheck")
 end
 
 ---A client in a dungeon (still alone), logged in.
@@ -58,10 +58,10 @@ describe("AutocastCheck", function()
             assert.are.same({ "growl", "solo" }, { M:Wanted() }, "leaving the group ends it too")
         end)
 
-        it("is told to other addons as KENNEL_AUTOCAST_WANTED when it changes", function()
+        it("is told to other addons as BEASTKEEPER_AUTOCAST_WANTED when it changes", function()
             local client = NewClient():login():advance(0.2)
             local heard = {}
-            client.Kennel:Listen(heard, "KENNEL_AUTOCAST_WANTED", function(_, event)
+            client.Addon:Listen(heard, "BEASTKEEPER_AUTOCAST_WANTED", function(_, event)
                 heard[#heard + 1] = event
             end)
             client:fire("PET_BAR_UPDATE"):advance(0.2)
@@ -97,7 +97,7 @@ describe("AutocastCheck", function()
 
         it("names the button's key in the hint when it has one", function()
             local client = NewClient()
-            client.bindings["CLICK KennelAutocastButton:LeftButton"] = "G"
+            client.bindings["CLICK BeastkeeperAutocastButton:LeftButton"] = "G"
             client:login():autocast(GROWL, false)
             assert.are.equal("Press <G>.", client:toast().Hint.text)
         end)
@@ -124,7 +124,7 @@ describe("AutocastCheck", function()
         it("toasts on entering the dungeon and stops on leaving it", function()
             local client = NewClient():setAutocast(COWER, true):login():group(true)
             assert.are.equal("Cower is on autocast", client:toastTitle(), "solo still")
-            client.Kennel:HideToast()
+            client.Addon:HideToast()
             client.instance = "party"
             client:fire("PLAYER_ENTERING_WORLD"):advance(0.2)
             assert.are.equal("Growl is on autocast", client:toastTitle())
@@ -299,7 +299,7 @@ describe("AutocastCheck", function()
     describe("switched off", function()
         it("takes its toasts away and stops checking", function()
             local client = inDungeon():group(true)
-            client.Kennel:SetModuleOn("AutocastCheck", false)
+            client.Addon:SetModuleOn("AutocastCheck", false)
             client:animate(1)
             assert.is_false(client:toast().shown)
             client:autocast(GROWL, true):autocast(COWER, false)
@@ -310,7 +310,7 @@ describe("AutocastCheck", function()
         it("drops a check that was already on its way", function()
             local client = NewClient():login():setAutocast(GROWL, false)
             client:fire("PET_BAR_UPDATE")
-            client.Kennel:SetModuleOn("AutocastCheck", false)
+            client.Addon:SetModuleOn("AutocastCheck", false)
             client:advance(0.2)
             assert.is_nil(client:toastTitle())
         end)
@@ -331,25 +331,28 @@ describe("AutocastCheck", function()
             assert.is_true(client:printedContains("Growl from now on, until you enter or leave a dungeon group."))
         end)
 
-        it("toast nothing when the macro sets autocast right after, as KennelKite and KennelGrowl do", function()
-            local client = NewClient():login():slash("autocast cower")
-            client:advance(0.1):setAutocast(GROWL, false):setAutocast(COWER, true)
-            client:advance(0.3):petBarUpdate():advance(1)
-            assert.is_nil(client:toastTitle())
-            client:slash("autocast growl"):advance(0.4)
-            client:setAutocast(GROWL, true):setAutocast(COWER, false):petBarUpdate():advance(1)
-            assert.is_nil(client:toastTitle())
-        end)
+        it(
+            "toast nothing when the macro sets autocast right after, as BeastkeeperKite and BeastkeeperGrowl do",
+            function()
+                local client = NewClient():login():slash("autocast cower")
+                client:advance(0.1):setAutocast(GROWL, false):setAutocast(COWER, true)
+                client:advance(0.3):petBarUpdate():advance(1)
+                assert.is_nil(client:toastTitle())
+                client:slash("autocast growl"):advance(0.4)
+                client:setAutocast(GROWL, true):setAutocast(COWER, false):petBarUpdate():advance(1)
+                assert.is_nil(client:toastTitle())
+            end
+        )
 
-        it("are listed in /kennel help", function()
+        it("are listed in /beastkeeper help", function()
             local client = NewClient():login():slash("help")
-            assert.is_true(client:printedContains("/kennel autocast growl - "))
-            assert.is_true(client:printedContains("/kennel autocast cower - "))
+            assert.is_true(client:printedContains("/beastkeeper autocast growl - "))
+            assert.is_true(client:printedContains("/beastkeeper autocast cower - "))
         end)
 
         it("say the module is off instead of choosing", function()
             local client = NewClient():login()
-            client.Kennel:SetModuleOn("AutocastCheck", false)
+            client.Addon:SetModuleOn("AutocastCheck", false)
             client:slash("autocast cower")
             assert.is_true(client:printedContains("Autocast Check is off."))
         end)
@@ -361,10 +364,10 @@ describe("AutocastCheck", function()
 
         it("sets autocast to what fits now, with a key binding of its own", function()
             local client = NewClient():login()
-            local button = _G.KennelAutocastButton
+            local button = _G.BeastkeeperAutocastButton
             assert.are.equal("macro", button.attributes.type)
             assert.are.equal(GROWL_LINES, button.attributes.macrotext)
-            local binding = _G["BINDING_NAME_CLICK KennelAutocastButton:LeftButton"]
+            local binding = _G["BINDING_NAME_CLICK BeastkeeperAutocastButton:LeftButton"]
             assert.are.equal("Autocast Check: set Growl and Cower as fits", binding)
             client.instance = "party"
             client:group(true)
@@ -375,7 +378,7 @@ describe("AutocastCheck", function()
 
         it("says in chat what it set, once per press (the key's release)", function()
             local client = NewClient():login()
-            local button = _G.KennelAutocastButton
+            local button = _G.BeastkeeperAutocastButton
             client.printed = {}
             for _, down in ipairs({ true, false }) do
                 for _, hook in ipairs(button.hooks.OnClick) do
@@ -388,24 +391,24 @@ describe("AutocastCheck", function()
 
         it("is in the client's language", function()
             NewClient({ locale = "deDE" }):login()
-            local lines = _G.KennelAutocastButton.attributes.macrotext
+            local lines = _G.BeastkeeperAutocastButton.attributes.macrotext
             assert.are.equal("/petautocaston Knurren\n/petautocastoff Ducken", lines)
         end)
 
         it("changes after combat, when it cannot before", function()
             local client = NewClient():login():enterCombat()
             client:slash("autocast cower")
-            assert.are.equal(GROWL_LINES, _G.KennelAutocastButton.attributes.macrotext)
+            assert.are.equal(GROWL_LINES, _G.BeastkeeperAutocastButton.attributes.macrotext)
             client:leaveCombat()
-            assert.are.equal(COWER_LINES, _G.KennelAutocastButton.attributes.macrotext)
+            assert.are.equal(COWER_LINES, _G.BeastkeeperAutocastButton.attributes.macrotext)
         end)
 
         it("does nothing while the module is off", function()
             local client = NewClient():login()
-            client.Kennel:SetModuleOn("AutocastCheck", false)
-            assert.is_nil(_G.KennelAutocastButton.attributes.macrotext)
-            client.Kennel:SetModuleOn("AutocastCheck", true)
-            assert.are.equal(GROWL_LINES, _G.KennelAutocastButton.attributes.macrotext)
+            client.Addon:SetModuleOn("AutocastCheck", false)
+            assert.is_nil(_G.BeastkeeperAutocastButton.attributes.macrotext)
+            client.Addon:SetModuleOn("AutocastCheck", true)
+            assert.are.equal(GROWL_LINES, _G.BeastkeeperAutocastButton.attributes.macrotext)
         end)
     end)
 
@@ -414,11 +417,11 @@ describe("AutocastCheck", function()
 
         before_each(function()
             client = NewClient():login()
-            args = client.Kennel:GetOptionsTable().args.AutocastCheck.args
+            args = client.Addon:GetOptionsTable().args.AutocastCheck.args
         end)
 
         it("passes AceConfig's validation", function()
-            LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(client.Kennel:GetOptionsTable(), "Kennel")
+            LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(client.Addon:GetOptionsTable(), "Beastkeeper")
         end)
 
         it("sets each setting and checks again", function()
@@ -433,7 +436,7 @@ describe("AutocastCheck", function()
         end)
 
         it("only stores a setting while the module is off", function()
-            client.Kennel:SetModuleOn("AutocastCheck", false)
+            client.Addon:SetModuleOn("AutocastCheck", false)
             client:setAutocast(GROWL, false)
             args.growl.set({}, false)
             args.growl.set({}, true)
@@ -444,9 +447,9 @@ describe("AutocastCheck", function()
         it("shows an example toast for what fits now, beside a real one", function()
             args.test.func()
             assert.are.equal("Growl is not on autocast", client:toastTitle())
-            client.Kennel:HideToast()
+            client.Addon:HideToast()
             client:slash("autocast cower")
-            client.Kennel:HideToast()
+            client.Addon:HideToast()
             args.test.func()
             assert.are.equal("Cower is not on autocast", client:toastTitle())
         end)

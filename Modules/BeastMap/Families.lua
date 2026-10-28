@@ -1,15 +1,15 @@
 local _, ns = ...
 
--- The Families tab of Kennel's window (Core\Window.lua): every pet family (Core\Constants\Families.lua), with
+-- The Families tab of Beastkeeper's window (Core\Window.lua): every pet family (Core\Constants\Families.lua), with
 -- how many of the hunter's pets are of it; for the chosen one (the pet out's at first) its
 -- specialization, diet, the abilities beasts teach it with how many ranks the hunter knows, and the
 -- beasts of that family nearest first (BeastMap.lua's Nearest), each with a button that goes there,
 -- and the first one's model.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
 
 local LIST_WIDTH, ROW_HEIGHT, LIST_ROWS = 150, 16, 20
 local BEAST_ROWS, BEAST_HEIGHT, MODEL_SIZE = 3, 22, 150
@@ -24,16 +24,16 @@ local order, lines, beasts = {}, {}, {}
 ---@param b number
 ---@return boolean
 local function ByName(a, b)
-    return (Kennel.FamilyName(a) or "") < (Kennel.FamilyName(b) or "")
+    return (Addon.FamilyName(a) or "") < (Addon.FamilyName(b) or "")
 end
 
----The families on this client, by name: one Kennel has for one client only (the Fox on WoW:
+---The families on this client, by name: one Beastkeeper has for one client only (the Fox on WoW:
 ---Forever, Burning Crusade's on Burning Crusade) only there.
 ---@return number[]
 local function Order()
     wipe(order)
     local client = (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient()
-    for familyID, info in pairs(Kennel.familyInfo) do
+    for familyID, info in pairs(Addon.familyInfo) do
         if not info.client or info.client == client then order[#order + 1] = familyID end
     end
     table.sort(order, ByName)
@@ -44,9 +44,9 @@ end
 ---@param familyID number
 ---@return number
 local function PetCount(familyID)
-    local journal = Kennel:GetModule("PetJournal", true) --[[@as KennelPetJournal?]]
+    local journal = Addon:GetModule("PetJournal", true) --[[@as BeastkeeperPetJournal?]]
     if not journal or not journal:IsEnabled() then return 0 end
-    local name, count = Kennel.FamilyName(familyID), 0
+    local name, count = Addon.FamilyName(familyID), 0
     for _, entry in pairs(journal:Pets()) do
         if entry.family == name then count = count + 1 end
     end
@@ -54,7 +54,7 @@ local function PetCount(familyID)
 end
 
 ---Whether a rank can be learned by the family: its list names it, or names none (every family).
----@param rank KennelPetAbilityRank
+---@param rank BeastkeeperPetAbilityRank
 ---@param familyID number
 ---@return boolean
 local function ForFamily(rank, familyID)
@@ -72,7 +72,7 @@ end
 local function AbilitiesText(familyID)
     ---@type table<number, {low: number, high: number, known: number}>
     local found = {}
-    local ranks = Kennel.data.petAbilityRanks --[[@as table<number, KennelPetAbilityRank>]]
+    local ranks = Addon.data.petAbilityRanks --[[@as table<number, BeastkeeperPetAbilityRank>]]
     for spellID, rank in pairs(ranks) do
         if ForFamily(rank, familyID) then
             local seen = found[rank.ability] or { low = rank.rank, high = rank.rank, known = 0 }
@@ -83,7 +83,7 @@ local function AbilitiesText(familyID)
     end
     wipe(lines)
     for ability, seen in pairs(found) do
-        local name = Kennel.SpellInfo(ability) or "?"
+        local name = Addon.SpellInfo(ability) or "?"
         lines[#lines + 1] = L.BEASTMAP_FAMILY_ABILITY:format(name, seen.low, seen.high, seen.known)
     end
     table.sort(lines)
@@ -95,15 +95,15 @@ end
 ---@return number[]
 local function Beasts(familyID)
     wipe(beasts)
-    local all = Kennel.data.beasts --[[@as table<number, KennelBeast>]]
+    local all = Addon.data.beasts --[[@as table<number, BeastkeeperBeast>]]
     for npc, beast in pairs(all) do
         if beast.family == familyID then beasts[#beasts + 1] = npc end
     end
     return M.Nearest(beasts)
 end
 
----The diet line: "Eats: Meat, Fish"; empty when Kennel does not know it.
----@param info KennelFamilyInfo
+---The diet line: "Eats: Meat, Fish"; empty when Beastkeeper does not know it.
+---@param info BeastkeeperFamilyInfo
 ---@return string
 local function DietText(info)
     if not info.diet then return "" end
@@ -117,7 +117,7 @@ end
 
 ---A text in the skin's font.
 ---@param parent Frame
----@param skin KennelButtonHolderSkin
+---@param skin BeastkeeperButtonHolderSkin
 ---@param template string?
 ---@param size number?
 ---@return FontString
@@ -128,25 +128,25 @@ local function Text(parent, skin, template, size)
     return text
 end
 
----A family's portrait, cropped as the look crops icons (Kennel:CropIcon).
+---A family's portrait, cropped as the look crops icons (Beastkeeper:CropIcon).
 ---@param parent Frame
----@param skin KennelButtonHolderSkin
+---@param skin BeastkeeperButtonHolderSkin
 ---@param size number
 ---@return Texture
 local function Portrait(parent, skin, size)
     local icon = parent:CreateTexture(nil, "ARTWORK")
     icon:SetSize(size, size)
-    Kennel:CropIcon(icon, skin.CropIcon)
+    Addon:CropIcon(icon, skin.CropIcon)
     return icon
 end
 
 ---Builds the panel: the families' rows, the card's texts, the beasts' rows and the model.
----@param panel KennelFamiliesPanel
----@param skin KennelButtonHolderSkin
+---@param panel BeastkeeperFamiliesPanel
+---@param skin BeastkeeperButtonHolderSkin
 local function Create(panel, skin)
     panel.rows, panel.beasts = {}, {}
     for index = 1, LIST_ROWS do
-        local row = CreateFrame("Button", nil, panel) --[[@as KennelFamilyRow]]
+        local row = CreateFrame("Button", nil, panel) --[[@as BeastkeeperFamilyRow]]
         row:SetSize(LIST_WIDTH, ROW_HEIGHT)
         row:SetPoint("TOPLEFT", 0, -(index - 1) * ROW_HEIGHT)
         row.icon = Portrait(row, skin, ROW_HEIGHT - 4)
@@ -156,7 +156,7 @@ local function Create(panel, skin)
         row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
         row:SetScript("OnClick", function()
             panel.chosen = row.familyID
-            Kennel:RefreshWindow("families")
+            Addon:RefreshWindow("families")
         end)
         panel.rows[index] = row
     end
@@ -177,7 +177,7 @@ local function Create(panel, skin)
     panel.none = Text(panel, skin)
     panel.none:SetPoint("BOTTOMLEFT", left, BEAST_ROWS * BEAST_HEIGHT + 4)
     for index = 1, BEAST_ROWS do
-        local row = CreateFrame("Frame", nil, panel) --[[@as KennelFamilyBeastRow]]
+        local row = CreateFrame("Frame", nil, panel) --[[@as BeastkeeperFamilyBeastRow]]
         row:SetHeight(BEAST_HEIGHT)
         row:SetPoint("BOTTOMLEFT", left, (BEAST_ROWS - index) * BEAST_HEIGHT)
         row:SetPoint("RIGHT")
@@ -195,7 +195,7 @@ local function Create(panel, skin)
 end
 
 ---Fills the beasts' rows and the model from the family's beasts.
----@param panel KennelFamiliesPanel
+---@param panel BeastkeeperFamiliesPanel
 ---@param familyID number
 local function FillBeasts(panel, familyID)
     local list = Beasts(familyID)
@@ -204,7 +204,7 @@ local function FillBeasts(panel, familyID)
         row.npc = npc
         row:SetShown(npc ~= nil)
         if npc then
-            local beast = Kennel.data.beasts[npc] --[[@as KennelBeast]]
+            local beast = Addon.data.beasts[npc] --[[@as BeastkeeperBeast]]
             row.text:SetText(L.BEASTMAP_TEACHER_LINE:format(M.Place(npc), M.LevelText(beast)))
             row.go:SetShown(beast.pins ~= nil)
         end
@@ -212,7 +212,7 @@ local function FillBeasts(panel, familyID)
     panel.none:SetText(#list == 0 and L.BEASTMAP_NO_BEASTS or "")
     -- By display ID the model shows at once; by NPC ID only once the client has the creature in its
     -- cache, else the old model stays: so cleared first.
-    local first = list[1] and Kennel.data.beasts[list[1]]
+    local first = list[1] and Addon.data.beasts[list[1]]
     if first then
         panel.model:ClearModel()
         if first.display then
@@ -227,43 +227,43 @@ local function FillBeasts(panel, familyID)
 end
 
 ---Fills the list and the chosen family's card.
----@param panel KennelFamiliesPanel
+---@param panel BeastkeeperFamiliesPanel
 local function Refresh(panel)
     local families = Order()
     if not panel.chosen then
-        local out = Kennel.PetFamilyID()
-        panel.chosen = out and Kennel.familyInfo[out] and out or families[1]
+        local out = Addon.PetFamilyID()
+        panel.chosen = out and Addon.familyInfo[out] and out or families[1]
     end
     for index, row in ipairs(panel.rows) do
         local familyID = families[index]
         row.familyID = familyID
         row:SetShown(familyID ~= nil)
         if familyID then
-            local name, count = Kennel.FamilyName(familyID) or "?", PetCount(familyID)
+            local name, count = Addon.FamilyName(familyID) or "?", PetCount(familyID)
             row.label:SetText(count > 0 and L.BEASTMAP_FAMILY_ROW:format(name, count) or name)
-            row.icon:SetTexture(Kennel.FamilyIcon(familyID))
+            row.icon:SetTexture(Addon.FamilyIcon(familyID))
             local colour = familyID == panel.chosen and CHOSEN or OTHER
             row.label:SetTextColor(colour[1], colour[2], colour[3])
         end
     end
     local familyID = panel.chosen --[[@as number]]
-    local info = Kennel.familyInfo[familyID]
-    panel.title:SetText(Kennel.FamilyName(familyID) or "?")
-    panel.titleIcon:SetTexture(Kennel.FamilyIcon(familyID))
+    local info = Addon.familyInfo[familyID]
+    panel.title:SetText(Addon.FamilyName(familyID) or "?")
+    panel.titleIcon:SetTexture(Addon.FamilyIcon(familyID))
     -- Pet specializations came with Wrath; WoW: Forever has them. The classic clients have a
     -- category and fixed modifiers per family instead.
     local hasSpecs = (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient() == "forever"
     if hasSpecs then
-        panel.spec:SetText(Kennel.SpecName(familyID) or "")
+        panel.spec:SetText(Addon.SpecName(familyID) or "")
     else
-        panel.spec:SetText(Kennel.FamilyModsText(familyID) or "")
+        panel.spec:SetText(Addon.FamilyModsText(familyID) or "")
     end
     panel.diet:SetText(DietText(info))
     panel.abilities:SetText(AbilitiesText(familyID))
     FillBeasts(panel, familyID)
 end
 
-Kennel:RegisterWindowTab({
+Addon:RegisterWindowTab({
     id = "families",
     title = L.BEASTMAP_TAB_FAMILIES,
     order = 30,

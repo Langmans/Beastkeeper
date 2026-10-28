@@ -7,10 +7,10 @@ local _, ns = ...
 -- and only a beast the hunter can tame now unless beasts above its level count. Also without
 -- HandyNotes.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
 
 local RAID_WARNING = SOUNDKIT.RAID_WARNING --[[@as number]]
 -- Not every client has every one; a missing one is skipped.
@@ -23,7 +23,7 @@ local alarmed = {}
 local lines = {}
 
 ---The ranks a beast teaches that the hunter wants: their spells, a new list (it goes out with
----KENNEL_RARE_SEEN), and tooltip-style lines in `lines` (emptied first).
+---BEASTKEEPER_RARE_SEEN), and tooltip-style lines in `lines` (emptied first).
 ---@param npc number
 ---@return number[]
 local function WantedRanks(npc)
@@ -44,29 +44,29 @@ local function WantedRanks(npc)
     return wanted
 end
 
----Sends KENNEL_RARE_SEEN for the creature with `guid` when it is a rare beast worth taming, and
+---Sends BEASTKEEPER_RARE_SEEN for the creature with `guid` when it is a rare beast worth taming, and
 ---not yet this spawn; toasts it too when the rare toast is on.
 ---@param guid GameValue
 function M:SeeCreature(guid)
     if not self:IsEnabled() then return end
-    local npc = Kennel.NPCFromGUID(guid, "Creature")
+    local npc = Addon.NPCFromGUID(guid, "Creature")
     if not npc then return end
     -- A GUID that gave an NPC ID is a readable string.
     local spawn = guid --[[@as string]]
-    local beast = Kennel.data.beasts[npc] --[[@as KennelBeast?]]
+    local beast = Addon.data.beasts[npc] --[[@as BeastkeeperBeast?]]
     if not beast or not beast.rare or alarmed[spawn] then return end
     if not self:Settings().aboveLevel and beast.minLevel > self:PlayerLevel() then return end
     local ranks = WantedRanks(npc)
     if #ranks == 0 then return end
     alarmed[spawn] = true
     local name = M.BeastName(npc)
-    Kennel:SendMessage(
-        "KENNEL_RARE_SEEN",
+    Addon:SendMessage(
+        Addon.messages.rareSeen,
         { module = self:GetName(), npc = npc, name = name, guid = spawn, ranks = ranks }
     )
     if not self:Settings().rareToast then return end
-    local _, icon = Kennel.SpellInfo(ranks[1])
-    Kennel:ShowToast({
+    local _, icon = Addon.SpellInfo(ranks[1])
+    Addon:ShowToast({
         key = "BeastMap:rare:" .. spawn,
         type = "BeastMap:rare",
         source = self.title,
@@ -104,5 +104,5 @@ end
 
 ---Listens for creatures coming in sight; from OnEnable.
 function M:WatchRares()
-    Kennel.RegisterEvents(self, EVENTS)
+    Addon.RegisterEvents(self, EVENTS)
 end

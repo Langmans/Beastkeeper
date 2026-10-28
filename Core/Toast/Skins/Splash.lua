@@ -3,11 +3,11 @@ local _, ns = ...
 -- The splash: a toast in the middle of the screen, for things worth a moment. The module's name
 -- over a thin line, the icon in a diamond that pops in (a unit's portrait as a round badge on its
 -- lower right, when the toast brings one), the title, text and a grey hint centred,
--- and a short timer bar; plain text, no glow. Kennel's own has a black panel whose edges fade
--- out; NewSplashSkin makes one in any style (KennelSkinStyle), such as EllesmereUI's.
+-- and a short timer bar; plain text, no glow. Beastkeeper's own has a black panel whose edges fade
+-- out; NewSplashSkin makes one in any style (BeastkeeperSkinStyle), such as EllesmereUI's.
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
 local WIDTH, HEIGHT = 380, 220
 local DIAMOND = 46
@@ -54,7 +54,7 @@ end
 
 ---A centred line of text, in the style's font when it has one.
 ---@param frame Frame
----@param style KennelSkinStyle
+---@param style BeastkeeperSkinStyle
 ---@param template string the game's font, without a style font
 ---@param size number the size in the style's font
 ---@return FontString
@@ -68,10 +68,10 @@ local function Line(frame, style, template, size)
 end
 
 ---Makes the frame, the first time it shows: the style's panel and border, else the fading one.
----@param style KennelSkinStyle
----@return KennelSplashFrame
+---@param style BeastkeeperSkinStyle
+---@return BeastkeeperSplashFrame
 local function Build(style)
-    local frame = Kennel:NewToastFrame(style.frameName) --[[@as KennelSplashFrame]]
+    local frame = Addon:NewToastFrame(style.frameName) --[[@as BeastkeeperSplashFrame]]
     frame:SetSize(WIDTH, HEIGHT)
     if style.panel then
         local panel = frame:CreateTexture(nil, "BACKGROUND")
@@ -99,8 +99,8 @@ local function Build(style)
     frame.Inner:SetRotation(math.pi / 4)
     frame.Icon = frame:CreateTexture(nil, "OVERLAY")
     frame.Icon:SetPoint("CENTER", frame.Diamond, "CENTER")
-    Kennel:CropIcon(frame.Icon)
-    Kennel:AddToastPortrait(frame, frame.Diamond, PORTRAIT_SIZE)
+    Addon:CropIcon(frame.Icon)
+    Addon:AddToastPortrait(frame, frame.Diamond, PORTRAIT_SIZE)
 
     frame.Title = Line(frame, style, "GameFontNormalLarge", TITLE_SIZE)
     frame.Title:SetPoint("TOP", frame.Diamond, "BOTTOM", 0, -16)
@@ -117,9 +117,9 @@ local function Build(style)
     return frame
 end
 
----@param self KennelSplashSkin
----@param info KennelToastInfo
----@param settings KennelToastSettings
+---@param self BeastkeeperSplashSkin
+---@param info BeastkeeperToastInfo
+---@param settings BeastkeeperToastSettings
 local function Show(self, info, settings)
     self.frame = self.frame or Build(self.style)
     local frame = self.frame
@@ -129,22 +129,22 @@ local function Show(self, info, settings)
     frame.Diamond:SetColorTexture(accent[1], accent[2], accent[3], 1)
     frame.Timer:SetColorTexture(accent[1], accent[2], accent[3], 1)
     frame.Source:SetText(info.source or "")
-    frame.Icon:SetTexture(info.icon or Kennel.TOAST_ICON)
-    Kennel:ShowToastPortrait(frame, info.portrait, accent)
+    frame.Icon:SetTexture(info.icon or Addon.TOAST_ICON)
+    Addon:ShowToastPortrait(frame, info.portrait, accent)
     frame.Title:SetText(info.title)
     frame.Text:SetText(info.text or "")
     frame.Hint:SetText(info.hint or "")
     frame:SetScale(settings.scale)
-    Kennel:PlaceToast(frame, "CENTER", 0, 160)
+    Addon:PlaceToast(frame, "CENTER", 0, 160)
     frame:Show()
 end
 
----@param self KennelSplashSkin
+---@param self BeastkeeperSplashSkin
 ---@param intro number
 ---@param fade number
 ---@param left number
 local function Update(self, intro, fade, left)
-    local frame = self.frame --[[@as KennelSplashFrame]]
+    local frame = self.frame --[[@as BeastkeeperSplashFrame]]
     frame:SetAlpha(intro * (1 - fade))
     -- The diamond grows from 60% and overshoots a little; the icon keeps inside it.
     local size = DIAMOND * (0.6 + 0.4 * EaseOutBack(intro))
@@ -156,18 +156,18 @@ end
 
 ---A splash skin in `style`; register it with RegisterToastSkin.
 ---@param name string shown in the look choice
----@param style KennelSkinStyle
----@return KennelSplashSkin
-function Kennel:NewSplashSkin(name, style)
-    local skin = self:NewToastSkin(name) --[[@as KennelSplashSkin]]
+---@param style BeastkeeperSkinStyle
+---@return BeastkeeperSplashSkin
+function Addon:NewSplashSkin(name, style)
+    local skin = self:NewToastSkin(name) --[[@as BeastkeeperSplashSkin]]
     skin.style, skin.Show, skin.Update = style, Show, Update
     return skin
 end
 
-Kennel:RegisterToastSkin(
+Addon:RegisterToastSkin(
     "splash",
-    Kennel:NewSplashSkin(
-        Kennel.L.TOAST_SKIN_SPLASH,
-        { frameName = "KennelToastSplash", accent = Kennel.DefaultToastAccent }
+    Addon:NewSplashSkin(
+        Addon.L.TOAST_SKIN_SPLASH,
+        { frameName = Addon.Global("ToastSplash"), accent = Addon.DefaultToastAccent }
     )
 )

@@ -1,19 +1,19 @@
 local _, ns = ...
 
--- Pet sounds by family (Kennel.families, Families.lua), as FileDataIDs for PlaySoundFile. One
+-- Pet sounds by family (Beastkeeper.families, Families.lua), as FileDataIDs for PlaySoundFile. One
 -- table per kind of sound, named <KIND>_PER_FAMILY; Pet.lua picks the active pet's. FileDataIDs
 -- from the wago.tools community listfile, with the file names so they can be looked up again.
 
----@type Kennel
-local Kennel = ns
-local F = Kennel.families
+---@type Addon
+local Addon = ns
+local F = Addon.families
 
-Kennel.sounds = {}
+Addon.sounds = {}
 
 -- The call a pet gives when it is sent to attack. None was found for the Crocolisk, Scorpid and
 -- Bat.
 ---@type table<number, number>
-Kennel.sounds.AGGRO_PER_FAMILY = {
+Addon.sounds.AGGRO_PER_FAMILY = {
     [F.wolf] = 564215, -- sound/creature/wolf/mwolfaggro1.ogg
     [F.cat] = 562387, -- sound/creature/tiger/mtigeraggroa.ogg
     [F.spider] = 561415, -- sound/creature/tarantula/mtarantulaaggroa.ogg
@@ -34,7 +34,7 @@ Kennel.sounds.AGGRO_PER_FAMILY = {
 -- The sound a pet makes when it dies. The Hyena has only later files, and the Crocolisk, Scorpid
 -- and Bat have none of their own.
 ---@type table<number, number>
-Kennel.sounds.DEATH_PER_FAMILY = {
+Addon.sounds.DEATH_PER_FAMILY = {
     [F.wolf] = 564219, -- sound/creature/wolf/mwolfdeath1.ogg
     [F.cat] = 562391, -- sound/creature/tiger/mtigerdeatha.ogg
     [F.spider] = 561420, -- sound/creature/tarantula/mtarantuladeath1a.ogg
@@ -53,7 +53,7 @@ Kennel.sounds.DEATH_PER_FAMILY = {
 
 -- The cry of a pet critically wounded. The Crocolisk, Scorpid and Bat have none of their own.
 ---@type table<number, number>
-Kennel.sounds.WOUND_PER_FAMILY = {
+Addon.sounds.WOUND_PER_FAMILY = {
     [F.wolf] = 564231, -- sound/creature/wolf/mwolfwoundcritical1.ogg
     [F.cat] = 562395, -- sound/creature/tiger/mtigerwoundcriticala.ogg
     [F.spider] = 561419, -- sound/creature/tarantula/mtarantulawoundcritical1a.ogg

@@ -1,25 +1,25 @@
 local _, ns = ...
 
--- AutocastCheck's page in the settings window (Kennel > Autocast Check): which abilities are
--- watched, the combat reminder, the sound, an example toast and the macros. Kennel's core
+-- AutocastCheck's page in the settings window (Beastkeeper > Autocast Check): which abilities are
+-- watched, the combat reminder, the sound, an example toast and the macros. Beastkeeper's core
 -- builds the page from GetOptions and greys it out while the module is off.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("AutocastCheck") --[[@as KennelAutocastCheck]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("AutocastCheck") --[[@as BeastkeeperAutocastCheck]]
 
 ---Checks again after a change, since what counts as wrong may have changed.
 local function Recheck()
     M:Check()
 end
 
----A getter and setter for one profile setting (Kennel:Setting).
+---A getter and setter for one profile setting (Beastkeeper:Setting).
 ---@param key string
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set
 local function Setting(key)
-    return Kennel:Setting(M, key, Recheck)
+    return Addon:Setting(M, key, Recheck)
 end
 
 ---@return table
@@ -85,7 +85,7 @@ function M:GetOptions()
                 desc = L.AUTOCAST_OPTION_MACROS_DESC,
                 order = 8,
                 func = function()
-                    Kennel:CreateMacros(M, true)
+                    Addon:CreateMacros(M, true)
                 end,
             },
         },

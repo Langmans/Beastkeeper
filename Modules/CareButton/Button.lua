@@ -11,10 +11,10 @@ local _, ns = ...
 -- casts, and from the settings page. It is mirrored into the character's saved settings. While the
 -- module is off the button has no macro and the state driver is gone.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("CareButton") --[[@as KennelCareButton]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("CareButton") --[[@as BeastkeeperCareButton]]
 
 M.PET_STATES = "[@pet,dead] dead; [@pet,exists] alive; none"
 
@@ -34,8 +34,8 @@ local ON_STATE = [[
 ]]
 local RUN_APPLY = [[ self:RunAttribute("apply") ]]
 
-local button = CreateFrame("Button", "KennelCareButton", UIParent, "SecureActionButtonTemplate")
-local header = CreateFrame("Frame", "KennelCareButtonHeader", UIParent, "SecureHandlerStateTemplate")
+local button = CreateFrame("Button", Addon.Global("CareButton"), UIParent, "SecureActionButtonTemplate")
+local header = CreateFrame("Frame", Addon.Global("CareButtonHeader"), UIParent, "SecureHandlerStateTemplate")
 -- For its look on screen (OnScreen.lua).
 M.button = button
 
@@ -48,7 +48,7 @@ local clauses = {}
 ---@param spellID number
 ---@return string?
 local function Known(spellID)
-    return Kennel.KnowsSpell(spellID) and M.SpellName(spellID) or nil
+    return Addon.KnowsSpell(spellID) and M.SpellName(spellID) or nil
 end
 
 ---The macro the button runs, with only the spells the hunter knows. Without a remembered death:
@@ -92,7 +92,7 @@ end
 
 ---The spellbook changed: the button's macro texts again, and the macro's line.
 function M:ApplyMacroTexts()
-    Kennel:OutOfCombat("CareButton:texts", function()
+    Addon:OutOfCombat("CareButton:texts", function()
         header:SetAttribute("textAlive", M:MacroText(false))
         header:SetAttribute("textDead", M:MacroText(true))
         SecureHandlerExecute(header, RUN_APPLY)
@@ -144,7 +144,7 @@ end
 ---Sets the button up while the module is on for a hunter, takes it down otherwise; now, or once
 ---combat ends.
 function M:ApplyButton()
-    Kennel:OutOfCombat("CareButton:button", function()
+    Addon:OutOfCombat("CareButton:button", function()
         local _, class = UnitClass("player")
         if self:IsEnabled() and class == "HUNTER" then
             Setup()
@@ -166,4 +166,4 @@ function M:SetPetDead(dead)
 end
 
 -- The key binding's name in Esc > Options > Keybindings (Bindings.xml).
-_G["BINDING_NAME_CLICK KennelCareButton:LeftButton"] = L.CAREBUTTON_BINDING
+_G["BINDING_NAME_CLICK " .. Addon.Global("CareButton") .. ":LeftButton"] = L.CAREBUTTON_BINDING

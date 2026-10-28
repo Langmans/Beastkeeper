@@ -1,8 +1,8 @@
 <Bindings>
-    <!-- Esc > Options > Keybindings > AddOns > Kennel. Each module's secure button is clicked by its
+    <!-- Esc > Options > Keybindings > AddOns > Beastkeeper. Each module's secure button is clicked by its
          binding itself; the names shown are set by the modules (their Button.lua). -->
-    <Binding name="CLICK KennelAutocastButton:LeftButton" header="KENNEL" category="ADDONS"/>
-    <Binding name="CLICK KennelCareButton:LeftButton" category="ADDONS"/>
-    <Binding name="CLICK KennelTameButton:LeftButton" category="ADDONS"/>
-    <Binding name="CLICK KennelWindowButton:LeftButton" category="ADDONS"/>
+    <Binding name="CLICK BeastkeeperAutocastButton:LeftButton" header="BEASTKEEPER" category="ADDONS"/>
+    <Binding name="CLICK BeastkeeperCareButton:LeftButton" category="ADDONS"/>
+    <Binding name="CLICK BeastkeeperTameButton:LeftButton" category="ADDONS"/>
+    <Binding name="CLICK BeastkeeperWindowButton:LeftButton" category="ADDONS"/>
 </Bindings>

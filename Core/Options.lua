@@ -1,22 +1,22 @@
 local addonName, ns = ...
 
--- The options, in the game's own AddOns settings tab: a "Kennel" page with a switch per module,
+-- The options, in the game's own AddOns settings tab: a "Beastkeeper" page with a switch per module,
 -- under it a page per module that has options (GetOptions), and Profiles.
 --
 -- The whole table is built by GetOptionsTable every time AceConfig asks for it, so a switch
 -- flipped elsewhere (a profile change, say) is what the next page shows. A module's own page
 -- stays reachable while the module is off, but greyed out.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
+---@type Addon
+local Addon = ns
+local L = Addon.L
 
 -- The entries of AceDBOptions' own Profiles page. AceDBOptions hands every addon the same args
 -- table, and other addons write into it (RestedXP Guides adds "Reload guides and UI", "Reset Guide
 -- Progress" and "Set current profile as default"), so taking it as it is would put their buttons
--- on Kennel's page. Kennel copies only these; tests/options_spec.lua checks the list still
+-- on Beastkeeper's page. Beastkeeper copies only these; tests/options_spec.lua checks the list still
 -- matches the AceDBOptions version in Libs/.
-Kennel.PROFILE_OPTIONS = {
+Addon.PROFILE_OPTIONS = {
     "desc",
     "descreset",
     "reset",
@@ -30,9 +30,9 @@ Kennel.PROFILE_OPTIONS = {
     "delete",
 }
 
----The Profiles page: AceDBOptions' group for KennelDB with a copy of only its own entries.
+---The Profiles page: AceDBOptions' group for BeastkeeperDB with a copy of only its own entries.
 ---@return AceConfig.OptionsTable
-function Kennel:GetProfileOptions()
+function Addon:GetProfileOptions()
     local shared = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
     -- GetOptionsTable always sets args.
     local sharedArgs = shared.args --[[@as table<string, AceConfig.OptionsTable>]]
@@ -54,12 +54,12 @@ end
 ---A getter and setter for one of a module's settings (module:Settings()[key]), for an option on
 ---its page. `changed`, when given, runs after a set while the module is on, for settings that
 ---change what the module shows now.
----@param module KennelSettingsModule
+---@param module BeastkeeperSettingsModule
 ---@param key string
----@param changed fun(module: KennelSettingsModule)?
+---@param changed fun(module: BeastkeeperSettingsModule)?
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set
-function Kennel:Setting(module, key, changed)
+function Addon:Setting(module, key, changed)
     ---@type table<string, string|boolean|number>
     local settings = module:Settings()
     ---@return string|boolean|number
@@ -76,15 +76,15 @@ function Kennel:Setting(module, key, changed)
 end
 
 -- What a per-kind skin choice stores for "the same as every toast". It is kept as it is, not as
--- no entry, so it can override the look a module gives that kind (KennelModule.toastSkins); being
+-- no entry, so it can override the look a module gives that kind (BeastkeeperModule.toastSkins); being
 -- no skin, ToastSkinFor passes it on to the choice for every toast.
 local SAME = "same"
 
 ---The skin choices: a select for every toast, one per kind of toast the modules show (from order
 ---10), and the options of skins that have their own (GetOptions, from order 50, by skin id).
----@param settings KennelToastSettings
+---@param settings BeastkeeperToastSettings
 ---@param args table<string, table> the toast box's options, added to
-function Kennel:AddSkinOptions(settings, args)
+function Addon:AddSkinOptions(settings, args)
     ---@type table<string, string>
     local names = {}
     for id, skin in pairs(self:ToastSkins()) do
@@ -142,9 +142,9 @@ function Kennel:AddSkinOptions(settings, args)
     end
 end
 
----The toast's settings, shared by every module, as a box on Kennel's page below the switches.
+---The toast's settings, shared by every module, as a box on Beastkeeper's page below the switches.
 ---@return AceConfig.OptionsTable
-function Kennel:GetToastOptions()
+function Addon:GetToastOptions()
     local settings = self:ToastSettings()
     local options = {
         type = "group",
@@ -200,11 +200,11 @@ function Kennel:GetToastOptions()
                 order = 4,
                 func = function()
                     self:ShowToast({
-                        key = "Kennel:test",
+                        key = "Beastkeeper:test",
                         source = addonName,
                         title = L.TOAST_TEST_TITLE,
                         text = L.TOAST_TEST_TEXT,
-                        -- The icon of Kennel's entry in the addon list.
+                        -- The icon of Beastkeeper's entry in the addon list.
                         icon = "Interface\\Icons\\Ability_Hunter_BeastCall",
                     })
                 end,
@@ -218,7 +218,7 @@ end
 ---A select between "auto" and the registered skins of one kind, stored under `key`.
 ---@param key "skin"|"holder"
 ---@param name string
----@param register table<string, KennelButtonSkin|KennelButtonHolderSkin>
+---@param register table<string, BeastkeeperButtonSkin|BeastkeeperButtonHolderSkin>
 ---@param order number
 ---@return table
 local function ButtonSkinSelect(key, name, register, order)
@@ -235,19 +235,19 @@ local function ButtonSkinSelect(key, name, register, order)
             return names
         end,
         get = function()
-            return Kennel:ButtonSettings()[key]
+            return Addon:ButtonSettings()[key]
         end,
         ---@param _ table AceConfig's info about the option
         ---@param value string
         set = function(_, value)
-            Kennel:ButtonSettings()[key] = value
+            Addon:ButtonSettings()[key] = value
         end,
     }
 end
 
----The look of Kennel's buttons, as a box on Kennel's page below the toast's.
+---The look of Beastkeeper's buttons, as a box on Beastkeeper's page below the toast's.
 ---@return AceConfig.OptionsTable
-function Kennel:GetButtonOptions()
+function Addon:GetButtonOptions()
     return {
         type = "group",
         inline = true,
@@ -264,16 +264,16 @@ function Kennel:GetButtonOptions()
                 order = 3,
                 width = "full",
                 get = function()
-                    return Kennel:CropsIcons()
+                    return Addon:CropsIcons()
                 end,
                 ---@param _ table AceConfig's info about the option
                 ---@param value boolean
                 set = function(_, value)
-                    Kennel:ButtonSettings().crop = value
+                    Addon:ButtonSettings().crop = value
                 end,
                 -- The look's own UI decides (ElvUI's Crop Icons); the box shows what it says.
                 disabled = function()
-                    return Kennel:ButtonHolderSkins()[Kennel:ButtonHolderSkinFor()].CropsIcons ~= nil
+                    return Addon:ButtonHolderSkins()[Addon:ButtonHolderSkinFor()].CropsIcons ~= nil
                 end,
             },
         },
@@ -281,7 +281,7 @@ function Kennel:GetButtonOptions()
 end
 
 ---@return AceConfig.OptionsTable
-function Kennel:GetOptionsTable()
+function Addon:GetOptionsTable()
     local switches = {
         intro = { type = "description", name = L.MODULES_DESC, order = 0 },
         toast = self:GetToastOptions(),
@@ -303,12 +303,12 @@ function Kennel:GetOptionsTable()
     return options
 end
 
----A module's switch on Kennel's page and, when it has options, its own page.
+---A module's switch on Beastkeeper's page and, when it has options, its own page.
 ---@param options table
 ---@param switches table
 ---@param name string
----@param module KennelModule
-function Kennel:AddModuleOptions(options, switches, name, module)
+---@param module BeastkeeperModule
+function Addon:AddModuleOptions(options, switches, name, module)
     switches[name] = {
         type = "toggle",
         name = module.title or name,
@@ -335,7 +335,7 @@ function Kennel:AddModuleOptions(options, switches, name, module)
 end
 
 ---Registers the options with AceConfig and adds the pages to the settings window.
-function Kennel:SetupOptions()
+function Addon:SetupOptions()
     LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, function()
         return self:GetOptionsTable()
     end)
@@ -359,8 +359,8 @@ function Kennel:SetupOptions()
     dialog:AddToBlizOptions(addonName, args.profiles.name, addonName, "profiles")
 end
 
----Opens the settings window on Kennel's page, or on a module's.
+---Opens the settings window on Beastkeeper's page, or on a module's.
 ---@param module string? the module's name
-function Kennel:OpenOptions(module)
+function Addon:OpenOptions(module)
     Settings.OpenToCategory(module and self.moduleCategoryIDs[module] or self.optionsCategoryID)
 end

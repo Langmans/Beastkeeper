@@ -4,23 +4,23 @@ local _, ns = ...
 -- and fade count from showing, the stay only while not hovered); the sound; and the card taking
 -- over from a skin that errors. A frame of its own drives the clock, made on the first toast.
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
 -- Seconds. A toast that asks for a screenshot gets it a moment after its intro, fully drawn.
 local INTRO, FADE_OUT = 0.2, 0.35
 local SCREENSHOT_AT = INTRO + 0.2
 
 ---The skin that drew the last toast; for tests and for ToastFrame.
----@type KennelToastSkin?
+---@type BeastkeeperToastSkin?
 local lastSkin
 ---@type Frame?
 local driver
 ---The toast up now, and the skin drawing it; nil when none is.
----@type KennelToastInfo?, KennelToastSkin?
+---@type BeastkeeperToastInfo?, BeastkeeperToastSkin?
 local current, currentSkin
 ---Toasts waiting while another is up; each shows when the one before it is gone.
----@type KennelToastInfo[]
+---@type BeastkeeperToastInfo[]
 local queue = {}
 ---Seconds since the toast was shown; how many of those it was not hovered (what counts towards
 ---its stay); how long it stays before it fades; when the fade began, on the first clock.
@@ -34,19 +34,19 @@ local screenshotDue = false
 local Engine = {}
 
 ---The card, which takes over from a skin that fails.
----@return KennelToastSkin
+---@return BeastkeeperToastSkin
 local function Card()
-    return Kennel:ToastSkins()[Kennel.TOAST_DEFAULT_SKIN]
+    return Addon:ToastSkins()[Addon.TOAST_DEFAULT_SKIN]
 end
 
 ---Calls a method of the skin drawing the toast. When it errors, the error goes to the error
 ---handler (BugSack and the like), and a skin other than the card is replaced by the card for the
----rest of this toast: a broken skin from another addon cannot stop Kennel's toasts.
+---rest of this toast: a broken skin from another addon cannot stop Beastkeeper's toasts.
 ---@param method string
 ---@param ... any the method's arguments
 ---@return boolean? result what IsMouseOver answers; false after an error
 local function Call(method, ...)
-    local skin = currentSkin --[[@as KennelToastSkin]]
+    local skin = currentSkin --[[@as BeastkeeperToastSkin]]
     local ok, result = pcall(skin[method], skin, ...)
     if ok then
         return result --[[@as boolean?]]
@@ -60,11 +60,11 @@ end
 ---the toast was going away anyway.
 ---@param show boolean
 function Engine.Fallback(show)
-    local failed = currentSkin --[[@as KennelToastSkin]]
+    local failed = currentSkin --[[@as BeastkeeperToastSkin]]
     pcall(failed.Hide, failed)
     currentSkin = Card()
     lastSkin = currentSkin
-    if show then Call("Show", current, Kennel:ToastSettings()) end
+    if show then Call("Show", current, Addon:ToastSettings()) end
 end
 
 ---Shows the next waiting toast, if any; called whenever one is gone.
@@ -107,7 +107,7 @@ local function Tick(_, elapsed)
 end
 
 ---Plays a toast's sound: a sound file, or a sound kit.
----@param sound KennelSound?
+---@param sound BeastkeeperSound?
 local function Play(sound)
     if not sound then return end
     if sound.file then
@@ -118,14 +118,14 @@ local function Play(sound)
 end
 
 ---Hands `info` to its skin and starts the clock.
----@param info KennelToastInfo
+---@param info BeastkeeperToastInfo
 function Engine.Display(info)
     if not driver then
-        driver = CreateFrame("Frame", "KennelToastDriver", UIParent)
+        driver = CreateFrame("Frame", Addon.Global("ToastDriver"), UIParent)
         driver:SetScript("OnUpdate", Tick)
     end
-    local settings = Kennel:ToastSettings()
-    current, currentSkin = info, Kennel:ToastSkins()[Kennel:ToastSkinFor(info.type)]
+    local settings = Addon:ToastSettings()
+    current, currentSkin = info, Addon:ToastSkins()[Addon:ToastSkinFor(info.type)]
     lastSkin = currentSkin
     clock, shownFor, fadeStart, stay = 0, 0, nil, settings.duration
     screenshotDue = info.screenshot == true
@@ -133,7 +133,7 @@ function Engine.Display(info)
     Play(info.sound)
     -- An instant skin is done once shown (it handed the toast on): the next one follows at once.
     if
-        (currentSkin --[[@as KennelToastSkin]]).instant
+        (currentSkin --[[@as BeastkeeperToastSkin]]).instant
     then
         ShowNext()
         return
@@ -143,7 +143,7 @@ function Engine.Display(info)
 end
 
 ---Closes the toast at once, without the fade; the next waiting one, if any, follows.
-function Kennel:HideToast()
+function Addon:HideToast()
     if not currentSkin then return end
     Call("Hide")
     ShowNext()
@@ -160,12 +160,12 @@ local function Queued(key)
 end
 
 ---Shows a toast now, or after the one that is up. A key whose toast is up or waiting gets no
----second one. Sends KENNEL_TOAST ({ module, toast }) first, so a listener may still change the
+---second one. Sends BEASTKEEPER_TOAST ({ module, toast }) first, so a listener may still change the
 ---toast (docs\04-hooking.md); the module is the part of the key before the colon.
----@param info KennelToastInfo
-function Kennel:ShowToast(info)
+---@param info BeastkeeperToastInfo
+function Addon:ShowToast(info)
     if (current and current.key == info.key) or Queued(info.key) then return end
-    self:SendMessage("KENNEL_TOAST", { module = info.key:match("^([^:]+):"), toast = info })
+    self:SendMessage(Addon.messages.toast, { module = info.key:match("^([^:]+):"), toast = info })
     if current then
         queue[#queue + 1] = info
     else
@@ -175,7 +175,7 @@ end
 
 ---Takes away the toast for `key`: it fades out if it is up, and is dropped if it is waiting.
 ---@param key string
-function Kennel:DropToast(key)
+function Addon:DropToast(key)
     local index = Queued(key)
     if index then table.remove(queue, index) end
     if current and current.key == key and not fadeStart then fadeStart = clock end
@@ -183,7 +183,7 @@ end
 
 ---Takes away every toast whose key starts with `prefix` (a module's name and a colon).
 ---@param prefix string
-function Kennel:DropToasts(prefix)
+function Addon:DropToasts(prefix)
     for i = #queue, 1, -1 do
         if queue[i].key:sub(1, #prefix) == prefix then table.remove(queue, i) end
     end
@@ -192,12 +192,12 @@ end
 
 ---The frame that drives the clock, once a toast has shown; for tests.
 ---@return Frame?
-function Kennel:ToastDriver()
+function Addon:ToastDriver()
     return driver
 end
 
 ---The frame of the skin that drew the last toast, if that skin has one to give.
 ---@return Frame?
-function Kennel:ToastFrame()
+function Addon:ToastFrame()
     return lastSkin and lastSkin.Frame and lastSkin:Frame()
 end

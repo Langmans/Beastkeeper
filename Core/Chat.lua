@@ -4,8 +4,8 @@ local _, ns = ...
 -- a hardware event. One message waits at a time, for at most MAX_WAIT seconds; with MessageQueue
 -- loaded, that addon does the waiting.
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
 local MAX_WAIT = 10 -- seconds
 
@@ -15,11 +15,11 @@ local waitingText, waitingKind, waitingSince
 
 -- Shown only while a message waits; it passes every key on. Passing keys on is restricted in
 -- combat, so loaded in combat it stays hidden (it would swallow keys) and only clicks send.
-local keys = CreateFrame("Frame", "KennelChatKeys", UIParent)
+local keys = CreateFrame("Frame", Addon.Global("ChatKeys"), UIParent)
 keys:Hide()
 keys:EnableKeyboard(true)
 local propagating = false
-Kennel:OutOfCombat("chat:keys", function()
+Addon:OutOfCombat("chat:keys", function()
     keys:SetPropagateKeyboardInput(true)
     propagating = true
 end)
@@ -45,7 +45,7 @@ end)
 ---message replaces one still waiting, and one not sent within ten seconds is dropped.
 ---@param text string
 ---@param kind string
-function Kennel:SendOnInput(text, kind)
+function Addon:SendOnInput(text, kind)
     local since = GetTime()
     waitingText, waitingKind, waitingSince = text, kind, since
     -- Enqueue, not its SendChatMessage: that one sends an EMOTE at once, and gets blocked.

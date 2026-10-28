@@ -1,19 +1,19 @@
 local _, ns = ...
 
--- The hunter's ammo count as a data broker source ("Kennel Ammo"), which displays such as
+-- The hunter's ammo count as a data broker source ("Beastkeeper Ammo"), which displays such as
 -- EllesmereUI's data bars and Titan Panel show: the count of the ammo in the ammo slot, orange
 -- below the low line and red below the critical one, with a toast each time it crosses one
--- (taken away once restocked) and KENNEL_AMMO for other addons. Its tooltip names the nearest
+-- (taken away once restocked) and BEASTKEEPER_AMMO for other addons. Its tooltip names the nearest
 -- vendor of the hunter's faction that sells its kind of ammo (arrows for a bow or crossbow,
 -- bullets for a gun; Data\Ammo.lua); a click shows the way there through LibGoThere. Buy.lua buys
 -- at a vendor. Only for a hunter.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
+---@type Addon
+local Addon = ns
+local L = Addon.L
 
----@type KennelAmmo
-local M = Kennel:NewModule("Ammo")
+---@type BeastkeeperAmmo
+local M = Addon:NewModule("Ammo")
 M.title = L.AMMO_TITLE
 M.description = L.AMMO_DESC
 M.requires = { "ammo" }
@@ -21,14 +21,14 @@ M.toastTypes = { low = L.AMMO_TOASTTYPE_LOW, critical = L.AMMO_TOASTTYPE_CRITICA
 M.defaults = { profile = { low = 500, critical = 250, toasts = true, buy = true, stacks = 1 } }
 
 ---The settings of the profile in use.
----@return KennelAmmoSettings
+---@return BeastkeeperAmmoSettings
 function M:Settings()
-    return self.db.profile --[[@as KennelAmmoSettings]]
+    return self.db.profile --[[@as BeastkeeperAmmoSettings]]
 end
 
 local GoThere = LibStub("LibGoThere-1.0") --[[@as LibGoThere]]
 local AMMO_SLOT, RANGED_SLOT = INVSLOT_AMMO, INVSLOT_RANGED
-local K, W = Kennel.ammoKinds, Enum.ItemWeaponSubclass
+local K, W = Addon.ammoKinds, Enum.ItemWeaponSubclass
 -- A ranged weapon's ammo by the weapon's subclass: a bow and a crossbow shoot arrows, a gun bullets.
 local KINDS = { [W.Bows] = K.arrow, [W.Crossbow] = K.arrow, [W.Guns] = K.bullet }
 local ICON = "Interface\\Icons\\INV_Ammo_Arrow_02"
@@ -38,9 +38,9 @@ local COLORS = { low = "|cffff8000%d|r", critical = "|cffff2020%d|r" }
 -- display redraws only when the text changes.
 local EVENTS = { "BAG_UPDATE_DELAYED", "PLAYER_EQUIPMENT_CHANGED" }
 
----The kind of ammo the hunter's ranged weapon shoots (a Kennel.ammoKinds value), nil without a
+---The kind of ammo the hunter's ranged weapon shoots (a Beastkeeper.ammoKinds value), nil without a
 ---bow, gun or crossbow.
----@return KennelAmmoKind?
+---@return BeastkeeperAmmoKind?
 function M.Kind()
     local id = GetInventoryItemID("player", RANGED_SLOT)
     if not id then return nil end
@@ -61,7 +61,7 @@ end
 function M.AmmoName(itemID)
     local name = C_Item.GetItemInfo(itemID)
     if name then return name end
-    local ammo = Kennel.data.ammo[itemID] --[[@as KennelAmmoItem?]]
+    local ammo = Addon.data.ammo[itemID] --[[@as BeastkeeperAmmoItem?]]
     return ammo and ammo.name or "?"
 end
 
@@ -122,7 +122,7 @@ end
 
 -- The vendors' spots per kind of ammo for the hunter's faction, built on first use and again when
 -- the data changes.
----@type table<KennelAmmoKind, LibGoTherePoint[]>
+---@type table<BeastkeeperAmmoKind, LibGoTherePoint[]>
 local pointsByKind = {}
 ---@type table?
 local pointsFrom
@@ -132,22 +132,22 @@ local pointsFrom
 local continentOf, worldX, worldY = {}, {}, {}
 
 ---Whether a vendor sells ammo of `kind`.
----@param vendor KennelAmmoVendor
----@param kind KennelAmmoKind
+---@param vendor BeastkeeperAmmoVendor
+---@param kind BeastkeeperAmmoKind
 ---@return boolean
 local function Sells(vendor, kind)
     for _, itemID in ipairs(vendor.sells) do
-        local ammo = Kennel.data.ammo[itemID] --[[@as KennelAmmoItem?]]
+        local ammo = Addon.data.ammo[itemID] --[[@as BeastkeeperAmmoItem?]]
         if ammo and ammo.kind == kind then return true end
     end
     return false
 end
 
 ---Every pin of every vendor of the hunter's faction that sells its kind of ammo.
----@param kind KennelAmmoKind
+---@param kind BeastkeeperAmmoKind
 ---@return LibGoTherePoint[]
 local function VendorPoints(kind)
-    local vendors = Kennel.data.ammoVendors --[[@as table<number, KennelAmmoVendor>]]
+    local vendors = Addon.data.ammoVendors --[[@as table<number, BeastkeeperAmmoVendor>]]
     if pointsByKind[kind] then return pointsByKind[kind] end
     ---@type LibGoTherePoint[]
     local points = {}
@@ -160,7 +160,7 @@ local function VendorPoints(kind)
                     local x, y = flat[i] / 100, flat[i + 1] / 100
                     local point = { map, x, y, vendor.name }
                     points[#points + 1] = point
-                    local continent, wx, wy = Kennel.InWorld(map, x, y)
+                    local continent, wx, wy = Addon.InWorld(map, x, y)
                     if continent then
                         continentOf[point], worldX[point], worldY[point] = continent, wx, wy
                     end
@@ -230,9 +230,9 @@ end
 
 -- The nearest vendor is kept while the hunter stays within RANGE yards of where it was looked up,
 -- at most KEEP seconds, for one kind of ammo: a route addon's travel times take a while, and RANGE
--- yards are a few seconds of travel. The spot is a continent and x, y in yards (Kennel.PlayerInWorld).
+-- yards are a few seconds of travel. The spot is a continent and x, y in yards (Beastkeeper.PlayerInWorld).
 local RANGE, KEEP = 100, 60
----@type number?, number, number, KennelAmmoKind?, number, LibGoTherePoint?, number?
+---@type number?, number, number, BeastkeeperAmmoKind?, number, LibGoTherePoint?, number?
 local keptPlace, keptX, keptY, keptKind, keptSince, keptPoint, keptSeconds = nil, 0, 0, nil, 0, nil, nil
 
 ---The nearest vendor for the hunter's kind of ammo, and the seconds to it when known.
@@ -241,14 +241,14 @@ local keptPlace, keptX, keptY, keptKind, keptSince, keptPoint, keptSeconds = nil
 function M:NearestVendor()
     local kind = M.Kind()
     if not kind then return nil end
-    if Kennel.data.ammoVendors ~= pointsFrom then
+    if Addon.data.ammoVendors ~= pointsFrom then
         wipe(pointsByKind)
         wipe(continentOf)
         wipe(worldX)
         wipe(worldY)
-        pointsFrom, keptPlace = Kennel.data.ammoVendors, nil
+        pointsFrom, keptPlace = Addon.data.ammoVendors, nil
     end
-    local place, x, y = Kennel.PlayerInWorld()
+    local place, x, y = Addon.PlayerInWorld()
     local now = GetTime()
     if
         place
@@ -301,7 +301,7 @@ end
 ---@param button string
 local function OnClick(_, button)
     if button == "RightButton" then
-        Kennel:OpenOptions("Ammo")
+        Addon:OpenOptions("Ammo")
         return
     end
     local vendor = M:NearestVendor()
@@ -309,13 +309,13 @@ local function OnClick(_, button)
         M:Print(L.AMMO_NO_VENDOR)
         return
     end
-    GoThere:Navigate("Kennel", vendor[1], vendor[2], vendor[3], vendor[4])
+    GoThere:Navigate(Addon.NAME, vendor[1], vendor[2], vendor[3], vendor[4])
 end
 
 ---The toast for crossing into `state`.
 ---@param state "low"|"critical"
 ---@param count number
----@return KennelToastInfo
+---@return BeastkeeperToastInfo
 local function Toast(state, count)
     local lasts = Lasts(count)
     return {
@@ -329,7 +329,7 @@ local function Toast(state, count)
 end
 
 ---Brings the text and icon up to date; when the count crossed a line: the toast (once per line,
----taken away once restocked) and KENNEL_AMMO.
+---taken away once restocked) and BEASTKEEPER_AMMO.
 function M:Update()
     local object = self.object
     if not object then return end
@@ -348,9 +348,9 @@ function M:Update()
     object.text = COLORS[state] and COLORS[state]:format(count) or tostring(count)
     if state == self.state then return end
     self.state = state
-    Kennel:DropToasts("Ammo:")
-    if state ~= "ok" and self:Settings().toasts then Kennel:ShowToast(Toast(state, count)) end
-    Kennel:SendMessage("KENNEL_AMMO", { module = self:GetName(), count = count, state = state, kind = kind })
+    Addon:DropToasts("Ammo:")
+    if state ~= "ok" and self:Settings().toasts then Addon:ShowToast(Toast(state, count)) end
+    Addon:SendMessage(Addon.messages.ammo, { module = self:GetName(), count = count, state = state, kind = kind })
 end
 
 -- The handler of every event that may change the count.
@@ -362,7 +362,7 @@ function M:OnEnable()
     local _, class = UnitClass("player")
     if class ~= "HUNTER" then return end
     if not self.object then
-        self.object = LibStub("LibDataBroker-1.1"):NewDataObject("Kennel Ammo", {
+        self.object = LibStub("LibDataBroker-1.1"):NewDataObject(Addon.NAME .. " Ammo", {
             type = "data source",
             label = L.AMMO_LABEL,
             icon = ICON,
@@ -372,7 +372,7 @@ function M:OnEnable()
         })
     end
     self.state = nil
-    Kennel.RegisterEvents(self, EVENTS, Update)
+    Addon.RegisterEvents(self, EVENTS, Update)
     self:RegisterEvent("MERCHANT_SHOW")
     self:RegisterEvent("PLAYER_REGEN_DISABLED")
     self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -381,6 +381,6 @@ end
 
 -- A data object cannot be taken back: its text says Off; the toasts go.
 function M:OnDisable()
-    Kennel:DropToasts("Ammo:")
+    Addon:DropToasts("Ammo:")
     self:Update()
 end

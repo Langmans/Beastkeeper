@@ -4,8 +4,8 @@ local _, ns = ...
 -- and position in yards, and the player's. x and y are as UnitPosition gives them (its second and
 -- first return); C_Map's world positions have them the other way round.
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
 ---Where a spot on a map (x, y from 0 to 1) lies in the world: its continent (instance ID) and x, y
 ---in yards; nil when the client cannot place the map.
@@ -15,7 +15,7 @@ local Kennel = ns
 ---@return number? continent
 ---@return number x
 ---@return number y
-function Kennel.InWorld(map, x, y)
+function Addon.InWorld(map, x, y)
     local continent, world = C_Map.GetWorldPosFromMapPos(map, CreateVector2D(x, y))
     if not continent or not world then return nil, 0, 0 end
     return continent, world.y, world.x
@@ -26,9 +26,9 @@ end
 ---@return number? continent
 ---@return number x
 ---@return number y
-function Kennel.PlayerInWorld()
+function Addon.PlayerInWorld()
     local y, x, _, instance = UnitPosition("player")
-    if Kennel.Readable(x) and x and y then return instance or 0, x, y end
+    if Addon.Readable(x) and x and y then return instance or 0, x, y end
     local map = C_Map.GetBestMapForUnit("player")
     local position = map and C_Map.GetPlayerMapPosition(map, "player")
     if not map or not position then return nil, 0, 0 end

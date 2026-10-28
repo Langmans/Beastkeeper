@@ -1,17 +1,17 @@
--- The beast data Kennel gets from LibTameable-1.0: pet ability ranks and the beasts that teach
--- them, loaded here on its own per client, with the family table Kennel shows them by (the module
+-- The beast data Beastkeeper gets from LibTameable-1.0: pet ability ranks and the beasts that teach
+-- them, loaded here on its own per client, with the family table Beastkeeper shows them by (the module
 -- specs use a small data set instead).
 
 -- WOW_PROJECT_ID of each client the library has data for.
 local PROJECTS = { era = 2, tbc = 5, forever = 18 }
 
 ---@param client string? a PROJECTS key, WoW: Forever by default
----@return table<number, KennelPetAbilityRank>, table<number, KennelBeast>, table<number, KennelFamilyInfo>
+---@return table<number, BeastkeeperPetAbilityRank>, table<number, BeastkeeperBeast>, table<number, BeastkeeperFamilyInfo>
 local function Load(client)
-    -- Core\Addon.lua's Kennel.SelfKeyedEnum, which needs the whole addon to load.
-    local ns = { L = {}, SelfKeyedEnum = NewClient().Kennel.SelfKeyedEnum }
-    assert(loadfile("Core/Constants/Enums.lua"))("Kennel", ns)
-    assert(loadfile("Core/Constants/Families.lua"))("Kennel", ns)
+    -- Core\Addon.lua's Beastkeeper.SelfKeyedEnum, which needs the whole addon to load.
+    local ns = { L = {}, SelfKeyedEnum = NewClient().Addon.SelfKeyedEnum }
+    assert(loadfile("Core/Constants/Enums.lua"))("Beastkeeper", ns)
+    assert(loadfile("Core/Constants/Families.lua"))("Beastkeeper", ns)
     -- The loaded files read these from _G, not from the spec's own environment.
     _G.WOW_PROJECT_ID = PROJECTS[client or "forever"]
     _G.LibStub = nil
@@ -42,7 +42,7 @@ describe("the beast data", function()
     local ranks, beasts, families = Load()
 
     for client in pairs(PROJECTS) do
-        it("names only families Kennel's family table has (" .. client .. ")", function()
+        it("names only families Beastkeeper's family table has (" .. client .. ")", function()
             local clientRanks, clientBeasts = Load(client)
             assert.is_not_nil(next(clientBeasts))
             for npc, beast in pairs(clientBeasts) do
@@ -119,8 +119,8 @@ describe("the beast data", function()
 
     it("has the pet trainers and stable masters, each with a faction it serves and its spots", function()
         local ns = {}
-        assert(loadfile("Core/Constants/Enums.lua"))("Kennel", ns)
-        assert(loadfile("Data/Forever/Trainers.lua"))("Kennel", ns)
+        assert(loadfile("Core/Constants/Enums.lua"))("Beastkeeper", ns)
+        assert(loadfile("Data/Forever/Trainers.lua"))("Beastkeeper", ns)
         local count = { trainer = 0, stable = 0 }
         for npc, trainer in pairs(ns.data.trainers) do
             count[trainer.kind] = count[trainer.kind] + 1

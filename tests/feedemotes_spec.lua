@@ -5,7 +5,7 @@ local MYSTERY_MEAT, APPLE, JERKY, BREAD = 12037, 4536, 117, 4540
 
 ---The module.
 local function module(client)
-    return client.Kennel:GetModule("FeedEmotes")
+    return client.Addon:GetModule("FeedEmotes")
 end
 
 ---A hunter logged in with FeedEmotes switched on (it starts off). Without `variety`, the
@@ -14,7 +14,7 @@ end
 local function feeder(opts)
     opts = opts or {}
     local client = NewClient(opts):login()
-    client.Kennel:SetModuleOn("FeedEmotes", true)
+    client.Addon:SetModuleOn("FeedEmotes", true)
     if not opts.variety then
         local emotes = module(client):LinesInUse().emotes
         emotes.openings, emotes.whole, emotes.wholeFamily = nil, nil, nil
@@ -31,7 +31,7 @@ end
 describe("FeedEmotes", function()
     it("is off until switched on: its emotes go out in public chat", function()
         local client = NewClient():login()
-        assert.is_false(client.Kennel:IsModuleOn("FeedEmotes"))
+        assert.is_false(client.Addon:IsModuleOn("FeedEmotes"))
         client:feed(MYSTERY_MEAT):settle()
         assert.are.same({}, client.chatSent)
     end)
@@ -159,18 +159,18 @@ describe("FeedEmotes", function()
 
         it("sends nothing for a cast still waiting for the bags when switched off", function()
             local client = feeder():castSucceeded()
-            client.Kennel:SetModuleOn("FeedEmotes", false)
+            client.Addon:SetModuleOn("FeedEmotes", false)
             client:settle()
             assert.are.same({}, client.chatSent)
         end)
 
         it("watches nothing on other classes, and stops when switched off", function()
             local mage = NewClient({ class = "MAGE" }):login()
-            mage.Kennel:SetModuleOn("FeedEmotes", true)
+            mage.Addon:SetModuleOn("FeedEmotes", true)
             mage:feed(MYSTERY_MEAT):settle()
             assert.are.same({}, mage.chatSent)
             local client = feeder()
-            client.Kennel:SetModuleOn("FeedEmotes", false)
+            client.Addon:SetModuleOn("FeedEmotes", false)
             client:feed(MYSTERY_MEAT):settle()
             assert.are.same({}, client.chatSent)
         end)

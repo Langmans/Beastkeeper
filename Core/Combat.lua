@@ -4,8 +4,8 @@ local _, ns = ...
 -- combat, or once combat ends. Kept on the core, since a module's own events are dropped when it is
 -- switched off, and switching a module off in combat is exactly when this is needed.
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
 -- What waits for the end of combat, by key: asking again for a key replaces what waited.
 ---@type table<string, fun()>
@@ -14,7 +14,7 @@ local waiting = {}
 ---Runs `fn` now, or after combat; per key only the last one asked runs.
 ---@param key string
 ---@param fn fun()
-function Kennel:OutOfCombat(key, fn)
+function Addon:OutOfCombat(key, fn)
     if not InCombatLockdown() then
         fn()
         return
@@ -24,7 +24,7 @@ function Kennel:OutOfCombat(key, fn)
 end
 
 ---Combat ended: runs what waited for it.
-function Kennel:RunWaiting()
+function Addon:RunWaiting()
     self:UnregisterEvent("PLAYER_REGEN_ENABLED")
     local due = waiting
     waiting = {}

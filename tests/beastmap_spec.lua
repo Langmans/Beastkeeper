@@ -7,9 +7,9 @@ local BORDER = 1430 -- the simulated map right east of Elwynn Forest
 local TRAINER_ICON, STABLE_ICON = 132162, 132161
 local CLAW_ICON, BITE_ICON, CHARGE_ICON = 132140, 132278, 132183
 
----@param Kennel Kennel
-local function SmallData(Kennel)
-    Kennel.data = {
+---@param Addon Addon
+local function SmallData(Addon)
+    Addon.data = {
         petAbilityRanks = {
             [CLAW] = { ability = CLAW, rank = 1, level = 1, families = { 2 }, teachers = { 101 } },
             [CLAW_2] = { ability = CLAW, rank = 2, level = 8, families = { 2 }, teachers = { 101 } },
@@ -81,10 +81,10 @@ end
 ---@param key string
 ---@param value boolean
 local function set(client, key, value)
-    client.Kennel:GetModule("BeastMap"):GetOptions().args[key].set(nil, value)
+    client.Addon:GetModule("BeastMap"):GetOptions().args[key].set(nil, value)
 end
 
----Kennel's button on the world map, if it made one.
+---Beastkeeper's button on the world map, if it made one.
 ---@param client table
 ---@return table?
 local function mapButton(client)
@@ -118,7 +118,7 @@ describe("Beast Map", function()
             assert.are.same({}, client:mapPins(ELWYNN))
             assert.are.same({}, client:mapPins(ELWYNN, true), "the minimap too")
             assert.are.equal(before + 1, client.mapUpdates.world)
-            assert.is_false(client.Kennel:GetModule("BeastMap"):Settings().pins)
+            assert.is_false(client.Addon:GetModule("BeastMap"):Settings().pins)
             assert.are.equal("Pins hidden. Click to show them.", select(2, hoverMapButton(client))[1].text)
             button:GetScript("OnClick")(button, "LeftButton")
             assert.are.equal(3, #client:mapPins(ELWYNN))
@@ -139,16 +139,16 @@ describe("Beast Map", function()
         it("is not there without HandyNotes, or while the module is off", function()
             assert.is_nil(mapButton(hunter(10, { handyNotes = false })))
             local client = hunter(10)
-            client.Kennel:GetModule("BeastMap"):Disable()
+            client.Addon:GetModule("BeastMap"):Disable()
             assert.is_false(mapButton(client):IsShown())
-            client.Kennel:GetModule("BeastMap"):Enable()
+            client.Addon:GetModule("BeastMap"):Enable()
             assert.is_true(mapButton(client):IsShown())
         end)
     end)
 
-    it("joins HandyNotes as the Kennel plugin, and stays out without it", function()
+    it("joins HandyNotes as the Beastkeeper plugin, and stays out without it", function()
         local client = hunter()
-        assert.is_not_nil(HandyNotes.plugins.Kennel)
+        assert.is_not_nil(HandyNotes.plugins.Beastkeeper)
         assert.is_not_nil(HandyNotes.pluginOptions)
         assert.has_no.errors(function()
             hunter(10, { handyNotes = false })
@@ -157,7 +157,7 @@ describe("Beast Map", function()
 
     it("is for hunters only", function()
         hunter(10, { class = "MAGE" })
-        assert.is_nil(HandyNotes.plugins.Kennel)
+        assert.is_nil(HandyNotes.plugins.Beastkeeper)
     end)
 
     it("pins the beasts at or below the hunter's level that teach a rank it lacks", function()
@@ -210,7 +210,7 @@ describe("Beast Map", function()
 
     it("indents the options that refine another, greyed while that one is off", function()
         local client = hunter(10)
-        local args = client.Kennel:GetModule("BeastMap"):GetOptions().args
+        local args = client.Addon:GetModule("BeastMap"):GetOptions().args
         for parent, children in pairs({
             usefulOnly = { "gaps", "aboveLevel", "untilTame" },
             levelToast = { "levelChat" },
@@ -247,7 +247,7 @@ describe("Beast Map", function()
         _, lines = client:hoverPin(ELWYNN, spider.coord)
         assert.are.equal("Level 5", lines[1].text)
         assert.is_true(GameTooltip:IsShown())
-        HandyNotes.plugins.Kennel.OnLeave()
+        HandyNotes.plugins.Beastkeeper.OnLeave()
         assert.is_false(GameTooltip:IsShown())
         assert.has_no.errors(function()
             client:hoverPin(ELWYNN, 1)
@@ -320,7 +320,7 @@ describe("Beast Map", function()
             set(client, "tooltip", false)
             assert.are.same({}, client:hoverUnit(creature(101)))
             set(client, "tooltip", true)
-            client.Kennel:GetModule("BeastMap"):Disable()
+            client.Addon:GetModule("BeastMap"):Disable()
             assert.are.same({}, client:hoverUnit(creature(101)))
             assert.are.same({}, hunter(10, { class = "MAGE" }):hoverUnit(creature(101)))
         end)
@@ -336,7 +336,7 @@ describe("Beast Map", function()
 
         ---The key's release, as the client runs a key binding's click.
         local function press(client)
-            local button = _G.KennelTameButton
+            local button = _G.BeastkeeperTameButton
             for _, hook in ipairs(button.hooks.OnClick or {}) do
                 hook(button, "LeftButton", false)
             end
@@ -347,37 +347,37 @@ describe("Beast Map", function()
             local client = hunter(10)
             client.unitGUIDs.nameplate1 = "Creature-0-5250-0-12-104-0000ABCDEF"
             client:fire("NAME_PLATE_UNIT_ADDED", "nameplate1")
-            assert.are.equal(TARGET_RARE_CAT, _G.KennelTameButton.attributes.macrotext)
-            assert.are.equal("macro", _G.KennelTameButton.attributes.type)
+            assert.are.equal(TARGET_RARE_CAT, _G.BeastkeeperTameButton.attributes.macrotext)
+            assert.are.equal("macro", _G.BeastkeeperTameButton.attributes.type)
             assert.is_true(client:printedContains("The tame key now targets Rare Cat."))
             assert.are.equal(
                 "Beast Map: target and mark the beast to tame",
-                _G["BINDING_NAME_CLICK KennelTameButton:LeftButton"]
+                _G["BINDING_NAME_CLICK BeastkeeperTameButton:LeftButton"]
             )
         end)
 
         it("takes the beast whose pin was clicked, after combat when in it", function()
             local client = hunter(10):enterCombat()
             client:clickPin(TIRISFAL, client:mapPins(TIRISFAL)[1].coord)
-            assert.is_nil(_G.KennelTameButton.attributes.macrotext)
+            assert.is_nil(_G.BeastkeeperTameButton.attributes.macrotext)
             client:leaveCombat()
-            assert.are.equal(TARGET_RARE_CAT, _G.KennelTameButton.attributes.macrotext)
+            assert.are.equal(TARGET_RARE_CAT, _G.BeastkeeperTameButton.attributes.macrotext)
         end)
 
         it("says how to set a beast when there is none yet, and stays empty while switched off", function()
             local client = press(hunter(10))
             assert.is_true(client:printedContains("No beast to target yet"))
-            client.Kennel:GetModule("BeastMap"):Disable()
+            client.Addon:GetModule("BeastMap"):Disable()
             client:clickPin(TIRISFAL, 1)
-            assert.is_nil(_G.KennelTameButton.attributes.macrotext)
+            assert.is_nil(_G.BeastkeeperTameButton.attributes.macrotext)
         end)
     end)
 
     describe("the hunt", function()
         ---The Abilities tab on `ability`'s row (its index in the list).
         local function abilities(client, index)
-            client.Kennel:OpenWindow("abilities")
-            local panel = client.Kennel.window.panels.abilities
+            client.Addon:OpenWindow("abilities")
+            local panel = client.Addon.window.panels.abilities
             local row = panel.rows[index]
             row:GetScript("OnClick")(row, "LeftButton")
             return panel
@@ -388,12 +388,12 @@ describe("Beast Map", function()
             button:GetScript("OnClick")(button, "LeftButton")
         end
 
-        ---What KENNEL_HUNT_STARTED and KENNEL_HUNT_ENDED told, in order.
+        ---What BEASTKEEPER_HUNT_STARTED and BEASTKEEPER_HUNT_ENDED told, in order.
         local function heard(client)
             local events = {}
             local listener = {}
-            for _, message in ipairs({ "KENNEL_HUNT_STARTED", "KENNEL_HUNT_ENDED" }) do
-                client.Kennel:Listen(listener, message, function(_, event)
+            for _, message in ipairs({ "BEASTKEEPER_HUNT_STARTED", "BEASTKEEPER_HUNT_ENDED" }) do
+                client.Addon:Listen(listener, message, function(_, event)
                     events[#events + 1] = { message, event }
                 end)
             end
@@ -405,23 +405,23 @@ describe("Beast Map", function()
             local events = heard(client)
             local panel = abilities(client, 3)
             click(panel.ranks[3].go)
-            local M = client.Kennel:GetModule("BeastMap")
+            local M = client.Addon:GetModule("BeastMap")
             assert.are.same({ npc = 104, spellID = CLAW_3 }, M.db.char.hunt, "kept for the character")
             assert.is_true(client:printedContains("Hunting Rare Cat for Claw (Rank 3)."))
             assert.is_true(client:printedContains("Tirisfal Glades 30.0, 30.0"), "the route")
             assert.are.equal("Rare Cat", M.tameTarget)
-            assert.are.equal("KENNEL_HUNT_STARTED", events[1][1])
+            assert.are.equal("BEASTKEEPER_HUNT_STARTED", events[1][1])
             assert.are.same({ module = "BeastMap", npc = 104, spellID = CLAW_3, name = "Rare Cat" }, events[1][2])
             assert.is_true(panel.ranks[3].go.active.shown, "the hunted rank's button lit")
         end)
 
-        it("stops on that button again, or with /kennel hunt stop", function()
+        it("stops on that button again, or with /beastkeeper hunt stop", function()
             local client = hunter(10)
             local events = heard(client)
             local panel = abilities(client, 3)
             click(panel.ranks[3].go)
             click(panel.ranks[3].go)
-            local M = client.Kennel:GetModule("BeastMap")
+            local M = client.Addon:GetModule("BeastMap")
             assert.is_nil(M.db.char.hunt)
             assert.is_true(client:printedContains("Stopped hunting Rare Cat."))
             assert.are.same(
@@ -444,13 +444,13 @@ describe("Beast Map", function()
             local panel = abilities(client, 3)
             click(panel.ranks[3].go) -- Rare Cat, Claw 3
             click(abilities(client, 1).ranks[1].go) -- Spider, Bite 1
-            assert.are.same({ "KENNEL_HUNT_STARTED", "KENNEL_HUNT_ENDED", "KENNEL_HUNT_STARTED" }, {
+            assert.are.same({ "BEASTKEEPER_HUNT_STARTED", "BEASTKEEPER_HUNT_ENDED", "BEASTKEEPER_HUNT_STARTED" }, {
                 events[1][1],
                 events[2][1],
                 events[3][1],
             })
             assert.are.equal("Rare Cat", events[2][2].name)
-            assert.are.same({ npc = 103, spellID = BITE }, client.Kennel:GetModule("BeastMap").db.char.hunt)
+            assert.are.same({ npc = 103, spellID = BITE }, client.Addon:GetModule("BeastMap").db.char.hunt)
         end)
 
         it("ends once the hunter knows the rank", function()
@@ -458,7 +458,7 @@ describe("Beast Map", function()
             local events = heard(client)
             click(abilities(client, 3).ranks[3].go)
             client:openTrainer({ { "Claw", "used", CLAW_3 } }):closeTrainer()
-            assert.is_nil(client.Kennel:GetModule("BeastMap").db.char.hunt)
+            assert.is_nil(client.Addon:GetModule("BeastMap").db.char.hunt)
             assert.is_true(client:printedContains("Learned Claw (Rank 3): the hunt for Rare Cat is over."))
             assert.are.equal("learned", events[2][2].reason)
         end)
@@ -471,7 +471,7 @@ describe("Beast Map", function()
                 if p.x == 20 then pin = p end
             end
             client:clickPin(ELWYNN, pin.coord)
-            assert.are.same({ npc = 103, spellID = BITE }, client.Kennel:GetModule("BeastMap").db.char.hunt)
+            assert.are.same({ npc = 103, spellID = BITE }, client.Addon:GetModule("BeastMap").db.char.hunt)
             assert.is_true(client:printedContains("Elwynn Forest 20.0, 20.0"))
         end)
 
@@ -479,7 +479,7 @@ describe("Beast Map", function()
         ---(its CENTER's offset) and its size.
         local function shownAreas(client, pool)
             local out = {}
-            for _, disc in ipairs(client.Kennel:GetModule("BeastMap")[pool] or {}) do
+            for _, disc in ipairs(client.Addon:GetModule("BeastMap")[pool] or {}) do
                 if disc.shown then
                     local point = disc.points[#disc.points]
                     out[#out + 1] = { x = point[4], y = point[5], width = disc.width, height = disc.height }
@@ -583,7 +583,7 @@ describe("Beast Map", function()
         ---The toasts shown from now on.
         local function toasts(client)
             local seen = {}
-            client.Kennel.RegisterMessage(seen, "KENNEL_TOAST", function(_, event)
+            client.Addon.RegisterMessage(seen, "BEASTKEEPER_TOAST", function(_, event)
                 seen[#seen + 1] = event.toast
             end)
             return seen
@@ -614,10 +614,10 @@ describe("Beast Map", function()
             assert.are.equal(2, #seen, "another spawn")
         end)
 
-        it("is told to other addons as KENNEL_RARE_SEEN, also with the toast off", function()
+        it("is told to other addons as BEASTKEEPER_RARE_SEEN, also with the toast off", function()
             local client = hunter(10)
             local heard = {}
-            client.Kennel:Listen(heard, "KENNEL_RARE_SEEN", function(_, event)
+            client.Addon:Listen(heard, "BEASTKEEPER_RARE_SEEN", function(_, event)
                 heard[#heard + 1] = event
             end)
             local seen = toasts(client)
@@ -674,7 +674,7 @@ describe("Beast Map", function()
                 seen = toasts(client)
                 set(client, "rareToast", false)
                 nameplate(client, RARE_CAT)
-                client.Kennel:GetModule("BeastMap"):Disable()
+                client.Addon:GetModule("BeastMap"):Disable()
                 set(client, "rareToast", true)
                 nameplate(client, "Creature-0-5250-0-12-104-0000FEDCBA")
                 assert.are.same({}, seen)
@@ -683,10 +683,10 @@ describe("Beast Map", function()
     end)
 
     describe("the Abilities tab", function()
-        ---The tab, opened in Kennel's window.
+        ---The tab, opened in Beastkeeper's window.
         local function tab(client)
-            client.Kennel:OpenWindow("abilities")
-            return client.Kennel.window.panels.abilities
+            client.Addon:OpenWindow("abilities")
+            return client.Addon.window.panels.abilities
         end
 
         ---The shown rows' label texts of a list.
@@ -763,7 +763,7 @@ describe("Beast Map", function()
             }, "the beasts' levels")
             assert.are.same({ 1, 0.6, 0.3 }, panel.ranks[6].text.textColor, "above the hunter's level")
             click(panel.ranks[6].go)
-            assert.are.same({ npc = 102, spellID = CLAW_3 }, client.Kennel:GetModule("BeastMap").db.char.hunt)
+            assert.are.same({ npc = 102, spellID = CLAW_3 }, client.Addon:GetModule("BeastMap").db.char.hunt)
             assert.is_true(panel.ranks[6].go.active.shown)
             click(panel.ranks[3])
             assert.is_false(panel.ranks[4].shown, "folded again")
@@ -771,13 +771,13 @@ describe("Beast Map", function()
 
         it("scrolls a long list with the mouse wheel", function()
             local client = hunter(70)
-            local beasts, teachers = client.Kennel.data.beasts, {}
+            local beasts, teachers = client.Addon.data.beasts, {}
             for i = 1, 20 do
                 beasts[400 + i] =
                     { name = "Cat " .. i, family = 2, minLevel = 10, maxLevel = 10, pins = { [ELWYNN] = { i, 50 } } }
                 teachers[i] = 400 + i
             end
-            client.Kennel.data.petAbilityRanks[CLAW].teachers = teachers
+            client.Addon.data.petAbilityRanks[CLAW].teachers = teachers
             local panel = tab(client)
             click(panel.rows[3])
             click(panel.ranks[1])
@@ -833,8 +833,8 @@ describe("Beast Map", function()
             local panel = tab(client)
             click(panel.rows[3])
             assert.are.equal("Low Cat in Elwynn Forest, above your level", panel.ranks[1].text.text)
-            client.Kennel.data.petAbilityRanks[CLAW_2].teachers = {}
-            client.Kennel:RefreshWindow("abilities")
+            client.Addon.data.petAbilityRanks[CLAW_2].teachers = {}
+            client.Addon:RefreshWindow("abilities")
             assert.are.equal("No beast teaches it", panel.ranks[2].text.text)
             assert.is_false(panel.ranks[2].go.shown)
             local row = panel.ranks[2]
@@ -885,10 +885,10 @@ describe("Beast Map", function()
             click(panel.rows[3])
             local first = asked
             assert.is_true(first <= 5, "one per beast at most: " .. first)
-            client.Kennel:RefreshWindow("abilities")
+            client.Addon:RefreshWindow("abilities")
             assert.are.equal(first, asked, "kept")
             client:advance(31)
-            client.Kennel:RefreshWindow("abilities")
+            client.Addon:RefreshWindow("abilities")
             assert.is_true(asked > first, "the hunter may have moved")
         end)
 
@@ -897,8 +897,8 @@ describe("Beast Map", function()
             local panel = tab(client)
             click(panel.rows[3])
             assert.are.equal("High Cat in Elwynn Forest", panel.ranks[3].text.text)
-            client.Kennel.data.beasts[102].pins = { [TIRISFAL] = { 1, 1 } }
-            client.Kennel:RefreshWindow("abilities")
+            client.Addon.data.beasts[102].pins = { [TIRISFAL] = { 1, 1 } }
+            client.Addon:RefreshWindow("abilities")
             assert.are.equal("High Cat in Tirisfal Glades", panel.ranks[3].text.text, "65 is closer to 70")
         end)
 
@@ -906,7 +906,7 @@ describe("Beast Map", function()
             local client = hunter(70)
             -- At Elwynn Forest's east edge; Late Cat lives in Elwynn's west and just over the border.
             client.worldPos = { -9000, 400 - 0.45 * 3470, 0 }
-            client.Kennel.data.beasts[106].pins = { [ELWYNN] = { 5, 50 }, [BORDER] = { 10, 50 } }
+            client.Addon.data.beasts[106].pins = { [ELWYNN] = { 5, 50 }, [BORDER] = { 10, 50 } }
             local panel = tab(client)
             click(panel.rows[3])
             assert.are.equal("Late Cat in Border Valley", panel.ranks[3].text.text)
@@ -916,7 +916,7 @@ describe("Beast Map", function()
 
         it("asks the route addon about the 5 nearest beasts in reach only", function()
             local client = hunter(70)
-            local beasts, teachers = client.Kennel.data.beasts, {}
+            local beasts, teachers = client.Addon.data.beasts, {}
             for i = 1, 7 do
                 beasts[300 + i] = {
                     name = "Cat " .. i,
@@ -927,7 +927,7 @@ describe("Beast Map", function()
                 }
                 teachers[i] = 300 + i
             end
-            client.Kennel.data.petAbilityRanks[CLAW_3].teachers = teachers
+            client.Addon.data.petAbilityRanks[CLAW_3].teachers = teachers
             local asked = {}
             LibStub("LibGoThere-1.0"):RegisterProvider({
                 id = "test",
@@ -1000,17 +1000,17 @@ describe("Beast Map", function()
         it("is a tab only while Beast Map is on", function()
             local client = hunter(10)
             tab(client)
-            client.Kennel:GetModule("BeastMap"):Disable()
-            client.Kennel:ToggleWindow()
-            client.Kennel:OpenWindow("abilities")
-            assert.are.equal("pets", client.Kennel.window.current)
+            client.Addon:GetModule("BeastMap"):Disable()
+            client.Addon:ToggleWindow()
+            client.Addon:OpenWindow("abilities")
+            assert.are.equal("pets", client.Addon.window.current)
         end)
     end)
 
     describe("the Families tab", function()
         local function tab(client)
-            client.Kennel:OpenWindow("families")
-            return client.Kennel.window.panels.families
+            client.Addon:OpenWindow("families")
+            return client.Addon.window.panels.families
         end
 
         local function shown(rows, field)
@@ -1073,11 +1073,11 @@ describe("Beast Map", function()
 
         it("shows the nearest beast's model by its display ID, else by its NPC ID", function()
             local client = hunter(10)
-            client.Kennel.data.beasts[101].display = 892
+            client.Addon.data.beasts[101].display = 892
             local panel = tab(client)
             assert.are.same({ displayID = 892 }, panel.model.shownModel)
-            client.Kennel.data.beasts[101].display = nil
-            client.Kennel:RefreshWindow("families")
+            client.Addon.data.beasts[101].display = nil
+            client.Addon:RefreshWindow("families")
             assert.are.same({ creature = 101 }, panel.model.shownModel)
         end)
 
@@ -1099,7 +1099,7 @@ describe("Beast Map", function()
             assert.is_false(panel.beasts[2].go.shown, "no pin to go to")
         end)
 
-        it("shows another family on a click, also one Kennel knows little of", function()
+        it("shows another family on a click, also one Beastkeeper knows little of", function()
             local client = hunter(10)
             client.familyNames[40] = "Fuchs"
             local panel = tab(client)
@@ -1113,7 +1113,7 @@ describe("Beast Map", function()
             assert.are.equal("", panel.diet.text)
             assert.are.equal("", panel.abilities.text)
             assert.are.same({}, shown(panel.beasts, "text"))
-            assert.are.equal("No beast of this family in Kennel's data.", panel.none.text)
+            assert.are.equal("No beast of this family in Beastkeeper's data.", panel.none.text)
             assert.is_false(panel.model.shown)
         end)
 
@@ -1150,16 +1150,16 @@ describe("Beast Map", function()
         client:openTrainer({ { "Claw", "used", CLAW } }):closeTrainer()
         assert.are.equal(before + 2, client.mapUpdates.world)
         set(client, "gaps", true)
-        assert.is_true(client.Kennel:GetModule("BeastMap"):Settings().gaps)
+        assert.is_true(client.Addon:GetModule("BeastMap"):Settings().gaps)
         assert.are.equal(before + 3, client.mapUpdates.world)
     end)
 
     it("pins nothing while switched off", function()
         local client = hunter(10)
-        client.Kennel:GetModule("BeastMap"):Disable()
+        client.Addon:GetModule("BeastMap"):Disable()
         assert.are.same({}, client:mapPins(ELWYNN))
         assert.is_true(client.mapUpdates.world > 0)
-        client.Kennel:GetModule("BeastMap"):Enable()
+        client.Addon:GetModule("BeastMap"):Enable()
         assert.are.equal(3, #client:mapPins(ELWYNN))
     end)
 
@@ -1222,7 +1222,7 @@ describe("Beast Map", function()
 
         it("names an ordinary beast before a rare, and the beast alone when its map has no name", function()
             local client = hunter(9)
-            client.Kennel.data.beasts[104].minLevel = 11 -- Rare Cat now comes with Late Cat
+            client.Addon.data.beasts[104].minLevel = 11 -- Rare Cat now comes with Late Cat
             local _, text = levelUp(client, 11)
             assert.are.equal("Late Cat teaches it.", text)
         end)

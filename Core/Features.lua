@@ -3,18 +3,18 @@ local _, ns = ...
 -- What the client's game has of the hunter pet's old mechanics, found by asking for the API, not
 -- by version: WoW: Forever, Classic Era and Burning Crusade have them all; Wrath and later lack
 -- training points (and so learning abilities from beasts), Cataclysm and later pet happiness and
--- ammo. A module names what it needs in `requires`; without it, it stays off (Kennel:IsModuleOn).
+-- ammo. A module names what it needs in `requires`; without it, it stays off (Beastkeeper:IsModuleOn).
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
----Works out Kennel.features; at OnInitialize, when every file has loaded.
-function Kennel:FindFeatures()
+---Works out Beastkeeper.features; at OnInitialize, when every file has loaded.
+function Addon:FindFeatures()
     self.features = {
         happiness = self.C.Has("PetInfo", "GetPetHappiness"),
         ammo = INVSLOT_AMMO ~= nil,
         beastTraining = self.C.Has("PetInfo", "GetPetTrainingPoints"),
-        -- Kennel's own data of which beasts teach what (Data\<client>\Beasts.lua).
+        -- Beastkeeper's own data of which beasts teach what (Data\<client>\Beasts.lua).
         beastData = next(self.data.beasts) ~= nil,
     }
 end
@@ -22,7 +22,7 @@ end
 ---Whether the client has everything a module needs.
 ---@param name string
 ---@return boolean
-function Kennel:IsModuleUsable(name)
+function Addon:IsModuleUsable(name)
     for _, feature in ipairs(self.modules[name].requires or {}) do
         if not self.features[feature] then return false end
     end

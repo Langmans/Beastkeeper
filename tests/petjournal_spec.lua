@@ -10,7 +10,7 @@ local FLUFFY = 3069428 -- the default pet's number
 ---@param client table
 ---@return table<string, table>
 local function page(client)
-    return client.Kennel:GetModule("PetJournal"):GetOptions().args
+    return client.Addon:GetModule("PetJournal"):GetOptions().args
 end
 
 ---The journal text of the chosen pet (the pet out, unless another was picked).
@@ -45,10 +45,10 @@ describe("Pet Journal", function()
         -- Creature's, where a tamed pet's is a Pet's at once (seen 2026-10-25 on Season of Discovery).
         client.petGUID = "Creature-0-5211-1-143-1998-00005E1A20"
         client:summon("Webwood Lurker", {}):advance(1)
-        assert.are.same({}, client.Kennel:GetModule("PetJournal"):Pets())
+        assert.are.same({}, client.Addon:GetModule("PetJournal"):Pets())
         client.petGUID = "Pet-0-5211-1-143-1995-0101235792"
         client:summon("Owl", { 17253 }):advance(1)
-        assert.is_not_nil(next(client.Kennel:GetModule("PetJournal"):Pets()), "the tamed one")
+        assert.is_not_nil(next(client.Addon:GetModule("PetJournal"):Pets()), "the tamed one")
     end)
 
     it("records a tame: when, where and as which beast", function()
@@ -65,7 +65,7 @@ describe("Pet Journal", function()
         local client = NewClient()
         client.petGUID = "Pet-0-4615-1-1-165189-3AA8C65C43"
         client:login():advance(600)
-        local M = client.Kennel:GetModule("PetJournal")
+        local M = client.Addon:GetModule("PetJournal")
         local old = tostring(0xA8C65C43)
         assert.is_truthy(M:Pets()[old], "kept under the GUID's number at first")
         client:petDies():petBack()
@@ -91,7 +91,7 @@ describe("Pet Journal", function()
         local client = NewClient()
         client.petGUID = "Pet-0-4615-1-1-165189-3AA8C65C43"
         client:login()
-        local M = client.Kennel:GetModule("PetJournal")
+        local M = client.Addon:GetModule("PetJournal")
         client.stable.stabled = {
             { petNumber = 10, name = "Fluffy", familyName = "Cat" },
             { petNumber = 11, name = "Fluffy", familyName = "Cat" },
@@ -121,14 +121,14 @@ describe("Pet Journal", function()
         client:summon("Whiskers", { 17253 }):advance(60)
         local when = date("%Y-%m-%d %H:%M", client.serverTime)
         assert.is_true(says(client, "Tamed " .. when .. " in Darkshore, as NPC 3825."), journal(client))
-        local pets = client.Kennel:GetModule("PetJournal"):Pets()
+        local pets = client.Addon:GetModule("PetJournal"):Pets()
         assert.is_truthy(pets[fresh])
         client:logout()
         client = NewClient({ saved = Saved() })
         client.petGUID = "Pet-0-5250-0-1-3825-0100ABCDEF"
         client.pet.name = "Whiskers"
         client:login():advance(60)
-        pets = client.Kennel:GetModule("PetJournal"):Pets()
+        pets = client.Addon:GetModule("PetJournal"):Pets()
         assert.is_nil(pets[fresh], "moved")
         local entry = pets[tostring(0xABCDEF)]
         assert.is_true(entry.first.tamed)
@@ -144,7 +144,7 @@ describe("Pet Journal", function()
         client = NewClient({ saved = Saved() })
         client.petGUID = "Pet-0-5250-0-1-1188-0100ABCDEF"
         client:login():advance(1)
-        local pets = client.Kennel:GetModule("PetJournal"):Pets()
+        local pets = client.Addon:GetModule("PetJournal"):Pets()
         assert.is_truthy(pets["Creature-0-5250-0-1-3825-0000ABCDEF"], "still waiting for its own pet")
         assert.is_nil(pets[tostring(0xABCDEF)].first.tamed)
     end)
@@ -196,7 +196,7 @@ describe("Pet Journal", function()
         client:summon("Whiskers", { 17253 }):advance(1)
         page(client).pet.set(nil, tostring(FLUFFY))
         assert.is_true(says(client, "Can teach you: Bite (Rank 1), Cower (Rank 1)."), journal(client))
-        client.Kennel:SetModuleOn("AbilityLearned", false)
+        client.Addon:SetModuleOn("AbilityLearned", false)
         assert.is_false(says(client, "Can teach you"), "without Ability Learned's ranks")
     end)
 
@@ -243,7 +243,7 @@ describe("Pet Journal", function()
             page(client).tooltip.set(nil, false)
             assert.are.same({}, tooltip(client, client.petGUID))
             page(client).tooltip.set(nil, true)
-            client.Kennel:SetModuleOn("PetJournal", false)
+            client.Addon:SetModuleOn("PetJournal", false)
             assert.are.same({}, tooltip(client, client.petGUID))
         end)
     end)
@@ -252,7 +252,7 @@ describe("Pet Journal", function()
         local mage = NewClient({ class = "MAGE" }):login():advance(1)
         assert.are.same({}, page(mage).pet.values())
         local client = NewClient({ noPet = true }):login()
-        client.Kennel:SetModuleOn("PetJournal", false)
+        client.Addon:SetModuleOn("PetJournal", false)
         client:summon("Whiskers", { 17253 }):advance(1)
         assert.are.same({}, page(client).pet.values())
     end)

@@ -4,16 +4,16 @@ local _, ns = ...
 -- below the low line. WoW: Forever may hide the pet's health from addons (a secret value), so the
 -- low toast cannot decide then; the marker needs no decision. A Step curve maps the health
 -- fraction to an alpha (1 below the line, 0 from it up), UnitHealthPercent evaluates it in the
--- client, and the result goes straight into SetAlpha, which takes a hidden value. Kennel never
+-- client, and the result goes straight into SetAlpha, which takes a hidden value. Beastkeeper never
 -- reads the number. The marker takes no mouse: an invisible frame would still catch clicks.
 
----@type Kennel
-local Kennel = ns
-local M = Kennel:GetModule("CareButton") --[[@as KennelCareButton]]
+---@type Addon
+local Addon = ns
+local M = Addon:GetModule("CareButton") --[[@as BeastkeeperCareButton]]
 
 local SIZE = 28
 
-local marker = CreateFrame("Frame", "KennelLowHealthMarker", UIParent)
+local marker = CreateFrame("Frame", Addon.Global("LowHealthMarker"), UIParent)
 marker:SetSize(SIZE, SIZE)
 marker:SetFrameStrata("MEDIUM")
 marker:EnableMouse(false)
@@ -59,10 +59,10 @@ function M:UpdateMarker()
     end
     if not styled then
         styled = true
-        local _, mendIcon = Kennel.SpellInfo(M.MEND_PET)
+        local _, mendIcon = Addon.SpellInfo(M.MEND_PET)
         icon:SetTexture(mendIcon)
-        Kennel:StyleButton(marker --[[@as Button]], { icon = icon, group = "CareButton" })(1, 0, 0)
-        marker:SetPoint("RIGHT", Kennel.PetFrame(), "LEFT", -4, 0)
+        Addon:StyleButton(marker --[[@as Button]], { icon = icon, group = "CareButton" })(1, 0, 0)
+        marker:SetPoint("RIGHT", Addon.PetFrame(), "LEFT", -4, 0)
     end
     -- A number curve gives a number, hidden or not; SetAlpha takes the hidden one as it is.
     local alpha = UnitHealthPercent("pet", true, CurveFor(self:Settings().low)) --[[@as number]]

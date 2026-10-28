@@ -1,7 +1,7 @@
--- The /kennel slash command.
+-- The /beastkeeper slash command.
 
-local function modules(Kennel)
-    local autocast = Kennel:NewModule("Autocast")
+local function modules(Addon)
+    local autocast = Addon:NewModule("Autocast")
     autocast.title = "Autocast Check"
     -- Its own word: the real AutocastCheck has "autocast", and which of two matches is found
     -- would depend on table order.
@@ -10,29 +10,29 @@ local function modules(Kennel)
         kite = { desc = "switch kite mode", func = spy.new(function() end) },
         tank = { desc = "switch tank mode", func = spy.new(function() end) },
     }
-    local off = Kennel:NewModule("Off")
+    local off = Addon:NewModule("Off")
     off.enabledByDefault = false
     off.command = "off"
     off.commands = { go = { desc = "go", func = spy.new(function() end) } }
     -- A command word without any commands.
-    Kennel:NewModule("Bare").command = "bare"
+    Addon:NewModule("Bare").command = "bare"
 end
 
-describe("/kennel", function()
-    local client, Kennel
+describe("/beastkeeper", function()
+    local client, Addon
 
     before_each(function()
         client = NewClient({ modules = modules }):login()
-        Kennel = client.Kennel
+        Addon = client.Addon
     end)
 
     it("config opens the options page", function()
         client:slash("config")
-        assert.are.same({ Kennel.optionsCategoryID }, client.opened)
+        assert.are.same({ Addon.optionsCategoryID }, client.opened)
     end)
 
     it("hands a module command the module and the rest of the line", function()
-        local autocast = Kennel:GetModule("Autocast")
+        local autocast = Addon:GetModule("Autocast")
         local kite = autocast.commands.kite.func
         client:slash("fake kite on")
         assert.spy(kite).was.called_with(autocast, "on")
@@ -42,7 +42,7 @@ describe("/kennel", function()
 
     it("says a module is off instead of running its command", function()
         client:slash("off go")
-        assert.spy(Kennel:GetModule("Off").commands.go.func).was_not.called()
+        assert.spy(Addon:GetModule("Off").commands.go.func).was_not.called()
         assert.is_true(client:printedContains("Off is off."))
     end)
 
@@ -56,11 +56,11 @@ describe("/kennel", function()
     it("help lists every module command, sorted", function()
         client:slash("help")
         local printed = table.concat(client.printed, "\n")
-        assert.truthy(printed:find("/kennel - open or close Kennel's window", 1, true))
-        assert.truthy(printed:find("/kennel config - open the options", 1, true))
-        local kite = printed:find("/kennel fake kite - switch kite mode", 1, true)
-        local tank = printed:find("/kennel fake tank - switch tank mode", 1, true)
-        local go = printed:find("/kennel off go - go", 1, true)
+        assert.truthy(printed:find("/beastkeeper - open or close Beastkeeper's window", 1, true))
+        assert.truthy(printed:find("/beastkeeper config - open the options", 1, true))
+        local kite = printed:find("/beastkeeper fake kite - switch kite mode", 1, true)
+        local tank = printed:find("/beastkeeper fake tank - switch tank mode", 1, true)
+        local go = printed:find("/beastkeeper off go - go", 1, true)
         assert.truthy(kite and tank and go and kite < tank and tank < go, printed)
     end)
 end)

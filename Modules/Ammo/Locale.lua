@@ -1,6 +1,7 @@
 -- Ammo's English strings: the "Ammo" namespace on the CurseForge translation page (see
 -- Locales\README.md). Ammo, vendor and zone names come from the client or the data.
-local L = LibStub("AceLocale-3.0"):NewLocale("Kennel", "enUS", true)
+local addonName = ...
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 
 -- One string per line, however long: see Locales\README.md.
 -- stylua: ignore start
@@ -35,7 +36,7 @@ L.AMMO_ENOUGH = "Enough for %s of Auto Shot."
 L.AMMO_LASTS = " (%s of Auto Shot)"
 L.AMMO_MINUTES = "~%d min"
 L.AMMO_SECONDS = "~%d s"
--- Kennel's page: the kinds of toast, for a look of their own.
+-- Beastkeeper's page: the kinds of toast, for a look of their own.
 L.AMMO_TOASTTYPE_LOW = "Ammo low"
 L.AMMO_TOASTTYPE_CRITICAL = "Ammo critically low"
 

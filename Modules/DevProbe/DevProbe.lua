@@ -1,7 +1,7 @@
 --@debug@
 local _, ns = ...
 
--- A probe for development: keeps in KennelDB (DevProbe's global namespace) what Kennel cannot learn
+-- A probe for development: keeps in BeastkeeperDB (DevProbe's global namespace) what Beastkeeper cannot learn
 -- from the API documentation, to read back from the SavedVariables after playing:
 --   stable      C_StableInfo's entry of each pet, as the lists give it
 --   petSpells   each spell a pet gets: its name and rank, the rank before, the pet's level and
@@ -23,14 +23,14 @@ local _, ns = ...
 --               and whether the data has the beast on that map
 -- A raw return that the client hides (a secret value) is kept as "secret"; a missing API as
 -- "missing"; one that errors as "error: ...".
--- Each finding also goes to Kennel:Log (OAP Debug). Like Dev Screenshots the whole file is a
+-- Each finding also goes to Beastkeeper:Log (OAP Debug). Like Dev Screenshots the whole file is a
 -- --@debug@ block, so only a copy straight from the repository has it. Off until switched on.
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
----@type KennelDevProbe
-local M = Kennel:NewModule("DevProbe")
+---@type BeastkeeperDevProbe
+local M = Addon:NewModule("DevProbe")
 M.title = "Dev Probe"
 M.description = "Keeps what the client says of pets, stable and families. Repository copies only."
 M.enabledByDefault = false
@@ -56,9 +56,9 @@ local KEEP = 200 -- entries per list
 local LEVEL_WINDOW = 2 -- seconds after a level-up in which a new spell counts as from it
 
 ---The saved findings.
----@return KennelProbeData
+---@return BeastkeeperProbeData
 local function Data()
-    return M.db.global --[[@as KennelProbeData]]
+    return M.db.global --[[@as BeastkeeperProbeData]]
 end
 
 ---Adds to a list, keeping its last KEEP.
@@ -118,7 +118,7 @@ local function Returns(fn, ...)
             local x, y = (value --[[@as Vector2DMixin]]):GetXY()
             value = { x = x, y = y }
         end
-        if value ~= nil then out[i - 1] = Kennel.Readable(value) and value or "secret" end
+        if value ~= nil then out[i - 1] = Addon.Readable(value) and value or "secret" end
     end
     return out
 end
@@ -185,16 +185,16 @@ local function RankLine(name, rank)
     return number and ("%s %s"):format(name, number) or name
 end
 
----KENNEL_PET_TAMED: a little later, what the pet knows beside what the data says it teaches.
+---BEASTKEEPER_PET_TAMED: a little later, what the pet knows beside what the data says it teaches.
 ---@param _ string the message
----@param event KennelPetTamedEvent
+---@param event BeastkeeperPetTamedEvent
 function M:OnTamed(_, event)
     local npc = event.npc
     if not npc then return end
     C_Timer.After(TAME_WAIT, function()
         ---@type string[], string[]
         local knows, expected = {}, {}
-        for name, spell in pairs(Kennel.PetSpells()) do
+        for name, spell in pairs(Addon.PetSpells()) do
             knows[#knows + 1] = RankLine(name, spell.rank) --[[@as string]]
         end
         local lib = LibStub("LibTameable-1.0") --[[@as LibTameable]]
@@ -202,7 +202,7 @@ function M:OnTamed(_, event)
         local teaches = lib:GetTeaches(npc) or {}
         for _, spellID in ipairs(teaches) do
             local _, rank = lib:GetRank(spellID)
-            expected[#expected + 1] = RankLine(Kennel.SpellInfo(spellID) or tostring(spellID), rank) --[[@as string]]
+            expected[#expected + 1] = RankLine(Addon.SpellInfo(spellID) or tostring(spellID), rank) --[[@as string]]
         end
         table.sort(knows)
         table.sort(expected)
@@ -223,7 +223,7 @@ function M:OnTamed(_, event)
             match = match,
             t = GetServerTime(),
         })
-        Kennel:Log("info", "probe: tamed {1}, its spells match the data: {2}", npc, tostring(match))
+        Addon:Log("info", "probe: tamed {1}, its spells match the data: {2}", npc, tostring(match))
     end)
 end
 
@@ -231,9 +231,9 @@ end
 ---stands and whether the data has the beast on that map.
 ---@param guid GameValue
 local function NoteBeast(guid)
-    if not M:IsEnabled() or type(guid) ~= "string" or not Kennel.Readable(guid) then return end
+    if not M:IsEnabled() or type(guid) ~= "string" or not Addon.Readable(guid) then return end
     local npc = tonumber((select(6, strsplit("-", guid))))
-    local beast = npc and Kennel.data.beasts[npc]
+    local beast = npc and Addon.data.beasts[npc]
     if not npc or not beast or Data().beasts[npc] then return end
     local map = C_Map.GetBestMapForUnit("player")
     local position = map and C_Map.GetPlayerMapPosition(map, "player")
@@ -250,15 +250,15 @@ local function NoteBeast(guid)
     Data().beasts[npc] = {
         name = beast.name,
         map = map,
-        x = Kennel.Readable(x) and x and math.floor(x * 1000 + 0.5) / 10 or nil,
-        y = Kennel.Readable(y) and y and math.floor(y * 1000 + 0.5) / 10 or nil,
+        x = Addon.Readable(x) and x and math.floor(x * 1000 + 0.5) / 10 or nil,
+        y = Addon.Readable(y) and y and math.floor(y * 1000 + 0.5) / 10 or nil,
         onDataMap = map ~= nil and beast.pins ~= nil and beast.pins[map] ~= nil,
         dataMaps = dataMaps,
         t = GetServerTime(),
     }
 end
 
-Kennel.OnUnitTooltip(function(_, guid)
+Addon.OnUnitTooltip(function(_, guid)
     NoteBeast(guid)
 end)
 
@@ -282,7 +282,7 @@ local leveledAt = -math.huge
 ---Notes the pet's spells now without telling: the starting point for the next comparison.
 local function Baseline()
     wipe(known)
-    for name, spell in pairs(Kennel.PetSpells()) do
+    for name, spell in pairs(Addon.PetSpells()) do
         known[name] = spell.rank or ""
     end
 end
@@ -290,7 +290,7 @@ end
 ---Compares the pet's spells with the last look and keeps each new spell or rank.
 function M:CompareSpells()
     if not UnitExists("pet") then return end
-    for name, spell in pairs(Kennel.PetSpells()) do
+    for name, spell in pairs(Addon.PetSpells()) do
         local rank = spell.rank or ""
         if known[name] ~= rank then
             local how = "other"
@@ -309,7 +309,7 @@ function M:CompareSpells()
                 how = how,
                 t = GetServerTime(),
             })
-            Kennel:Log("info", "probe: pet got {1} {2} ({3})", name, rank, how)
+            Addon:Log("info", "probe: pet got {1} {2} ({3})", name, rank, how)
             known[name] = rank
         end
     end
@@ -319,15 +319,15 @@ end
 ---@param event string
 local function NoteGUID(event)
     local guid = UnitGUID("pet")
-    if type(guid) ~= "string" or not Kennel.Readable(guid) then return end
+    if type(guid) ~= "string" or not Addon.Readable(guid) then return end
     Push(Data().guids, { event = event, guid = guid, name = UnitName("pet"), t = GetServerTime() })
-    Kennel:Log("info", "probe: {1} {2}", event, guid)
+    Addon:Log("info", "probe: {1} {2}", event, guid)
 end
 
 ---Keeps what the pet out's family eats.
 local function NoteFoods()
     local _, family = UnitCreatureFamily("pet")
-    if family then Data().foods[family] = Copy({ list = Kennel.C.PetInfo.GetPetFoodTypes() }).list end
+    if family then Data().foods[family] = Copy({ list = Addon.C.PetInfo.GetPetFoodTypes() }).list end
 end
 
 ---Keeps the client's name of every pet family.
@@ -393,16 +393,16 @@ function M:LOCALPLAYER_PET_RENAMED()
     NoteGUID("LOCALPLAYER_PET_RENAMED")
 end
 
----KENNEL_ABILITY_LEARNED: a rank below the highest the hunter knew of that ability (Ability
+---BEASTKEEPER_ABILITY_LEARNED: a rank below the highest the hunter knew of that ability (Ability
 ---Learned has not marked the learn yet when it sends this).
 ---@param _ string the message
----@param event KennelAbilityLearnedEvent
+---@param event BeastkeeperAbilityLearnedEvent
 function M:OnLearned(_, event)
-    local learned = Kennel:GetModule("AbilityLearned", true) --[[@as KennelAbilityLearned?]]
+    local learned = Addon:GetModule("AbilityLearned", true) --[[@as BeastkeeperAbilityLearned?]]
     local highest = learned and learned:HighestRank(event.name)
     if highest and event.rank < highest then
         Push(Data().lowerRanks, { name = event.name, rank = event.rank, highest = highest, t = GetServerTime() })
-        Kennel:Log("info", "probe: learned {1} rank {2} below rank {3}", event.name, event.rank, highest)
+        Addon:Log("info", "probe: learned {1} rank {2} below rank {3}", event.name, event.rank, highest)
     end
 end
 
@@ -419,15 +419,15 @@ local EVENTS = {
 }
 
 function M:OnEnable()
-    Kennel.RegisterEvents(self, EVENTS)
-    Kennel:Listen(self, "KENNEL_ABILITY_LEARNED", "OnLearned")
-    Kennel:Listen(self, "KENNEL_PET_TAMED", "OnTamed")
+    Addon.RegisterEvents(self, EVENTS)
+    Addon:Listen(self, Addon.messages.abilityLearned, "OnLearned")
+    Addon:Listen(self, Addon.messages.petTamed, "OnTamed")
     Baseline()
     self:PLAYER_ENTERING_WORLD()
 end
 
 function M:OnDisable()
-    Kennel:StopListening(self)
+    Addon:StopListening(self)
 end
 
 ---@return table

@@ -1,16 +1,16 @@
 local _, ns = ...
 
--- The Pets tab of Kennel's window (Core\Window.lua): every pet in the journal on the left, the pet
+-- The Pets tab of Beastkeeper's window (Core\Window.lua): every pet in the journal on the left, the pet
 -- out first, and a card for the chosen one on the right: its model, name, level and loyalty, its
--- family's specialization (Ferocity, Cunning, Tenacity: Kennel.SpecName), the journal (Journal.lua)
+-- family's specialization (Ferocity, Cunning, Tenacity: Beastkeeper.SpecName), the journal (Journal.lua)
 -- and its abilities, those it could teach you in green. The model is the pet
 -- out itself; a stabled pet's as the stable showed it (its displayID), else the beast it was
 -- tamed as. Dragging turns it.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("PetJournal") --[[@as KennelPetJournal]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("PetJournal") --[[@as BeastkeeperPetJournal]]
 
 local LIST_WIDTH, ROW_HEIGHT, ROWS, MODEL_SIZE = 180, 20, 16, 180
 -- How far a pixel of drag turns the model, in radians.
@@ -47,7 +47,7 @@ M.PetOrder = Order
 ---Shows the pet's model: the pet out, else its stable model, else the beast it was; none without.
 ---@param model PlayerModel
 ---@param key string
----@param entry KennelJournalEntry
+---@param entry BeastkeeperJournalEntry
 local function ShowModel(model, key, entry)
     model:ClearModel()
     if key == M.current and UnitExists("pet") then
@@ -65,7 +65,7 @@ end
 M.ShowModel = ShowModel
 
 ---Turns the model while the mouse drags it.
----@param model KennelPetModel
+---@param model BeastkeeperPetModel
 local function OnUpdate(model)
     if not model.dragX then return end
     local x = GetCursorPosition()
@@ -73,37 +73,37 @@ local function OnUpdate(model)
     model.dragX = x
 end
 
----@param model KennelPetModel
+---@param model BeastkeeperPetModel
 local function OnMouseDown(model)
     model.dragX = GetCursorPosition()
 end
 
----@param model KennelPetModel
+---@param model BeastkeeperPetModel
 local function OnMouseUp(model)
     model.dragX = nil
 end
 
 ---A text on the card, in the skin's font.
----@param panel KennelPetsPanel
+---@param panel BeastkeeperPetsPanel
 ---@param template string
 ---@param size number
 ---@return FontString
 local function Text(panel, template, size)
     local text = panel:CreateFontString(nil, "OVERLAY", template)
     text:SetJustifyH("LEFT")
-    text:SetWidth(Kennel.WINDOW_PANEL_WIDTH - LIST_WIDTH - MODEL_SIZE - 30)
+    text:SetWidth(Addon.WINDOW_PANEL_WIDTH - LIST_WIDTH - MODEL_SIZE - 30)
     panel.skin.Font(text, size)
     return text
 end
 
 ---Builds the panel: the list's rows, the model and the card's texts.
----@param panel KennelPetsPanel
----@param skin KennelButtonHolderSkin
+---@param panel BeastkeeperPetsPanel
+---@param skin BeastkeeperButtonHolderSkin
 local function Create(panel, skin)
     panel.skin = skin
     panel.rows = {}
     for index = 1, ROWS do
-        local row = CreateFrame("Button", nil, panel) --[[@as KennelPetRow]]
+        local row = CreateFrame("Button", nil, panel) --[[@as BeastkeeperPetRow]]
         row:SetSize(LIST_WIDTH, ROW_HEIGHT)
         row:SetPoint("TOPLEFT", 0, -(index - 1) * ROW_HEIGHT)
         row.label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -112,11 +112,11 @@ local function Create(panel, skin)
         row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
         row:SetScript("OnClick", function()
             M.picked = row.key
-            Kennel:RefreshWindow("pets")
+            Addon:RefreshWindow("pets")
         end)
         panel.rows[index] = row
     end
-    local model = CreateFrame("PlayerModel", nil, panel) --[[@as KennelPetModel]]
+    local model = CreateFrame("PlayerModel", nil, panel) --[[@as BeastkeeperPetModel]]
     model:SetSize(MODEL_SIZE, MODEL_SIZE)
     model:SetPoint("TOPRIGHT")
     model:EnableMouse(true)
@@ -137,7 +137,7 @@ local function Create(panel, skin)
 end
 
 ---Fills the list and the chosen pet's card.
----@param panel KennelPetsPanel
+---@param panel BeastkeeperPetsPanel
 local function Refresh(panel)
     local pets = M:Pets()
     local keys = Order()
@@ -165,13 +165,13 @@ local function Refresh(panel)
     end
     panel.name:SetText(entry.name or "?")
     panel.level:SetText(M.LevelLine(entry))
-    panel.spec:SetText(Kennel.SpecName(Kennel.FamilyID(entry.family)) or "")
+    panel.spec:SetText(Addon.SpecName(Addon.FamilyID(entry.family)) or "")
     panel.journal:SetText(table.concat(M:JournalLines(key, true), "\n"))
     panel.abilities:SetText(M.AbilitiesLine(entry, true) or "")
     ShowModel(panel.model, key, entry)
 end
 
-Kennel:RegisterWindowTab({
+Addon:RegisterWindowTab({
     id = "pets",
     title = L.PETJOURNAL_TAB,
     order = 10,

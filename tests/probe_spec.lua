@@ -1,5 +1,5 @@
 -- The Dev Probe (Modules\DevProbe): a module only in a copy straight from the repository, off until
--- switched on, that keeps in KennelDB what Kennel cannot know from the API documentation: what the
+-- switched on, that keeps in BeastkeeperDB what Beastkeeper cannot know from the API documentation: what the
 -- stable's lists hold, when and how a pet gets a new spell, what each family eats, the client's
 -- family names, a lower rank learned after a higher one, and the pet's GUID around a tame.
 
@@ -13,14 +13,14 @@ local function probing(opts)
     opts = opts or {}
     opts.dev = true
     local client = NewClient(opts):login()
-    assert.is_false(client.Kennel:GetModule("DevProbe"):IsEnabled(), "off until switched on")
-    client.Kennel:SetModuleOn("DevProbe", true)
-    return client, client.Kennel:GetModule("DevProbe").db.global
+    assert.is_false(client.Addon:GetModule("DevProbe"):IsEnabled(), "off until switched on")
+    client.Addon:SetModuleOn("DevProbe", true)
+    return client, client.Addon:GetModule("DevProbe").db.global
 end
 
 describe("the Dev Probe", function()
     it("is not there in a release", function()
-        assert.is_nil(NewClient():login().Kennel:GetModule("DevProbe", true))
+        assert.is_nil(NewClient():login().Addon:GetModule("DevProbe", true))
     end)
 
     it("keeps what the stable's lists say of each pet", function()
@@ -75,7 +75,7 @@ describe("the Dev Probe", function()
         client:summon("Whiskers", {})
         assert.are.equal(200, #probe.guids)
         assert.are.equal("2", probe.guids[1].guid)
-        client.Kennel:SetModuleOn("DevProbe", false)
+        client.Addon:SetModuleOn("DevProbe", false)
         client:summon("Shadow", {})
         assert.are.equal("UNIT_PET", probe.guids[200].event)
         assert.are.equal("Whiskers", probe.guids[200].name)
@@ -110,7 +110,7 @@ describe("the Dev Probe", function()
         assert.is_truthy(tContains(events, "UNIT_PET Creature-0-1-1-1-3825-00000ABCDE"))
     end)
 
-    it("keeps what the client is: its build, project, the library's client, the APIs Kennel leans on", function()
+    it("keeps what the client is: its build, project, the library's client, the APIs Beastkeeper leans on", function()
         local client, probe = probing()
         client:fire("PLAYER_ENTERING_WORLD")
         local found = probe.client
@@ -178,7 +178,7 @@ describe("the Dev Probe", function()
     it("forgets everything from its page", function()
         local client, probe = probing()
         client:fire("PET_STABLE_UPDATE")
-        client.Kennel:GetModule("DevProbe"):GetOptions().args.forget.func()
+        client.Addon:GetModule("DevProbe"):GetOptions().args.forget.func()
         assert.are.same({}, probe.stable)
         assert.are.same({}, probe.guids)
     end)

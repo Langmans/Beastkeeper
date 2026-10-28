@@ -4,34 +4,34 @@ local _, ns = ...
 -- on top of the UI and on screen, moves where it is dragged (the spot is saved in the profile,
 -- shared by all skins, until it is reset) and closes on a right-click.
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
----@param frame KennelToastFrame
+---@param frame BeastkeeperToastFrame
 local function OnDragStart(frame)
     frame.dragging = true
     frame:StartMoving()
 end
 
----@param frame KennelToastFrame
+---@param frame BeastkeeperToastFrame
 local function OnDragStop(frame)
     frame.dragging = false
     frame:StopMovingOrSizing()
     local point, _, relativePoint, x, y = frame:GetPoint(1)
-    if point then Kennel:ToastSettings().pos = { point, relativePoint, x, y } end
+    if point then Addon:ToastSettings().pos = { point, relativePoint, x, y } end
 end
 
 ---@param _ Frame
 ---@param button string
 local function OnMouseUp(_, button)
-    if button == "RightButton" then Kennel:HideToast() end
+    if button == "RightButton" then Addon:HideToast() end
 end
 
 ---A frame for a skin: on top of the UI, kept on screen, draggable, closed by a right-click.
 ---Hidden until the skin shows it.
 ---@param name string? a global name, for /fstack and other addons
 ---@return Frame
-function Kennel:NewToastFrame(name)
+function Addon:NewToastFrame(name)
     local frame = CreateFrame("Frame", name, UIParent)
     frame:SetFrameStrata("HIGH")
     frame:SetClampedToScreen(true)
@@ -47,12 +47,12 @@ end
 
 ---Places a skin's frame where it was dragged to, or at the skin's own standard spot; `lift`
 ---raises it that many pixels (for a slide in). Not while the mouse drags it.
----@param frame KennelToastFrame
+---@param frame BeastkeeperToastFrame
 ---@param point string the standard spot: an anchor point on UIParent
 ---@param x number
 ---@param y number
 ---@param lift number?
-function Kennel:PlaceToast(frame, point, x, y, lift)
+function Addon:PlaceToast(frame, point, x, y, lift)
     if frame.dragging then return end
     lift = lift or 0
     frame:ClearAllPoints()
@@ -66,12 +66,12 @@ end
 
 local CIRCLE_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 
----A round badge for a unit's portrait (KennelToastInfo.portrait) on the lower right of `icon`, in
+---A round badge for a unit's portrait (BeastkeeperToastInfo.portrait) on the lower right of `icon`, in
 ---a ring; it becomes frame.Portrait and frame.PortraitRing, shown by ShowToastPortrait.
 ---@param frame Frame the skin's frame
 ---@param icon Region what the badge sits on
 ---@param size number the portrait's size; the ring is 4 pixels wider
-function Kennel:AddToastPortrait(frame, icon, size)
+function Addon:AddToastPortrait(frame, icon, size)
     local ring = frame:CreateTexture(nil, "OVERLAY", nil, 6)
     ring:SetSize(size + 4, size + 4)
     ring:SetPoint("CENTER", icon, "BOTTOMRIGHT", -2, 2)
@@ -89,10 +89,10 @@ end
 
 ---Shows `unit`'s portrait on the badge, the ring in `accent`, while that unit exists; hides the
 ---badge otherwise.
----@param frame KennelPortraitFrame
+---@param frame BeastkeeperPortraitFrame
 ---@param unit string?
 ---@param accent number[]
-function Kennel:ShowToastPortrait(frame, unit, accent)
+function Addon:ShowToastPortrait(frame, unit, accent)
     local shown = unit ~= nil and UnitExists(unit)
     if shown then
         SetPortraitTexture(frame.Portrait, unit --[[@as string]])
@@ -103,25 +103,25 @@ function Kennel:ShowToastPortrait(frame, unit, accent)
 end
 
 ---Puts the toast back in its standard spot.
-function Kennel:ResetToastPosition()
+function Addon:ResetToastPosition()
     self:ToastSettings().pos = nil
 end
 
 -- What a skin that draws in one frame, kept in self.frame, does like every other.
 local SkinBase = {}
 
----@param self KennelFrameSkin
+---@param self BeastkeeperFrameSkin
 function SkinBase.Hide(self)
     (self.frame --[[@as Frame]]):Hide()
 end
 
----@param self KennelFrameSkin
+---@param self BeastkeeperFrameSkin
 ---@return boolean
 function SkinBase.IsMouseOver(self)
     return (self.frame --[[@as Frame]]):IsMouseOver()
 end
 
----@param self KennelFrameSkin
+---@param self BeastkeeperFrameSkin
 ---@return Frame?
 function SkinBase.Frame(self)
     return self.frame
@@ -129,7 +129,7 @@ end
 
 ---A skin drawing in self.frame, with Hide, IsMouseOver and Frame; it adds Show and Update.
 ---@param name string shown in the look choice; localized
----@return KennelFrameSkin
-function Kennel:NewToastSkin(name)
-    return setmetatable({ name = name }, { __index = SkinBase }) --[[@as KennelFrameSkin]]
+---@return BeastkeeperFrameSkin
+function Addon:NewToastSkin(name)
+    return setmetatable({ name = name }, { __index = SkinBase }) --[[@as BeastkeeperFrameSkin]]
 end

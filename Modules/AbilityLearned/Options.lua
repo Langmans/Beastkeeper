@@ -1,20 +1,20 @@
 local _, ns = ...
 
--- AbilityLearned's page in the settings window (Kennel > Ability Learned): the sound, the
+-- AbilityLearned's page in the settings window (Beastkeeper > Ability Learned): the sound, the
 -- screenshot, the hints, the training points and loyalty toasts with their sounds, an example toast, a simulated learn, what the pet can teach, and the
 -- history.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("AbilityLearned") --[[@as KennelAbilityLearned]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("AbilityLearned") --[[@as BeastkeeperAbilityLearned]]
 
----A getter and setter for one profile setting (Kennel:Setting).
+---A getter and setter for one profile setting (Beastkeeper:Setting).
 ---@param key string
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set
 local function Setting(key)
-    return Kennel:Setting(M, key)
+    return Addon:Setting(M, key)
 end
 
 ---A sound choice for the setting `key`.
@@ -93,7 +93,7 @@ function M:GetOptions()
                 func = function()
                     local name, rank, icon, petSpell = M.Example()
                     local teacher = petSpell and UnitName("pet") or nil
-                    Kennel:ShowToast(M:Toast({ name = name, rank = rank, icon = icon, teacher = teacher }))
+                    Addon:ShowToast(M:Toast({ name = name, rank = rank, icon = icon, teacher = teacher }))
                 end,
             },
             simulate = {

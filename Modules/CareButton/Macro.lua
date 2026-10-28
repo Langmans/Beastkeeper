@@ -1,24 +1,24 @@
 local _, ns = ...
 
--- The KennelCare macro: `#showtooltip` and the button's own `/use` line, so it casts what the
--- button casts without going through it. Kennel makes it once per character (Core\Macro.lua). Its
+-- The BeastkeeperCare macro: `#showtooltip` and the button's own `/use` line, so it casts what the
+-- button casts without going through it. Beastkeeper makes it once per character (Core\Macro.lua). Its
 -- cast line follows the button: macro conditions cannot see a dead pet whose body is gone, so the
 -- line is rewritten whenever `petdead` changes, and when the macros change. Only a macro whose
 -- first line is #showtooltip is touched, and in it only the cast line; the player's own lines
 -- stay. Macros cannot be edited in combat: the edit waits for its end.
 
----@type Kennel
-local Kennel = ns
-local M = Kennel:GetModule("CareButton") --[[@as KennelCareButton]]
+---@type Addon
+local Addon = ns
+local M = Addon:GetModule("CareButton") --[[@as BeastkeeperCareButton]]
 
-local NAME = "KennelCare"
+local NAME = Addon.Global("Care")
 local TOOLTIP = "#showtooltip"
 local QUESTION_MARK = 134400 -- the icon a macro gets when #showtooltip picks the spell's own
 
----@return KennelMacro[]
+---@return BeastkeeperMacro[]
 function M:Macros()
     local body = TOOLTIP .. "\n" .. self:MacroText(self:PetDead())
-    return { { name = NAME, icon = QUESTION_MARK, body = body, desc = Kennel.L.CAREBUTTON_MACRO } }
+    return { { name = NAME, icon = QUESTION_MARK, body = body, desc = Addon.L.CAREBUTTON_MACRO } }
 end
 
 -- The macro's lines while UpdatedBody works on them; kept, since it runs on every macro change and
@@ -48,7 +48,7 @@ end
 
 ---Rewrites the macro's cast line when it no longer matches the button; after combat when in it.
 function M:UpdateMacro()
-    Kennel:OutOfCombat("CareButton:macro", function()
+    Addon:OutOfCombat("CareButton:macro", function()
         local index = GetMacroIndexByName(NAME)
         if index == 0 then return end
         local _, _, current = GetMacroInfo(index)

@@ -6,23 +6,23 @@ local _, ns = ...
 -- opens, which only happens outside combat. A row's click, a second right-click, Escape or a
 -- change in the bags closes it.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("Feeding") --[[@as KennelFeeding]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("Feeding") --[[@as BeastkeeperFeeding]]
 
 local ROW_HEIGHT, WIDTH, PAD = 24, 220, 4
 
-local list = CreateFrame("Frame", "KennelFeedList", UIParent, "BackdropTemplate")
+local list = CreateFrame("Frame", Addon.Global("FeedList"), UIParent, "BackdropTemplate")
 list:SetWidth(WIDTH)
 list:SetFrameStrata("DIALOG")
 list:Hide()
-table.insert(UISpecialFrames, "KennelFeedList")
+table.insert(UISpecialFrames, Addon.Global("FeedList"))
 -- The chosen holder skin (Core\Buttons.lua), applied the first time the list opens.
----@type KennelButtonHolderSkin?
+---@type BeastkeeperButtonHolderSkin?
 local skin
 
----@type KennelFoodRow[]
+---@type BeastkeeperFoodRow[]
 local rows = {}
 
 local function Close()
@@ -31,10 +31,10 @@ end
 
 ---The row at `index`, made the first time.
 ---@param index number
----@return KennelFoodRow
+---@return BeastkeeperFoodRow
 local function Row(index)
     if rows[index] then return rows[index] end
-    local row = CreateFrame("Button", "KennelFeedChoice" .. index, list, "SecureActionButtonTemplate") --[[@as KennelFoodRow]]
+    local row = CreateFrame("Button", Addon.Global("FeedChoice") .. index, list, "SecureActionButtonTemplate") --[[@as BeastkeeperFoodRow]]
     row:SetSize(WIDTH - 2 * PAD, ROW_HEIGHT)
     row:SetPoint("TOPLEFT", PAD, -PAD - (index - 1) * ROW_HEIGHT)
     -- As the feed button: down and up registered, acting on the up (ActionButtonUseKeyDown).
@@ -46,9 +46,9 @@ local function Row(index)
     row.icon:SetPoint("LEFT", 2, 0)
     row.label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     row.label:SetPoint("LEFT", row.icon, "RIGHT", 6, 0)
-    local look = skin --[[@as KennelButtonHolderSkin]]
+    local look = skin --[[@as BeastkeeperButtonHolderSkin]]
     look.Font(row.label, 12)
-    Kennel:CropIcon(row.icon, look.CropIcon)
+    Addon:CropIcon(row.icon, look.CropIcon)
     row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
     row:HookScript("OnClick", Close)
     rows[index] = row
@@ -61,7 +61,7 @@ function M:ToggleFoodList()
     if list:IsShown() then return Close() end
     local foods = self:Foods()
     if InCombatLockdown() or #foods == 0 then return end
-    skin = skin or Kennel:StyleButtonHolder(list)
+    skin = skin or Addon:StyleButtonHolder(list)
     for index, food in ipairs(foods) do
         local row = Row(index)
         row:SetAttribute("macrotext", M.FeedMacro(food))

@@ -2,11 +2,11 @@
 
 ---A module that reports its OnEnable/OnDisable calls to the spies module.enabled and
 ---module.disabled. The handlers themselves stay functions: AceAddon only calls a function.
----@param Kennel Kennel
+---@param Addon Addon
 ---@param name string
 ---@param fields table?
-local function spyModule(Kennel, name, fields)
-    local module = Kennel:NewModule(name)
+local function spyModule(Addon, name, fields)
+    local module = Addon:NewModule(name)
     for key, value in pairs(fields or {}) do
         module[key] = value
     end
@@ -20,35 +20,35 @@ local function spyModule(Kennel, name, fields)
     return module
 end
 
-local function twoModules(Kennel)
-    spyModule(Kennel, "Alpha", { defaults = { profile = { size = 3 } } })
-    spyModule(Kennel, "Beta", { enabledByDefault = false })
+local function twoModules(Addon)
+    spyModule(Addon, "Alpha", { defaults = { profile = { size = 3 } } })
+    spyModule(Addon, "Beta", { enabledByDefault = false })
 end
 
-describe("Kennel", function()
-    local client, Kennel, alpha, beta
+describe("Beastkeeper", function()
+    local client, Addon, alpha, beta
 
     local function start(opts)
         opts = opts or {}
         opts.modules = twoModules
         client = NewClient(opts):login()
-        Kennel = client.Kennel
-        alpha, beta = Kennel:GetModule("Alpha"), Kennel:GetModule("Beta")
+        Addon = client.Addon
+        alpha, beta = Addon:GetModule("Alpha"), Addon:GetModule("Beta")
     end
 
     it("loads all of Ace3 and the core without errors", function()
         client = NewClient():login()
         assert.are.same({}, client.errors)
-        assert.is_table(client.Kennel.db)
+        assert.is_table(client.Addon.db)
     end)
 
     it("registers only the events this client has, so switching modules off stays quiet", function()
         for _, opts in ipairs({ {}, { noEventUtils = true } }) do
             opts.unknownEvents = { "LEARNED_SPELL_IN_TAB", "VIGNETTE_MINIMAP_UPDATED", "UNIT_HAPPINESS" }
             local real = NewClient(opts):login()
-            real.Kennel.db:SetProfile("other")
-            for name in pairs(real.Kennel.modules) do
-                real.Kennel:SetModuleOn(name, false)
+            real.Addon.db:SetProfile("other")
+            for name in pairs(real.Addon.modules) do
+                real.Addon:SetModuleOn(name, false)
             end
             assert.are.same({}, real.errors)
         end
@@ -60,8 +60,8 @@ describe("Kennel", function()
         end)
 
         it("are on by default unless the module says otherwise", function()
-            assert.is_true(Kennel:IsModuleOn("Alpha"))
-            assert.is_false(Kennel:IsModuleOn("Beta"))
+            assert.is_true(Addon:IsModuleOn("Alpha"))
+            assert.is_false(Addon:IsModuleOn("Beta"))
             assert.is_true(alpha:IsEnabled())
             assert.is_false(beta:IsEnabled())
             assert.spy(alpha.enabled).was.called(1)
@@ -74,8 +74,8 @@ describe("Kennel", function()
         end)
 
         it("start and stop a module through SetModuleOn and save the switch", function()
-            Kennel:SetModuleOn("Alpha", false)
-            Kennel:SetModuleOn("Beta", true)
+            Addon:SetModuleOn("Alpha", false)
+            Addon:SetModuleOn("Beta", true)
             assert.is_false(alpha:IsEnabled())
             assert.is_true(beta:IsEnabled())
             assert.spy(alpha.disabled).was.called(1)
@@ -103,22 +103,22 @@ describe("Kennel", function()
         end)
 
         it("restarts the running modules from the new profile", function()
-            Kennel.db:SetProfile("Tank")
+            Addon.db:SetProfile("Tank")
             assert.spy(alpha.disabled).was.called(1)
             assert.spy(alpha.enabled).was.called(2)
             assert.spy(beta.enabled).was_not.called()
         end)
 
         it("follows the switches of the profile switched to, copied or reset", function()
-            Kennel.db:SetProfile("Tank")
-            Kennel:SetModuleOn("Beta", true)
-            Kennel.db:SetProfile("Default")
+            Addon.db:SetProfile("Tank")
+            Addon:SetModuleOn("Beta", true)
+            Addon.db:SetProfile("Default")
             assert.is_false(beta:IsEnabled(), "off again in Default")
 
-            Kennel.db:CopyProfile("Tank")
+            Addon.db:CopyProfile("Tank")
             assert.is_true(beta:IsEnabled(), "copied from Tank")
 
-            Kennel.db:ResetProfile()
+            Addon.db:ResetProfile()
             assert.is_false(beta:IsEnabled(), "back to the default")
         end)
     end)

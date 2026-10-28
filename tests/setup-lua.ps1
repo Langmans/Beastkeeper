@@ -1,10 +1,10 @@
-# Sets up Kennel's development tools on Windows, all inside .lua\ in the repository (gitignored),
+# Sets up Beastkeeper's development tools on Windows, all inside .lua\ in the repository (gitignored),
 # so nothing outside the repository changes and no PATH edit is needed:
 #
 # - Lua 5.1.5, built by hererocks with Visual Studio's C compiler (the C build tools must be
 #   installed; Python provides hererocks);
 # - LuaRocks, the standalone Windows build, with its config in .lua\config-5.1.lua;
-# - the pinned test rocks from kennel-dev-1.rockspec (busted, luacov, ...), compiled with the
+# - the pinned test rocks from beastkeeper-dev-1.rockspec (busted, luacov, ...), compiled with the
 #   same compiler as Lua;
 # - StyLua, the release binary.
 #
@@ -47,7 +47,7 @@ $luaForward = $lua -replace "\\", "/"
 Set-Content -Encoding ascii $config @"
 lua_version = "5.1"
 lua_interpreter = "lua.exe"
-rocks_trees = { { name = "kennel", root = "$luaForward" } }
+rocks_trees = { { name = "beastkeeper", root = "$luaForward" } }
 variables = {
     LUA = "$luaForward/bin/lua.exe",
     LUA_DIR = "$luaForward",
@@ -57,7 +57,7 @@ variables = {
 }
 "@
 $env:LUAROCKS_CONFIG = $config
-cmd /c "call `"$vcvars`" >nul && `"$luarocks`" install --only-deps `"$root\kennel-dev-1.rockspec`""
+cmd /c "call `"$vcvars`" >nul && `"$luarocks`" install --only-deps `"$root\beastkeeper-dev-1.rockspec`""
 if ($LASTEXITCODE -ne 0) { throw "luarocks install failed" }
 
 if (-not (Test-Path (Join-Path $bin "stylua.exe"))) {

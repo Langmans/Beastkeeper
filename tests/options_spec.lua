@@ -1,18 +1,18 @@
 -- The options table and the pages in the settings window.
 
-local function modules(Kennel)
-    local alpha = Kennel:NewModule("Alpha")
+local function modules(Addon)
+    local alpha = Addon:NewModule("Alpha")
     alpha.title = "Alpha Title"
     alpha.description = "Does alpha things."
     function alpha:GetOptions()
         return { args = { size = { type = "range", name = "Size", min = 1, max = 5, step = 1 } } }
     end
-    local beta = Kennel:NewModule("Beta")
+    local beta = Addon:NewModule("Beta")
     beta.enabledByDefault = false
     function beta:GetOptions()
         return { name = "Beta Page", args = {} }
     end
-    Kennel:NewModule("Gamma")
+    Addon:NewModule("Gamma")
 end
 
 describe("the options", function()
@@ -20,12 +20,12 @@ describe("the options", function()
 
     before_each(function()
         client = NewClient({ modules = modules }):login()
-        options = client.Kennel:GetOptionsTable()
+        options = client.Addon:GetOptionsTable()
     end)
 
     it("pass AceConfig's validation", function()
         -- Raises on any malformed entry.
-        LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(options, "Kennel")
+        LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(options, "Beastkeeper")
         assert.are.same({}, client.errors)
     end)
 
@@ -42,8 +42,8 @@ describe("the options", function()
             local switches = options.args.modules.args
             assert.is_false(switches.Beta.get())
             switches.Beta.set({}, true)
-            assert.is_true(client.Kennel:GetModule("Beta"):IsEnabled())
-            assert.is_true(client.Kennel:GetOptionsTable().args.modules.args.Beta.get())
+            assert.is_true(client.Addon:GetModule("Beta"):IsEnabled())
+            assert.is_true(client.Addon:GetOptionsTable().args.modules.args.Beta.get())
         end)
     end)
 
@@ -70,31 +70,31 @@ describe("the options", function()
         it("lists every entry of AceDBOptions' own page", function()
             -- No other addon is loaded here, so the shared table holds only AceDBOptions' entries.
             -- A new AceDBOptions version with more entries fails this until PROFILE_OPTIONS has them.
-            local shared = LibStub("AceDBOptions-3.0"):GetOptionsTable(client.Kennel.db)
+            local shared = LibStub("AceDBOptions-3.0"):GetOptionsTable(client.Addon.db)
             assert.are.same(keys(shared.args), keys(options.args.profiles.args))
         end)
 
         it("leaves out what other addons write into AceDBOptions' shared table", function()
             -- As RestedXP Guides does with its guide buttons.
-            local shared = LibStub("AceDBOptions-3.0"):GetOptionsTable(client.Kennel.db)
+            local shared = LibStub("AceDBOptions-3.0"):GetOptionsTable(client.Addon.db)
             shared.args.resetGuideProgress = { type = "execute", name = "Reset Guide Progress", func = function() end }
-            local profiles = client.Kennel:GetOptionsTable().args.profiles
+            local profiles = client.Addon:GetOptionsTable().args.profiles
             assert.is_nil(profiles.args.resetGuideProgress)
             assert.is_table(profiles.args.reset)
             shared.args.resetGuideProgress = nil
         end)
 
-        it("still changes KennelDB's profile", function()
+        it("still changes BeastkeeperDB's profile", function()
             local profiles = options.args.profiles
             -- AceConfig calls a string `set` on the handler with AceConfig's info for the option.
             profiles.handler:SetProfile({ arg = nil }, "Tank")
-            assert.are.equal("Tank", client.Kennel.db:GetCurrentProfile())
+            assert.are.equal("Tank", client.Addon.db:GetCurrentProfile())
         end)
     end)
 end)
 
 describe("the settings window", function()
-    it("gets Kennel, a page per module with options and Profiles", function()
+    it("gets Beastkeeper, a page per module with options and Profiles", function()
         local client = NewClient({ modules = modules }):login()
         local names = {}
         for _, category in pairs(client.categories) do
@@ -103,25 +103,25 @@ describe("the settings window", function()
         end
         table.sort(names)
         assert.are.same({
-            "- > Kennel",
-            "Kennel > Ability Learned",
-            "Kennel > Alpha Title",
-            "Kennel > Ammo",
-            "Kennel > Autocast Check",
-            "Kennel > Beast Map",
-            "Kennel > Beta Page",
-            "Kennel > Care Button",
-            "Kennel > Data Broker",
-            "Kennel > Feed Emotes",
-            "Kennel > Feeding",
-            "Kennel > Pet Journal",
-            "Kennel > Profiles",
+            "- > Beastkeeper",
+            "Beastkeeper > Ability Learned",
+            "Beastkeeper > Alpha Title",
+            "Beastkeeper > Ammo",
+            "Beastkeeper > Autocast Check",
+            "Beastkeeper > Beast Map",
+            "Beastkeeper > Beta Page",
+            "Beastkeeper > Care Button",
+            "Beastkeeper > Data Broker",
+            "Beastkeeper > Feed Emotes",
+            "Beastkeeper > Feeding",
+            "Beastkeeper > Pet Journal",
+            "Beastkeeper > Profiles",
         }, names)
     end)
 
     it("uses the page name as category ID on a client without C_SettingsUtil", function()
         local client = NewClient({ modules = modules, noSettingsPanel = true }):login()
-        assert.are.equal("Kennel", client.Kennel.optionsCategoryID)
+        assert.are.equal("Beastkeeper", client.Addon.optionsCategoryID)
     end)
 
     it("draws every page when shown", function()
@@ -141,9 +141,9 @@ describe("the settings window", function()
         local client = NewClient({ modules = modules }):login()
         local dialog = LibStub("AceConfigDialog-3.0")
         for _, path in ipairs({ "modules", "Alpha", "Beta", "AutocastCheck", "CareButton", "profiles" }) do
-            dialog:Open("Kennel", path)
+            dialog:Open("Beastkeeper", path)
         end
-        dialog:Close("Kennel")
+        dialog:Close("Beastkeeper")
         assert.are.same({}, client.errors)
     end)
 end)

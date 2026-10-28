@@ -4,11 +4,11 @@
 
 `Modules\DevScreenshots`: in a copy straight from the repository there is a
 module "Dev Screenshots", off until switched on. On, each kind of toast (once
-faded in) and each Kennel chat line (numbers ignored, at most one every two
+faded in) and each Beastkeeper chat line (numbers ignored, at most one every two
 seconds) gets one screenshot in the game's `Screenshots` folder, the first
-time it shows, after a grey `[Kennel dev] ...` chat line saying what it was
+time it shows, after a grey `[Beastkeeper dev] ...` chat line saying what it was
 for. What has a screenshot is kept across sessions; a button on its page
-forgets it. It listens to `KENNEL_TOAST` and `KENNEL_PRINT` like any addon
+forgets it. It listens to `BEASTKEEPER_TOAST` and `BEASTKEEPER_PRINT` like any addon
 could ([04-hooking.md](04-hooking.md)). The whole file is a `--@debug@` block,
 which the packager comments out of every release; the specs load the files
 the same way unless a client asks for `dev`.
@@ -16,7 +16,7 @@ the same way unless a client asks for `dev`.
 ## Facts from the client while playing
 
 `Modules\DevProbe`, also a `--@debug@` module, off until switched on, keeps
-in KennelDB (`KennelDB.namespaces.DevProbe.global`) what the API
+in BeastkeeperDB (`BeastkeeperDB.namespaces.DevProbe.global`) what the API
 documentation does not tell, for reading the SavedVariables back after
 playing:
 
@@ -30,21 +30,21 @@ playing:
 - `guids`: the pet's GUID at UNIT_PET and LOCALPLAYER_PET_RENAMED.
 
 Each list keeps its last 200; a button on its page empties them. Each finding
-also goes to OAP Debug and DebugLog through `Kennel:Log`.
+also goes to OAP Debug and DebugLog through `Beastkeeper:Log`.
 
 ## Tests
 
 The tests run on Lua 5.1, the version WoW runs, with
 [busted](https://lunarmodules.github.io/busted/) and
 [luacov](https://lunarmodules.github.io/luacov/). The tool versions are
-pinned in `kennel-dev-1.rockspec`.
+pinned in `beastkeeper-dev-1.rockspec`.
 
 **Setup on Windows**, once: `tests\setup-lua.ps1` builds Lua 5.1.5 with
 Visual Studio's C compiler (needs the C++ build tools and Python), and puts
 LuaRocks, the test rocks and StyLua next to it, all inside `.lua\`
 (gitignored). Nothing outside the repository changes. On Linux or macOS,
 install Lua 5.1 and LuaRocks, then
-`luarocks install --only-deps kennel-dev-1.rockspec` and StyLua.
+`luarocks install --only-deps beastkeeper-dev-1.rockspec` and StyLua.
 
 Everything runs through `tests/check.lua`, from the repository root
 (`.lua\bin\lua.exe tests\check.lua` on Windows, or `lua tests/check.lua`
@@ -53,7 +53,7 @@ after `.lua\bin\activate.ps1`):
 - `lua tests/check.lua` runs lint, then the tests with the coverage check.
 - `lua tests/check.lua test` fetches `Libs\` if needed and runs the
   `tests/*_spec.lua` files with busted, then prints line coverage of
-  Kennel's own files (not `Libs\`). Extra arguments go to busted, such as
+  Beastkeeper's own files (not `Libs\`). Extra arguments go to busted, such as
   `test --filter=options`. `coverage/lcov.info` is written for editor
   plugins and `coverage/junit.xml` for CI, and `coverage/index.html`, every
   file with its lines marked hit or missed, where luacov's HTML reporter can
@@ -117,7 +117,7 @@ fails. It knows the Ace3 types (`AceModule`, `AceDBObject-3.0`,
 
 ## How the tests work
 
-`tests/helper.lua` reads `Kennel_Forever.toc` (and `Kennel_Vanilla.toc` for
+`tests/helper.lua` reads `Beastkeeper_Forever.toc` (and `Beastkeeper_Vanilla.toc` for
 `NewClient({ era = true })`, a simulated Classic Era) the way the client does,
 with every `.xml` in it expanded to the files it loads. `NewClient()`
 (`tests/wow.lua`) is a simulated client: it resets the WoW API globals and loads
@@ -127,15 +127,15 @@ compiled once per run and, unless the client asks for `dev`, has its
 per test, so tests never share state:
 
 ```lua
-describe("/kennel", function()
+describe("/beastkeeper", function()
     local client
     before_each(function()
-        client = NewClient({ modules = function(Kennel) ... end }):login()
+        client = NewClient({ modules = function(Beastkeeper) ... end }):login()
     end)
 
     it("config opens the options page", function()
         client:slash("config")
-        assert.are.same({ client.Kennel.optionsCategoryID }, client.opened)
+        assert.are.same({ client.Beastkeeper.optionsCategoryID }, client.opened)
     end)
 end)
 ```

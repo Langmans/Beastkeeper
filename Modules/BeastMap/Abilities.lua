@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- The Abilities tab of Kennel's window (Core\Window.lua): every pet ability beasts teach, with how
+-- The Abilities tab of Beastkeeper's window (Core\Window.lua): every pet ability beasts teach, with how
 -- many of its ranks the hunter knows; for the chosen one every rank with its pet level, and
 -- whether the hunter knows it or which beast teaches it, nearest first (BeastMap.lua's Nearest):
 -- the beast's place, the travel time when a route addon gives one, and in a column of its own how
@@ -8,10 +8,10 @@ local _, ns = ...
 -- Each rank keeps to one line (a long place is cut short; the tooltip has it whole), every other
 -- row striped, under column heads; the chosen ability has a bar in the look's accent.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
 
 local LIST_WIDTH, ROW_HEIGHT, LIST_ROWS = 170, 18, 21
 local RANK_ROWS, RANK_HEIGHT, RANK_WIDTH, LEVEL_WIDTH, MORE_WIDTH = 15, 22, 64, 80, 30
@@ -36,7 +36,7 @@ local order = {}
 ---@param b number
 ---@return boolean
 local function ByRank(a, b)
-    local ranks = Kennel.data.petAbilityRanks
+    local ranks = Addon.data.petAbilityRanks
     return ranks[a].rank < ranks[b].rank
 end
 
@@ -46,7 +46,7 @@ local function Groups()
     if groups then return groups end
     ---@type table<number, number[]>
     local built = {}
-    local ranks = Kennel.data.petAbilityRanks --[[@as table<number, KennelPetAbilityRank>]]
+    local ranks = Addon.data.petAbilityRanks --[[@as table<number, BeastkeeperPetAbilityRank>]]
     for spellID, rank in pairs(ranks) do
         built[rank.ability] = built[rank.ability] or {}
         table.insert(built[rank.ability], spellID)
@@ -62,14 +62,14 @@ end
 ---@param ability number
 ---@return string
 local function AbilityName(ability)
-    return Kennel.SpellInfo(ability) or "?"
+    return Addon.SpellInfo(ability) or "?"
 end
 
 ---An ability's icon; the question mark when the client cannot say.
 ---@param ability number
 ---@return number|string
 local function AbilityIcon(ability)
-    local _, icon = Kennel.SpellInfo(ability)
+    local _, icon = Addon.SpellInfo(ability)
     return icon or 134400
 end
 
@@ -114,19 +114,19 @@ local function TeacherText(teachers)
     local parts = { M.Place(best) }
     local seconds = M.TravelTimeTo(best)
     if seconds then parts[#parts + 1] = L.BEASTMAP_TRAVEL:format(math.max(1, math.floor(seconds / 60 + 0.5))) end
-    local above = Kennel.data.beasts[best].minLevel > M:PlayerLevel()
+    local above = Addon.data.beasts[best].minLevel > M:PlayerLevel()
     if above then parts[#parts + 1] = L.BEASTMAP_ABOVE end
     return table.concat(parts, ", "), above
 end
 
 ---A rank's tooltip: every teacher in order, with its level.
----@param row KennelRankRow
+---@param row BeastkeeperRankRow
 local function OnEnter(row)
     if not row.teachers then return end
     GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
     GameTooltip:SetText(M.RankText(row.spellID --[[@as number]]) or "?")
     for _, npc in ipairs(row.teachers) do
-        local line = L.BEASTMAP_TEACHER_LINE:format(M.Place(npc), M.LevelText(Kennel.data.beasts[npc]))
+        local line = L.BEASTMAP_TEACHER_LINE:format(M.Place(npc), M.LevelText(Addon.data.beasts[npc]))
         GameTooltip:AddLine(line, 1, 1, 1)
     end
     GameTooltip:Show()
@@ -139,7 +139,7 @@ end
 ---A go button's tooltip: the beast it leads to.
 ---@param go Button
 local function OnGoEnter(go)
-    local row = go:GetParent() --[[@as KennelRankRow]]
+    local row = go:GetParent() --[[@as BeastkeeperRankRow]]
     GameTooltip:SetOwner(go, "ANCHOR_RIGHT")
     local hunting = M:IsHunting(row.best, row.spellID)
     GameTooltip:SetText(
@@ -150,7 +150,7 @@ end
 
 ---A text in the skin's font, on one line.
 ---@param parent Frame
----@param skin KennelButtonHolderSkin
+---@param skin BeastkeeperButtonHolderSkin
 ---@param justify string? "LEFT" by default
 ---@return FontString
 local function Text(parent, skin, justify)
@@ -161,25 +161,25 @@ local function Text(parent, skin, justify)
     return text
 end
 
----An ability's icon, cropped as the look crops icons (Kennel:CropIcon).
+---An ability's icon, cropped as the look crops icons (Beastkeeper:CropIcon).
 ---@param parent Frame
----@param skin KennelButtonHolderSkin
+---@param skin BeastkeeperButtonHolderSkin
 ---@param size number
 ---@return Texture
 local function Icon(parent, skin, size)
     local icon = parent:CreateTexture(nil, "ARTWORK")
     icon:SetSize(size, size)
-    Kennel:CropIcon(icon, skin.CropIcon)
+    Addon:CropIcon(icon, skin.CropIcon)
     return icon
 end
 
 ---A row of the abilities' list: its icon and name, how many ranks are known, a bar when chosen.
----@param panel KennelAbilitiesPanel
----@param skin KennelButtonHolderSkin
+---@param panel BeastkeeperAbilitiesPanel
+---@param skin BeastkeeperButtonHolderSkin
 ---@param index number
----@return KennelAbilityRow
+---@return BeastkeeperAbilityRow
 local function AbilityRow(panel, skin, index)
-    local row = CreateFrame("Button", nil, panel) --[[@as KennelAbilityRow]]
+    local row = CreateFrame("Button", nil, panel) --[[@as BeastkeeperAbilityRow]]
     row:SetSize(LIST_WIDTH, ROW_HEIGHT)
     row:SetPoint("TOPLEFT", 0, -(index - 1) * ROW_HEIGHT)
     local accent = skin.Accent and skin.Accent() or GOLD
@@ -195,17 +195,17 @@ local function AbilityRow(panel, skin, index)
     row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
     row:SetScript("OnClick", function()
         panel.chosen = row.ability
-        Kennel:RefreshWindow("abilities")
+        Addon:RefreshWindow("abilities")
     end)
     return row
 end
 
 ---The column heads above the ranks.
----@param panel KennelAbilitiesPanel
----@param skin KennelButtonHolderSkin
----@return KennelRankHeader
+---@param panel BeastkeeperAbilitiesPanel
+---@param skin BeastkeeperButtonHolderSkin
+---@return BeastkeeperRankHeader
 local function Header(panel, skin)
-    local header = CreateFrame("Frame", nil, panel) --[[@as KennelRankHeader]]
+    local header = CreateFrame("Frame", nil, panel) --[[@as BeastkeeperRankHeader]]
     header:SetHeight(16)
     header:SetPoint("TOPLEFT", LIST_WIDTH + 16, -HEADER_TOP)
     header:SetPoint("RIGHT")
@@ -228,12 +228,12 @@ local function Header(panel, skin)
 end
 
 ---A rank's row: rank, pet level, the teacher on one line, how many more, the go button.
----@param panel KennelAbilitiesPanel
----@param skin KennelButtonHolderSkin
+---@param panel BeastkeeperAbilitiesPanel
+---@param skin BeastkeeperButtonHolderSkin
 ---@param index number
----@return KennelRankRow
+---@return BeastkeeperRankRow
 local function RankRow(panel, skin, index)
-    local row = CreateFrame("Button", nil, panel) --[[@as KennelRankRow]]
+    local row = CreateFrame("Button", nil, panel) --[[@as BeastkeeperRankRow]]
     row:SetHeight(RANK_HEIGHT)
     row:SetPoint("TOPLEFT", LIST_WIDTH + 16, -RANKS_TOP - (index - 1) * RANK_HEIGHT)
     row:SetPoint("RIGHT")
@@ -249,13 +249,13 @@ local function RankRow(panel, skin, index)
     row.level = Text(row, skin, "RIGHT")
     row.level:SetWidth(LEVEL_COLUMN)
     row.level:SetPoint("LEFT", RANK_WIDTH, 0)
-    row.go = CreateFrame("Button", nil, row) --[[@as KennelGoButton]]
+    row.go = CreateFrame("Button", nil, row) --[[@as BeastkeeperGoButton]]
     row.go:SetSize(RANK_HEIGHT - 4, RANK_HEIGHT - 4)
     row.go:SetPoint("RIGHT", -2, 0)
     row.go.icon = row.go:CreateTexture(nil, "ARTWORK")
     row.go.icon:SetAllPoints()
     row.go.icon:SetTexture(GO_ICON)
-    Kennel:CropIcon(row.go.icon, skin.CropIcon)
+    Addon:CropIcon(row.go.icon, skin.CropIcon)
     row.go:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
     row.go.active = row.go:CreateTexture(nil, "OVERLAY")
     row.go.active:SetAllPoints()
@@ -278,7 +278,7 @@ local function RankRow(panel, skin, index)
     row:SetScript("OnClick", function()
         if not row.npc and row.teachers and #row.teachers > 1 then
             panel.expanded[row.spellID] = not panel.expanded[row.spellID] or nil
-            Kennel:RefreshWindow("abilities")
+            Addon:RefreshWindow("abilities")
         end
     end)
     row:SetScript("OnEnter", OnEnter)
@@ -287,7 +287,7 @@ local function RankRow(panel, skin, index)
 end
 
 ---Lays out a row's text column: a teacher's sits in a little under its rank.
----@param row KennelRankRow
+---@param row BeastkeeperRankRow
 ---@param teacher boolean
 local function PlaceText(row, teacher)
     row.text:ClearAllPoints()
@@ -296,8 +296,8 @@ local function PlaceText(row, teacher)
 end
 
 ---Builds the panel: the abilities' rows, the title, the column heads, the ranks' rows.
----@param panel KennelAbilitiesPanel
----@param skin KennelButtonHolderSkin
+---@param panel BeastkeeperAbilitiesPanel
+---@param skin BeastkeeperButtonHolderSkin
 local function Create(panel, skin)
     panel.rows, panel.ranks = {}, {}
     for index = 1, LIST_ROWS do
@@ -319,16 +319,16 @@ local function Create(panel, skin)
     panel:SetScript("OnMouseWheel", function(_, delta)
         local last = math.max(0, #panel.lineSpells - RANK_ROWS)
         panel.offset = math.min(last, math.max(0, panel.offset - delta))
-        Kennel:RefreshWindow("abilities")
+        Addon:RefreshWindow("abilities")
     end)
 end
 
 ---Fills one rank's row.
----@param row KennelRankRow
+---@param row BeastkeeperRankRow
 ---@param spellID number
 ---@param expanded boolean? its teachers show below it
 local function FillRank(row, spellID, expanded)
-    local rank = Kennel.data.petAbilityRanks[spellID] --[[@as KennelPetAbilityRank]]
+    local rank = Addon.data.petAbilityRanks[spellID] --[[@as BeastkeeperPetAbilityRank]]
     row.spellID, row.npc = spellID, nil
     row.rank:SetText(L.BEASTMAP_RANK:format(rank.rank))
     row.level:SetText(tostring(rank.level))
@@ -351,7 +351,7 @@ local function FillRank(row, spellID, expanded)
         row.text:SetTextColor(colour[1], colour[2], colour[3])
         if #teachers > 1 then row.more:SetText(L.BEASTMAP_MORE:format(#teachers - 1)) end
         row.more:SetTextColor(DIM[1], DIM[2], DIM[3])
-        row.go:SetShown(Kennel.data.beasts[teachers[1]].pins ~= nil)
+        row.go:SetShown(Addon.data.beasts[teachers[1]].pins ~= nil)
         row.go.active:SetShown(M:IsHunting(row.best, spellID))
     else
         row.teachers, row.best = nil, nil
@@ -364,11 +364,11 @@ end
 
 ---Fills a row with one of a rank's teachers: its levels, its place and travel time, its own hunt
 ---button.
----@param row KennelRankRow
+---@param row BeastkeeperRankRow
 ---@param spellID number
 ---@param npc number
 local function FillTeacher(row, spellID, npc)
-    local beast = Kennel.data.beasts[npc]
+    local beast = Addon.data.beasts[npc]
     row.spellID, row.npc, row.best, row.teachers = spellID, npc, npc, nil
     row.toggle:Hide()
     row.rank:SetText("")
@@ -390,7 +390,7 @@ end
 
 ---The chosen ability's lines, in `panel.lineSpells` and `panel.lineBeasts`: each rank, and below
 ---an unfolded one each of its teachers, nearest first (lineBeasts false on a rank's line).
----@param panel KennelAbilitiesPanel
+---@param panel BeastkeeperAbilitiesPanel
 ---@param spells number[]
 local function Lines(panel, spells)
     local lineSpells, lineBeasts = panel.lineSpells, panel.lineBeasts
@@ -398,7 +398,7 @@ local function Lines(panel, spells)
     wipe(lineBeasts)
     for _, spellID in ipairs(spells) do
         lineSpells[#lineSpells + 1], lineBeasts[#lineSpells + 1] = spellID, false
-        local rank = Kennel.data.petAbilityRanks[spellID]
+        local rank = Addon.data.petAbilityRanks[spellID]
         if panel.expanded[spellID] and M.Lacking(spellID) then
             for _, npc in ipairs(M.Nearest(rank.teachers)) do
                 lineSpells[#lineSpells + 1], lineBeasts[#lineSpells + 1] = spellID, npc
@@ -408,7 +408,7 @@ local function Lines(panel, spells)
 end
 
 ---Fills the list and the chosen ability's ranks.
----@param panel KennelAbilitiesPanel
+---@param panel BeastkeeperAbilitiesPanel
 local function Refresh(panel)
     local abilities = Order()
     if not panel.chosen or not Groups()[panel.chosen] then panel.chosen = abilities[1] end
@@ -451,7 +451,7 @@ local function Refresh(panel)
     end
 end
 
-Kennel:RegisterWindowTab({
+Addon:RegisterWindowTab({
     id = "abilities",
     title = L.BEASTMAP_TAB_ABILITIES,
     order = 20,

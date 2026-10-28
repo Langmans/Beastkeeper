@@ -1,5 +1,5 @@
 -- CareButton: one key for Mend Pet, Revive Pet and Call Pet that remembers a dead pet, its toasts,
--- what failed casts teach it, and the KennelCare macro that follows it.
+-- what failed casts teach it, and the BeastkeeperCare macro that follows it.
 
 local MEND, REVIVE, CALL = 136, 982, 883
 -- /use rather than /cast: it casts a spell just the same, and leaves more of the 255 characters.
@@ -70,8 +70,8 @@ describe("CareButton", function()
 
         it("acts on the key's release and answers to up and down clicks", function()
             NewClient():login()
-            assert.are.same({ "AnyUp", "AnyDown" }, KennelCareButton.clicks)
-            assert.is_false(KennelCareButton.attributes.useOnKeyDown)
+            assert.are.same({ "AnyUp", "AnyDown" }, BeastkeeperCareButton.clicks)
+            assert.is_false(BeastkeeperCareButton.attributes.useOnKeyDown)
         end)
 
         it("uses the client's spell names, or English ones without them", function()
@@ -91,22 +91,22 @@ describe("CareButton", function()
             NewClient():login()
             assert.are.equal(
                 "Care Button: mend, revive or call pet",
-                _G["BINDING_NAME_CLICK KennelCareButton:LeftButton"]
+                _G["BINDING_NAME_CLICK BeastkeeperCareButton:LeftButton"]
             )
         end)
 
         it("does nothing while the module is off, and works again when it is on", function()
             local client = NewClient():login()
-            client.Kennel:SetModuleOn("CareButton", false)
+            client.Addon:SetModuleOn("CareButton", false)
             assert.is_nil(client:press())
             assert.are.same({}, client.drivers)
-            client.Kennel:SetModuleOn("CareButton", true)
+            client.Addon:SetModuleOn("CareButton", true)
             assert.are.equal("Mend Pet", client:press())
         end)
 
         it("is switched off and on again after combat when the module is switched in combat", function()
             local client = NewClient():login():enterCombat()
-            client.Kennel:SetModuleOn("CareButton", false)
+            client.Addon:SetModuleOn("CareButton", false)
             assert.are.equal("Mend Pet", client:press(), "it cannot change in combat")
             assert.are.same({}, client.blocked)
             client:leaveCombat()
@@ -117,7 +117,7 @@ describe("CareButton", function()
     describe("the toasts", function()
         it("say the pet died, with the spell's icon and the key to press", function()
             local client = NewClient():login()
-            client.bindings["CLICK KennelCareButton:LeftButton"] = "F"
+            client.bindings["CLICK BeastkeeperCareButton:LeftButton"] = "F"
             client:petDies()
             local toast = client:toast()
             assert.are.equal("Your pet is dead", client:toastTitle())
@@ -128,7 +128,7 @@ describe("CareButton", function()
 
         it("name the macro when there is no key binding", function()
             local client = NewClient():login():petDies()
-            assert.are.equal("Press your KennelCare macro.", client:toast().Hint.text)
+            assert.are.equal("Press your BeastkeeperCare macro.", client:toast().Hint.text)
         end)
 
         it("go away when the pet lives again", function()
@@ -159,7 +159,7 @@ describe("CareButton", function()
             client:petBack():animate(1)
             assert.is_false(client:toast().shown, "the pet came")
             client:petDies():petGone():leaveCombat()
-            client.Kennel:HideToast()
+            client.Addon:HideToast()
             client:enterCombat()
             assert.are.equal("Your pet is dead", client:toastTitle())
         end)
@@ -170,11 +170,11 @@ describe("CareButton", function()
             client:login():enterCombat()
             assert.is_nil(client:toastTitle(), "no pet to miss yet")
             client:leaveCombat()
-            assert.is_false(_G.KennelCareButton:IsShown(), "no button on screen")
+            assert.is_false(_G.BeastkeeperCareButton:IsShown(), "no button on screen")
             assert.are.equal(0, #client.charMacros, "no macros yet")
             client.unknownSpells[883] = nil
             client:fire("SPELLS_CHANGED")
-            assert.is_true(_G.KennelCareButton:IsShown())
+            assert.is_true(_G.BeastkeeperCareButton:IsShown())
             assert.is_true(#client.charMacros > 0)
             client:enterCombat()
             assert.are.equal("You have no pet out", client:toastTitle())
@@ -220,7 +220,7 @@ describe("CareButton", function()
             assert.is_nil(client:toastTitle())
             client:petHealth(40)
             assert.are.equal("Your pet is at 40% health", client:toastTitle())
-            client.Kennel:HideToast()
+            client.Addon:HideToast()
             client:petHealth(30)
             assert.is_nil(client:toastTitle(), "still low: no second toast")
             client:petHealth(80)
@@ -270,7 +270,7 @@ describe("CareButton", function()
         end)
 
         it("are four kinds, each with a look of its own", function()
-            local kinds = NewClient():login().Kennel:ToastTypes()
+            local kinds = NewClient():login().Addon:ToastTypes()
             assert.are.equal("Care Button: pet died", kinds["CareButton:dead"])
             assert.are.equal("Care Button: no pet at the pull", kinds["CareButton:nopet"])
             assert.are.equal("Care Button: low health", kinds["CareButton:low"])
@@ -279,7 +279,7 @@ describe("CareButton", function()
 
         it("go away when the module is switched off", function()
             local client = NewClient():login():petDies()
-            client.Kennel:SetModuleOn("CareButton", false)
+            client.Addon:SetModuleOn("CareButton", false)
             client:animate(1)
             assert.is_false(client:toast().shown)
         end)
@@ -290,7 +290,7 @@ describe("CareButton", function()
 
         ---The mouse over the button: the tooltip's title and its lines' texts.
         local function hover(client)
-            local button = _G.KennelCareButton
+            local button = _G.BeastkeeperCareButton
             client.tooltipLines, GameTooltip.text = {}, nil
             button:GetScript("OnEnter")(button)
             local texts = {}
@@ -303,7 +303,7 @@ describe("CareButton", function()
         it("shows the spell it casts now, with a border to match, below the pet frame", function()
             local client = NewClient()
             local colors = {}
-            client.Kennel:RegisterButtonSkin("record", {
+            client.Addon:RegisterButtonSkin("record", {
                 name = "Record",
                 priority = 100,
                 Style = function(button)
@@ -313,7 +313,7 @@ describe("CareButton", function()
                 end,
             })
             client:login()
-            local button = _G.KennelCareButton
+            local button = _G.BeastkeeperCareButton
             assert.is_true(button:IsShown())
             assert.are.same({ "TOPLEFT", PetFrame, "BOTTOMLEFT", 0, -4 }, { button:GetPoint() })
             assert.are.equal(MEND_ICON, button.icon.texture)
@@ -326,20 +326,20 @@ describe("CareButton", function()
             client:petBack()
             assert.are.equal(MEND_ICON, button.icon.texture)
             NewClient({ noPet = true }):login()
-            assert.are.equal(CALL_ICON, _G.KennelCareButton.icon.texture)
+            assert.are.equal(CALL_ICON, _G.BeastkeeperCareButton.icon.texture)
         end)
 
         it("names the spell and the modifiers in its tooltip", function()
             local title, lines = hover(NewClient():login())
             assert.are.equal("Care Button", title)
             assert.are.same({ "Mend Pet", "Shift: Revive Pet. Ctrl: Call Pet. Shift-drag to move." }, lines)
-            _G.KennelCareButton:GetScript("OnLeave")(_G.KennelCareButton)
+            _G.BeastkeeperCareButton:GetScript("OnLeave")(_G.BeastkeeperCareButton)
             assert.is_false(GameTooltip:IsShown())
         end)
 
         it("moves with Shift held, keeps its place, and goes back from the page", function()
             local client = NewClient():login()
-            local button = _G.KennelCareButton
+            local button = _G.BeastkeeperCareButton
             button:GetScript("OnDragStart")(button)
             assert.is_falsy(button.moving)
             client.mods.shift = true
@@ -347,36 +347,36 @@ describe("CareButton", function()
             button:GetScript("OnDragStop")(button)
             client:logout()
             client = NewClient({ saved = Saved() }):login()
-            assert.are.same({ "TOPLEFT", UIParent, "BOTTOMLEFT", 300, 700 }, { _G.KennelCareButton:GetPoint() })
-            client.Kennel:GetOptionsTable().args.CareButton.args.resetPosition.func()
-            assert.are.same({ "TOPLEFT", PetFrame, "BOTTOMLEFT", 0, -4 }, { _G.KennelCareButton:GetPoint() })
+            assert.are.same({ "TOPLEFT", UIParent, "BOTTOMLEFT", 300, 700 }, { _G.BeastkeeperCareButton:GetPoint() })
+            client.Addon:GetOptionsTable().args.CareButton.args.resetPosition.func()
+            assert.are.same({ "TOPLEFT", PetFrame, "BOTTOMLEFT", 0, -4 }, { _G.BeastkeeperCareButton:GetPoint() })
         end)
 
         it("hides with its switch or the module off, after combat", function()
             local client = NewClient():login()
-            local args = client.Kennel:GetOptionsTable().args.CareButton.args
+            local args = client.Addon:GetOptionsTable().args.CareButton.args
             client:enterCombat()
             args.visible.set({}, false)
-            assert.is_true(_G.KennelCareButton:IsShown(), "a secure button stays in combat")
+            assert.is_true(_G.BeastkeeperCareButton:IsShown(), "a secure button stays in combat")
             client:leaveCombat()
-            assert.is_false(_G.KennelCareButton:IsShown())
+            assert.is_false(_G.BeastkeeperCareButton:IsShown())
             args.visible.set({}, true)
-            assert.is_true(_G.KennelCareButton:IsShown())
-            client.Kennel:SetModuleOn("CareButton", false)
-            assert.is_false(_G.KennelCareButton:IsShown())
+            assert.is_true(_G.BeastkeeperCareButton:IsShown())
+            client.Addon:SetModuleOn("CareButton", false)
+            assert.is_false(_G.BeastkeeperCareButton:IsShown())
         end)
     end)
 
     describe("the low health marker", function()
         ---The marker's alpha as the client would draw it: a hidden one still carries its value.
         local function alpha()
-            local value = _G.KennelLowHealthMarker.alpha
+            local value = _G.BeastkeeperLowHealthMarker.alpha
             return type(value) == "table" and value.secret or value
         end
 
         it("lights up beside the pet frame below the low line", function()
             local client = NewClient():login()
-            local marker = _G.KennelLowHealthMarker
+            local marker = _G.BeastkeeperLowHealthMarker
             assert.is_true(marker:IsShown())
             assert.are.same({ "RIGHT", PetFrame, "LEFT", -4, 0 }, { marker:GetPoint() })
             client:petHealth(60)
@@ -389,7 +389,7 @@ describe("CareButton", function()
             local client = NewClient():login()
             client.healthSecret = true
             client:petHealth(20)
-            assert.is_true(issecretvalue(_G.KennelLowHealthMarker.alpha), "handed on as the client gave it")
+            assert.is_true(issecretvalue(_G.BeastkeeperLowHealthMarker.alpha), "handed on as the client gave it")
             assert.are.equal(1, alpha())
             client:petHealth(80)
             assert.are.equal(0, alpha())
@@ -397,34 +397,34 @@ describe("CareButton", function()
 
         it("follows the low line, and is gone at 0%", function()
             local client = NewClient():login()
-            local args = client.Kennel:GetOptionsTable().args.CareButton.args
+            local args = client.Addon:GetOptionsTable().args.CareButton.args
             args.low.set({}, 25)
             client:petHealth(30)
             assert.are.equal(0, alpha())
             client:petHealth(20)
             assert.are.equal(1, alpha())
             args.low.set({}, 0)
-            assert.is_false(_G.KennelLowHealthMarker:IsShown())
+            assert.is_false(_G.BeastkeeperLowHealthMarker:IsShown())
         end)
 
         it("is gone without a living pet, or with its switch or the module off", function()
             local client = NewClient():login()
-            local marker = _G.KennelLowHealthMarker
+            local marker = _G.BeastkeeperLowHealthMarker
             client:petDies()
             assert.is_false(marker:IsShown())
             client:petBack()
             assert.is_true(marker:IsShown())
-            local args = client.Kennel:GetOptionsTable().args.CareButton.args
+            local args = client.Addon:GetOptionsTable().args.CareButton.args
             args.marker.set({}, false)
             assert.is_false(marker:IsShown())
             args.marker.set({}, true)
-            client.Kennel:SetModuleOn("CareButton", false)
+            client.Addon:SetModuleOn("CareButton", false)
             assert.is_false(marker:IsShown())
         end)
 
         it("stays away on a client without curves", function()
             NewClient({ noCurveAPI = true }):login():petHealth(10)
-            assert.is_false(_G.KennelLowHealthMarker:IsShown())
+            assert.is_false(_G.BeastkeeperLowHealthMarker:IsShown())
         end)
     end)
 
@@ -458,7 +458,7 @@ describe("CareButton", function()
 
         it("says to hold Shift in combat, and switches once combat ends", function()
             local client = NewClient({ noPet = true }):login():enterCombat()
-            client.Kennel:HideToast()
+            client.Addon:HideToast()
             client:castFails(CALL)
             assert.are.equal(
                 "Call Pet failed. In combat the button cannot switch: hold Shift for Revive Pet.",
@@ -509,11 +509,11 @@ describe("CareButton", function()
         end)
     end)
 
-    describe("the KennelCare macro", function()
+    describe("the BeastkeeperCare macro", function()
         it("is made for the character the first time, following the button", function()
             local client = NewClient():login()
-            assert.are.equal(ALIVE, client:macroBody("KennelCare"))
-            assert.are.equal(134400, client:macro("KennelCare").icon)
+            assert.are.equal(ALIVE, client:macroBody("BeastkeeperCare"))
+            assert.are.equal(134400, client:macro("BeastkeeperCare").icon)
         end)
 
         it("holds only the spells the hunter knows, and grows as the hunter learns them", function()
@@ -522,39 +522,39 @@ describe("CareButton", function()
             client.unknownSpells[982] = true -- Revive Pet: the quest Training the Beast
             client:login()
             local alive = "#showtooltip\n/use [mod:ctrl][nopet] Call Pet"
-            assert.are.equal(alive, client:macroBody("KennelCare"))
-            assert.are.equal("/use [mod:ctrl][nopet] Call Pet", _G.KennelCareButton.attributes.macrotext)
+            assert.are.equal(alive, client:macroBody("BeastkeeperCare"))
+            assert.are.equal("/use [mod:ctrl][nopet] Call Pet", _G.BeastkeeperCareButton.attributes.macrotext)
             client.unknownSpells[982] = nil
             client:fire("SPELLS_CHANGED")
             local withRevive = "/use [mod:shift][@pet,dead] Revive Pet; [mod:ctrl][nopet] Call Pet"
-            assert.are.equal("#showtooltip\n" .. withRevive, client:macroBody("KennelCare"))
-            assert.are.equal(withRevive, _G.KennelCareButton.attributes.macrotext)
+            assert.are.equal("#showtooltip\n" .. withRevive, client:macroBody("BeastkeeperCare"))
+            assert.are.equal(withRevive, _G.BeastkeeperCareButton.attributes.macrotext)
             client.unknownSpells[136] = nil
             client:fire("SPELLS_CHANGED")
-            assert.are.equal(ALIVE, client:macroBody("KennelCare"), "the whole line once all are known")
+            assert.are.equal(ALIVE, client:macroBody("BeastkeeperCare"), "the whole line once all are known")
         end)
 
         it("shows Revive Pet when made while the pet counts as dead", function()
             local client = NewClient({ noPet = true, saved = saved(nil, { petDead = true }) }):login()
-            assert.are.equal(DEAD, client:macroBody("KennelCare"))
+            assert.are.equal(DEAD, client:macroBody("BeastkeeperCare"))
         end)
 
         it("follows the button outside combat", function()
             local client = NewClient():login():petDies()
-            assert.are.equal(DEAD, client:macroBody("KennelCare"))
+            assert.are.equal(DEAD, client:macroBody("BeastkeeperCare"))
             client:petGone()
-            assert.are.equal(DEAD, client:macroBody("KennelCare"), "still Revive Pet once the body is gone")
+            assert.are.equal(DEAD, client:macroBody("BeastkeeperCare"), "still Revive Pet once the body is gone")
             client:petBack()
-            assert.are.equal(ALIVE, client:macroBody("KennelCare"))
+            assert.are.equal(ALIVE, client:macroBody("BeastkeeperCare"))
         end)
 
         it("waits in combat and is written once combat ends", function()
             local client = NewClient():login():enterCombat()
             client:petDies():petGone()
-            assert.are.equal(ALIVE, client:macroBody("KennelCare"), "not edited in combat")
+            assert.are.equal(ALIVE, client:macroBody("BeastkeeperCare"), "not edited in combat")
             assert.are.same({}, client.blocked, "and not tried")
             client:leaveCombat()
-            assert.are.equal(DEAD, client:macroBody("KennelCare"))
+            assert.are.equal(DEAD, client:macroBody("BeastkeeperCare"))
         end)
 
         it("is not edited again when it is right already", function()
@@ -567,22 +567,22 @@ describe("CareButton", function()
 
         it("is brought up to date when the macros change", function()
             local client = NewClient({ noPet = true, saved = saved(nil, { petDead = true }) }):login()
-            client:macro("KennelCare").body = ALIVE
+            client:macro("BeastkeeperCare").body = ALIVE
             client:fire("UPDATE_MACROS")
-            assert.are.equal(DEAD, client:macroBody("KennelCare"))
+            assert.are.equal(DEAD, client:macroBody("BeastkeeperCare"))
         end)
 
         it("takes an older /cast line for its own and writes it with /use", function()
             local client = NewClient({ noPet = true }):login()
-            client:macro("KennelCare").body = "#showtooltip\n" .. ALIVE_CAST:gsub("^/use", "/cast")
+            client:macro("BeastkeeperCare").body = "#showtooltip\n" .. ALIVE_CAST:gsub("^/use", "/cast")
             client:fire("UPDATE_MACROS")
-            assert.are.equal(ALIVE, client:macroBody("KennelCare"))
+            assert.are.equal(ALIVE, client:macroBody("BeastkeeperCare"))
         end)
 
         it("keeps the player's own lines and only rewrites its cast line", function()
             local client = NewClient():login()
             local own = "/use [mod:alt] Hearthstone; Call Pet"
-            client:macro("KennelCare").body = "#ShowTooltip Old\n/petattack\n"
+            client:macro("BeastkeeperCare").body = "#ShowTooltip Old\n/petattack\n"
                 .. ALIVE_CAST
                 .. "\n"
                 .. own
@@ -590,16 +590,16 @@ describe("CareButton", function()
             client:petDies()
             assert.are.equal(
                 "#showtooltip\n/petattack\n" .. DEAD_CAST .. "\n" .. own .. "\n/say hi",
-                client:macroBody("KennelCare"),
+                client:macroBody("BeastkeeperCare"),
                 "a /use line with another spell is the player's own"
             )
         end)
 
         it("is left alone when its first line is no #showtooltip, or when it is gone", function()
             local client = NewClient():login()
-            client:macro("KennelCare").body = ALIVE_CAST
+            client:macro("BeastkeeperCare").body = ALIVE_CAST
             client:petDies()
-            assert.are.equal(ALIVE_CAST, client:macroBody("KennelCare"))
+            assert.are.equal(ALIVE_CAST, client:macroBody("BeastkeeperCare"))
             client = NewClient():login()
             client.charMacros = {}
             client:petDies()
@@ -609,8 +609,8 @@ describe("CareButton", function()
         it("is made again from the settings page", function()
             local client = NewClient():login()
             client.charMacros = {}
-            client.Kennel:GetOptionsTable().args.CareButton.args.macro.func()
-            assert.are.equal(ALIVE, client:macroBody("KennelCare"))
+            client.Addon:GetOptionsTable().args.CareButton.args.macro.func()
+            assert.are.equal(ALIVE, client:macroBody("BeastkeeperCare"))
         end)
     end)
 
@@ -619,11 +619,11 @@ describe("CareButton", function()
 
         before_each(function()
             client = NewClient():login()
-            args = client.Kennel:GetOptionsTable().args.CareButton.args
+            args = client.Addon:GetOptionsTable().args.CareButton.args
         end)
 
         it("passes AceConfig's validation", function()
-            LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(client.Kennel:GetOptionsTable(), "Kennel")
+            LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(client.Addon:GetOptionsTable(), "Beastkeeper")
         end)
 
         it("sets the toasts, the low line and the sound", function()
@@ -660,7 +660,7 @@ describe("CareButton", function()
 
     it("works again after a profile change", function()
         local client = NewClient():login()
-        client.Kennel.db:SetProfile("Other")
+        client.Addon.db:SetProfile("Other")
         assert.are.equal("Mend Pet", client:press())
         assert.are.equal(1, #client.drivers)
     end)

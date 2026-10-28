@@ -8,13 +8,13 @@ local _, ns = ...
 --
 -- On the minimap they sit around where the hunter stands, redrawn a few times a second while a
 -- hunt is on: the hunter's place on the area's map gives the offset in map percent, turned into
--- yards by measuring the map in the world (Kennel.InWorld), then into the minimap's pixels by how
+-- yards by measuring the map in the world (Beastkeeper.InWorld), then into the minimap's pixels by how
 -- many yards it shows across at its zoom, turned with the player when the minimap rotates. A mask
 -- keeps the discs inside the round minimap.
 
----@type Kennel
-local Kennel = ns
-local M = Kennel:GetModule("BeastMap") --[[@as KennelBeastMap]]
+---@type Addon
+local Addon = ns
+local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
 
 local DISC = "Interface\\CHARACTERFRAME\\TempPortraitAlphaMask"
 local COLOUR = { 0.35, 1, 0.35, 0.3 }
@@ -40,9 +40,9 @@ local yardsPer = {}
 local function YardsPerPercent(map)
     local known = yardsPer[map]
     if known == nil then
-        local continent, x, y = Kennel.InWorld(map, 0.5, 0.5)
-        local _, ex, ey = Kennel.InWorld(map, 0.51, 0.5)
-        local _, sx, sy = Kennel.InWorld(map, 0.5, 0.51)
+        local continent, x, y = Addon.InWorld(map, 0.5, 0.5)
+        local _, ex, ey = Addon.InWorld(map, 0.51, 0.5)
+        local _, sx, sy = Addon.InWorld(map, 0.5, 0.51)
         known = continent ~= nil and { math.sqrt((ex - x) ^ 2 + (ey - y) ^ 2), math.sqrt((sx - x) ^ 2 + (sy - y) ^ 2) }
         yardsPer[map] = known
     end
@@ -79,10 +79,10 @@ local function HideFrom(pool, first)
 end
 
 ---The beast hunted now, while the module is on.
----@return KennelBeast?
+---@return BeastkeeperBeast?
 local function Hunted()
     local hunt = M:IsEnabled() and M:Hunt()
-    return hunt and Kennel.data.beasts[hunt.npc] or nil
+    return hunt and Addon.data.beasts[hunt.npc] or nil
 end
 
 -- The frame over the world map's canvas, made the first time.
@@ -134,7 +134,7 @@ function M:DrawMinimapAreas()
         local sizes = IsIndoors() and MINIMAP_YARDS.indoor or MINIMAP_YARDS.outdoor
         local perYard = Minimap:GetWidth() / sizes[(Minimap:GetZoom() or 0) + 1]
         local facing = GetCVar("rotateMinimap") == "1" and GetPlayerFacing and GetPlayerFacing() or 0
-        if not Kennel.Readable(facing) then facing = 0 end
+        if not Addon.Readable(facing) then facing = 0 end
         local cos, sin = math.cos(facing), math.sin(facing)
         for map, pins in pairs(beast.pins) do
             local east, south = YardsPerPercent(map)
@@ -143,7 +143,7 @@ function M:DrawMinimapAreas()
             if position then
                 px, py = position:GetXY()
             end
-            if east and south and Kennel.Readable(px) and px and py then
+            if east and south and Addon.Readable(px) and px and py then
                 local radii = beast.radii and beast.radii[map]
                 local across = (east + south) / 2
                 for i = 1, #pins, 2 do

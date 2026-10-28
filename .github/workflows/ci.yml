@@ -1,6 +1,6 @@
 # Lint and tests on every push and pull request; release.yml runs the same job before a release.
 #
-# Lua 5.1.5 and LuaRocks come from the leafo actions, the test rocks from kennel-dev-1.rockspec,
+# Lua 5.1.5 and LuaRocks come from the leafo actions, the test rocks from beastkeeper-dev-1.rockspec,
 # StyLua from its own action (installed only; tests/check.lua runs it), WoW Lua LS from its GitHub
 # release, pinned and checked against the release's checksum. tests/check.lua then fetches Ace3
 # into Libs/ and runs everything; under CI a missing WoW Lua LS fails instead of being skipped.
@@ -32,7 +32,7 @@ jobs:
           luaVersion: "5.1.5"
       - uses: leafo/gh-actions-luarocks@v6
       - name: Install the test rocks
-        run: luarocks install --only-deps kennel-dev-1.rockspec
+        run: luarocks install --only-deps beastkeeper-dev-1.rockspec
       - uses: JohnnyMorganz/stylua-action@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -8,14 +8,14 @@ local _, ns = ...
 -- - eaten: the item whose count in the bags dropped (Feed Pet: Forever's button, the spellbook
 --   with a click in EllesmereUIBags). The bags may update just after the cast, hence WaitForBags.
 
----@type Kennel
-local Kennel = ns
-local M = Kennel:GetModule("FeedEmotes") --[[@as KennelFeedEmotes]]
+---@type Addon
+local Addon = ns
+local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
 
 local FOOD_WINDOW = 3 -- seconds after an item is picked (or let go of) a cast may still claim it
 local EATEN_WINDOW = 1 -- seconds an item that left the bags counts as eaten, before or after the cast
 
----@class KennelFoodTracker
+---@class BeastkeeperFoodTracker
 ---@field targetedFood number?
 ---@field targetedAt number?
 ---@field cursorFood number?
@@ -41,12 +41,12 @@ local function CountBags(counts)
     for bag = 0, NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS or 4 do
         for slot = 1, C_Container.GetContainerNumSlots(bag) do
             local itemID = C_Container.GetContainerItemID(bag, slot)
-            if itemID and Kennel.Readable(itemID) then inBags[itemID] = true end
+            if itemID and Addon.Readable(itemID) then inBags[itemID] = true end
         end
     end
     for itemID in pairs(inBags) do
         local count = C_Item.GetItemCount(itemID)
-        if Kennel.Readable(count) then counts[itemID] = count end
+        if Addon.Readable(count) then counts[itemID] = count end
     end
 end
 
@@ -56,7 +56,7 @@ end
 function Tracker:OnTargeted(bag, slot)
     if not (SpellIsTargeting and SpellIsTargeting()) then return end
     local item = C_Container.GetContainerItemInfo(bag, slot)
-    if item and Kennel.Readable(item.itemID) then
+    if item and Addon.Readable(item.itemID) then
         self.targetedFood, self.targetedAt = item.itemID, GetTime()
     end
 end
@@ -65,7 +65,7 @@ end
 function Tracker:OnCursorChanged()
     local kind, itemID = GetCursorInfo()
     if kind == "item" then
-        self.cursorFood = Kennel.Readable(itemID) and itemID --[[@as number]] or nil
+        self.cursorFood = Addon.Readable(itemID) and itemID --[[@as number]] or nil
         self.cursorReleasedAt = nil
     elseif self.cursorFood and not self.cursorReleasedAt then
         self.cursorReleasedAt = GetTime()

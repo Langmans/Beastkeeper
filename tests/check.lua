@@ -1,4 +1,4 @@
--- Kennel's checks, run from the repository root with Lua 5.1:
+-- Beastkeeper's checks, run from the repository root with Lua 5.1:
 --
 --   lua tests/check.lua           lint, then the tests with the coverage check
 --   lua tests/check.lua test      the tests; extra arguments go to busted, e.g.
@@ -279,7 +279,7 @@ local function test(extra)
         report(sh.run(argv, true), "busted")
     end
     fixJunit()
-    -- Every executable line of Kennel's own files must run in some test. A partial run covers
+    -- Every executable line of Beastkeeper's own files must run in some test. A partial run covers
     -- only part and is not held to it.
     if full and sh.exists("coverage/luacov.stats.out") then
         sh.run({ tool("luacov"), "-r", "lcov" })

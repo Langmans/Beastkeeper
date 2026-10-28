@@ -11,10 +11,10 @@ local _, ns = ...
 -- trainer (Growl, Great Stamina, Natural Armor, the resistances) are left out. Nothing compares
 -- English text: names and the chat line come from the client, so this works in any language.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("AbilityLearned") --[[@as KennelAbilityLearned]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("AbilityLearned") --[[@as BeastkeeperAbilityLearned]]
 
 -- The rank 1 spell of each wild-learned ability, only to look up its name in the client's
 -- language; every rank has the same name. From Wowhead's Forever hunter pet abilities list.
@@ -61,7 +61,7 @@ function M.IsWildAbility(name)
     if not complete then
         complete = true
         for _, id in ipairs(WILD_ABILITY_IDS) do
-            local spellName = Kennel.SpellInfo(id)
+            local spellName = Addon.SpellInfo(id)
             if spellName then
                 wildNames[spellName] = true
             else
@@ -94,11 +94,11 @@ end
 ---@param value GameValue
 ---@return string?
 local function Plain(value)
-    return Kennel.Readable(value) and type(value) == "string" and value ~= "" and value or nil
+    return Addon.Readable(value) and type(value) == "string" and value ~= "" and value or nil
 end
 
 ---A learn waiting out the merge window.
----@class KennelPendingLearn
+---@class BeastkeeperPendingLearn
 ---@field name string
 ---@field rank string?
 ---@field icon (number|string)?
@@ -107,7 +107,7 @@ end
 ---@field petIcon (number|string)? its icon there
 ---@field simulated boolean
 
----@type KennelPendingLearn?
+---@type BeastkeeperPendingLearn?
 local pending
 -- True while the page's simulation feeds its line through.
 local simulating = false
@@ -151,7 +151,7 @@ local function Learned(name, rank, spellID)
     ---@type (number|string)?, string?
     local icon, idRank
     if spellID then
-        _, icon, idRank = Kennel.SpellInfo(spellID)
+        _, icon, idRank = Addon.SpellInfo(spellID)
     end
     if pending and pending.name == name then
         pending.rank = pending.rank or rank or idRank
@@ -161,7 +161,7 @@ local function Learned(name, rank, spellID)
     if not M.IsWildAbility(name) then return false end
     if pending then Flush() end
     -- Copied, not kept: PetSpells refills its entries on its next call.
-    local petSpell = Kennel.PetSpells()[name]
+    local petSpell = Addon.PetSpells()[name]
     pending = {
         name = name,
         rank = rank or idRank,
@@ -196,7 +196,7 @@ end
 ---A spell learned, by the spellbook events.
 ---@param spellID number
 function M:SpellLearned(spellID)
-    local name, _, rank = Kennel.SpellInfo(spellID)
+    local name, _, rank = Addon.SpellInfo(spellID)
     Learned(Plain(name), Plain(rank), spellID)
 end
 
@@ -205,18 +205,18 @@ end
 ---@return string name
 ---@return string rank
 ---@return (number|string)? icon
----@return KennelPetSpell? petSpell the pet's own, when it has it
+---@return BeastkeeperPetSpell? petSpell the pet's own, when it has it
 function M.Example()
-    local spells = Kennel.PetSpells()
+    local spells = Addon.PetSpells()
     ---@type string[]
     local names = {}
     for name in pairs(spells) do
         if M.IsWildAbility(name) then names[#names + 1] = name end
     end
     table.sort(names)
-    local name = names[1] or Kennel.SpellInfo(CLAW) or L.ABILITYLEARNED_TEST_SPELL
+    local name = names[1] or Addon.SpellInfo(CLAW) or L.ABILITYLEARNED_TEST_SPELL
     local petSpell = spells[name]
-    local _, icon, rank = Kennel.SpellInfo(CLAW_RANK_2)
+    local _, icon, rank = Addon.SpellInfo(CLAW_RANK_2)
     rank = (petSpell and petSpell.rank) or rank or L.ABILITYLEARNED_TEST_RANK
     return name, rank, (petSpell and petSpell.icon) or icon, petSpell
 end

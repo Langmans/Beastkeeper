@@ -5,21 +5,21 @@
 
 local JERKY, HAUNCH, MUTTON, MYSTERY, WOLF, BREAD = 117, 2287, 3770, 12037, 2680, 4540
 
----The toasts shown from now on, as Kennel hands them to listeners.
+---The toasts shown from now on, as Beastkeeper hands them to listeners.
 ---@param client table
----@return KennelToastInfo[]
+---@return BeastkeeperToastInfo[]
 local function toasts(client)
     local seen = {}
-    client.Kennel.RegisterMessage(seen, "KENNEL_TOAST", function(_, event)
+    client.Addon.RegisterMessage(seen, "BEASTKEEPER_TOAST", function(_, event)
         seen[#seen + 1] = event.toast
     end)
     return seen
 end
 
 ---The toast with `key` among those seen, if any.
----@param seen KennelToastInfo[]
+---@param seen BeastkeeperToastInfo[]
 ---@param key string
----@return KennelToastInfo?
+---@return BeastkeeperToastInfo?
 local function toastFor(seen, key)
     for _, toast in ipairs(seen) do
         if toast.key == key then return toast end
@@ -32,7 +32,7 @@ end
 ---@return table[] lines
 local function hover(client)
     client.tooltipLines, GameTooltip.text = {}, nil
-    local button = _G.KennelFeedButton
+    local button = _G.BeastkeeperFeedButton
     button:GetScript("OnEnter")(button)
     return GameTooltip.text, client.tooltipLines
 end
@@ -67,7 +67,7 @@ describe("Feeding", function()
             assert.are.same({ 1, 1, 0 }, lines[4].color, "half: yellow")
             assert.are.same({ 1, 0.5, 0 }, lines[5].color, "little: orange")
             assert.are.equal("Click to feed the first, right-click to choose. Shift-drag to move.", lines[#lines].text)
-            _G.KennelFeedButton:GetScript("OnLeave")(_G.KennelFeedButton)
+            _G.BeastkeeperFeedButton:GetScript("OnLeave")(_G.BeastkeeperFeedButton)
             assert.is_false(GameTooltip:IsShown())
         end)
 
@@ -77,7 +77,7 @@ describe("Feeding", function()
             client:stock(MUTTON, 5):stock(JERKY, 2)
             local function ids()
                 local out = {}
-                for _, food in ipairs(client.Kennel:GetModule("Feeding"):Foods()) do
+                for _, food in ipairs(client.Addon:GetModule("Feeding"):Foods()) do
                     out[#out + 1] = food.itemID
                 end
                 return out
@@ -91,7 +91,7 @@ describe("Feeding", function()
             local client = NewClient():login():stock(MUTTON, 5)
             client.bag[#client.bag + 1] = { itemID = MUTTON, count = 2 }
             client:fire("BAG_UPDATE_DELAYED")
-            assert.are.equal("/cast Feed Pet\n/use 0 2", _G.KennelFeedButton.attributes.macrotext)
+            assert.are.equal("/cast Feed Pet\n/use 0 2", _G.BeastkeeperFeedButton.attributes.macrotext)
         end)
 
         it("leaves out food the pet does not eat, and food too far below its level to please it", function()
@@ -115,7 +115,7 @@ describe("Feeding", function()
     describe("the button", function()
         it("feeds the first food: Feed Pet on its bag slot", function()
             local client = stocked()
-            local button = _G.KennelFeedButton
+            local button = _G.BeastkeeperFeedButton
             assert.are.equal("macro", button.attributes.type)
             assert.are.equal("/cast Feed Pet\n/use 0 5", button.attributes.macrotext, "Mutton Chop's slot")
             client:eat(MUTTON):eat(MUTTON):eat(MUTTON):eat(MUTTON):eat(MUTTON)
@@ -125,18 +125,18 @@ describe("Feeding", function()
         it("changes after combat, when it cannot before", function()
             local client = NewClient():login():stock(MUTTON, 1):enterCombat()
             client:stock(HAUNCH, 2)
-            assert.are.equal("/cast Feed Pet\n/use 0 1", _G.KennelFeedButton.attributes.macrotext)
+            assert.are.equal("/cast Feed Pet\n/use 0 1", _G.BeastkeeperFeedButton.attributes.macrotext)
             client:leaveCombat()
-            assert.are.equal("/cast Feed Pet\n/use 0 2", _G.KennelFeedButton.attributes.macrotext)
+            assert.are.equal("/cast Feed Pet\n/use 0 2", _G.BeastkeeperFeedButton.attributes.macrotext)
         end)
 
         it("acts on a click as it comes up, whatever ActionButtonUseKeyDown says, the list's rows too", function()
             local client = stocked()
-            local button = _G.KennelFeedButton
+            local button = _G.BeastkeeperFeedButton
             assert.are.same({ "AnyUp", "AnyDown" }, button.clicks)
             assert.is_false(button.attributes.useOnKeyDown)
             rawget(button, "foodlist")(button)
-            local row = _G.KennelFeedChoice1
+            local row = _G.BeastkeeperFeedChoice1
             assert.are.same({ "AnyUp", "AnyDown" }, row.clicks)
             assert.is_false(row.attributes.useOnKeyDown)
             assert.is_not_nil(client)
@@ -148,25 +148,25 @@ describe("Feeding", function()
             client:login():stock(MUTTON, 5)
             local seen = toasts(client)
             client:setHappiness(2)
-            assert.is_false(_G.KennelFeedButton.shown, "the pet is content, yet nothing to feed with")
-            assert.is_nil(_G.KennelFeedButton.attributes.macrotext)
+            assert.is_false(_G.BeastkeeperFeedButton.shown, "the pet is content, yet nothing to feed with")
+            assert.is_nil(_G.BeastkeeperFeedButton.attributes.macrotext)
             assert.are.same({}, seen, "no content toast")
             client:eat(MUTTON):eat(MUTTON):eat(MUTTON):eat(MUTTON):eat(MUTTON)
             assert.are.same({}, seen, "no out-of-food toast")
             client.unknownSpells[6991] = nil
             client:fire("SPELLS_CHANGED"):stock(MUTTON, 1)
-            assert.is_true(_G.KennelFeedButton.shown, "learned: the button for the content pet")
-            assert.are.equal("/cast Feed Pet\n/use 0 1", _G.KennelFeedButton.attributes.macrotext)
+            assert.is_true(_G.BeastkeeperFeedButton.shown, "learned: the button for the content pet")
+            assert.are.equal("/cast Feed Pet\n/use 0 1", _G.BeastkeeperFeedButton.attributes.macrotext)
         end)
 
         it("has nothing to do without food", function()
             NewClient():login()
-            assert.is_nil(_G.KennelFeedButton.attributes.macrotext)
+            assert.is_nil(_G.BeastkeeperFeedButton.attributes.macrotext)
         end)
 
         it("shows beside the pet frame only while the pet is not happy, changing after combat", function()
             local client = NewClient():login()
-            local button = _G.KennelFeedButton
+            local button = _G.BeastkeeperFeedButton
             assert.is_false(button:IsShown(), "a happy pet")
             client:setHappiness(2)
             assert.is_true(button:IsShown())
@@ -181,7 +181,7 @@ describe("Feeding", function()
 
         it("moves with Shift held, and stays where it was dropped", function()
             local client = NewClient():login()
-            local button = _G.KennelFeedButton
+            local button = _G.BeastkeeperFeedButton
             button:GetScript("OnDragStart")(button)
             assert.is_falsy(button.moving, "a plain drag does not move it")
             client.mods.shift = true
@@ -190,34 +190,34 @@ describe("Feeding", function()
             button:GetScript("OnDragStop")(button)
             client:logout()
             local again = NewClient({ saved = Saved() }):login()
-            assert.are.same({ "TOPLEFT", UIParent, "BOTTOMLEFT", 300, 700 }, { _G.KennelFeedButton:GetPoint() })
-            again.Kennel:GetModule("Feeding"):GetOptions().args.resetPosition.func()
-            assert.are.same({ "LEFT", PetFrame, "RIGHT", 4, 0 }, { _G.KennelFeedButton:GetPoint() })
+            assert.are.same({ "TOPLEFT", UIParent, "BOTTOMLEFT", 300, 700 }, { _G.BeastkeeperFeedButton:GetPoint() })
+            again.Addon:GetModule("Feeding"):GetOptions().args.resetPosition.func()
+            assert.are.same({ "LEFT", PetFrame, "RIGHT", 4, 0 }, { _G.BeastkeeperFeedButton:GetPoint() })
         end)
 
         it("is gone while the module is off, and on another class", function()
             local client = NewClient():login():stock(MUTTON, 1)
-            client.Kennel:SetModuleOn("Feeding", false)
-            assert.is_nil(_G.KennelFeedButton.attributes.macrotext)
-            assert.is_false(_G.KennelFeedButton:IsShown())
-            client.Kennel:SetModuleOn("Feeding", true)
-            assert.is_not_nil(_G.KennelFeedButton.attributes.macrotext)
+            client.Addon:SetModuleOn("Feeding", false)
+            assert.is_nil(_G.BeastkeeperFeedButton.attributes.macrotext)
+            assert.is_false(_G.BeastkeeperFeedButton:IsShown())
+            client.Addon:SetModuleOn("Feeding", true)
+            assert.is_not_nil(_G.BeastkeeperFeedButton.attributes.macrotext)
             NewClient({ class = "MAGE" }):login():stock(MUTTON, 1)
-            assert.is_nil(_G.KennelFeedButton.attributes.macrotext)
+            assert.is_nil(_G.BeastkeeperFeedButton.attributes.macrotext)
         end)
     end)
 
     describe("the list on a right-click", function()
         ---A right-click on the feed button: the secure button calls the module's own handler.
         local function rightClick()
-            local button = _G.KennelFeedButton
+            local button = _G.BeastkeeperFeedButton
             assert.are.equal("foodlist", button.attributes.type2)
             rawget(button, "foodlist")(button, nil, "RightButton")
         end
 
         ---A click on one row of the list, as the client runs its scripts.
         local function choose(index)
-            local choice = _G["KennelFeedChoice" .. index]
+            local choice = _G["BeastkeeperFeedChoice" .. index]
             for _, hook in ipairs(choice.hooks.OnClick) do
                 hook(choice, "LeftButton", false)
             end
@@ -226,10 +226,10 @@ describe("Feeding", function()
         it("shows every food to pick from; a row feeds that food and closes the list", function()
             stocked()
             rightClick()
-            assert.is_true(_G.KennelFeedList:IsShown())
+            assert.is_true(_G.BeastkeeperFeedList:IsShown())
             local rows = {}
             for i = 1, 5 do
-                local choice = _G["KennelFeedChoice" .. i]
+                local choice = _G["BeastkeeperFeedChoice" .. i]
                 assert.is_true(choice:IsShown())
                 rows[i] = choice.label.text .. " = " .. choice.attributes.macrotext
             end
@@ -241,29 +241,29 @@ describe("Feeding", function()
                 "Spiced Wolf Meat x2 = /cast Feed Pet\n/use 0 6",
             }, rows)
             choose(3)
-            assert.is_false(_G.KennelFeedList:IsShown())
+            assert.is_false(_G.BeastkeeperFeedList:IsShown())
         end)
 
         it("hides the rows it no longer needs", function()
             local client = stocked()
             rightClick()
             rightClick()
-            assert.is_false(_G.KennelFeedList:IsShown(), "a second right-click closes it")
+            assert.is_false(_G.BeastkeeperFeedList:IsShown(), "a second right-click closes it")
             client:eat(HAUNCH):eat(HAUNCH)
             rightClick()
-            assert.is_true(_G.KennelFeedChoice4:IsShown())
-            assert.is_false(_G.KennelFeedChoice5:IsShown())
+            assert.is_true(_G.BeastkeeperFeedChoice4:IsShown())
+            assert.is_false(_G.BeastkeeperFeedChoice5:IsShown())
         end)
 
         it("closes with Escape, and does not open in combat or without food", function()
             local client = stocked()
-            assert.is_true(tContains(UISpecialFrames, "KennelFeedList"))
+            assert.is_true(tContains(UISpecialFrames, "BeastkeeperFeedList"))
             client:enterCombat()
             rightClick()
-            assert.is_false(_G.KennelFeedList:IsShown())
+            assert.is_false(_G.BeastkeeperFeedList:IsShown())
             NewClient():login()
             rightClick()
-            assert.is_false(_G.KennelFeedList:IsShown())
+            assert.is_false(_G.BeastkeeperFeedList:IsShown())
         end)
     end)
 
@@ -272,12 +272,12 @@ describe("Feeding", function()
             local client = NewClient():login():stock(MUTTON, 5)
             local seen = toasts(client)
             client:setHappiness(2)
-            local content = toastFor(seen, "Feeding:content") --[[@as KennelToastInfo]]
+            local content = toastFor(seen, "Feeding:content") --[[@as BeastkeeperToastInfo]]
             assert.are.equal("Fluffy is content", content.title)
             assert.are.equal("Feed it: a happy pet does 125% damage.", content.text)
             assert.are.equal("Next: Mutton Chop", content.hint)
             client:setHappiness(1)
-            local unhappy = toastFor(seen, "Feeding:unhappy") --[[@as KennelToastInfo]]
+            local unhappy = toastFor(seen, "Feeding:unhappy") --[[@as BeastkeeperToastInfo]]
             assert.are.equal("Fluffy is unhappy", unhappy.title)
             assert.are.equal("It does 75% damage, and its loyalty drops.", unhappy.text)
             client:setHappiness(1)
@@ -302,7 +302,7 @@ describe("Feeding", function()
             local client = NewClient():login():stock(MUTTON, 1):stock(BREAD, 3)
             local seen = toasts(client)
             client:eat(MUTTON)
-            local none = toastFor(seen, "Feeding:nofood") --[[@as KennelToastInfo]]
+            local none = toastFor(seen, "Feeding:nofood") --[[@as BeastkeeperToastInfo]]
             assert.are.equal("Nothing for Fluffy to eat", none.title)
             assert.are.equal("Your bags hold no food it eats. Buy some before you go.", none.text)
             client:eat(BREAD)
@@ -313,7 +313,7 @@ describe("Feeding", function()
 
         it("each have a switch", function()
             local client = NewClient():login():stock(MUTTON, 1)
-            local args = client.Kennel:GetModule("Feeding"):GetOptions().args
+            local args = client.Addon:GetModule("Feeding"):GetOptions().args
             for _, key in ipairs({ "content", "unhappy", "noFood" }) do
                 args[key].set(nil, false)
             end

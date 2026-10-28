@@ -1,12 +1,12 @@
 local _, ns = ...
 
--- Feeding's page in the settings window (Kennel > Feeding): a switch per toast, and the button's
+-- Feeding's page in the settings window (Beastkeeper > Feeding): a switch per toast, and the button's
 -- place back beside the pet frame.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("Feeding") --[[@as KennelFeeding]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("Feeding") --[[@as BeastkeeperFeeding]]
 
 ---A toggle for one toast's setting.
 ---@param key "content"|"unhappy"|"noFood"
@@ -14,7 +14,7 @@ local M = Kennel:GetModule("Feeding") --[[@as KennelFeeding]]
 ---@param order number
 ---@return table
 local function Toggle(key, name, order)
-    local get, set = Kennel:Setting(M, key)
+    local get, set = Addon:Setting(M, key)
     return { type = "toggle", name = name, order = order, width = "full", get = get, set = set }
 end
 

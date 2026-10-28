@@ -7,10 +7,10 @@ local _, ns = ...
 -- border are textures, which may change in combat. Showing, hiding and moving it may not: those
 -- wait for combat to end. Shift-drag moves it; the place is kept per profile.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
-local M = Kennel:GetModule("CareButton") --[[@as KennelCareButton]]
+---@type Addon
+local Addon = ns
+local L = Addon.L
+local M = Addon:GetModule("CareButton") --[[@as BeastkeeperCareButton]]
 
 local SIZE = 36
 local HINT_COLOR = { 0.5, 0.5, 0.5 }
@@ -45,9 +45,9 @@ end
 ---Gives the button the icon and border of the spell it casts now.
 function M:UpdateLook()
     local spell = self:NextCast()
-    local _, spellIcon = Kennel.SpellInfo(spell)
+    local _, spellIcon = Addon.SpellInfo(spell)
     icon:SetTexture(spellIcon)
-    SetBorderColor = SetBorderColor or Kennel:StyleButton(button, { icon = icon, group = "CareButton" })
+    SetBorderColor = SetBorderColor or Addon:StyleButton(button, { icon = icon, group = "CareButton" })
     local color = COLORS[spell]
     SetBorderColor(color[1], color[2], color[3])
 end
@@ -59,7 +59,7 @@ function M:PlaceButton()
     if at then
         button:SetPoint(at[1], UIParent, at[2], at[3], at[4])
     else
-        button:SetPoint("TOPLEFT", Kennel.PetFrame(), "BOTTOMLEFT", 0, -4)
+        button:SetPoint("TOPLEFT", Addon.PetFrame(), "BOTTOMLEFT", 0, -4)
     end
 end
 
@@ -70,7 +70,7 @@ function M:ShowOnScreen()
     local shown = self:IsEnabled()
         and class == "HUNTER"
         and self:Settings().visible
-        and Kennel.KnowsSpell(Kennel.CALL_PET)
+        and Addon.KnowsSpell(Addon.CALL_PET)
     if shown then
         self:PlaceButton()
         self:UpdateLook()

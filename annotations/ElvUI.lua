@@ -16,7 +16,7 @@
 ---@class ElvUIFontString: FontString
 ---@field FontTemplate fun(self: ElvUIFontString, font: string?, size: number?, style: string?)
 
----ElvUI's media (E.media), as far as Kennel reads it.
+---ElvUI's media (E.media), as far as Beastkeeper reads it.
 ---@class ElvUIMedia
 ---@field rgbvaluecolor number[]? its "value color": { r, g, b }
 
@@ -26,11 +26,11 @@
 ---@field db ElvUIProfile? the profile's settings, its plugins' among them
 ---@field GetModule fun(self: ElvUIEngine, name: string, silent: boolean?): ElvUISkins?
 
----ElvUI's Skins module (E:GetModule("Skins")), the part Kennel uses.
+---ElvUI's Skins module (E:GetModule("Skins")), the part Beastkeeper uses.
 ---@class ElvUISkins
 ---@field HandleCloseButton (fun(self: ElvUISkins, button: Button))?
 
----ElvUI's profile (E.db), as far as Kennel reads it: Eltruism's shadow settings.
+---ElvUI's profile (E.db), as far as Beastkeeper reads it: Eltruism's shadow settings.
 ---@class ElvUIProfile
 ---@field general {cropIcon: number?}? its Crop Icons setting: 0 none, 1 or 2 more and more
 ---@field ElvUI_EltreumUI {skins: {shadow: {enable: boolean, length: number}?}?}?

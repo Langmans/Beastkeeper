@@ -11,12 +11,12 @@ local _, ns = ...
 --
 -- Only a hunter has a pet to feed: on any other class the module watches nothing.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
+---@type Addon
+local Addon = ns
+local L = Addon.L
 
----@type KennelFeeding
-local M = Kennel:NewModule("Feeding")
+---@type BeastkeeperFeeding
+local M = Addon:NewModule("Feeding")
 M.title = L.FEEDING_TITLE
 M.description = L.FEEDING_DESC
 M.requires = { "happiness" }
@@ -27,24 +27,24 @@ M.toastTypes = {
 }
 M.defaults = { profile = { content = true, unhappy = true, noFood = true } }
 
-M.FEED_PET = Kennel.FEED_PET
+M.FEED_PET = Addon.FEED_PET
 local FEED_PET_NAME = "Feed Pet" -- for a client that cannot name the spell itself
 local FEED_PET_ICON = 132165
 local WELL_FED = 19705 -- a Well Fed buff: its name is what a food's tooltip says
 -- Happiness a bite by levels below the pet: at most `below` levels lower gives `bite`.
 local BITES = { { below = 10, bite = 35 }, { below = 20, bite = 17 }, { below = 30, bite = 8 } }
-local HAPPY, CONTENT, UNHAPPY = Kennel.happiness.happy, Kennel.happiness.content, Kennel.happiness.unhappy
+local HAPPY, CONTENT, UNHAPPY = Addon.happiness.happy, Addon.happiness.content, Addon.happiness.unhappy
 
 ---The settings of the profile in use.
----@return KennelFeedingSettings
+---@return BeastkeeperFeedingSettings
 function M:Settings()
-    return self.db.profile --[[@as KennelFeedingSettings]]
+    return self.db.profile --[[@as BeastkeeperFeedingSettings]]
 end
 
 ---Feed Pet's name as the client calls it, for the button's macro.
 ---@return string
 function M.FeedPetName()
-    return Kennel.SpellInfo(M.FEED_PET) or FEED_PET_NAME
+    return Addon.SpellInfo(M.FEED_PET) or FEED_PET_NAME
 end
 
 ---The happiness a bite of food at `level` gives a pet at `petLevel`: 35, 17, 8, or 0.
@@ -62,31 +62,31 @@ end
 ---@type table<number, boolean>
 local wellFed = {}
 
----Whether an item's tooltip (Kennel.C.TooltipInfo) says it makes the eater Well Fed (any case:
+---Whether an item's tooltip (Beastkeeper.C.TooltipInfo) says it makes the eater Well Fed (any case:
 ---"you will become well fed"). Kept per item once the client has loaded it; asked again while it
 ---has not.
 ---@param itemID number
 ---@return boolean
 local function MakesWellFed(itemID)
     if wellFed[itemID] ~= nil then return wellFed[itemID] end
-    local buff = (Kennel.SpellInfo(WELL_FED) or "Well Fed"):lower()
+    local buff = (Addon.SpellInfo(WELL_FED) or "Well Fed"):lower()
     local found = false
-    local lines = Kennel.C.TooltipInfo.GetItemByID(itemID).lines
+    local lines = Addon.C.TooltipInfo.GetItemByID(itemID).lines
     for _, line in ipairs(lines) do
         local text = line.leftText
-        if Kennel.Readable(text) and type(text) == "string" and text:lower():find(buff, 1, true) then found = true end
+        if Addon.Readable(text) and type(text) == "string" and text:lower():find(buff, 1, true) then found = true end
     end
     if #lines > 0 then wellFed[itemID] = found end
     return found
 end
 
 -- The food in the bags, in feeding order; the entries are reused from scan to scan.
----@type KennelFood[]
+---@type BeastkeeperFood[]
 local foods, pool = {}, {}
 
 ---Two foods in feeding order.
----@param a KennelFood
----@param b KennelFood
+---@param a BeastkeeperFood
+---@param b BeastkeeperFood
 ---@return boolean
 local function Before(a, b)
     if a.wellFed ~= b.wellFed then return b.wellFed end
@@ -107,12 +107,12 @@ local waiting = {}
 ---@param petLevel number
 local function AddSlot(bag, slot, petLevel)
     local item = C_Container.GetContainerItemInfo(bag, slot)
-    if not item or not Kennel.C.PetInfo.CanPetEatItem(item.itemID) then return end
+    if not item or not Addon.C.PetInfo.CanPetEatItem(item.itemID) then return end
     local itemID = item.itemID
     local level = select(4, C_Item.GetItemInfo(itemID))
     if not level and not waiting[itemID] then
         waiting[itemID] = true
-        Kennel.WhenItemLoaded(itemID, function()
+        Addon.WhenItemLoaded(itemID, function()
             waiting[itemID] = nil
             if M:IsEnabled() then M:Update() end
         end)
@@ -127,7 +127,7 @@ local function AddSlot(bag, slot, petLevel)
 end
 
 ---Reads the bags again: the food the pet out eats, in feeding order. Empty without a pet.
----@return KennelFood[]
+---@return BeastkeeperFood[]
 function M:Scan()
     wipe(foods)
     local petLevel = UnitExists("pet") and UnitLevel("pet")
@@ -142,20 +142,20 @@ function M:Scan()
 end
 
 ---The food in feeding order, as of the last scan.
----@return KennelFood[]
+---@return BeastkeeperFood[]
 function M:Foods()
     return foods
 end
 
 ---A food's name, as the client gives it.
----@param food KennelFood
+---@param food BeastkeeperFood
 ---@return string
 function M.FoodName(food)
     return C_Item.GetItemInfo(food.itemID) or ("item:" .. food.itemID)
 end
 
 ---The macro that feeds a food: Feed Pet, then its bag slot as the item it waits for.
----@param food KennelFood
+---@param food BeastkeeperFood
 ---@return string
 function M.FeedMacro(food)
     return ("/cast %s\n/use %d %d"):format(M.FeedPetName(), food.bag, food.slot)
@@ -166,14 +166,14 @@ local BITE_COLORS = { [35] = { 0, 1, 0 }, [17] = { 1, 1, 0 }, [8] = { 1, 0.5, 0 
 local WELL_FED_COLOR = { 0.6, 0.6, 0.6 }
 
 ---A food's colour in the tooltip and the list.
----@param food KennelFood
+---@param food BeastkeeperFood
 ---@return number r, number g, number b
 function M.FoodColor(food)
     local color = food.wellFed and WELL_FED_COLOR or BITE_COLORS[food.bite]
     return color[1], color[2], color[3]
 end
 
-local Happiness = Kennel.PetHappiness
+local Happiness = Addon.PetHappiness
 M.Happiness = Happiness
 
 -- Per toast: its title (%s: the pet's name) and text.
@@ -186,11 +186,11 @@ local TOASTS = {
 
 ---The toast for `kind`: for a happiness drop with the food the button feeds next as its hint.
 ---@param kind "content"|"unhappy"|"nofood"
----@return KennelToastInfo
+---@return BeastkeeperToastInfo
 function M:Toast(kind)
     local first = foods[1]
     local hint = first and L.FEEDING_NEXT:format(M.FoodName(first)) or L.FEEDING_HINT_NO_FOOD
-    local _, feedIcon = Kennel.SpellInfo(M.FEED_PET)
+    local _, feedIcon = Addon.SpellInfo(M.FEED_PET)
     return {
         key = "Feeding:" .. kind,
         type = "Feeding:" .. kind,
@@ -210,11 +210,11 @@ function M:CheckHappiness()
     local last = self.happiness or HAPPY
     self.happiness = happiness
     local settings = self:Settings()
-    if happiness > UNHAPPY then Kennel:DropToast("Feeding:unhappy") end
-    if happiness > CONTENT then Kennel:DropToast("Feeding:content") end
-    if happiness >= last or not Kennel.KnowsSpell(M.FEED_PET) then return end
-    if happiness == CONTENT and settings.content then Kennel:ShowToast(self:Toast("content")) end
-    if happiness == UNHAPPY and settings.unhappy then Kennel:ShowToast(self:Toast("unhappy")) end
+    if happiness > UNHAPPY then Addon:DropToast("Feeding:unhappy") end
+    if happiness > CONTENT then Addon:DropToast("Feeding:content") end
+    if happiness >= last or not Addon.KnowsSpell(M.FEED_PET) then return end
+    if happiness == CONTENT and settings.content then Addon:ShowToast(self:Toast("content")) end
+    if happiness == UNHAPPY and settings.unhappy then Addon:ShowToast(self:Toast("unhappy")) end
 end
 
 ---Scans the bags, gives the button its food, and says when the last food the pet eats has gone.
@@ -224,9 +224,9 @@ function M:Update()
     self:CloseFoodList()
     self:ApplyButton()
     if #foods > 0 then
-        Kennel:DropToast("Feeding:nofood")
-    elseif had and UnitExists("pet") and self:Settings().noFood and Kennel.KnowsSpell(M.FEED_PET) then
-        Kennel:ShowToast(self:Toast("nofood"))
+        Addon:DropToast("Feeding:nofood")
+    elseif had and UnitExists("pet") and self:Settings().noFood and Addon.KnowsSpell(M.FEED_PET) then
+        Addon:ShowToast(self:Toast("nofood"))
     end
 end
 
@@ -251,7 +251,7 @@ function M:UNIT_LEVEL(_, unit)
     if unit == "pet" then self:Update() end
 end
 
--- The core's KENNEL_PET_HAPPINESS: the pet's happiness changed.
+-- The core's BEASTKEEPER_PET_HAPPINESS: the pet's happiness changed.
 function M:OnHappiness()
     self:CheckHappiness()
 end
@@ -261,7 +261,7 @@ local EVENTS = { "BAG_UPDATE_DELAYED", "UNIT_PET", "UNIT_LEVEL", "SPELLS_CHANGED
 
 ---Feed Pet learned (or the spellbook changed otherwise): the button again when that changed.
 function M:SPELLS_CHANGED()
-    local canFeed = Kennel.KnowsSpell(M.FEED_PET)
+    local canFeed = Addon.KnowsSpell(M.FEED_PET)
     if canFeed == self.canFeed then return end
     self.canFeed = canFeed
     self:Update()
@@ -270,18 +270,18 @@ end
 function M:OnEnable()
     local _, class = UnitClass("player")
     if class ~= "HUNTER" then return end
-    Kennel.RegisterEvents(self, EVENTS)
-    Kennel:Listen(self, "KENNEL_PET_HAPPINESS", "OnHappiness")
+    Addon.RegisterEvents(self, EVENTS)
+    Addon:Listen(self, Addon.messages.petHappiness, "OnHappiness")
     self.happiness = nil
-    self.canFeed = Kennel.KnowsSpell(M.FEED_PET)
+    self.canFeed = Addon.KnowsSpell(M.FEED_PET)
     wipe(foods)
     self:Update()
 end
 
 -- AceEvent drops the events by itself; the toasts and the button go here.
 function M:OnDisable()
-    Kennel:StopListening(self)
-    Kennel:DropToasts("Feeding:")
+    Addon:StopListening(self)
+    Addon:DropToasts("Feeding:")
     wipe(foods)
     self:CloseFoodList()
     self:ApplyButton()

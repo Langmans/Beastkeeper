@@ -5,12 +5,12 @@ local _, ns = ...
 -- runs after filling a unit's tooltip (TooltipDataProcessor, WoW: Forever and newer). Never both,
 -- so a line is added once.
 
----@type Kennel
-local Kennel = ns
+---@type Addon
+local Addon = ns
 
 ---Runs `fn(tooltip, guid)` after the game fills a unit's tooltip.
 ---@param fn fun(tooltip: GameTooltip, guid: GameValue)
-function Kennel.OnUnitTooltip(fn)
+function Addon.OnUnitTooltip(fn)
     if GameTooltip:HasScript("OnTooltipSetUnit") then
         ---@param tooltip GameTooltip
         GameTooltip:HookScript("OnTooltipSetUnit", function(tooltip)

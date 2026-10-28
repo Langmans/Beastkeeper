@@ -1,17 +1,17 @@
 local _, ns = ...
 
--- Kennel as a LibDataBroker-1.1 data source ("Kennel"), which displays such as Titan Panel,
+-- Beastkeeper as a LibDataBroker-1.1 data source ("Beastkeeper"), which displays such as Titan Panel,
 -- ChocolateBar and ElvUI's datatexts show: the pet out in its text (name, happiness, free training
--- points), more in its tooltip (level, loyalty, points, the Pet Journal in brief), Kennel's window
+-- points), more in its tooltip (level, loyalty, points, the Pet Journal in brief), Beastkeeper's window
 -- on a click and the options on a right-click. A data object cannot be taken back, so while
 -- the module is off its text says so. Only for a hunter.
 
----@type Kennel
-local Kennel = ns
-local L = Kennel.L
+---@type Addon
+local Addon = ns
+local L = Addon.L
 
----@type KennelBroker
-local M = Kennel:NewModule("Broker")
+---@type BeastkeeperBroker
+local M = Addon:NewModule("Broker")
 M.title = L.BROKER_TITLE
 M.description = L.BROKER_DESC
 -- minimap: LibDBIcon's own table for the minimap button (hide, and minimapPos once dragged).
@@ -22,7 +22,7 @@ local HINT_COLOR = { 0.5, 0.5, 0.5 }
 local JOURNAL_COLOR = { 0.6, 0.6, 0.6 }
 -- The happiness levels by number, as Feeding names them.
 local HAPPINESS = { L.FEEDING_UNHAPPY, L.FEEDING_CONTENT, L.FEEDING_HAPPY }
--- Happiness and growth come from the core's KENNEL_PET_HAPPINESS and KENNEL_PET_GROWTH; points
+-- Happiness and growth come from the core's BEASTKEEPER_PET_HAPPINESS and BEASTKEEPER_PET_GROWTH; points
 -- spent change only what is free, which UNIT_PET_TRAINING_POINTS tells.
 local EVENTS = { "UNIT_PET", "UNIT_PET_TRAINING_POINTS" }
 
@@ -32,8 +32,8 @@ local EVENTS = { "UNIT_PET", "UNIT_PET_TRAINING_POINTS" }
 local function Text()
     if not UnitExists("pet") then return L.BROKER_NO_PET end
     local name = UnitName("pet") or "?"
-    local happiness = Kennel.PetHappiness()
-    local free = Kennel.PetTrainingPoints()
+    local happiness = Addon.PetHappiness()
+    local free = Addon.PetTrainingPoints()
     if not happiness or not free then return name end
     return L.BROKER_TEXT:format(name, HAPPINESS[happiness], free)
 end
@@ -41,7 +41,7 @@ end
 ---The Pet Journal's brief lines for the pet out, when that module is on and has it.
 ---@param tooltip GameTooltip
 local function AddJournal(tooltip)
-    local journal = Kennel:GetModule("PetJournal", true) --[[@as KennelPetJournal?]]
+    local journal = Addon:GetModule("PetJournal", true) --[[@as BeastkeeperPetJournal?]]
     if not journal or not journal:IsEnabled() or not journal.current then return end
     for _, line in ipairs(journal:JournalLines(journal.current, true)) do
         tooltip:AddLine(line, JOURNAL_COLOR[1], JOURNAL_COLOR[2], JOURNAL_COLOR[3], true)
@@ -56,23 +56,23 @@ local function OnTooltipShow(tooltip)
     else
         local family = UnitCreatureFamily("pet")
         tooltip:AddLine(L.BROKER_PET:format(UnitName("pet") or "?", UnitLevel("pet") or 0, family or "?"))
-        local free, total = Kennel.PetTrainingPoints()
-        local loyalty, loyaltyName = Kennel.PetLoyalty(total or 0, total and UnitLevel("pet") or nil)
-        if loyalty then tooltip:AddLine(L.BROKER_LOYALTY:format(Kennel.LoyaltyLabel(loyalty, loyaltyName)), 1, 1, 1) end
+        local free, total = Addon.PetTrainingPoints()
+        local loyalty, loyaltyName = Addon.PetLoyalty(total or 0, total and UnitLevel("pet") or nil)
+        if loyalty then tooltip:AddLine(L.BROKER_LOYALTY:format(Addon.LoyaltyLabel(loyalty, loyaltyName)), 1, 1, 1) end
         if free then tooltip:AddLine(L.BROKER_POINTS:format(free, total), 1, 1, 1) end
         AddJournal(tooltip)
     end
     tooltip:AddLine(L.BROKER_CLICK, HINT_COLOR[1], HINT_COLOR[2], HINT_COLOR[3])
 end
 
----A click opens or closes Kennel's window; a right-click opens the options.
+---A click opens or closes Beastkeeper's window; a right-click opens the options.
 ---@param _ Frame the display's frame
 ---@param button string
 local function OnClick(_, button)
     if button == "RightButton" then
-        Kennel:OpenOptions()
+        Addon:OpenOptions()
     else
-        Kennel:ToggleWindow()
+        Addon:ToggleWindow()
     end
 end
 
@@ -90,24 +90,24 @@ function M:OnEnable()
     local _, class = UnitClass("player")
     if class ~= "HUNTER" then return end
     if not self.object then
-        self.object = LibStub("LibDataBroker-1.1"):NewDataObject("Kennel", {
+        self.object = LibStub("LibDataBroker-1.1"):NewDataObject(Addon.NAME, {
             type = "data source",
-            label = "Kennel",
+            label = Addon.NAME,
             icon = ICON,
             text = "",
             OnTooltipShow = OnTooltipShow,
             OnClick = OnClick,
         })
     end
-    Kennel.RegisterEvents(self, EVENTS, Update)
-    Kennel:Listen(self, "KENNEL_PET_HAPPINESS", Update)
-    Kennel:Listen(self, "KENNEL_PET_GROWTH", Update)
+    Addon.RegisterEvents(self, EVENTS, Update)
+    Addon:Listen(self, Addon.messages.petHappiness, Update)
+    Addon:Listen(self, Addon.messages.petGrowth, Update)
     self:Update()
     self:ApplyMinimapButton()
 end
 
 function M:OnDisable()
-    Kennel:StopListening(self)
+    Addon:StopListening(self)
     self:Update()
     self:ApplyMinimapButton()
 end
@@ -118,15 +118,15 @@ function M:ApplyMinimapButton()
     local icon = LibStub("LibDBIcon-1.0", true)
     if not icon or not self.object then return end
     local settings = self.db.profile.minimap --[[@as LibDBIcon.button.DB]]
-    if icon:IsRegistered("Kennel") then
-        icon:Refresh("Kennel", settings)
+    if icon:IsRegistered(Addon.NAME) then
+        icon:Refresh(Addon.NAME, settings)
     else
-        icon:Register("Kennel", self.object, settings)
+        icon:Register(Addon.NAME, self.object, settings)
     end
     if self:IsEnabled() and not settings.hide then
-        icon:Show("Kennel")
+        icon:Show(Addon.NAME)
     else
-        icon:Hide("Kennel")
+        icon:Hide(Addon.NAME)
     end
 end
 

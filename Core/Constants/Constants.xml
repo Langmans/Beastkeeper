@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <!-- Kennel's names for the game's bare values; the data files and every module use them. -->
+    <!-- Beastkeeper's names for the game's bare values; the data files and every module use them. -->
     <Script file="Enums.lua"/>
     <Script file="Families.lua"/>
 </Ui>
