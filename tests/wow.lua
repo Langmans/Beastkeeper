@@ -138,8 +138,10 @@ local SPELLS = {
         [136] = { "Mend Pet", 132179, "" },
         [982] = { "Revive Pet", 132163, "" },
         [883] = { "Call Pet", 132161, "" },
+        [5149] = { "Beast Training", 132162, "" },
     },
     deDE = {
+        [5149] = { "Tierausbildung", 132162, "" },
         [136] = { "Tier heilen", 132179, "" },
         [982] = { "Tier wiederbeleben", 132163, "" },
         [883] = { "Tier rufen", 132161, "" },
@@ -609,9 +611,9 @@ function NewClient(opts)
     -- The client's "Your pet is dead" error, under the name the addon checks first.
     ERR_PET_SPELL_DEAD, PETTAME_DEAD = "Your pet is dead.", nil
 
-    -- Macro conditions, as far as Beastkeeper uses them: [@pet], dead, exists, nopet, mod:shift,
-    -- mod:ctrl. Brackets are alternatives, commas inside one all have to hold. client.mods: the
-    -- modifier keys held ({ shift = true }).
+    -- Macro conditions, as far as Beastkeeper uses them: [@pet], dead, exists, pet, nopet,
+    -- mod:shift, mod:ctrl, mod:alt. Brackets are alternatives, commas inside one all have to hold.
+    -- client.mods: the modifier keys held ({ shift = true }).
     client.mods = {}
     local function conditionHolds(group)
         local target, holds = "player", true
@@ -625,7 +627,9 @@ function NewClient(opts)
                 holds = holds and UnitExists(target)
             elseif condition == "nopet" then
                 holds = holds and not UnitExists("pet")
-            elseif condition == "mod:shift" or condition == "mod:ctrl" then
+            elseif condition == "pet" then
+                holds = holds and UnitExists("pet")
+            elseif condition == "mod:shift" or condition == "mod:ctrl" or condition == "mod:alt" then
                 holds = holds and client.mods[condition:sub(5)] == true
             else
                 error("unknown macro condition " .. condition)

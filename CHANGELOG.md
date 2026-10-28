@@ -120,6 +120,9 @@
   installed, the messages and chat lines in a Beastkeeper tab, sorted into
   categories. As much as the "Debug" setting on Beastkeeper's page says.
 - With LS: Toasts loaded: a toast look that hands Beastkeeper's toasts to it.
+- Care Button: Alt-click opens Beast Training while the pet has training
+  points to spend; the tooltip says how many.
+- Data Broker: a middle-click opens the window on the pet abilities.
 - An About page in the settings: title, notes, version, author, license and
   website (LibAboutPanel-2.0).
 - Messages with a table of details, heard through Beastkeeper:Listen:

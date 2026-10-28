@@ -78,7 +78,8 @@ function M:ShowOnScreen()
     button:SetShown(shown)
 end
 
----The tooltip: the spell a click casts now, and what Shift and Ctrl do.
+---The tooltip: the spell a click casts now, what Shift and Ctrl do, and Alt while it opens Beast
+---Training.
 ---@param self Button
 local function OnEnter(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -86,6 +87,11 @@ local function OnEnter(self)
     GameTooltip:AddLine(M.SpellName(M:NextCast()), 1, 1, 1)
     local hint = L.CAREBUTTON_ONSCREEN_HINT:format(M.SpellName(M.REVIVE_PET), M.SpellName(M.CALL_PET))
     GameTooltip:AddLine(hint, HINT_COLOR[1], HINT_COLOR[2], HINT_COLOR[3], true)
+    local training, free = M:TrainingOnAlt()
+    if training then
+        local line = L.CAREBUTTON_ONSCREEN_TRAINING:format(training, free)
+        GameTooltip:AddLine(line, HINT_COLOR[1], HINT_COLOR[2], HINT_COLOR[3], true)
+    end
     GameTooltip:Show()
 end
 

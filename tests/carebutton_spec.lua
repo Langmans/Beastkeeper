@@ -3,7 +3,8 @@
 
 local MEND, REVIVE, CALL = 136, 982, 883
 -- /use rather than /cast: it casts a spell just the same, and leaves more of the 255 characters.
-local ALIVE_CAST = "/use [mod:shift][@pet,dead] Revive Pet; [mod:ctrl][nopet] Call Pet; Mend Pet"
+local ALIVE_CAST =
+    "/use [mod:alt,pet] Beast Training; [mod:shift][@pet,dead] Revive Pet; [mod:ctrl][nopet] Call Pet; Mend Pet"
 local DEAD_CAST = "/use [mod:ctrl] Call Pet; [mod:shift][@pet,dead][nopet] Revive Pet; Mend Pet"
 local ALIVE = "#showtooltip\n" .. ALIVE_CAST
 local DEAD = "#showtooltip\n" .. DEAD_CAST
@@ -332,7 +333,11 @@ describe("CareButton", function()
         it("names the spell and the modifiers in its tooltip", function()
             local title, lines = hover(NewClient():login())
             assert.are.equal("Care Button", title)
-            assert.are.same({ "Mend Pet", "Shift: Revive Pet. Ctrl: Call Pet. Shift-drag to move." }, lines)
+            assert.are.same({
+                "Mend Pet",
+                "Shift: Revive Pet. Ctrl: Call Pet. Shift-drag to move.",
+                "Alt: Beast Training, 43 training points free.",
+            }, lines)
             _G.BeastkeeperCareButton:GetScript("OnLeave")(_G.BeastkeeperCareButton)
             assert.is_false(GameTooltip:IsShown())
         end)
@@ -516,17 +521,50 @@ describe("CareButton", function()
             assert.are.equal(134400, client:macro("BeastkeeperCare").icon)
         end)
 
+        it("casts Beast Training on Alt while the pet has training points free", function()
+            local client = NewClient():login()
+            local button = _G.BeastkeeperCareButton
+            assert.truthy(button.attributes.macrotext:find("[mod:alt,pet] Beast Training; ", 1, true))
+            client.trainingPoints = { 50, 50 }
+            client:fire("UNIT_PET_TRAINING_POINTS", "pet")
+            local spent = "/use [mod:shift][@pet,dead] Revive Pet; [mod:ctrl][nopet] Call Pet; Mend Pet"
+            assert.are.equal(spent, button.attributes.macrotext, "all spent: gone")
+            assert.are.equal("#showtooltip\n" .. spent, client:macroBody("BeastkeeperCare"))
+            client.trainingPoints = { 51, 50 }
+            client:fire("UNIT_PET_TRAINING_POINTS", "pet")
+            assert.are.equal(ALIVE_CAST, button.attributes.macrotext, "a point gained: back")
+            assert.are.equal(DEAD_CAST, client.Addon:GetModule("CareButton"):MacroText(true), "never for a dead pet")
+        end)
+
+        it("leaves Beast Training out without a pet or before the hunter knows it", function()
+            local client = NewClient({ noPet = true }):login()
+            assert.is_nil(_G.BeastkeeperCareButton.attributes.macrotext:find("Beast Training", 1, true))
+            client = NewClient()
+            client.unknownSpells[5149] = true
+            client:login()
+            assert.is_nil(_G.BeastkeeperCareButton.attributes.macrotext:find("Beast Training", 1, true))
+            local _, lines = (function()
+                local button = _G.BeastkeeperCareButton
+                client.tooltipLines = {}
+                button:GetScript("OnEnter")(button)
+                return nil, client.tooltipLines
+            end)()
+            assert.are.equal(2, #lines, "no Alt line in the tooltip")
+        end)
+
         it("holds only the spells the hunter knows, and grows as the hunter learns them", function()
             local client = NewClient()
             client.unknownSpells[136] = true -- Mend Pet: trained at 12
             client.unknownSpells[982] = true -- Revive Pet: the quest Training the Beast
+            client.unknownSpells[5149] = true -- Beast Training: the same quest
             client:login()
             local alive = "#showtooltip\n/use [mod:ctrl][nopet] Call Pet"
             assert.are.equal(alive, client:macroBody("BeastkeeperCare"))
             assert.are.equal("/use [mod:ctrl][nopet] Call Pet", _G.BeastkeeperCareButton.attributes.macrotext)
-            client.unknownSpells[982] = nil
+            client.unknownSpells[982], client.unknownSpells[5149] = nil, nil
             client:fire("SPELLS_CHANGED")
-            local withRevive = "/use [mod:shift][@pet,dead] Revive Pet; [mod:ctrl][nopet] Call Pet"
+            local withRevive =
+                "/use [mod:alt,pet] Beast Training; [mod:shift][@pet,dead] Revive Pet; [mod:ctrl][nopet] Call Pet"
             assert.are.equal("#showtooltip\n" .. withRevive, client:macroBody("BeastkeeperCare"))
             assert.are.equal(withRevive, _G.BeastkeeperCareButton.attributes.macrotext)
             client.unknownSpells[136] = nil
@@ -576,7 +614,9 @@ describe("CareButton", function()
             local client = NewClient({ noPet = true }):login()
             client:macro("BeastkeeperCare").body = "#showtooltip\n" .. ALIVE_CAST:gsub("^/use", "/cast")
             client:fire("UPDATE_MACROS")
-            assert.are.equal(ALIVE, client:macroBody("BeastkeeperCare"))
+            -- No pet, so no training points: Beast Training drops out of the line it took over.
+            local noTraining = "/use [mod:shift][@pet,dead] Revive Pet; [mod:ctrl][nopet] Call Pet; Mend Pet"
+            assert.are.equal("#showtooltip\n" .. noTraining, client:macroBody("BeastkeeperCare"))
         end)
 
         it("keeps the player's own lines and only rewrites its cast line", function()

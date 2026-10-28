@@ -51,9 +51,20 @@ local function Known(spellID)
     return Addon.KnowsSpell(spellID) and M.SpellName(spellID) or nil
 end
 
+---Beast Training's name and the pet's free training points, while there are any to spend and the
+---hunter knows it; nil otherwise. A macro condition cannot see the points, so the macro texts are
+---made again when they change.
+---@return string? name
+---@return number? free
+function M:TrainingOnAlt()
+    local free = Addon.PetTrainingPoints()
+    local training = free and free > 0 and Known(Addon.BEAST_TRAINING)
+    if training then return training, free end
+end
+
 ---The macro the button runs, with only the spells the hunter knows. Without a remembered death:
----Revive Pet on a dead pet still there, Call Pet without a pet, Mend Pet otherwise. With one:
----Revive Pet whenever there is no living pet.
+---Beast Training on Alt while the pet has points to spend, Revive Pet on a dead pet still there,
+---Call Pet without a pet, Mend Pet otherwise. With one: Revive Pet whenever there is no living pet.
 ---@param petDead boolean
 ---@return string
 function M:MacroText(petDead)
@@ -63,6 +74,8 @@ function M:MacroText(petDead)
         clauses[#clauses + 1] = call and "[mod:ctrl] " .. call
         clauses[#clauses + 1] = revive and "[mod:shift][@pet,dead][nopet] " .. revive
     else
+        local training = self:TrainingOnAlt()
+        clauses[#clauses + 1] = training and "[mod:alt,pet] " .. training
         clauses[#clauses + 1] = revive and "[mod:shift][@pet,dead] " .. revive
         clauses[#clauses + 1] = call and "[mod:ctrl][nopet] " .. call
     end
@@ -83,6 +96,7 @@ function M:IsCareLine(line)
             name ~= M.SpellName(M.MEND_PET)
             and name ~= M.SpellName(M.REVIVE_PET)
             and name ~= M.SpellName(M.CALL_PET)
+            and name ~= M.SpellName(Addon.BEAST_TRAINING)
         then
             return false
         end

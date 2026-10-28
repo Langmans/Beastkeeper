@@ -57,6 +57,8 @@ L.CAREBUTTON_OPTION_VISIBLE_DESC = "Below your pet's portrait, with the icon of 
 L.CAREBUTTON_OPTION_RESET = "Put the button back below the pet"
 -- The on-screen button's tooltip, under the spell a click casts. First %s: Revive Pet; second: Call Pet, as the game names them.
 L.CAREBUTTON_ONSCREEN_HINT = "Shift: %s. Ctrl: %s. Shift-drag to move."
+-- The same tooltip, while the pet has training points to spend. %s: Beast Training's name; %d: the free points.
+L.CAREBUTTON_ONSCREEN_TRAINING = "Alt: %s, %d training points free."
 L.CAREBUTTON_OPTION_LOW = "Toast at this pet health (0: never)"
 L.CAREBUTTON_OPTION_MARKER = "Mark low health beside the pet frame"
 L.CAREBUTTON_OPTION_MARKER_DESC = "Mend Pet's icon lights up left of your pet's portrait while its health is below the line above. WoW: Forever may hide your pet's health in combat, so the toast cannot tell then; the marker still can."

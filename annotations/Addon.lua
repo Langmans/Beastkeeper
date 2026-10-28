@@ -301,6 +301,8 @@
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field ApplyMacroTexts fun(self: AddonCareButton) the button's macro texts again, for the spells known now
 ---@field IsCareLine fun(self: AddonCareButton, line: string): boolean a /use line of the care spells alone
+---@field TrainingOnAlt fun(self: AddonCareButton): string?, number? Beast Training's name and the free points while Alt opens it
+---@field OnPetPoints fun(self: AddonCareButton, event: string, unit: string) the macro texts again for the pet's points
 ---@field lowShown boolean the low toast was given and health has not been above the line since
 ---@field deadAfterCombat boolean a failed cast in combat showed the pet is dead
 ---@field reviveCasts table<string, true> Revive Pet casts that started, by cast GUID

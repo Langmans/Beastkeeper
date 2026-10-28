@@ -33,7 +33,7 @@ M.defaults = {
 M.MEND_PET, M.REVIVE_PET, M.CALL_PET = 136, 982, 883
 local RAID_WARNING = SOUNDKIT.RAID_WARNING --[[@as number]]
 -- The English names, for a client that cannot name the spell itself.
-local FALLBACK_NAMES = { [136] = "Mend Pet", [982] = "Revive Pet", [883] = "Call Pet" }
+local FALLBACK_NAMES = { [136] = "Mend Pet", [982] = "Revive Pet", [883] = "Call Pet", [5149] = "Beast Training" }
 -- The names the client's "Your pet is dead" error may have among the global strings.
 local PET_DEAD_ERRORS = { "ERR_PET_SPELL_DEAD", "PETTAME_DEAD" }
 
@@ -230,6 +230,13 @@ function M:SPELLS_CHANGED()
     self:ApplyMacroTexts()
 end
 
+---The pet's training points changed, or another pet came out: Beast Training on Alt or not.
+---@param _ string the event
+---@param unit string
+function M:OnPetPoints(_, unit)
+    if unit == "pet" or unit == "player" then self:ApplyMacroTexts() end
+end
+
 -- The pet bar changed, its stance perhaps: the Passive toast goes once the pet is off Passive.
 function M:PET_BAR_UPDATE()
     if not OnPassive() then Addon:DropToast("CareButton:passive") end
@@ -256,6 +263,8 @@ function M:OnEnable()
     self:RegisterEvent("PET_BAR_UPDATE")
     self:RegisterEvent("SPELLS_CHANGED")
     self:RegisterEvent("UPDATE_MACROS", "UpdateMacro")
+    -- Beast Training on Alt depends on the pet's free points (Button.lua, TrainingOnAlt).
+    Addon.RegisterEvents(self, { "UNIT_PET_TRAINING_POINTS", "UNIT_PET" }, "OnPetPoints")
     Addon:OfferMacros(self)
     self:ApplyButton()
 end

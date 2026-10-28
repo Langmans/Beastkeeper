@@ -65,12 +65,16 @@ local function OnTooltipShow(tooltip)
     tooltip:AddLine(L.BROKER_CLICK, HINT_COLOR[1], HINT_COLOR[2], HINT_COLOR[3])
 end
 
----A click opens or closes Beastkeeper's window; a right-click opens the options.
+---A click opens or closes Beastkeeper's window; a middle-click opens it on the pet abilities; a
+---right-click opens the options. (Beast Training cannot open from here: casting needs a secure
+---button, which a display's frame is not; the Care Button does it on Alt.)
 ---@param _ Frame the display's frame
 ---@param button string
 local function OnClick(_, button)
     if button == "RightButton" then
         Addon:OpenOptions()
+    elseif button == "MiddleButton" then
+        Addon:OpenWindow("abilities")
     else
         Addon:ToggleWindow()
     end

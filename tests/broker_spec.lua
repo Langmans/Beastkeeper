@@ -43,7 +43,10 @@ describe("Data Broker", function()
         assert.is_truthy(lines[2]:find("^Loyalty 4 %(.*Dependable"), lines[2])
         assert.are.equal("43 of 50 training points free", lines[3])
         assert.is_truthy(table.concat(lines, "\n"):find("Out together: 1 min.", 1, true), "the journal")
-        assert.are.equal("Click: Beastkeeper's window. Right-click: settings.", lines[#lines])
+        assert.are.equal(
+            "Click: Beastkeeper's window. Middle-click: the pet abilities. Right-click: settings.",
+            lines[#lines]
+        )
         client.Addon:SetModuleOn("PetJournal", false)
         assert.are.equal(4, #tooltip(client), "no journal while it is off")
         client:petGone():fire("UNIT_PET", "player")
@@ -78,6 +81,13 @@ describe("Data Broker", function()
         assert.is_true(_G.BeastkeeperWindow.shown)
         broker().OnClick(nil, "RightButton")
         assert.are.same({ client.Addon.optionsCategoryID }, client.opened)
+    end)
+
+    it("opens the window on the pet abilities on a middle-click", function()
+        local client = NewClient():login()
+        broker().OnClick(nil, "MiddleButton")
+        assert.is_true(_G.BeastkeeperWindow.shown)
+        assert.are.equal("abilities", client.Addon.window.current)
     end)
 
     it("says so while switched off, and is not there on another class", function()

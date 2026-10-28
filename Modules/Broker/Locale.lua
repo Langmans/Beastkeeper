@@ -22,7 +22,7 @@ L.BROKER_PET = "%s, level %d %s"
 L.BROKER_LOYALTY = "Loyalty %s"
 -- First %d: free training points; second: the pet's total.
 L.BROKER_POINTS = "%d of %d training points free"
-L.BROKER_CLICK = "Click: Beastkeeper's window. Right-click: settings."
+L.BROKER_CLICK = "Click: Beastkeeper's window. Middle-click: the pet abilities. Right-click: settings."
 
 -- The module's page: the switch for the button on the minimap, and its tooltip.
 L.BROKER_OPTION_MINIMAP = "Show a button on the minimap"
