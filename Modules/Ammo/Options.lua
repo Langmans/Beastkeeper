@@ -62,6 +62,22 @@ function M:GetOptions()
                 set = buySet,
             },
             stacks = Slider("stacks", L.AMMO_OPTION_STACKS, L.AMMO_OPTION_STACKS_DESC, 5, 10, 1),
+            equippedOnly = {
+                type = "toggle",
+                name = L.AMMO_OPTION_EQUIPPED,
+                desc = L.AMMO_OPTION_EQUIPPED_DESC,
+                order = 0.5,
+                width = "full",
+                get = function()
+                    return M:Settings().equippedOnly
+                end,
+                ---@param _ table AceConfig's info about the option
+                ---@param on boolean
+                set = function(_, on)
+                    M:Settings().equippedOnly = on
+                    M:Update()
+                end,
+            },
         },
     }
 end

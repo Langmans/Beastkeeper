@@ -210,8 +210,19 @@ describe("Ammo", function()
             assert.are.equal("No bow or gun", broker().text)
         end)
 
+        it("counts the ammo in the ammo slot by default, every kind at once on a switch", function()
+            local client = hunter(1200)
+            client:stock(SHARP, 495)
+            assert.are.equal("1200", broker().text, "the Rough Arrows in the ammo slot")
+            local option = client.Addon:GetModule("Ammo"):GetOptions().args.equippedOnly
+            assert.is_true(option.get())
+            option.set(nil, false)
+            assert.are.equal("1695", broker().text, "at once")
+        end)
+
         it("counts every kind of ammo the weapon shoots and the hunter's level allows", function()
             local client = hunter(1200)
+            client.Addon:GetModule("Ammo"):Settings().equippedOnly = false
             client:stock(SHARP, 495)
             assert.are.equal("1695", broker().text, "Rough and Sharp Arrows, not the ammo slot's alone")
             client:stock(LIGHT_SHOT, 300)

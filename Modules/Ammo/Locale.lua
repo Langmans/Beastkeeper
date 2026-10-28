@@ -44,6 +44,8 @@ L.AMMO_TOASTTYPE_CRITICAL = "Ammo critically low"
 L.AMMO_BOUGHT = "Bought %d %s."
 
 -- The module's page.
+L.AMMO_OPTION_EQUIPPED = "Count only the ammo in the ammo slot"
+L.AMMO_OPTION_EQUIPPED_DESC = "Off: count every kind of ammo in your bags that your weapon shoots and your level allows."
 L.AMMO_OPTION_LOW = "Low below"
 L.AMMO_OPTION_LOW_DESC = "The count turns orange, with a toast, below this many."
 L.AMMO_OPTION_CRITICAL = "Critically low below"

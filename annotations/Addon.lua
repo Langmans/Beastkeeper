@@ -649,6 +649,7 @@
 ---@field toasts boolean
 ---@field buy boolean buy at a vendor
 ---@field stacks number stacks to keep without an ammo bag
+---@field equippedOnly boolean count only the ammo slot's kind; off: every kind the weapon shoots
 
 ---@class AddonAmmo: AddonModule, AddonSettingsModule
 ---@field db AceDBObject-3.0 always set: the module has defaults

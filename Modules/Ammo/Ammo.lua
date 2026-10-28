@@ -18,7 +18,7 @@ M.title = L.AMMO_TITLE
 M.description = L.AMMO_DESC
 M.requires = { "ammo" }
 M.toastTypes = { low = L.AMMO_TOASTTYPE_LOW, critical = L.AMMO_TOASTTYPE_CRITICAL }
-M.defaults = { profile = { low = 500, critical = 250, toasts = true, buy = true, stacks = 1 } }
+M.defaults = { profile = { low = 500, critical = 250, toasts = true, buy = true, stacks = 1, equippedOnly = true } }
 
 ---The settings of the profile in use.
 ---@return AddonAmmoSettings
@@ -63,13 +63,15 @@ local function Usable(itemID, kind, level)
     return (needs or (data and data.level) or 1) <= level
 end
 
----How much ammo the hunter carries that the weapon shoots: every kind of it in the bags (a quiver
----or pouch too) the hunter's level allows, not only the one in the ammo slot. None without ammo
----in the ammo slot (nothing to shoot) or without a bow, gun or crossbow.
+---How much ammo the hunter carries that the weapon shoots: by default (equippedOnly) the kind in
+---the ammo slot, counted in the bags; else every kind of it in the bags (a quiver or pouch too)
+---the hunter's level allows. None without ammo in the ammo slot (nothing to shoot) or without a
+---bow, gun or crossbow.
 ---@return number
 local function Count()
     local kind = M.Kind()
     if not kind or not GetInventoryItemID("player", AMMO_SLOT) then return 0 end
+    if M:Settings().equippedOnly then return GetInventoryItemCount("player", AMMO_SLOT) or 0 end
     local level, total = UnitLevel("player"), 0
     for bag = 0, NUM_BAG_SLOTS do
         for slot = 1, C_Container.GetContainerNumSlots(bag) do
