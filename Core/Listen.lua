@@ -176,6 +176,12 @@ function growth:Check()
     if self.pending then return end
     local free, total = Addon.PetTrainingPoints()
     if not total then return end
+    -- Right after a /reload a classic client may give no loyalty yet and the points as 0, which
+    -- would read as loyalty 1: a fall now and a rise once the values come in. Where the client has
+    -- loyalty, nothing counts until it gives one; a later event checks again.
+    local given = Addon.C.PetInfo.GetPetLoyalty()
+    local none = given == nil or (Addon.Readable(given) and given == "")
+    if none and Addon.C.Has("PetInfo", "GetPetLoyalty") then return end
     local pet, level = UnitName("pet"), UnitLevel("pet")
     local loyalty, loyaltyName = Addon.PetLoyalty(total, level)
     local pets = Addon.db.char.growth --[[@as table<string, AddonGrowthSeen>]]

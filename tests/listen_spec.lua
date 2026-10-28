@@ -158,6 +158,21 @@ describe("BEASTKEEPER_PET_GROWTH", function()
         assert.are.equal(52, heard[1].points)
     end)
 
+    it("waits while the client has the pet's points as 0 and no loyalty text yet, as after a reload", function()
+        local client = NewClient():login():advance(5)
+        client:logout()
+        client = NewClient({ saved = Saved() })
+        -- Right after a /reload on Classic Era: no loyalty text, the points not in yet.
+        client.trainingPoints, client.loyalty = { 0, 0 }, nil
+        client:login()
+        local _, heard = listen(client, "BEASTKEEPER_PET_GROWTH")
+        client:advance(5)
+        assert.are.same({}, heard, "no fall to loyalty 1")
+        client.trainingPoints, client.loyalty = { 50, 7 }, "Loyalty Level 4 (Dependable)"
+        client:fire("UNIT_PET_TRAINING_POINTS", "pet")
+        assert.are.same({}, heard, "the values it had: nothing changed, no rise either")
+    end)
+
     it("takes stock at once for a listener that comes after the login wait", function()
         local client = bare()
         client:advance(10)
