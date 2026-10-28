@@ -107,6 +107,14 @@ describe("Ammo", function()
             assert.are.equal("|cffff2020249|r", broker().text)
         end)
 
+        it("says Ammo in the toast while it counts every kind", function()
+            local client = hunter(1000)
+            client.Addon:GetModule("Ammo"):Settings().equippedOnly = false
+            local seen = toasts(client)
+            client:stock(ROUGH, 450)
+            assert.are.equal("Ammo low: 450 left", seen[1].title)
+        end)
+
         it("toasts once below each line, and takes the toast away once restocked", function()
             local client = hunter(1000)
             local seen = toasts(client)
@@ -114,11 +122,11 @@ describe("Ammo", function()
             client:stock(ROUGH, 400)
             assert.are.equal(1, #seen)
             assert.are.equal("Ammo:low", seen[1].type)
-            assert.are.equal("Ammo low: 450 left", seen[1].title)
+            assert.are.equal("Rough Arrow low: 450 left", seen[1].title, "the ammo slot's, by name")
             client:stock(ROUGH, 200)
             assert.are.equal(2, #seen)
             assert.are.equal("Ammo:critical", seen[2].type)
-            assert.are.equal("Ammo critically low: 200 left", seen[2].title)
+            assert.are.equal("Rough Arrow critically low: 200 left", seen[2].title)
             assert.are.equal(
                 "Enough for ~10 min of Auto Shot. Click the ammo counter for the nearest ammo vendor.",
                 seen[2].text

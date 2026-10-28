@@ -25,9 +25,10 @@ L.AMMO_TRAVEL = " (~%d min)"
 L.AMMO_NO_VENDOR = "No ammo vendor known."
 L.AMMO_CLICK = "Click: the way to it. Right-click: settings."
 
--- The toasts. %d: how many are left.
-L.AMMO_LOW = "Ammo low: %d left"
-L.AMMO_CRITICAL = "Ammo critically low: %d left"
+-- The toasts. %s: the ammo in the ammo slot by its name ("Rough Arrow"), or AMMO when every kind is counted; %d: how many are left.
+L.AMMO_LOW = "%s low: %d left"
+L.AMMO_CRITICAL = "%s critically low: %d left"
+L.AMMO = "Ammo"
 L.AMMO_TOAST_TEXT = "Click the ammo counter for the nearest ammo vendor."
 -- How long the ammo lasts at this fight's pace (else the last fight's, else one Auto Shot per weapon
 -- swing): in the toast before AMMO_TOAST_TEXT

@@ -345,11 +345,14 @@ end
 ---@return AddonToastInfo
 local function Toast(state, count)
     local lasts = Lasts(count)
+    -- The ammo slot's ammo by name while that is what is counted; "Ammo" for every kind.
+    local ammo = GetInventoryItemID("player", AMMO_SLOT)
+    local name = M:Settings().equippedOnly and ammo and M.AmmoName(ammo) or L.AMMO
     return {
         key = "Ammo:" .. state,
         type = "Ammo:" .. state,
         source = M.title,
-        title = (state == "low" and L.AMMO_LOW or L.AMMO_CRITICAL):format(count),
+        title = (state == "low" and L.AMMO_LOW or L.AMMO_CRITICAL):format(name, count),
         text = lasts and L.AMMO_ENOUGH:format(lasts) .. " " .. L.AMMO_TOAST_TEXT or L.AMMO_TOAST_TEXT,
         icon = GetInventoryItemTexture("player", AMMO_SLOT) or ICON,
     }

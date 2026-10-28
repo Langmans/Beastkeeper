@@ -124,7 +124,8 @@
   points to spend; the tooltip says how many.
 - Data Broker: a middle-click opens the window on the pet abilities.
 - Ammo: "Count only the ammo in the ammo slot" (on by default); switched off,
-  it counts every kind of ammo your weapon shoots and your level allows.
+  it counts every kind of ammo your weapon shoots and your level allows. The
+  low-ammo toast names the ammo it counts ("Rough Arrow low: 400 left").
 - Pets tab: the pets you no longer have (released, or lost) under a Past pets
   heading; the Stable tab shows only the pets you have.
 - An About page in the settings: title, notes, version, author, license and
