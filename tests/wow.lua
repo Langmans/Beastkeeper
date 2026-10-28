@@ -97,6 +97,8 @@ end
 ---@field eltruism table? Eltruism loaded too, with these shadow settings ({ enable, length })
 ---@field masque boolean? Masque loaded before Kennel
 ---@field messageQueue boolean? MessageQueue loaded before Kennel
+---@field lsToasts "classic"|"retail"|nil LS: Toasts loaded before Kennel, as ls_Toasts_Classic or ls_Toasts
+---@field lsToastColors boolean? LS: Toasts colours borders by the toast (its Colors settings); true by default
 ---@field handyNotes boolean? HandyNotes loaded before Kennel
 ---@field noPet boolean? no pet unit at the start
 ---@field inCombat boolean? in combat from the start
@@ -110,7 +112,8 @@ end
 ---@field era boolean? Classic Era 1.15 instead of WoW: Forever (see NewClient)
 ---@field noHappinessAPI boolean? no pet happiness, as from Cataclysm on
 ---@field noAmmoSlot boolean? no INVSLOT_AMMO, as from Cataclysm on
----@field unknownEvents string[]? events this client does not have (Forever: LEARNED_SPELL_IN_TAB)---@field noEventUtils boolean? no C_EventUtils.IsEventValid
+---@field unknownEvents string[]? events this client does not have (Forever: LEARNED_SPELL_IN_TAB)
+---@field noEventUtils boolean? no C_EventUtils.IsEventValid
 ---@field ranged number? the ranged weapon's item ID (none by default)
 ---@field ammo number? the item ID in the ammo slot (none by default)
 ---@field dev boolean? a copy straight from the repository: `--@debug@` blocks run (the DevScreenshots module)
@@ -1652,6 +1655,45 @@ function NewClient(opts)
                 client.enqueued[#client.enqueued + 1] = fn
             end,
         }
+    end
+
+    -- LS: Toasts, when opts.lsToasts says it is loaded: its global { E, C, L } under the addon's
+    -- name (ls_Toasts_Classic on the classic clients, ls_Toasts on retail). client.lsToasts
+    -- records each toast spawned: what was set on it, the anchor and do-not-disturb flag.
+    ls_Toasts, ls_Toasts_Classic = nil, nil
+    client.lsToasts = {}
+    if opts.lsToasts then
+        local function part(toast, name)
+            return {
+                SetText = function(_, text)
+                    toast[name] = text
+                end,
+                SetTexture = function(_, texture)
+                    toast[name] = texture
+                end,
+                SetVertexColor = function(_, r, g, b)
+                    toast[name] = { r, g, b }
+                end,
+                Show = function()
+                    toast[name .. "Shown"] = true
+                end,
+            }
+        end
+        local lsE = {
+            GetToast = function(_, event, dataType, dataValue)
+                local toast = { _data = {}, asked = { event, dataType, dataValue } }
+                toast.Title, toast.Text, toast.Icon = part(toast, "title"), part(toast, "text"), part(toast, "icon")
+                toast.Border, toast.IconBorder = part(toast, "border"), part(toast, "iconBorder")
+                function toast:Spawn(anchor, dnd)
+                    self.anchor, self.dnd = anchor, dnd
+                    client.lsToasts[#client.lsToasts + 1] = self
+                end
+                return toast, true, false
+            end,
+        }
+        local colors = opts.lsToastColors ~= false
+        local lsC = { db = { profile = { colors = { border = colors, icon_border = colors } } } }
+        _G[opts.lsToasts == "retail" and "ls_Toasts" or "ls_Toasts_Classic"] = { lsE, lsC, {} }
     end
 
     -- HandyNotes, when opts.handyNotes says it is loaded: its plugin registry and coordinate

@@ -5,5 +5,6 @@
     <Script file="ElvUI\Look.lua"/>
     <Script file="Masque\Button.lua"/>
     <Script file="LibSink\Toast.lua"/>
+    <Script file="LSToasts\Toast.lua"/>
     <Script file="MessageQueue\Sink.lua"/>
 </Ui>
