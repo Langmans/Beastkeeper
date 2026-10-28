@@ -44,6 +44,17 @@ function Addon.FamilyID(name)
     end
 end
 
+---A family's line on a card: before Wrath (Classic Era, Burning Crusade) its category and
+---modifiers, from Wrath on (WoW: Forever, and the clients LibTameable has no data for) its
+---specialization; "" without either.
+---@param familyID number?
+---@return string
+function Addon.FamilyLine(familyID)
+    local client = (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient()
+    if client == "era" or client == "tbc" then return Addon.FamilyModsText(familyID) or "" end
+    return Addon.SpecName(familyID) or ""
+end
+
 ---A family's specialization, named: Ferocity, Cunning or Tenacity, as Wowhead sorts the families
 ---(the client says "Default" for every pet); nil without one.
 ---@param familyID number?

@@ -932,3 +932,5 @@
 ---@field petCategories AddonPetCategories the families' categories before Wrath
 ---@field familyMods table<number, AddonFamilyMods> by CreatureFamily ID, the classic clients'
 ---@field FamilyModsText fun(familyID: number?): string?
+---@field FamilyLine fun(familyID: number?): string the category and modifiers before Wrath, else the specialization
+---@field LoyaltyFromText fun(text: string): number?, string? a loyalty text's level and name, in each client's wording

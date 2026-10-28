@@ -250,14 +250,7 @@ local function Refresh(panel)
     local info = Addon.familyInfo[familyID]
     panel.title:SetText(Addon.FamilyName(familyID) or "?")
     panel.titleIcon:SetTexture(Addon.FamilyIcon(familyID))
-    -- Pet specializations came with Wrath; WoW: Forever has them. The classic clients have a
-    -- category and fixed modifiers per family instead.
-    local hasSpecs = (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient() == "forever"
-    if hasSpecs then
-        panel.spec:SetText(Addon.SpecName(familyID) or "")
-    else
-        panel.spec:SetText(Addon.FamilyModsText(familyID) or "")
-    end
+    panel.spec:SetText(Addon.FamilyLine(familyID))
     panel.diet:SetText(DietText(info))
     panel.abilities:SetText(AbilitiesText(familyID))
     FillBeasts(panel, familyID)

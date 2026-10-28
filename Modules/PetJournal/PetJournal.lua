@@ -229,9 +229,11 @@ function M:ReadStableList(list)
             entry.first.npc = info.creatureID or entry.first.npc
             entry.name, entry.level, entry.family = info.name, info.level, info.familyName
             entry.displayID = info.displayID or entry.displayID
-            local text = info.loyaltyText
-            local level = info.loyaltyLevel or (text and tonumber(text:match("%d+")))
-            local name = info.loyaltyName or (text and text:match("%((.-)%)"))
+            local level, name = info.loyaltyLevel, info.loyaltyName
+            if info.loyaltyText then
+                local textLevel, textName = Addon.LoyaltyFromText(info.loyaltyText)
+                level, name = level or textLevel, name or textName
+            end
             entry.loyalty, entry.loyaltyName = level or entry.loyalty, name or entry.loyaltyName
         end
     end

@@ -81,7 +81,7 @@ local function Refresh(panel)
             local entry = pets[key]
             card.name:SetText(entry.name or "?")
             card.level:SetText(M.LevelLine(entry))
-            card.spec:SetText(Addon.SpecName(Addon.FamilyID(entry.family)) or "")
+            card.spec:SetText(Addon.FamilyLine(Addon.FamilyID(entry.family)))
             card.abilities:SetText(M.AbilitiesLine(entry, true) or "")
             local count = M.TeachCount(entry)
             card.teach:SetText(count > 0 and L.PETJOURNAL_TEACHES:format(count) or L.PETJOURNAL_TEACHES_NONE)

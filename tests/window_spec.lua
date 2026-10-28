@@ -162,6 +162,15 @@ describe("the Pets tab", function()
         assert.are.equal("Ferocity", panel.spec.text)
     end)
 
+    it("gives the family's category and modifiers on Classic Era, on the Pets and Stable cards", function()
+        local client = NewClient({ era = true }):login():advance(1)
+        client.Addon:OpenWindow("pets")
+        assert.are.equal("Offense: +10% damage, -2% health", client.Addon.window.panels.pets.spec.text)
+        client.Addon:OpenWindow("stable")
+        local card = client.Addon.window.panels.stable.cards[1]
+        assert.are.equal("Offense: +10% damage, -2% health", card.spec.text)
+    end)
+
     it("says so while the journal has no pet yet", function()
         local client = NewClient({ noPet = true }):login()
         open(client)

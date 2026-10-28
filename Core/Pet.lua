@@ -204,6 +204,19 @@ function Addon.PetNumberFromGUID(guid)
     return spawnUID and tonumber(spawnUID:sub(-8), 16) or nil
 end
 
+---A loyalty text's level and name, as the client words it for the pet out and in the stable:
+---Classic Era "(Loyalty Level 1) Rebellious", the name after the brackets; Burning Crusade
+---"Loyalty Level 4 (Dependable)", the name in them; WoW: Forever the bare name. Either may be nil.
+---@param text string
+---@return number? level
+---@return string? name
+function Addon.LoyaltyFromText(text)
+    if text == "" then return nil, nil end
+    local level = tonumber(text:match("%d+"))
+    local bracketed, after = text:match("^%((.-)%)%s*(.+)$")
+    return level, bracketed and after or text:match("%((.-)%)") or (not level and text or nil)
+end
+
 ---The pet's loyalty level and its name, as far as the client tells them. WoW: Forever gives the
 ---name alone ("Faithful"), Classic Era "(Loyalty Level 5) Faithful", some a number
 ---(Beastkeeper.C.PetInfo.GetPetLoyalty). Without a number the level comes from the training points,
@@ -220,12 +233,8 @@ function Addon.PetLoyalty(total, petLevel)
         value = nil
     elseif type(value) == "number" then
         loyalty = value
-    elseif type(value) == "string" and value ~= "" then
-        loyalty = tonumber(value:match("%d+"))
-        -- Classic Era: "(Loyalty Level 1) Rebellious", the name after the brackets; else the name in
-        -- them, "Loyalty Level 4 (Dependable)"; Forever: the bare name.
-        local level, after = value:match("^%((.-)%)%s*(.+)$")
-        name = level and after or value:match("%((.-)%)") or (not loyalty and value or nil)
+    elseif type(value) == "string" then
+        loyalty, name = Addon.LoyaltyFromText(value)
     end
     if not loyalty and type(petLevel) == "number" and Addon.Readable(petLevel) and petLevel > 0 then
         local derived = total / petLevel + 1

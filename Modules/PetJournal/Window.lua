@@ -165,7 +165,7 @@ local function Refresh(panel)
     end
     panel.name:SetText(entry.name or "?")
     panel.level:SetText(M.LevelLine(entry))
-    panel.spec:SetText(Addon.SpecName(Addon.FamilyID(entry.family)) or "")
+    panel.spec:SetText(Addon.FamilyLine(Addon.FamilyID(entry.family)))
     panel.journal:SetText(table.concat(M:JournalLines(key, true), "\n"))
     panel.abilities:SetText(M.AbilitiesLine(entry, true) or "")
     ShowModel(panel.model, key, entry)

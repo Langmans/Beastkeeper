@@ -110,6 +110,15 @@ describe("Classic Era", function()
         assert.are.equal(tostring(0xAABBCC), pets.Kaldor[1], "under its own number (the GUID's low 32 bits) now")
     end)
 
+    it("takes the loyalty name after the brackets in the stable's Classic Era wording", function()
+        local client = NewClient({ era = true, noPet = true }):login()
+        client.stableOpen = true
+        client.eraStable.stabled = { { "Kaldor", 10, "Boar", "(Loyalty Level 4) Dependable" } }
+        client:fire("PET_STABLE_SHOW")
+        local _, kaldor = next(client.Addon:GetModule("PetJournal"):Pets())
+        assert.are.same({ 4, "Dependable" }, { kaldor.loyalty, kaldor.loyaltyName })
+    end)
+
     it("reads the pet's spellbook through GetSpellBookItemName", function()
         local client = NewClient({ era = true }):login()
         local spells = client.Addon.PetSpells()
