@@ -91,17 +91,17 @@ same way, through `Beastkeeper:Listen`.
 ## Types
 
 Each message's table is a data transfer object with a fixed shape.
-[BeastkeeperMessages.lua](BeastkeeperMessages.lua), next to this file, describes them
+[AddonMessages.lua](AddonMessages.lua), next to this file, describes them
 for the Lua language server (LuaLS, or the WoW Lua LS): a `Beastkeeper...Event`
-class per message (`BeastkeeperToastEvent`, `BeastkeeperPetGrowthEvent`, ...), and
-`BeastkeeperToastInfo` for the toast. It ships with Beastkeeper and is never loaded in game. Point your
+class per message (`AddonToastEvent`, `AddonPetGrowthEvent`, ...), and
+`AddonToastInfo` for the toast. It ships with Beastkeeper and is never loaded in game. Point your
 workspace at it, for example in `.luarc.json`:
 
 ```json
 { "workspace.library": ["../Beastkeeper/docs"] }
 ```
 
-Then annotate a handler (`---@param event BeastkeeperToastEvent`) and the editor
+Then annotate a handler (`---@param event AddonToastEvent`) and the editor
 knows every field.
 
 ## The messages
@@ -280,7 +280,7 @@ local hook = {}
 BeastkeeperHookLog = BeastkeeperHookLog or {}
 
 -- Ranks the hunter now knows: keep them, and tell the group about a new learn.
----@param event BeastkeeperRanksKnownEvent
+---@param event AddonRanksKnownEvent
 Beastkeeper:Listen(hook, "BEASTKEEPER_RANKS_KNOWN", function(_, event)
     for _, known in ipairs(event.ranks) do
         table.insert(BeastkeeperHookLog, ("%s %s rank %d"):format(date("%Y-%m-%d"), known.name, known.rank))
@@ -291,7 +291,7 @@ Beastkeeper:Listen(hook, "BEASTKEEPER_RANKS_KNOWN", function(_, event)
 end)
 
 -- Every toast passes here before it shows: mark Care Button's dead-pet toast.
----@param event BeastkeeperToastEvent
+---@param event AddonToastEvent
 Beastkeeper:Listen(hook, "BEASTKEEPER_TOAST", function(_, event)
     if event.toast.type == "CareButton:dead" then
         event.toast.title = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_8:0|t " .. event.toast.title
@@ -299,7 +299,7 @@ Beastkeeper:Listen(hook, "BEASTKEEPER_TOAST", function(_, event)
 end)
 
 -- A pet left unhappy loses loyalty, and with it training points.
----@param event BeastkeeperPetGrowthEvent
+---@param event AddonPetGrowthEvent
 Beastkeeper:Listen(hook, "BEASTKEEPER_PET_GROWTH", function(_, event)
     if event.points < event.before.points then
         print(("%s lost %d training points: feed it."):format(event.pet, event.before.points - event.points))
@@ -307,7 +307,7 @@ Beastkeeper:Listen(hook, "BEASTKEEPER_PET_GROWTH", function(_, event)
 end)
 
 -- The core works this one out only while someone listens.
----@param event BeastkeeperPetDiedEvent
+---@param event AddonPetDiedEvent
 Beastkeeper:Listen(hook, "BEASTKEEPER_PET_DIED", function(_, event)
     PlaySound(SOUNDKIT.RAID_WARNING)
 end)

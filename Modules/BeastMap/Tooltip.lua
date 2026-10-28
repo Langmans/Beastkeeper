@@ -8,7 +8,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
+local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
 -- Per standing: the line's ending and its colour.
 ---@type table<string, {text: string, color: number[]}>

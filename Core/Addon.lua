@@ -3,7 +3,7 @@ local addonName, ns = ...
 -- The addon object, its saved settings and the module switches.
 --
 -- Every feature is an AceAddon module (Beastkeeper:NewModule). What a module may declare is described
--- by BeastkeeperModule in annotations\Beastkeeper.lua. The core owns the switch: profile.modules[name] says
+-- by AddonModule in annotations\Addon.lua. The core owns the switch: profile.modules[name] says
 -- whether a module runs, and the options page and a profile change both go through
 -- SetModuleOn/ApplyModuleStates. A module therefore never enables itself, and its OnDisable must
 -- undo everything its OnEnable did (events, hooks, frames shown), because that is also how a
@@ -23,7 +23,7 @@ Addon.SLASH_ALIAS = "bk"
 
 -- The messages Beastkeeper sends (docs\04-hooking.md), by key: messages.petGrowth is
 -- "<NAME>_PET_GROWTH".
-Addon.messages = {} --[[@as BeastkeeperMessages]]
+Addon.messages = {} --[[@as AddonMessages]]
 for _, key in ipairs({
     "print",
     "toast",
@@ -61,7 +61,7 @@ Addon.data = {
     trainers = {},
     ammo = {},
     ammoVendors = {},
-} --[[@as BeastkeeperData]]
+} --[[@as AddonData]]
 
 -- Every module can register events; anything else it embeds it lists itself.
 Addon:SetDefaultModuleLibraries("AceEvent-3.0")
@@ -85,7 +85,7 @@ end
 -- What every module has: Print, naming the module in BEASTKEEPER_PRINT.
 Addon:SetDefaultModulePrototype({
     ---A line in chat from this module.
-    ---@param self BeastkeeperModule
+    ---@param self AddonModule
     ---@param ... any
     Print = function(self, ...)
         PrintFrom(self:GetName(), ...)

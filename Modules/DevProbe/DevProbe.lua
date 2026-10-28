@@ -29,7 +29,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 
----@type BeastkeeperDevProbe
+---@type AddonDevProbe
 local M = Addon:NewModule("DevProbe")
 M.title = "Dev Probe"
 M.description = "Keeps what the client says of pets, stable and families. Repository copies only."
@@ -56,9 +56,9 @@ local KEEP = 200 -- entries per list
 local LEVEL_WINDOW = 2 -- seconds after a level-up in which a new spell counts as from it
 
 ---The saved findings.
----@return BeastkeeperProbeData
+---@return AddonProbeData
 local function Data()
-    return M.db.global --[[@as BeastkeeperProbeData]]
+    return M.db.global --[[@as AddonProbeData]]
 end
 
 ---Adds to a list, keeping its last KEEP.
@@ -187,7 +187,7 @@ end
 
 ---BEASTKEEPER_PET_TAMED: a little later, what the pet knows beside what the data says it teaches.
 ---@param _ string the message
----@param event BeastkeeperPetTamedEvent
+---@param event AddonPetTamedEvent
 function M:OnTamed(_, event)
     local npc = event.npc
     if not npc then return end
@@ -396,9 +396,9 @@ end
 ---BEASTKEEPER_ABILITY_LEARNED: a rank below the highest the hunter knew of that ability (Ability
 ---Learned has not marked the learn yet when it sends this).
 ---@param _ string the message
----@param event BeastkeeperAbilityLearnedEvent
+---@param event AddonAbilityLearnedEvent
 function M:OnLearned(_, event)
-    local learned = Addon:GetModule("AbilityLearned", true) --[[@as BeastkeeperAbilityLearned?]]
+    local learned = Addon:GetModule("AbilityLearned", true) --[[@as AddonAbilityLearned?]]
     local highest = learned and learned:HighestRank(event.name)
     if highest and event.rank < highest then
         Push(Data().lowerRanks, { name = event.name, rank = event.rank, highest = highest, t = GetServerTime() })

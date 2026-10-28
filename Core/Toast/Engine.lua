@@ -12,15 +12,15 @@ local INTRO, FADE_OUT = 0.2, 0.35
 local SCREENSHOT_AT = INTRO + 0.2
 
 ---The skin that drew the last toast; for tests and for ToastFrame.
----@type BeastkeeperToastSkin?
+---@type AddonToastSkin?
 local lastSkin
 ---@type Frame?
 local driver
 ---The toast up now, and the skin drawing it; nil when none is.
----@type BeastkeeperToastInfo?, BeastkeeperToastSkin?
+---@type AddonToastInfo?, AddonToastSkin?
 local current, currentSkin
 ---Toasts waiting while another is up; each shows when the one before it is gone.
----@type BeastkeeperToastInfo[]
+---@type AddonToastInfo[]
 local queue = {}
 ---Seconds since the toast was shown; how many of those it was not hovered (what counts towards
 ---its stay); how long it stays before it fades; when the fade began, on the first clock.
@@ -34,7 +34,7 @@ local screenshotDue = false
 local Engine = {}
 
 ---The card, which takes over from a skin that fails.
----@return BeastkeeperToastSkin
+---@return AddonToastSkin
 local function Card()
     return Addon:ToastSkins()[Addon.TOAST_DEFAULT_SKIN]
 end
@@ -46,7 +46,7 @@ end
 ---@param ... any the method's arguments
 ---@return boolean? result what IsMouseOver answers; false after an error
 local function Call(method, ...)
-    local skin = currentSkin --[[@as BeastkeeperToastSkin]]
+    local skin = currentSkin --[[@as AddonToastSkin]]
     local ok, result = pcall(skin[method], skin, ...)
     if ok then
         return result --[[@as boolean?]]
@@ -60,7 +60,7 @@ end
 ---the toast was going away anyway.
 ---@param show boolean
 function Engine.Fallback(show)
-    local failed = currentSkin --[[@as BeastkeeperToastSkin]]
+    local failed = currentSkin --[[@as AddonToastSkin]]
     pcall(failed.Hide, failed)
     currentSkin = Card()
     lastSkin = currentSkin
@@ -107,7 +107,7 @@ local function Tick(_, elapsed)
 end
 
 ---Plays a toast's sound: a sound file, or a sound kit.
----@param sound BeastkeeperSound?
+---@param sound AddonSound?
 local function Play(sound)
     if not sound then return end
     if sound.file then
@@ -118,7 +118,7 @@ local function Play(sound)
 end
 
 ---Hands `info` to its skin and starts the clock.
----@param info BeastkeeperToastInfo
+---@param info AddonToastInfo
 function Engine.Display(info)
     if not driver then
         driver = CreateFrame("Frame", Addon.Global("ToastDriver"), UIParent)
@@ -133,7 +133,7 @@ function Engine.Display(info)
     Play(info.sound)
     -- An instant skin is done once shown (it handed the toast on): the next one follows at once.
     if
-        (currentSkin --[[@as BeastkeeperToastSkin]]).instant
+        (currentSkin --[[@as AddonToastSkin]]).instant
     then
         ShowNext()
         return
@@ -162,7 +162,7 @@ end
 ---Shows a toast now, or after the one that is up. A key whose toast is up or waiting gets no
 ---second one. Sends BEASTKEEPER_TOAST ({ module, toast }) first, so a listener may still change the
 ---toast (docs\04-hooking.md); the module is the part of the key before the colon.
----@param info BeastkeeperToastInfo
+---@param info AddonToastInfo
 function Addon:ShowToast(info)
     if (current and current.key == info.key) or Queued(info.key) then return end
     self:SendMessage(Addon.messages.toast, { module = info.key:match("^([^:]+):"), toast = info })

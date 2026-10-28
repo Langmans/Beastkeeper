@@ -10,7 +10,7 @@ local _, ns = ...
 local Addon = ns
 local L = Addon.L
 
----@type BeastkeeperBroker
+---@type AddonBroker
 local M = Addon:NewModule("Broker")
 M.title = L.BROKER_TITLE
 M.description = L.BROKER_DESC
@@ -41,7 +41,7 @@ end
 ---The Pet Journal's brief lines for the pet out, when that module is on and has it.
 ---@param tooltip GameTooltip
 local function AddJournal(tooltip)
-    local journal = Addon:GetModule("PetJournal", true) --[[@as BeastkeeperPetJournal?]]
+    local journal = Addon:GetModule("PetJournal", true) --[[@as AddonPetJournal?]]
     if not journal or not journal:IsEnabled() or not journal.current then return end
     for _, line in ipairs(journal:JournalLines(journal.current, true)) do
         tooltip:AddLine(line, JOURNAL_COLOR[1], JOURNAL_COLOR[2], JOURNAL_COLOR[3], true)

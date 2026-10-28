@@ -17,7 +17,7 @@
   `requires`; without it, it stays off and off the settings page.
 - **Toast** (`Core\Toast\`): `Beastkeeper:ShowToast(info)` with a key, kind,
   source, title, text, hint, icon, accent colour and sound
-  (`BeastkeeperToastInfo`). One toast per key is up or waiting; toasts for
+  (`AddonToastInfo`). One toast per key is up or waiting; toasts for
   different keys show one after the other. Keys are `"<Module>:<what>"`:
   `Beastkeeper:DropToast(key)` takes one away when it is solved,
   `Beastkeeper:DropToasts("<Module>:")` all of a module's when it is switched off.
@@ -84,8 +84,8 @@
   `Beastkeeper.data.beasts` (per NPC ID: name, family, levels, rare/elite, pins per
   uiMapID or the zone of an instance) are the library's own tables: read them,
   never change them. Its API (`GetTeachers` with only rares or only the rest,
-  `GetTeaches`, `GetAbilityRanks`, ...) is in its README; `BeastkeeperData` in
-  `annotations/Beastkeeper.lua`.
+  `GetTeaches`, `GetAbilityRanks`, ...) is in its README; `AddonData` in
+  `annotations/Addon.lua`.
 - **Messages**: the core and the modules tell each other and other addons
   what happens through BEASTKEEPER_* messages ([04-hooking.md](04-hooking.md)). A
   module listens with `Beastkeeper:Listen(self, message, method)` in OnEnable and

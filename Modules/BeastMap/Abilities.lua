@@ -11,7 +11,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
+local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
 local LIST_WIDTH, ROW_HEIGHT, LIST_ROWS = 170, 18, 21
 local RANK_ROWS, RANK_HEIGHT, RANK_WIDTH, LEVEL_WIDTH, MORE_WIDTH = 15, 22, 64, 80, 30
@@ -46,7 +46,7 @@ local function Groups()
     if groups then return groups end
     ---@type table<number, number[]>
     local built = {}
-    local ranks = Addon.data.petAbilityRanks --[[@as table<number, BeastkeeperPetAbilityRank>]]
+    local ranks = Addon.data.petAbilityRanks --[[@as table<number, AddonPetAbilityRank>]]
     for spellID, rank in pairs(ranks) do
         built[rank.ability] = built[rank.ability] or {}
         table.insert(built[rank.ability], spellID)
@@ -120,7 +120,7 @@ local function TeacherText(teachers)
 end
 
 ---A rank's tooltip: every teacher in order, with its level.
----@param row BeastkeeperRankRow
+---@param row AddonRankRow
 local function OnEnter(row)
     if not row.teachers then return end
     GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
@@ -139,7 +139,7 @@ end
 ---A go button's tooltip: the beast it leads to.
 ---@param go Button
 local function OnGoEnter(go)
-    local row = go:GetParent() --[[@as BeastkeeperRankRow]]
+    local row = go:GetParent() --[[@as AddonRankRow]]
     GameTooltip:SetOwner(go, "ANCHOR_RIGHT")
     local hunting = M:IsHunting(row.best, row.spellID)
     GameTooltip:SetText(
@@ -150,7 +150,7 @@ end
 
 ---A text in the skin's font, on one line.
 ---@param parent Frame
----@param skin BeastkeeperButtonHolderSkin
+---@param skin AddonButtonHolderSkin
 ---@param justify string? "LEFT" by default
 ---@return FontString
 local function Text(parent, skin, justify)
@@ -163,7 +163,7 @@ end
 
 ---An ability's icon, cropped as the look crops icons (Beastkeeper:CropIcon).
 ---@param parent Frame
----@param skin BeastkeeperButtonHolderSkin
+---@param skin AddonButtonHolderSkin
 ---@param size number
 ---@return Texture
 local function Icon(parent, skin, size)
@@ -174,12 +174,12 @@ local function Icon(parent, skin, size)
 end
 
 ---A row of the abilities' list: its icon and name, how many ranks are known, a bar when chosen.
----@param panel BeastkeeperAbilitiesPanel
----@param skin BeastkeeperButtonHolderSkin
+---@param panel AddonAbilitiesPanel
+---@param skin AddonButtonHolderSkin
 ---@param index number
----@return BeastkeeperAbilityRow
+---@return AddonAbilityRow
 local function AbilityRow(panel, skin, index)
-    local row = CreateFrame("Button", nil, panel) --[[@as BeastkeeperAbilityRow]]
+    local row = CreateFrame("Button", nil, panel) --[[@as AddonAbilityRow]]
     row:SetSize(LIST_WIDTH, ROW_HEIGHT)
     row:SetPoint("TOPLEFT", 0, -(index - 1) * ROW_HEIGHT)
     local accent = skin.Accent and skin.Accent() or GOLD
@@ -201,11 +201,11 @@ local function AbilityRow(panel, skin, index)
 end
 
 ---The column heads above the ranks.
----@param panel BeastkeeperAbilitiesPanel
----@param skin BeastkeeperButtonHolderSkin
----@return BeastkeeperRankHeader
+---@param panel AddonAbilitiesPanel
+---@param skin AddonButtonHolderSkin
+---@return AddonRankHeader
 local function Header(panel, skin)
-    local header = CreateFrame("Frame", nil, panel) --[[@as BeastkeeperRankHeader]]
+    local header = CreateFrame("Frame", nil, panel) --[[@as AddonRankHeader]]
     header:SetHeight(16)
     header:SetPoint("TOPLEFT", LIST_WIDTH + 16, -HEADER_TOP)
     header:SetPoint("RIGHT")
@@ -228,12 +228,12 @@ local function Header(panel, skin)
 end
 
 ---A rank's row: rank, pet level, the teacher on one line, how many more, the go button.
----@param panel BeastkeeperAbilitiesPanel
----@param skin BeastkeeperButtonHolderSkin
+---@param panel AddonAbilitiesPanel
+---@param skin AddonButtonHolderSkin
 ---@param index number
----@return BeastkeeperRankRow
+---@return AddonRankRow
 local function RankRow(panel, skin, index)
-    local row = CreateFrame("Button", nil, panel) --[[@as BeastkeeperRankRow]]
+    local row = CreateFrame("Button", nil, panel) --[[@as AddonRankRow]]
     row:SetHeight(RANK_HEIGHT)
     row:SetPoint("TOPLEFT", LIST_WIDTH + 16, -RANKS_TOP - (index - 1) * RANK_HEIGHT)
     row:SetPoint("RIGHT")
@@ -249,7 +249,7 @@ local function RankRow(panel, skin, index)
     row.level = Text(row, skin, "RIGHT")
     row.level:SetWidth(LEVEL_COLUMN)
     row.level:SetPoint("LEFT", RANK_WIDTH, 0)
-    row.go = CreateFrame("Button", nil, row) --[[@as BeastkeeperGoButton]]
+    row.go = CreateFrame("Button", nil, row) --[[@as AddonGoButton]]
     row.go:SetSize(RANK_HEIGHT - 4, RANK_HEIGHT - 4)
     row.go:SetPoint("RIGHT", -2, 0)
     row.go.icon = row.go:CreateTexture(nil, "ARTWORK")
@@ -287,7 +287,7 @@ local function RankRow(panel, skin, index)
 end
 
 ---Lays out a row's text column: a teacher's sits in a little under its rank.
----@param row BeastkeeperRankRow
+---@param row AddonRankRow
 ---@param teacher boolean
 local function PlaceText(row, teacher)
     row.text:ClearAllPoints()
@@ -296,8 +296,8 @@ local function PlaceText(row, teacher)
 end
 
 ---Builds the panel: the abilities' rows, the title, the column heads, the ranks' rows.
----@param panel BeastkeeperAbilitiesPanel
----@param skin BeastkeeperButtonHolderSkin
+---@param panel AddonAbilitiesPanel
+---@param skin AddonButtonHolderSkin
 local function Create(panel, skin)
     panel.rows, panel.ranks = {}, {}
     for index = 1, LIST_ROWS do
@@ -324,11 +324,11 @@ local function Create(panel, skin)
 end
 
 ---Fills one rank's row.
----@param row BeastkeeperRankRow
+---@param row AddonRankRow
 ---@param spellID number
 ---@param expanded boolean? its teachers show below it
 local function FillRank(row, spellID, expanded)
-    local rank = Addon.data.petAbilityRanks[spellID] --[[@as BeastkeeperPetAbilityRank]]
+    local rank = Addon.data.petAbilityRanks[spellID] --[[@as AddonPetAbilityRank]]
     row.spellID, row.npc = spellID, nil
     row.rank:SetText(L.BEASTMAP_RANK:format(rank.rank))
     row.level:SetText(tostring(rank.level))
@@ -364,7 +364,7 @@ end
 
 ---Fills a row with one of a rank's teachers: its levels, its place and travel time, its own hunt
 ---button.
----@param row BeastkeeperRankRow
+---@param row AddonRankRow
 ---@param spellID number
 ---@param npc number
 local function FillTeacher(row, spellID, npc)
@@ -390,7 +390,7 @@ end
 
 ---The chosen ability's lines, in `panel.lineSpells` and `panel.lineBeasts`: each rank, and below
 ---an unfolded one each of its teachers, nearest first (lineBeasts false on a rank's line).
----@param panel BeastkeeperAbilitiesPanel
+---@param panel AddonAbilitiesPanel
 ---@param spells number[]
 local function Lines(panel, spells)
     local lineSpells, lineBeasts = panel.lineSpells, panel.lineBeasts
@@ -408,7 +408,7 @@ local function Lines(panel, spells)
 end
 
 ---Fills the list and the chosen ability's ranks.
----@param panel BeastkeeperAbilitiesPanel
+---@param panel AddonAbilitiesPanel
 local function Refresh(panel)
     local abilities = Order()
     if not panel.chosen or not Groups()[panel.chosen] then panel.chosen = abilities[1] end

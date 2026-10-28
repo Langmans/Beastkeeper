@@ -20,9 +20,9 @@ local ANCHOR = 1
 -- Beastkeeper's toasts handed over so far: each one's key in LS: Toasts.
 local count = 0
 
-local skin = { name = L.TOAST_SKIN_LSTOASTS, instant = true } --[[@as BeastkeeperToastSkin]]
+local skin = { name = L.TOAST_SKIN_LSTOASTS, instant = true } --[[@as AddonToastSkin]]
 
----@param info BeastkeeperToastInfo
+---@param info AddonToastInfo
 function skin:Show(info)
     count = count + 1
     local key = Addon.NAME:lower()

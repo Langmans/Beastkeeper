@@ -14,7 +14,7 @@ local _, ns = ...
 local Addon = ns
 local L = Addon.L
 
----@type BeastkeeperAbilityLearned
+---@type AddonAbilityLearned
 local M = Addon:NewModule("AbilityLearned")
 M.title = L.ABILITYLEARNED_TITLE
 M.description = L.ABILITYLEARNED_DESC
@@ -54,16 +54,16 @@ local EVENTS = {
 }
 
 ---The settings of the profile in use.
----@return BeastkeeperAbilityLearnedSettings
+---@return AddonAbilityLearnedSettings
 function M:Settings()
-    return self.db.profile --[[@as BeastkeeperAbilityLearnedSettings]]
+    return self.db.profile --[[@as AddonAbilityLearnedSettings]]
 end
 
 ---The sound a sound setting asks for: the pet's own (the level-up sound when its family has none
 ---or it is not about the pet out), the level-up sound, or none.
 ---@param key "sound"|"pointsSound"|"loyaltySound" the setting of the kind of toast
 ---@param petSound "AGGRO"|"WOUND"|nil which of the pet's sounds; nil when it is not about the pet out
----@return BeastkeeperSound?
+---@return AddonSound?
 function M:Sound(key, petSound)
     local setting = self:Settings()[key]
     if setting == "off" then return nil end
@@ -71,8 +71,8 @@ function M:Sound(key, petSound)
 end
 
 ---The toast for a learn.
----@param learn BeastkeeperLearn
----@return BeastkeeperToastInfo
+---@param learn AddonLearn
+---@return AddonToastInfo
 function M:Toast(learn)
     local teacher = learn.teacher
     local points = teacher and Addon.PetTrainingPoints()
@@ -92,7 +92,7 @@ function M:Toast(learn)
 end
 
 ---Shows a learn and, unless it was simulated, keeps it in the history.
----@param learn BeastkeeperLearn
+---@param learn AddonLearn
 function M:ShowLearn(learn)
     Addon:ShowToast(self:Toast(learn))
     if learn.simulated then return end

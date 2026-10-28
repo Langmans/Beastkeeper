@@ -20,9 +20,9 @@ local function UseProfile()
 end
 
 -- Show and GetOptions follow.
-local skin = { name = L.TOAST_SKIN_LIBSINK, instant = true } --[[@as BeastkeeperToastSkin]]
+local skin = { name = L.TOAST_SKIN_LIBSINK, instant = true } --[[@as AddonToastSkin]]
 
----@param info BeastkeeperToastInfo
+---@param info AddonToastInfo
 function skin:Show(info)
     UseProfile()
     local accent = info.accent or Addon.DefaultToastAccent()

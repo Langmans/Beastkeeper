@@ -18,11 +18,11 @@ local GOLD = { 1, 0.82, 0 }
 Addon.WINDOW_PANEL_WIDTH = WIDTH - 2 * PAD
 
 -- The registered tabs, in their order.
----@type BeastkeeperWindowTab[]
+---@type AddonWindowTab[]
 local registered = {}
 
----@param a BeastkeeperWindowTab
----@param b BeastkeeperWindowTab
+---@param a AddonWindowTab
+---@param b AddonWindowTab
 ---@return boolean
 local function ByOrder(a, b)
     return a.order < b.order
@@ -30,24 +30,24 @@ end
 
 ---Adds a tab to the window. Its Create builds the panel the first time the tab shows; Refresh fills
 ---it each time it shows, and on RefreshWindow.
----@param tab BeastkeeperWindowTab
+---@param tab AddonWindowTab
 function Addon:RegisterWindowTab(tab)
     registered[#registered + 1] = tab
     table.sort(registered, ByOrder)
 end
 
 ---Whether a tab shows now: its module, if it names one, is on.
----@param tab BeastkeeperWindowTab
+---@param tab AddonWindowTab
 ---@return boolean
 local function Showing(tab)
     if not tab.module then return true end
-    local module = Addon:GetModule(tab.module, true) --[[@as BeastkeeperModule?]]
+    local module = Addon:GetModule(tab.module, true) --[[@as AddonModule?]]
     return module ~= nil and module:IsEnabled() == true
 end
 
 ---The tab with `id`, if registered.
 ---@param id string
----@return BeastkeeperWindowTab?
+---@return AddonWindowTab?
 local function Find(id)
     for _, tab in ipairs(registered) do
         if tab.id == id then return tab end
@@ -56,7 +56,7 @@ end
 
 ---The tab with `id` when there is one and it shows.
 ---@param id string?
----@return BeastkeeperWindowTab?
+---@return AddonWindowTab?
 local function Shown(id)
     local tab = id and Find(id)
     if tab and Showing(tab) then return tab end
@@ -64,7 +64,7 @@ end
 
 ---The tab to show: `id` when it shows, else the current one, else the first that shows.
 ---@param id string?
----@return BeastkeeperWindowTab?
+---@return AddonWindowTab?
 local function Pick(id)
     local tab = Shown(id) or Shown(Addon.window and Addon.window.current)
     if tab then return tab end
@@ -74,9 +74,9 @@ local function Pick(id)
 end
 
 ---The window's saved settings.
----@return BeastkeeperWindowSettings
+---@return AddonWindowSettings
 local function Settings()
-    return Addon.db.profile.window --[[@as BeastkeeperWindowSettings]]
+    return Addon.db.profile.window --[[@as AddonWindowSettings]]
 end
 
 ---Keeps the window's place in the profile.
@@ -93,9 +93,9 @@ local function OnDragStart(frame)
 end
 
 ---Builds the window: frame, title, close button, the place it was left.
----@return BeastkeeperWindow
+---@return AddonWindow
 local function Build()
-    local frame = CreateFrame("Frame", Addon.Global("Window"), UIParent, "BackdropTemplate") --[[@as BeastkeeperWindow]]
+    local frame = CreateFrame("Frame", Addon.Global("Window"), UIParent, "BackdropTemplate") --[[@as AddonWindow]]
     frame:SetSize(WIDTH, HEIGHT)
     frame:SetFrameStrata("HIGH")
     frame:SetToplevel(true)
@@ -130,20 +130,20 @@ local function Build()
 end
 
 ---The look's accent colour, else the game's gold.
----@param skin BeastkeeperButtonHolderSkin
+---@param skin AddonButtonHolderSkin
 ---@return number[]
 local function Accent(skin)
     return skin.Accent and skin.Accent() or GOLD
 end
 
 ---The button of a tab, made the first time.
----@param window BeastkeeperWindow
----@param tab BeastkeeperWindowTab
----@return BeastkeeperWindowTabButton
+---@param window AddonWindow
+---@param tab AddonWindowTab
+---@return AddonWindowTabButton
 local function TabButton(window, tab)
     local button = window.tabs[tab.id]
     if button then return button end
-    button = CreateFrame("Button", nil, window) --[[@as BeastkeeperWindowTabButton]]
+    button = CreateFrame("Button", nil, window) --[[@as AddonWindowTabButton]]
     button:SetSize(TAB_WIDTH, TAB_HEIGHT)
     button.label = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     button.label:SetPoint("CENTER")
@@ -164,7 +164,7 @@ local function TabButton(window, tab)
 end
 
 ---Lays out the tab buttons of the tabs that show, top right; hides the others.
----@param window BeastkeeperWindow
+---@param window AddonWindow
 local function LayOutTabs(window)
     local x = -40
     for index = #registered, 1, -1 do
@@ -182,8 +182,8 @@ end
 ---Shows the tab with `id` (it must show), making its panel the first time, and fills it.
 ---@param id string
 function Addon:ShowWindowTab(id)
-    local window = self.window --[[@as BeastkeeperWindow]]
-    local tab = Find(id) --[[@as BeastkeeperWindowTab]]
+    local window = self.window --[[@as AddonWindow]]
+    local tab = Find(id) --[[@as AddonWindowTab]]
     window.current = id
     for other, panel in pairs(window.panels) do
         panel:SetShown(other == id)
@@ -234,7 +234,7 @@ end
 function Addon:RefreshWindow(id)
     local window = self.window
     if not window or not window:IsShown() or window.current ~= id then return end
-    local tab = Find(id) --[[@as BeastkeeperWindowTab]]
+    local tab = Find(id) --[[@as AddonWindowTab]]
     self:Time("window: " .. id, tab.Refresh, window.panels[id])
 end
 

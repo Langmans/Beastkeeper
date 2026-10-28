@@ -14,7 +14,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("CareButton") --[[@as BeastkeeperCareButton]]
+local M = Addon:GetModule("CareButton") --[[@as AddonCareButton]]
 
 M.PET_STATES = "[@pet,dead] dead; [@pet,exists] alive; none"
 

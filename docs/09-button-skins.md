@@ -13,7 +13,7 @@ takes over.
 ## A button skin
 
 A table with a localized `name`, an optional `priority` and `Style(button,
-parts)` (`BeastkeeperButtonSkin` in `annotations\Beastkeeper.lua`). `parts.icon` is the
+parts)` (`AddonButtonSkin` in `annotations\Addon.lua`). `parts.icon` is the
 button's icon texture, `parts.group` the module ("Feeding"). `Style` runs
 once; it returns a function that colours the border (the feed button shows
 the pet's happiness with it), or nil when the look has no border to colour.
@@ -45,7 +45,7 @@ the colour that marks what is chosen (the window's tab, the chosen row; the
 game's gold without it), `CropsIcons()` when the UI has its own setting for
 cropping icons (Beastkeeper's switch then follows it, greyed; ElvUI's Crop Icons)
 and `Close(button)` for a close button
-(`BeastkeeperButtonHolderSkin`). ElvUI's adds Eltruism's shadow to a panel when
+(`AddonButtonHolderSkin`). ElvUI's adds Eltruism's shadow to a panel when
 Eltruism is loaded with its shadows on. Register it with
 `Beastkeeper:RegisterButtonHolderSkin(id, skin)`. Masque skins buttons only, so it
 has no holder skin; with Masque the list takes the next one.

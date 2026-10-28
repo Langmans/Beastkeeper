@@ -11,16 +11,16 @@ local _, ns = ...
 local Addon = ns
 local L = Addon.L
 
----@type BeastkeeperPetJournal
+---@type AddonPetJournal
 local M = Addon:NewModule("PetJournal")
 M.title = L.PETJOURNAL_TITLE
 M.description = L.PETJOURNAL_DESC
 M.defaults = { profile = { tooltip = true }, char = { pets = {} } }
 
 ---The settings of the profile in use.
----@return BeastkeeperPetJournalSettings
+---@return AddonPetJournalSettings
 function M:Settings()
-    return self.db.profile --[[@as BeastkeeperPetJournalSettings]]
+    return self.db.profile --[[@as AddonPetJournalSettings]]
 end
 
 local BOOK_WAIT = 1 -- seconds for a new pet's spellbook to fill in
@@ -36,9 +36,9 @@ local EVENTS = {
 local STABLE_KEY = "stable:%s|%s"
 
 ---This character's pets, by number (as a string).
----@return table<string, BeastkeeperJournalEntry>
+---@return table<string, AddonJournalEntry>
 function M:Pets()
-    return self.db.char.pets --[[@as table<string, BeastkeeperJournalEntry>]]
+    return self.db.char.pets --[[@as table<string, AddonJournalEntry>]]
 end
 
 ---The pet out's key, or nil: its number; for a pet tamed this session, which keeps the beast's
@@ -59,7 +59,7 @@ end
 
 ---Moves the entry of a pet tamed in an earlier session, kept under its Creature GUID, to its
 ---number `key` now that it has one: the newest such entry tamed as the same beast.
----@param pets table<string, BeastkeeperJournalEntry>
+---@param pets table<string, AddonJournalEntry>
 ---@param key string
 local function Adopt(pets, key)
     local npc = Addon.PetNPC()
@@ -138,7 +138,7 @@ end
 ---A pet's entry, made the first time it is seen: out, or in the stable's lists.
 ---@param key string
 ---@param npc number? the NPC ID it was tamed as; the pet out's when nil
----@return BeastkeeperJournalEntry
+---@return AddonJournalEntry
 function M:Entry(key, npc)
     local pets = self:Pets()
     local entry = pets[key]
@@ -192,7 +192,7 @@ local stableKeys = {}
 
 ---The journal key of a stable pet without a number (Classic Era): the one entry of the same name
 ---and family, else its own under STABLE_KEY.
----@param pets table<string, BeastkeeperJournalEntry>
+---@param pets table<string, AddonJournalEntry>
 ---@param name string
 ---@param family string?
 ---@return string
@@ -212,7 +212,7 @@ end
 ---model it shows (displayID) and the beast it was tamed as (creatureID). A pet not in the journal
 ---yet gets an entry. Classic Era's lists give no number (NamedKey) and the loyalty as text; a
 ---number the client hides leaves the pet out.
----@param list BeastkeeperStablePet[]
+---@param list AddonStablePet[]
 function M:ReadStableList(list)
     for _, info in ipairs(list) do
         local number = info.petNumber
@@ -240,8 +240,8 @@ end
 ---Moves what an entry the stable does not know holds into the stable's entry of the same pet: the
 ---time out, deaths, loyalty rises, abilities seen, the earlier first sight and a tame. The
 ---stable's NPC ID stays.
----@param into BeastkeeperJournalEntry
----@param from BeastkeeperJournalEntry
+---@param into AddonJournalEntry
+---@param from AddonJournalEntry
 local function Merge(into, from)
     into.out, into.deaths = into.out + from.out, into.deaths + from.deaths
     for level, at in pairs(from.rises) do
@@ -257,8 +257,8 @@ local function Merge(into, from)
 end
 
 ---The one stable pet with this name and family; nil for none or several.
----@param pets table<string, BeastkeeperJournalEntry>
----@param entry BeastkeeperJournalEntry
+---@param pets table<string, AddonJournalEntry>
+---@param entry AddonJournalEntry
 ---@return string?
 local function StableTwin(pets, entry)
     ---@type string?
@@ -316,7 +316,7 @@ end
 ---The core's BEASTKEEPER_PET_TAMED. It may come before or after this module sees the pet come out,
 ---so it makes the entry if need be.
 ---@param _ string the message
----@param event BeastkeeperPetTamedEvent
+---@param event AddonPetTamedEvent
 function M:OnTamed(_, event)
     -- Freshly tamed, the pet has no number yet: it goes under its Creature GUID (Key).
     local key = event.petNumber and tostring(event.petNumber) or Key()

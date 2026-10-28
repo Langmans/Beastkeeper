@@ -20,7 +20,7 @@ local MAX_CHARACTER_MACROS = MACRO_CONSTS and MACRO_CONSTS.MAX_CHARACTER_MACROS 
 
 ---Makes the macros that are not there yet, and says in chat what it made and what found no room;
 ---by hand it also says when all were there already. Counts as made for this character.
----@param module BeastkeeperMacroModule
+---@param module AddonMacroModule
 ---@param byHand boolean? from the module's options
 ---@return boolean ran false in combat, when no macro can be made
 function Addon:CreateMacros(module, byHand)
@@ -52,7 +52,7 @@ function Addon:CreateMacros(module, byHand)
 end
 
 -- Modules whose macros wait to be made the one time, by name.
----@type table<string, BeastkeeperMacroModule>
+---@type table<string, AddonMacroModule>
 local offered = {}
 -- Whether the client has loaded the macros (the first UPDATE_MACROS); before that, GetNumMacros
 -- and GetMacroIndexByName do not know the player's macros yet.
@@ -92,7 +92,7 @@ end
 
 ---Makes a module's macros the first time for this character: now when the macros have loaded
 ---(a module switched on later), else once they have.
----@param module BeastkeeperMacroModule
+---@param module AddonMacroModule
 function Addon:OfferMacros(module)
     if self.db.char.macrosMade[module.moduleName] then return end
     offered[module.moduleName] = module
@@ -105,7 +105,7 @@ local DESC_COLOR = { 0.5, 0.9, 0.5 }
 
 -- Each macro's description and the module making it, by macro name; read once from the modules'
 -- Macros() on the first hover, since a tooltip hook runs on every hover.
----@type table<string, string>?, table<string, BeastkeeperMacroModule>
+---@type table<string, string>?, table<string, AddonMacroModule>
 local descriptions, makers = nil, {}
 
 ---The description of the macro called `name`, when a module that is on makes it.
@@ -115,7 +115,7 @@ function Addon:MacroDescription(name)
     if not descriptions then
         descriptions = {}
         for _, module in pairs(self.modules) do
-            ---@cast module BeastkeeperMacroModule
+            ---@cast module AddonMacroModule
             for _, macro in ipairs(module.Macros and module:Macros() or {}) do
                 if macro.desc then
                     descriptions[macro.name], makers[macro.name] = macro.desc, module

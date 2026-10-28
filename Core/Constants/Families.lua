@@ -44,16 +44,16 @@ Addon.families = {
 }
 
 -- The specializations, as Wowhead sorts the families.
-Addon.petSpecs = Addon.SelfKeyedEnum({ "ferocity", "cunning", "tenacity" }) --[[@as BeastkeeperPetSpecs]]
+Addon.petSpecs = Addon.SelfKeyedEnum({ "ferocity", "cunning", "tenacity" }) --[[@as AddonPetSpecs]]
 
 -- The kinds of food a family eats; upper-cased, each names a BEASTMAP_FOOD_* string, and the emote
 -- lines' food types use them as keys.
-Addon.diets = Addon.SelfKeyedEnum({ "meat", "fish", "cheese", "bread", "fungus", "fruit", "rawFish" }) --[[@as BeastkeeperDiets]]
+Addon.diets = Addon.SelfKeyedEnum({ "meat", "fish", "cheese", "bread", "fungus", "fruit", "rawFish" }) --[[@as AddonDiets]]
 
 local F, S, D = Addon.families, Addon.petSpecs, Addon.diets
 local ALL = { D.meat, D.fish, D.cheese, D.bread, D.fungus, D.fruit }
 
----@type table<number, BeastkeeperFamilyInfo>
+---@type table<number, AddonFamilyInfo>
 Addon.familyInfo = {
     [F.wolf] = { name = "Wolf", spec = S.ferocity, diet = { D.meat } },
     [F.cat] = { name = "Cat", spec = S.ferocity, diet = { D.meat, D.fish } },
@@ -83,12 +83,12 @@ Addon.familyInfo = {
 }
 
 -- The categories a family has before Wrath.
-Addon.petCategories = Addon.SelfKeyedEnum({ "offense", "defense", "general" }) --[[@as BeastkeeperPetCategories]]
+Addon.petCategories = Addon.SelfKeyedEnum({ "offense", "defense", "general" }) --[[@as AddonPetCategories]]
 
 local K = Addon.petCategories
 
 -- Per family its category and modifiers in percent, on the classic clients (the comment above).
----@type table<number, BeastkeeperFamilyMods>
+---@type table<number, AddonFamilyMods>
 Addon.familyMods = {
     [F.bat] = { category = K.offense, health = 0, armor = 0, damage = 7 },
     [F.bear] = { category = K.defense, health = 8, armor = 5, damage = -9 },

@@ -15,7 +15,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 
----@type BeastkeeperDevScreenshots
+---@type AddonDevScreenshots
 local M = Addon:NewModule("DevScreenshots")
 M.title = "Dev Screenshots"
 M.description = "A screenshot of each kind of toast and chat line, the first time. Repository copies only."
@@ -40,7 +40,7 @@ local function Shoot(what)
 end
 
 ---@param _ string the message
----@param event BeastkeeperToastEvent
+---@param event AddonToastEvent
 function M:BEASTKEEPER_TOAST(_, event)
     local toast = event.toast
     if Shoot("toast " .. (toast.type or toast.key)) then toast.screenshot = true end
@@ -66,7 +66,7 @@ local function Kind(line)
 end
 
 ---@param _ string the message
----@param event BeastkeeperPrintEvent
+---@param event AddonPrintEvent
 function M:BEASTKEEPER_PRINT(_, event)
     if GetTime() - lastShot < SHOT_GAP then return end
     if not Shoot("chat: " .. Kind(event.line)) then return end

@@ -15,7 +15,7 @@ local _, ns = ...
 local Addon = ns
 local L = Addon.L
 
----@type BeastkeeperCareButton
+---@type AddonCareButton
 local M = Addon:NewModule("CareButton")
 M.title = L.CAREBUTTON_TITLE
 M.description = L.CAREBUTTON_DESC
@@ -49,9 +49,9 @@ local ALERTS = {
 }
 
 ---The settings of the profile in use.
----@return BeastkeeperCareButtonSettings
+---@return AddonCareButtonSettings
 function M:Settings()
-    return self.db.profile --[[@as BeastkeeperCareButtonSettings]]
+    return self.db.profile --[[@as AddonCareButtonSettings]]
 end
 
 ---A spell's name as the client calls it, for macros; the English name without one.
@@ -70,7 +70,7 @@ end
 
 ---The sound for a toast: the pet's own, the raid warning, or none.
 ---@param kind "AGGRO"|"DEATH"|"WOUND"
----@return BeastkeeperSound?
+---@return AddonSound?
 function M:Sound(kind)
     local setting = self:Settings().sound
     if setting == "off" then return nil end
@@ -81,7 +81,7 @@ end
 ---@param kind "dead"|"nopet"|"low"|"passive"
 ---@param reason string? instead of the toast's own text
 ---@param percent number? the pet's health, for low
----@return BeastkeeperToastInfo
+---@return AddonToastInfo
 function M:Toast(kind, reason, percent)
     local alert = ALERTS[kind]
     ---@type (number|string)?

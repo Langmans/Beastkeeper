@@ -17,7 +17,7 @@ its tests in `tests\<name>_spec.lua`. The module itself:
 local _, Beastkeeper = ...
 local L = Beastkeeper.L
 
----@type BeastkeeperPetCare -- a class in annotations\Beastkeeper.lua
+---@type AddonPetCare -- a class in annotations\Addon.lua
 local M = Beastkeeper:NewModule("PetCare", "AceTimer-3.0")
 M.title = L.PETCARE_TITLE
 M.description = L.PETCARE_DESC
@@ -38,7 +38,7 @@ end
 ```
 
 `Modules\AutocastCheck\` is a complete example. What each field means is in
-`annotations/Beastkeeper.lua` (`BeastkeeperModule`). The rules the core relies on:
+`annotations/Addon.lua` (`AddonModule`). The rules the core relies on:
 
 - **The core owns the switch.** `profile.modules[name]` in `BeastkeeperDB` says
   whether a module runs; a module never calls `Enable`/`Disable` on itself.

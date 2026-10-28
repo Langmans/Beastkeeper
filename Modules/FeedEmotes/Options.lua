@@ -6,7 +6,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
+local M = Addon:GetModule("FeedEmotes") --[[@as AddonFeedEmotes]]
 
 local MYSTERY_MEAT = 12037
 local SEX = { game = nil, male = Addon.sex.male, female = Addon.sex.female }

@@ -8,7 +8,7 @@ either to draw in its own style (an ElvUI look, say) or as an adapter that
 hands the toast to something else.
 
 A skin is a table with a localized `name` and four methods
-(`BeastkeeperToastSkin` in `annotations\Beastkeeper.lua`). The engine calls `Show` once,
+(`AddonToastSkin` in `annotations\Addon.lua`). The engine calls `Show` once,
 `Update` every frame until the fade is done, then `Hide`:
 
 ```lua
@@ -42,7 +42,7 @@ text by default, chat, raid warning, MikSBT, ...).
 
 To restyle the card or the splash rather than draw anew,
 `Beastkeeper:NewCardSkin(name, style)` and `Beastkeeper:NewSplashSkin(name, style)` take
-a `BeastkeeperSkinStyle`: the frame's name, a panel colour, an edge colour or a
+a `AddonSkinStyle`: the frame's name, a panel colour, an edge colour or a
 `Border(frame)` function, an `accent()` function and a `Font(text, size)`
 function. `Integrations\EllesmereUI\Look.lua` does exactly that with
 EllesmereUI's font, border, panel and theme colour, registering "EllesmereUI"

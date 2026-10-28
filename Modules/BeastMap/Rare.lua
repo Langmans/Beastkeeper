@@ -10,7 +10,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
+local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
 local RAID_WARNING = SOUNDKIT.RAID_WARNING --[[@as number]]
 -- Not every client has every one; a missing one is skipped.
@@ -53,7 +53,7 @@ function M:SeeCreature(guid)
     if not npc then return end
     -- A GUID that gave an NPC ID is a readable string.
     local spawn = guid --[[@as string]]
-    local beast = Addon.data.beasts[npc] --[[@as BeastkeeperBeast?]]
+    local beast = Addon.data.beasts[npc] --[[@as AddonBeast?]]
     if not beast or not beast.rare or alarmed[spawn] then return end
     if not self:Settings().aboveLevel and beast.minLevel > self:PlayerLevel() then return end
     local ranks = WantedRanks(npc)

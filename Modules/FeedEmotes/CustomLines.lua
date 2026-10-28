@@ -7,14 +7,14 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
+local M = Addon:GetModule("FeedEmotes") --[[@as AddonFeedEmotes]]
 
 -- An emote is at most 255 bytes, and "feeds <pet> a <item link>. " in front can take about 100.
 -- The conditions are not sent, so they do not count.
 M.CUSTOM_LINE_MAX = 150
 
 ---Every condition, in the order a saved line lists them: sex, food type, family by ID.
----@type BeastkeeperFeedCondition[]
+---@type AddonFeedCondition[]
 M.Conditions = {
     { tag = "male", group = "sex", value = Addon.sex.male },
     { tag = "female", group = "sex", value = Addon.sex.female },
@@ -23,14 +23,14 @@ local D = Addon.diets
 for _, foodType in ipairs({ D.bread, D.meat, D.fish, D.cheese, D.fruit, D.fungus }) do
     M.Conditions[#M.Conditions + 1] = { tag = foodType, group = "foodType", value = foodType }
 end
----@type BeastkeeperFeedCondition[]
+---@type AddonFeedCondition[]
 local families = {}
 for name, id in pairs(M.Family) do
     families[#families + 1] = { tag = name:lower(), group = "family", value = id }
 end
 ---Families by ID: their values are numbers.
----@param a BeastkeeperFeedCondition
----@param b BeastkeeperFeedCondition
+---@param a AddonFeedCondition
+---@param b AddonFeedCondition
 ---@return boolean
 local function ByID(a, b)
     ---@type number, number
@@ -43,7 +43,7 @@ for _, condition in ipairs(families) do
 end
 
 ---Tag -> its condition.
----@type table<string, BeastkeeperFeedCondition>
+---@type table<string, AddonFeedCondition>
 M.ConditionByTag = {}
 for _, condition in ipairs(M.Conditions) do
     M.ConditionByTag[condition.tag] = condition
@@ -93,7 +93,7 @@ end
 
 ---Whether a line's conditions hold for one feeding.
 ---@param tags table<string, true>
----@param situation BeastkeeperFeedSituation
+---@param situation AddonFeedSituation
 ---@return boolean
 function M.ConditionsHold(tags, situation)
     ---@type table<string, true>, table<string, true>

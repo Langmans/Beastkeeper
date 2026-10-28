@@ -17,7 +17,7 @@ local listeners = {}
 
 -- Per message, the source that sends it: a table with the game events it watches, a method of the
 -- same name for each, and Start, which takes stock when it begins to watch.
----@type table<string, BeastkeeperSource>
+---@type table<string, AddonSource>
 local sources = {}
 
 ---Starts the message's source when it has a listener and is not running, stops it when it has none.
@@ -64,7 +64,7 @@ function Addon:StopListening(owner, message)
 end
 
 -- BEASTKEEPER_PET_HAPPINESS: the pet out's happiness changed; before is nil for a pet just out.
----@type BeastkeeperSource
+---@type AddonSource
 local happiness = { events = { "UNIT_HAPPINESS", "PET_UI_UPDATE", "UNIT_PET" } }
 sources.BEASTKEEPER_PET_HAPPINESS = happiness
 
@@ -113,7 +113,7 @@ local function PetDead()
 end
 
 -- BEASTKEEPER_PET_DIED: the pet out died, seen going from alive to dead.
----@type BeastkeeperSource
+---@type AddonSource
 local death = { events = { "UNIT_HEALTH", "UNIT_PET" } }
 sources.BEASTKEEPER_PET_DIED = death
 
@@ -144,7 +144,7 @@ end
 -- changes only what is free, not the total: no growth.
 local LOGIN_WAIT = 5 -- seconds
 local SUMMON_WAIT = 1 -- seconds for a new pet's values to fill in
----@type BeastkeeperSource
+---@type AddonSource
 local growth = { events = { "UNIT_PET_TRAINING_POINTS", "PET_UI_UPDATE", "UNIT_LEVEL", "UNIT_PET" } }
 sources.BEASTKEEPER_PET_GROWTH = growth
 
@@ -178,7 +178,7 @@ function growth:Check()
     if not total then return end
     local pet, level = UnitName("pet"), UnitLevel("pet")
     local loyalty, loyaltyName = Addon.PetLoyalty(total, level)
-    local pets = Addon.db.char.growth --[[@as table<string, BeastkeeperGrowthSeen>]]
+    local pets = Addon.db.char.growth --[[@as table<string, AddonGrowthSeen>]]
     local seen = pets[pet]
     if not seen then
         pets[pet] = { total = total, level = level, loyalty = loyalty }
@@ -217,7 +217,7 @@ end
 
 -- BEASTKEEPER_PET_TAMED: the pet that came out after a Tame Beast cast. It has no pet number until the
 -- next relog (its GUID is still the beast's), so petNumber is nil then.
----@type BeastkeeperSource
+---@type AddonSource
 local tame = { events = { "UNIT_SPELLCAST_SUCCEEDED", "UNIT_PET" } }
 sources.BEASTKEEPER_PET_TAMED = tame
 

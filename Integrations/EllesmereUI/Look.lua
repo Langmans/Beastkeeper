@@ -34,7 +34,7 @@ end
 
 ---The look, for a frame of this name.
 ---@param frameName string
----@return BeastkeeperSkinStyle
+---@return AddonSkinStyle
 local function Style(frameName)
     return { frameName = frameName, panel = { 0.06, 0.06, 0.08, 0.85 }, Border = Border, accent = Accent, Font = Font }
 end
@@ -49,7 +49,7 @@ end
 
 ---A button: its 1-pixel border, to colour, and a trimmed icon.
 ---@param button Button
----@param parts BeastkeeperButtonParts
+---@param parts AddonButtonParts
 ---@return fun(r: number, g: number, b: number)
 local function StyleButton(button, parts)
     Addon:CropIcon(parts.icon, CropIcon)

@@ -9,12 +9,12 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
+local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
 ---The hunt on, if any.
----@return BeastkeeperHunt?
+---@return AddonHunt?
 function M:Hunt()
-    return self.db.char.hunt --[[@as BeastkeeperHunt?]]
+    return self.db.char.hunt --[[@as AddonHunt?]]
 end
 
 ---Whether the hunt on is for beast `npc` and rank `spellID`.
@@ -81,7 +81,7 @@ M.command = "hunt"
 M.commands = {
     stop = {
         desc = L.BEASTMAP_CMD_STOP,
-        ---@param self BeastkeeperBeastMap
+        ---@param self AddonBeastMap
         func = function(self)
             self:StopHunt()
         end,

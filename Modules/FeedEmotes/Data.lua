@@ -5,11 +5,11 @@ local _, ns = ...
 
 ---@type Addon
 local Addon = ns
-local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
+local M = Addon:GetModule("FeedEmotes") --[[@as AddonFeedEmotes]]
 local D = Addon.diets
 
 ---Locale code ("enUS", "deDE", ...) -> that language's emote lines.
----@type table<string, BeastkeeperEmoteLines>
+---@type table<string, AddonEmoteLines>
 M.Lines = {}
 
 -- Item ID -> food group used as key in each locale's `emotes.food` table:

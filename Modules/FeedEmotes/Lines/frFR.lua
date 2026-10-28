@@ -6,7 +6,7 @@ local _, ns = ...
 
 ---@type Addon
 local Addon = ns
-local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
+local M = Addon:GetModule("FeedEmotes") --[[@as AddonFeedEmotes]]
 local F = M.Family
 
 M.Lines.frFR = {

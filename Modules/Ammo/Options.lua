@@ -6,7 +6,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("Ammo") --[[@as BeastkeeperAmmo]]
+local M = Addon:GetModule("Ammo") --[[@as AddonAmmo]]
 
 ---The count's look follows a changed line at once.
 local function Changed()

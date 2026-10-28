@@ -8,7 +8,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("PetJournal") --[[@as BeastkeeperPetJournal]]
+local M = Addon:GetModule("PetJournal") --[[@as AddonPetJournal]]
 
 local HIGHEST_LOYALTY = 6
 
@@ -24,7 +24,7 @@ end
 
 ---The line about the next loyalty level: from the average time out between the rises it saw.
 ---@param key string
----@param entry BeastkeeperJournalEntry
+---@param entry AddonJournalEntry
 ---@return string?
 local function Forecast(key, entry)
     local loyalty = entry.loyalty
@@ -49,10 +49,10 @@ local lines, teach = {}, {}
 
 ---The line of ranks the pet could still teach this character, from Ability Learned's known ranks;
 ---nil when it teaches nothing new or Ability Learned is off.
----@param entry BeastkeeperJournalEntry
+---@param entry AddonJournalEntry
 ---@return string?
 local function CanTeachLine(entry)
-    local known = Addon:GetModule("AbilityLearned", true) --[[@as BeastkeeperAbilityLearned?]]
+    local known = Addon:GetModule("AbilityLearned", true) --[[@as AddonAbilityLearned?]]
     if not known or not known:IsEnabled() or not entry.ranks then return nil end
     wipe(teach)
     for name, rank in pairs(entry.ranks) do
@@ -66,7 +66,7 @@ local function CanTeachLine(entry)
 end
 
 ---The line on the pet's level, family and loyalty.
----@param entry BeastkeeperJournalEntry
+---@param entry AddonJournalEntry
 ---@return string
 function M.LevelLine(entry)
     local loyalty = entry.loyalty and Addon.LoyaltyLabel(entry.loyalty, entry.loyaltyName) or "?"
@@ -79,14 +79,14 @@ local TEACH_COLOR = "|cff40ff40%s|r"
 local shown = {}
 
 ---Ability Learned, while it is on: it knows which ranks the hunter has.
----@return BeastkeeperAbilityLearned?
+---@return AddonAbilityLearned?
 local function Known()
-    local known = Addon:GetModule("AbilityLearned", true) --[[@as BeastkeeperAbilityLearned?]]
+    local known = Addon:GetModule("AbilityLearned", true) --[[@as AddonAbilityLearned?]]
     if known and known:IsEnabled() then return known end
 end
 
 ---Whether one of the pet's abilities ("Claw (Rank 2)") could teach the hunter a rank.
----@param known BeastkeeperAbilityLearned?
+---@param known AddonAbilityLearned?
 ---@param ability string
 ---@return boolean
 local function Teaches(known, ability)
@@ -95,7 +95,7 @@ local function Teaches(known, ability)
 end
 
 ---The line of the pet's abilities; with `highlight`, those it could teach this character in green.
----@param entry BeastkeeperJournalEntry
+---@param entry AddonJournalEntry
 ---@param highlight boolean?
 ---@return string? nil without abilities
 function M.AbilitiesLine(entry, highlight)
@@ -109,7 +109,7 @@ function M.AbilitiesLine(entry, highlight)
 end
 
 ---How many of the pet's abilities could teach this character a rank; 0 while Ability Learned is off.
----@param entry BeastkeeperJournalEntry
+---@param entry AddonJournalEntry
 ---@return number
 function M.TeachCount(entry)
     local known, count = Known(), 0

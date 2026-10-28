@@ -9,7 +9,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
+local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
 local TAME_BEAST = Addon.TAME_BEAST
 local SKULL = Addon.raidMarks.skull
@@ -47,7 +47,7 @@ end
 
 ---BEASTKEEPER_RARE_SEEN, the rare alarm's message: that beast is the one to tame.
 ---@param _ string the message
----@param event BeastkeeperRareSeenEvent
+---@param event AddonRareSeenEvent
 function M:OnRareSeen(_, event)
     self:SetTameTarget(event.name)
 end

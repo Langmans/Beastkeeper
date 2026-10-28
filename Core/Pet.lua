@@ -29,7 +29,7 @@ function Addon.CreatureName(npcID)
     if creatureNames[npcID] then return creatureNames[npcID] end
     local ok, data = pcall(Addon.C.TooltipInfo.GetHyperlink, ("unit:Creature-0-0-0-0-%d-0000000000"):format(npcID))
     if not ok or type(data) ~= "table" then return nil end
-    local line = (data --[[@as BeastkeeperTooltipData]]).lines and data.lines[1]
+    local line = (data --[[@as AddonTooltipData]]).lines and data.lines[1]
     local name = line and line.leftText
     if type(name) ~= "string" or not Addon.Readable(name) or name == "" then return nil end
     creatureNames[npcID] = name
@@ -91,7 +91,7 @@ end
 
 -- What PetSpells found last, and each spell's entry, kept and refilled rather than built anew on
 -- every summon, learn and hint.
----@type table<string, BeastkeeperPetSpell>, table<string, BeastkeeperPetSpell>
+---@type table<string, AddonPetSpell>, table<string, AddonPetSpell>
 local petSpells, spellEntries = {}, {}
 
 ---A pet spellbook entry's name, rank text and spell ID (Beastkeeper.C.SpellBook); nil for a command
@@ -128,7 +128,7 @@ end
 ---without a pet or a spellbook API. Pet commands (Attack, Follow) have no spell and are left
 ---out, as is an entry that cannot be read. The same table each time, refilled: read what is
 ---needed from it before the next call, and keep no entry.
----@return table<string, BeastkeeperPetSpell>
+---@return table<string, AddonPetSpell>
 function Addon.PetSpells()
     wipe(petSpells)
     for index = 1, Addon.PetBookSize() do
@@ -167,11 +167,11 @@ end
 ---The stable's entry of the pet out (Beastkeeper.C.StableInfo's active pets, which WoW: Forever gives
 ---away from the stable master too): the one with the pet's name. Nil without a pet, or without
 ---exactly one entry of that name.
----@return BeastkeeperStablePet?
+---@return AddonStablePet?
 function Addon.PetStableInfo()
     if not UnitExists("pet") then return nil end
     local name = UnitName("pet")
-    ---@type BeastkeeperStablePet?
+    ---@type AddonStablePet?
     local found
     for _, info in ipairs(Addon.C.StableInfo.GetActivePetList()) do
         if info.name == name then
@@ -306,7 +306,7 @@ end
 ---A sound of the active pet's family, as a toast sound; nil without a pet or for a family without
 ---that sound.
 ---@param kind "AGGRO"|"DEATH"|"WOUND" its attack call, death sound or wound cry
----@return BeastkeeperSound?
+---@return AddonSound?
 function Addon.PetSound(kind)
     local familyID = Addon.PetFamilyID()
     local sounds = Addon.sounds[kind .. "_PER_FAMILY"] --[[@as table<number, number>]]

@@ -11,9 +11,9 @@ local _, ns = ...
 local Addon = ns
 local L = Addon.L
 
--- Its fields and settings are described in annotations\Beastkeeper.lua (BeastkeeperAutocastCheck,
--- BeastkeeperAutocastSettings).
----@type BeastkeeperAutocastCheck
+-- Its fields and settings are described in annotations\Addon.lua (AddonAutocastCheck,
+-- AddonAutocastSettings).
+---@type AddonAutocastCheck
 local M = Addon:NewModule("AutocastCheck")
 M.title = L.AUTOCAST_TITLE
 M.description = L.AUTOCAST_DESC
@@ -30,9 +30,9 @@ M.defaults = {
 }
 
 ---The settings of the profile in use.
----@return BeastkeeperAutocastSettings
+---@return AddonAutocastSettings
 function M:Settings()
-    return self.db.profile --[[@as BeastkeeperAutocastSettings]]
+    return self.db.profile --[[@as AddonAutocastSettings]]
 end
 
 local GROWL, COWER, DISTRACTING_SHOT = 2649, 1742, 20736
@@ -83,7 +83,7 @@ M.Spell = Spell
 
 -- What the last read found: the pet's abilities that can autocast, by name. A check runs on every
 -- pet bar update, so the table and each ability's entry are kept and refilled, not built anew.
----@type table<string, BeastkeeperAutocastState>, table<string, BeastkeeperAutocastState>
+---@type table<string, AddonAutocastState>, table<string, AddonAutocastState>
 local states, entries = {}, {}
 
 ---Adds an ability that can autocast to `states`, unless its state is unreadable.
@@ -123,7 +123,7 @@ end
 
 ---The pet's abilities that can autocast, by name, with whether autocast is on. Empty without a
 ---pet. The same table each time, refilled: read it before the next call.
----@return table<string, BeastkeeperAutocastState>
+---@return table<string, AddonAutocastState>
 function M:PetAutocasts()
     wipe(states)
     if not UnitExists("pet") then return states end
@@ -172,7 +172,7 @@ local function PressHint()
 end
 
 ---The sound for a toast, as the sound setting asks: the pet's call, or the raid warning.
----@return BeastkeeperSound?
+---@return AddonSound?
 function M:Sound()
     local setting = self:Settings().sound
     if setting == "off" then return nil end
@@ -184,7 +184,7 @@ end
 ---@param reason string the toast's text: why
 ---@param name string? the ability's name; looked up when nil
 ---@param icon (number|string)? its icon; looked up when nil
----@return BeastkeeperToastInfo
+---@return AddonToastInfo
 function M:ProblemToast(key, reason, name, icon)
     local problem = PROBLEMS[key]
     local spellName, spellIcon = Spell(problem.spell)
@@ -326,13 +326,13 @@ function M:OnDisable()
 end
 
 ---/beastkeeper autocast growl: the BeastkeeperGrowl macro's line.
----@param module BeastkeeperAutocastCheck
+---@param module AddonAutocastCheck
 local function ChooseGrowl(module)
     module:Choose("growl")
 end
 
 ---/beastkeeper autocast cower: the BeastkeeperKite macro's line.
----@param module BeastkeeperAutocastCheck
+---@param module AddonAutocastCheck
 local function ChooseCower(module)
     module:Choose("cower")
 end
@@ -352,7 +352,7 @@ end
 
 ---The macros, with their text as this client would write it now. Each sets autocast itself (the
 ---game lets only a macro or a button the player presses do that) and tells the module the choice.
----@return BeastkeeperMacro[]
+---@return AddonMacro[]
 function M:Macros()
     local shot = Spell(DISTRACTING_SHOT)
     local _, growlIcon = Spell(GROWL)

@@ -10,7 +10,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("Feeding") --[[@as BeastkeeperFeeding]]
+local M = Addon:GetModule("Feeding") --[[@as AddonFeeding]]
 
 local H = Addon.happiness
 -- Border colour per happiness, and food line colour per bite.

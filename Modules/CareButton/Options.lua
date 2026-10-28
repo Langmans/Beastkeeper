@@ -6,7 +6,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("CareButton") --[[@as BeastkeeperCareButton]]
+local M = Addon:GetModule("CareButton") --[[@as AddonCareButton]]
 
 ---Checks the health again after the low line or the marker's switch changed.
 local function RecheckHealth()

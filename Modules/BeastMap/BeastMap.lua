@@ -19,7 +19,7 @@ local _, ns = ...
 local Addon = ns
 local L = Addon.L
 
----@type BeastkeeperBeastMap
+---@type AddonBeastMap
 local M = Addon:NewModule("BeastMap")
 M.title = L.BEASTMAP_TITLE
 M.description = L.BEASTMAP_DESC
@@ -54,14 +54,14 @@ local TRAINER_KINDS = {
     stable = { setting = "stables", icon = 132161, label = L.BEASTMAP_STABLE_MASTER },
 }
 
----@return BeastkeeperBeastMapSettings
+---@return AddonBeastMapSettings
 function M:Settings()
-    return self.db.profile --[[@as BeastkeeperBeastMapSettings]]
+    return self.db.profile --[[@as AddonBeastMapSettings]]
 end
 
 -- Built on first use from the data: per map, its pins as npc, coord pairs (pins.at: coord ->
 -- position, for the iterator); per beast, the ranks it teaches by ability and rank.
----@type table<number, BeastkeeperBeastMapPins>?
+---@type table<number, AddonBeastMapPins>?
 local byMap
 ---@type table<number, number[]>?
 local teaches
@@ -77,11 +77,11 @@ local shown = {}
 -- The rank a beast's pin shows (its icon's), filled with shown.
 ---@type table<number, number>
 local pinSpell = {}
----@type BeastkeeperBeastMapPins
-local NO_PINS = { at = {} } --[[@as BeastkeeperBeastMapPins]]
+---@type AddonBeastMapPins
+local NO_PINS = { at = {} } --[[@as AddonBeastMapPins]]
 
 ---The beast data (Data\Beasts.lua), read when used: the specs put a small set in its place.
----@return BeastkeeperData
+---@return AddonData
 local function Data()
     return Addon.data
 end
@@ -116,12 +116,12 @@ local function Teaches()
 end
 
 ---Adds a pin to a map's pins, unless the spot has one: a second there would make the iterator skip.
----@param maps table<number, BeastkeeperBeastMapPins>
+---@param maps table<number, AddonBeastMapPins>
 ---@param map number uiMapID
 ---@param id number a beast's NPC ID, or minus an instance's AreaTable ID
 ---@param coord number
 local function AddPin(maps, map, id, coord)
-    local pins = maps[map] or { at = {} } --[[@as BeastkeeperBeastMapPins]]
+    local pins = maps[map] or { at = {} } --[[@as AddonBeastMapPins]]
     maps[map] = pins
     if pins.at[coord] then return end
     pins[#pins + 1] = id
@@ -131,10 +131,10 @@ end
 
 ---Per map, its pins; built once. A beast in an instance waits in `inInstance` for its entrance.
 ---@param handyNotes HandyNotesApi
----@return table<number, BeastkeeperBeastMapPins>
+---@return table<number, AddonBeastMapPins>
 local function Pins(handyNotes)
     if byMap then return byMap end
-    ---@type table<number, BeastkeeperBeastMapPins>
+    ---@type table<number, AddonBeastMapPins>
     local maps = {}
     byMap = maps
     local beasts = Data().beasts
@@ -197,7 +197,7 @@ end
 local function Lacking(spellID)
     local rank = Data().petAbilityRanks[spellID]
     local name = Addon.SpellInfo(rank.ability)
-    local known = Addon:GetModule("AbilityLearned", true) --[[@as BeastkeeperAbilityLearned?]]
+    local known = Addon:GetModule("AbilityLearned", true) --[[@as AddonAbilityLearned?]]
     if not name or not known then return "above" end
     if rank.rank > (known:HighestRank(name) or 0) then return "above" end
     if not known:HasRank(name, rank.rank) then return "gap" end
@@ -206,7 +206,7 @@ end
 
 ---A trainer's or stable master's entry, or nil for a beast.
 ---@param npc number
----@return BeastkeeperTrainer?
+---@return AddonTrainer?
 local function Trainer(npc)
     local trainers = Data().trainers
     return trainers and trainers[npc]
@@ -276,7 +276,7 @@ function M.PinSpell(npc)
 end
 
 ---HandyNotes' iterator over a map's pins: the coord of the last pin returned leads to the next.
----@param pins BeastkeeperBeastMapPins
+---@param pins AddonBeastMapPins
 ---@param coord number?
 ---@return number? coord
 ---@return nil uiMapID the map asked for
@@ -297,7 +297,7 @@ end
 local handler = {}
 
 ---@param uiMapID number
----@return function, BeastkeeperBeastMapPins, nil
+---@return function, AddonBeastMapPins, nil
 function handler:GetNodes2(uiMapID)
     -- HandyNotes is loaded: it is the one asking.
     if not M:IsEnabled() or not M:Settings().pins then return NextPin, NO_PINS, nil end
@@ -307,7 +307,7 @@ function handler:GetNodes2(uiMapID)
 end
 
 ---"Level 5-6", "Level 10, rare elite".
----@param beast BeastkeeperBeast
+---@param beast AddonBeast
 ---@return string
 local function LevelText(beast)
     local level = beast.minLevel == beast.maxLevel and tostring(beast.minLevel)
@@ -393,7 +393,7 @@ function handler.OnEnter(pin, uiMapID, coord)
     elseif Trainer(id) then
         GameTooltip:AddLine(
             TRAINER_KINDS[
-                (Trainer(id) --[[@as BeastkeeperTrainer]]).kind
+                (Trainer(id) --[[@as AddonTrainer]]).kind
             ].label,
             1,
             1,
@@ -447,7 +447,7 @@ function M:Refresh()
 end
 
 ---A beast's first map by uiMapID; nil for a beast in an instance, which has only zones.
----@param beast BeastkeeperBeast
+---@param beast AddonBeast
 ---@return number?
 local function FirstMap(beast)
     ---@type number?
@@ -649,7 +649,7 @@ end
 
 ---The beast of exactly `level` that teaches a rank, the better one when there are several; nil
 ---when a lower beast teaches it already, or none of that level does.
----@param rank BeastkeeperPetAbilityRank
+---@param rank AddonPetAbilityRank
 ---@param level number
 ---@return number?
 local function NewTeacher(rank, level)

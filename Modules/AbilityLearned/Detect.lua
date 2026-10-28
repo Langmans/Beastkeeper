@@ -14,7 +14,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("AbilityLearned") --[[@as BeastkeeperAbilityLearned]]
+local M = Addon:GetModule("AbilityLearned") --[[@as AddonAbilityLearned]]
 
 -- The rank 1 spell of each wild-learned ability, only to look up its name in the client's
 -- language; every rank has the same name. From Wowhead's Forever hunter pet abilities list.
@@ -98,7 +98,7 @@ local function Plain(value)
 end
 
 ---A learn waiting out the merge window.
----@class BeastkeeperPendingLearn
+---@class AddonPendingLearn
 ---@field name string
 ---@field rank string?
 ---@field icon (number|string)?
@@ -107,7 +107,7 @@ end
 ---@field petIcon (number|string)? its icon there
 ---@field simulated boolean
 
----@type BeastkeeperPendingLearn?
+---@type AddonPendingLearn?
 local pending
 -- True while the page's simulation feeds its line through.
 local simulating = false
@@ -205,7 +205,7 @@ end
 ---@return string name
 ---@return string rank
 ---@return (number|string)? icon
----@return BeastkeeperPetSpell? petSpell the pet's own, when it has it
+---@return AddonPetSpell? petSpell the pet's own, when it has it
 function M.Example()
     local spells = Addon.PetSpells()
     ---@type string[]

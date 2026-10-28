@@ -127,4 +127,4 @@
   BEASTKEEPER_PET_GROWTH (training points, level and loyalty, up or down), which
   it works out only while something listens. Beastkeeper's own modules listen the
   same way. See docs/04-hooking.md, with an example addon, and
-  docs/BeastkeeperMessages.lua for their types.
+  docs/AddonMessages.lua for their types.

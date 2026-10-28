@@ -7,7 +7,7 @@ local JERKY, HAUNCH, MUTTON, MYSTERY, WOLF, BREAD = 117, 2287, 3770, 12037, 2680
 
 ---The toasts shown from now on, as Beastkeeper hands them to listeners.
 ---@param client table
----@return BeastkeeperToastInfo[]
+---@return AddonToastInfo[]
 local function toasts(client)
     local seen = {}
     client.Addon.RegisterMessage(seen, "BEASTKEEPER_TOAST", function(_, event)
@@ -17,9 +17,9 @@ local function toasts(client)
 end
 
 ---The toast with `key` among those seen, if any.
----@param seen BeastkeeperToastInfo[]
+---@param seen AddonToastInfo[]
 ---@param key string
----@return BeastkeeperToastInfo?
+---@return AddonToastInfo?
 local function toastFor(seen, key)
     for _, toast in ipairs(seen) do
         if toast.key == key then return toast end
@@ -272,12 +272,12 @@ describe("Feeding", function()
             local client = NewClient():login():stock(MUTTON, 5)
             local seen = toasts(client)
             client:setHappiness(2)
-            local content = toastFor(seen, "Feeding:content") --[[@as BeastkeeperToastInfo]]
+            local content = toastFor(seen, "Feeding:content") --[[@as AddonToastInfo]]
             assert.are.equal("Fluffy is content", content.title)
             assert.are.equal("Feed it: a happy pet does 125% damage.", content.text)
             assert.are.equal("Next: Mutton Chop", content.hint)
             client:setHappiness(1)
-            local unhappy = toastFor(seen, "Feeding:unhappy") --[[@as BeastkeeperToastInfo]]
+            local unhappy = toastFor(seen, "Feeding:unhappy") --[[@as AddonToastInfo]]
             assert.are.equal("Fluffy is unhappy", unhappy.title)
             assert.are.equal("It does 75% damage, and its loyalty drops.", unhappy.text)
             client:setHappiness(1)
@@ -302,7 +302,7 @@ describe("Feeding", function()
             local client = NewClient():login():stock(MUTTON, 1):stock(BREAD, 3)
             local seen = toasts(client)
             client:eat(MUTTON)
-            local none = toastFor(seen, "Feeding:nofood") --[[@as BeastkeeperToastInfo]]
+            local none = toastFor(seen, "Feeding:nofood") --[[@as AddonToastInfo]]
             assert.are.equal("Nothing for Fluffy to eat", none.title)
             assert.are.equal("Your bags hold no food it eats. Buy some before you go.", none.text)
             client:eat(BREAD)

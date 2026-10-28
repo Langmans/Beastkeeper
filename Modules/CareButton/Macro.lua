@@ -9,13 +9,13 @@ local _, ns = ...
 
 ---@type Addon
 local Addon = ns
-local M = Addon:GetModule("CareButton") --[[@as BeastkeeperCareButton]]
+local M = Addon:GetModule("CareButton") --[[@as AddonCareButton]]
 
 local NAME = Addon.Global("Care")
 local TOOLTIP = "#showtooltip"
 local QUESTION_MARK = 134400 -- the icon a macro gets when #showtooltip picks the spell's own
 
----@return BeastkeeperMacro[]
+---@return AddonMacro[]
 function M:Macros()
     local body = TOOLTIP .. "\n" .. self:MacroText(self:PetDead())
     return { { name = NAME, icon = QUESTION_MARK, body = body, desc = Addon.L.CAREBUTTON_MACRO } }

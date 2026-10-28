@@ -9,7 +9,7 @@ local _, ns = ...
 local Addon = ns
 local L = Addon.L
 
----@type BeastkeeperFeedEmotes
+---@type AddonFeedEmotes
 local M = Addon:NewModule("FeedEmotes")
 M.title = L.FEEDEMOTES_TITLE
 M.description = L.FEEDEMOTES_DESC
@@ -25,19 +25,19 @@ M.defaults = {
 M.FEED_PET = Addon.FEED_PET
 
 ---The settings of the profile in use.
----@return BeastkeeperFeedEmotesSettings
+---@return AddonFeedEmotesSettings
 function M:Settings()
-    return self.db.profile --[[@as BeastkeeperFeedEmotesSettings]]
+    return self.db.profile --[[@as AddonFeedEmotesSettings]]
 end
 
 ---This character's data.
----@return BeastkeeperFeedEmotesChar
+---@return AddonFeedEmotesChar
 function M:Char()
-    return self.db.char --[[@as BeastkeeperFeedEmotesChar]]
+    return self.db.char --[[@as AddonFeedEmotesChar]]
 end
 
 ---The emote lines in the client's language, English when it has none.
----@return BeastkeeperEmoteLines
+---@return AddonEmoteLines
 function M:LinesInUse()
     return self.Lines[GetLocale()] or self.Lines.enUS
 end

@@ -6,7 +6,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("PetJournal") --[[@as BeastkeeperPetJournal]]
+local M = Addon:GetModule("PetJournal") --[[@as AddonPetJournal]]
 
 ---The pet chosen on the page: the one picked, else the pet out, else any.
 ---@return string?
@@ -18,7 +18,7 @@ function M:Chosen()
 end
 
 ---"Fluffy (level 15 Cat)", for the choice of pet.
----@param entry BeastkeeperJournalEntry
+---@param entry AddonJournalEntry
 ---@return string
 local function PetLabel(entry)
     return L.PETJOURNAL_PET_ENTRY:format(entry.name or "?", entry.level or 0, entry.family or "?")

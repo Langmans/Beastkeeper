@@ -5,7 +5,7 @@ local _, ns = ...
 
 ---@type Addon
 local Addon = ns
-local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
+local M = Addon:GetModule("FeedEmotes") --[[@as AddonFeedEmotes]]
 local F = M.Family
 
 -- Head nouns that take "some": food you do not count (meat, bread, cheese

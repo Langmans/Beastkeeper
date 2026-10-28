@@ -8,7 +8,7 @@ local Addon = ns
 
 local ALLIANCE, HORDE = Addon.factions.alliance, Addon.factions.horde
 
----@type table<number, BeastkeeperTrainer>
+---@type table<number, AddonTrainer>
 local T = {}
 Addon.data = Addon.data or {}
 Addon.data.trainers = T

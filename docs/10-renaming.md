@@ -23,14 +23,16 @@ These must be changed by hand to the new name:
 
 ## The code's own names
 
-The Lua names (`Beastkeeper` for the addon object, `BeastkeeperBeastMap` and
-the other classes, the docs) are words, not settings. Rename them with a
-search and replace over the tracked files, on a branch, then run
-`tests\check.lua`:
+The code does not carry the name: the addon object is `Addon` (`local Addon =
+ns`), its types are `Addon...` (`AddonModule`, `AddonBeastMap`), the files
+are `annotations\Addon.lua` and `docs\AddonMessages.lua`. Only what a player
+or the game sees carries it: the texts (locales, README, docs), the `.toc`s,
+`Bindings.xml`, the repository's name and the rockspec. Rename those with a
+search and replace over the tracked files, on a branch, in one commit, then
+run `tests\check.lua`:
 
 - `Beastkeeper` → `<New>`, `beastkeeper` → `<new>`, `BEASTKEEPER` → `<NEW>`;
-- `git mv` the files with the name in theirs (the `.toc`s,
-  `annotations\Beastkeeper.lua`, `docs\BeastkeeperMessages.lua`, the rockspec).
+- `git mv` the files with the name in theirs (the `.toc`s, the rockspec).
 
 A player's saved settings live under the old `<NAME>DB` and do not move with
 it: copy `WTF\Account\<account>\SavedVariables\<Old>.lua` to `<New>.lua` and

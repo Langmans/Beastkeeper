@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- The skin register: the contract a skin keeps (BeastkeeperToastSkin) and which skin draws which kind
+-- The skin register: the contract a skin keeps (AddonToastSkin) and which skin draws which kind
 -- of toast. A look is chosen for every toast and, per kind, the same or its own; a skin that is
 -- not registered (its addon gone) falls back to the card. Frame.lua and Engine.lua are the rest
 -- of the toast; docs\05-toast-skins.md shows how they fit.
@@ -20,25 +20,25 @@ function Addon.DefaultToastAccent()
     return Addon.TOAST_ACCENT
 end
 
--- What a skin must have (BeastkeeperToastSkin): RegisterToastSkin refuses one without. An instant
+-- What a skin must have (AddonToastSkin): RegisterToastSkin refuses one without. An instant
 -- skin hands the toast on and is done, so it needs only Show.
 local SKIN_METHODS = { "Show", "Update", "Hide", "IsMouseOver" }
 local INSTANT_METHODS = { "Show" }
 
----@type table<string, BeastkeeperToastSkin>
+---@type table<string, AddonToastSkin>
 local skins = {}
 
 ---The toast's settings in the profile in use.
----@return BeastkeeperToastSettings
+---@return AddonToastSettings
 function Addon:ToastSettings()
-    return self.db.profile.toast --[[@as BeastkeeperToastSettings]]
+    return self.db.profile.toast --[[@as AddonToastSettings]]
 end
 
 ---Makes a skin available. Another addon calls this on Beastkeeper's addon object
 ---(LibStub("AceAddon-3.0"):GetAddon("Beastkeeper", true)), at any time after Beastkeeper has loaded.
 ---Raises an error naming what is missing when the skin does not keep the contract.
 ---@param id string kept in the saved settings; a short lowercase word
----@param skin BeastkeeperToastSkin
+---@param skin AddonToastSkin
 function Addon:RegisterToastSkin(id, skin)
     if type(id) ~= "string" or id == "" then
         error("Beastkeeper:RegisterToastSkin: id must be a non-empty string", 2)
@@ -57,7 +57,7 @@ function Addon:RegisterToastSkin(id, skin)
 end
 
 ---The registered skins, by id.
----@return table<string, BeastkeeperToastSkin>
+---@return table<string, AddonToastSkin>
 function Addon:ToastSkins()
     return skins
 end

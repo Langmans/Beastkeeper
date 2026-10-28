@@ -35,7 +35,7 @@ local function CropIcon(icon)
 end
 
 ---@param button Button
----@param parts BeastkeeperButtonParts
+---@param parts AddonButtonParts
 ---@return fun(r: number, g: number, b: number)
 local function StyleButton(button, parts)
     local elv = button --[[@as ElvUIFrame]]
@@ -87,7 +87,7 @@ end
 
 ---The look of a toast, for a frame of this name: ElvUI's transparent backdrop is its panel.
 ---@param frameName string
----@return BeastkeeperSkinStyle
+---@return AddonSkinStyle
 local function ToastStyle(frameName)
     return { frameName = frameName, panel = CLEAR, Border = StyleHolder, accent = Accent, Font = Font }
 end

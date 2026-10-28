@@ -4,7 +4,7 @@ local _, ns = ...
 -- over a thin line, the icon in a diamond that pops in (a unit's portrait as a round badge on its
 -- lower right, when the toast brings one), the title, text and a grey hint centred,
 -- and a short timer bar; plain text, no glow. Beastkeeper's own has a black panel whose edges fade
--- out; NewSplashSkin makes one in any style (BeastkeeperSkinStyle), such as EllesmereUI's.
+-- out; NewSplashSkin makes one in any style (AddonSkinStyle), such as EllesmereUI's.
 
 ---@type Addon
 local Addon = ns
@@ -54,7 +54,7 @@ end
 
 ---A centred line of text, in the style's font when it has one.
 ---@param frame Frame
----@param style BeastkeeperSkinStyle
+---@param style AddonSkinStyle
 ---@param template string the game's font, without a style font
 ---@param size number the size in the style's font
 ---@return FontString
@@ -68,10 +68,10 @@ local function Line(frame, style, template, size)
 end
 
 ---Makes the frame, the first time it shows: the style's panel and border, else the fading one.
----@param style BeastkeeperSkinStyle
----@return BeastkeeperSplashFrame
+---@param style AddonSkinStyle
+---@return AddonSplashFrame
 local function Build(style)
-    local frame = Addon:NewToastFrame(style.frameName) --[[@as BeastkeeperSplashFrame]]
+    local frame = Addon:NewToastFrame(style.frameName) --[[@as AddonSplashFrame]]
     frame:SetSize(WIDTH, HEIGHT)
     if style.panel then
         local panel = frame:CreateTexture(nil, "BACKGROUND")
@@ -117,9 +117,9 @@ local function Build(style)
     return frame
 end
 
----@param self BeastkeeperSplashSkin
----@param info BeastkeeperToastInfo
----@param settings BeastkeeperToastSettings
+---@param self AddonSplashSkin
+---@param info AddonToastInfo
+---@param settings AddonToastSettings
 local function Show(self, info, settings)
     self.frame = self.frame or Build(self.style)
     local frame = self.frame
@@ -139,12 +139,12 @@ local function Show(self, info, settings)
     frame:Show()
 end
 
----@param self BeastkeeperSplashSkin
+---@param self AddonSplashSkin
 ---@param intro number
 ---@param fade number
 ---@param left number
 local function Update(self, intro, fade, left)
-    local frame = self.frame --[[@as BeastkeeperSplashFrame]]
+    local frame = self.frame --[[@as AddonSplashFrame]]
     frame:SetAlpha(intro * (1 - fade))
     -- The diamond grows from 60% and overshoots a little; the icon keeps inside it.
     local size = DIAMOND * (0.6 + 0.4 * EaseOutBack(intro))
@@ -156,10 +156,10 @@ end
 
 ---A splash skin in `style`; register it with RegisterToastSkin.
 ---@param name string shown in the look choice
----@param style BeastkeeperSkinStyle
----@return BeastkeeperSplashSkin
+---@param style AddonSkinStyle
+---@return AddonSplashSkin
 function Addon:NewSplashSkin(name, style)
-    local skin = self:NewToastSkin(name) --[[@as BeastkeeperSplashSkin]]
+    local skin = self:NewToastSkin(name) --[[@as AddonSplashSkin]]
     skin.style, skin.Show, skin.Update = style, Show, Update
     return skin
 end

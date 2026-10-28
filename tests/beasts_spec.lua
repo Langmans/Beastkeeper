@@ -6,7 +6,7 @@
 local PROJECTS = { era = 2, tbc = 5, forever = 18 }
 
 ---@param client string? a PROJECTS key, WoW: Forever by default
----@return table<number, BeastkeeperPetAbilityRank>, table<number, BeastkeeperBeast>, table<number, BeastkeeperFamilyInfo>
+---@return table<number, AddonPetAbilityRank>, table<number, AddonBeast>, table<number, AddonFamilyInfo>
 local function Load(client)
     -- Core\Addon.lua's Beastkeeper.SelfKeyedEnum, which needs the whole addon to load.
     local ns = { L = {}, SelfKeyedEnum = NewClient().Addon.SelfKeyedEnum }

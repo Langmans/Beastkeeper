@@ -9,7 +9,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
+local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
 local LIST_WIDTH, ROW_HEIGHT, LIST_ROWS = 150, 16, 20
 local BEAST_ROWS, BEAST_HEIGHT, MODEL_SIZE = 3, 22, 150
@@ -44,7 +44,7 @@ end
 ---@param familyID number
 ---@return number
 local function PetCount(familyID)
-    local journal = Addon:GetModule("PetJournal", true) --[[@as BeastkeeperPetJournal?]]
+    local journal = Addon:GetModule("PetJournal", true) --[[@as AddonPetJournal?]]
     if not journal or not journal:IsEnabled() then return 0 end
     local name, count = Addon.FamilyName(familyID), 0
     for _, entry in pairs(journal:Pets()) do
@@ -54,7 +54,7 @@ local function PetCount(familyID)
 end
 
 ---Whether a rank can be learned by the family: its list names it, or names none (every family).
----@param rank BeastkeeperPetAbilityRank
+---@param rank AddonPetAbilityRank
 ---@param familyID number
 ---@return boolean
 local function ForFamily(rank, familyID)
@@ -72,7 +72,7 @@ end
 local function AbilitiesText(familyID)
     ---@type table<number, {low: number, high: number, known: number}>
     local found = {}
-    local ranks = Addon.data.petAbilityRanks --[[@as table<number, BeastkeeperPetAbilityRank>]]
+    local ranks = Addon.data.petAbilityRanks --[[@as table<number, AddonPetAbilityRank>]]
     for spellID, rank in pairs(ranks) do
         if ForFamily(rank, familyID) then
             local seen = found[rank.ability] or { low = rank.rank, high = rank.rank, known = 0 }
@@ -95,7 +95,7 @@ end
 ---@return number[]
 local function Beasts(familyID)
     wipe(beasts)
-    local all = Addon.data.beasts --[[@as table<number, BeastkeeperBeast>]]
+    local all = Addon.data.beasts --[[@as table<number, AddonBeast>]]
     for npc, beast in pairs(all) do
         if beast.family == familyID then beasts[#beasts + 1] = npc end
     end
@@ -103,7 +103,7 @@ local function Beasts(familyID)
 end
 
 ---The diet line: "Eats: Meat, Fish"; empty when Beastkeeper does not know it.
----@param info BeastkeeperFamilyInfo
+---@param info AddonFamilyInfo
 ---@return string
 local function DietText(info)
     if not info.diet then return "" end
@@ -117,7 +117,7 @@ end
 
 ---A text in the skin's font.
 ---@param parent Frame
----@param skin BeastkeeperButtonHolderSkin
+---@param skin AddonButtonHolderSkin
 ---@param template string?
 ---@param size number?
 ---@return FontString
@@ -130,7 +130,7 @@ end
 
 ---A family's portrait, cropped as the look crops icons (Beastkeeper:CropIcon).
 ---@param parent Frame
----@param skin BeastkeeperButtonHolderSkin
+---@param skin AddonButtonHolderSkin
 ---@param size number
 ---@return Texture
 local function Portrait(parent, skin, size)
@@ -141,12 +141,12 @@ local function Portrait(parent, skin, size)
 end
 
 ---Builds the panel: the families' rows, the card's texts, the beasts' rows and the model.
----@param panel BeastkeeperFamiliesPanel
----@param skin BeastkeeperButtonHolderSkin
+---@param panel AddonFamiliesPanel
+---@param skin AddonButtonHolderSkin
 local function Create(panel, skin)
     panel.rows, panel.beasts = {}, {}
     for index = 1, LIST_ROWS do
-        local row = CreateFrame("Button", nil, panel) --[[@as BeastkeeperFamilyRow]]
+        local row = CreateFrame("Button", nil, panel) --[[@as AddonFamilyRow]]
         row:SetSize(LIST_WIDTH, ROW_HEIGHT)
         row:SetPoint("TOPLEFT", 0, -(index - 1) * ROW_HEIGHT)
         row.icon = Portrait(row, skin, ROW_HEIGHT - 4)
@@ -177,7 +177,7 @@ local function Create(panel, skin)
     panel.none = Text(panel, skin)
     panel.none:SetPoint("BOTTOMLEFT", left, BEAST_ROWS * BEAST_HEIGHT + 4)
     for index = 1, BEAST_ROWS do
-        local row = CreateFrame("Frame", nil, panel) --[[@as BeastkeeperFamilyBeastRow]]
+        local row = CreateFrame("Frame", nil, panel) --[[@as AddonFamilyBeastRow]]
         row:SetHeight(BEAST_HEIGHT)
         row:SetPoint("BOTTOMLEFT", left, (BEAST_ROWS - index) * BEAST_HEIGHT)
         row:SetPoint("RIGHT")
@@ -195,7 +195,7 @@ local function Create(panel, skin)
 end
 
 ---Fills the beasts' rows and the model from the family's beasts.
----@param panel BeastkeeperFamiliesPanel
+---@param panel AddonFamiliesPanel
 ---@param familyID number
 local function FillBeasts(panel, familyID)
     local list = Beasts(familyID)
@@ -204,7 +204,7 @@ local function FillBeasts(panel, familyID)
         row.npc = npc
         row:SetShown(npc ~= nil)
         if npc then
-            local beast = Addon.data.beasts[npc] --[[@as BeastkeeperBeast]]
+            local beast = Addon.data.beasts[npc] --[[@as AddonBeast]]
             row.text:SetText(L.BEASTMAP_TEACHER_LINE:format(M.Place(npc), M.LevelText(beast)))
             row.go:SetShown(beast.pins ~= nil)
         end
@@ -227,7 +227,7 @@ local function FillBeasts(panel, familyID)
 end
 
 ---Fills the list and the chosen family's card.
----@param panel BeastkeeperFamiliesPanel
+---@param panel AddonFamiliesPanel
 local function Refresh(panel)
     local families = Order()
     if not panel.chosen then

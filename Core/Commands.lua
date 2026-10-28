@@ -17,7 +17,7 @@ end
 ---The module whose `command` is word, if any.
 ---@param word string
 ---@return string? name
----@return BeastkeeperModule? module
+---@return AddonModule? module
 function Addon:FindCommandModule(word)
     for name, module in pairs(self.modules) do
         if module.command == word then return name, module end

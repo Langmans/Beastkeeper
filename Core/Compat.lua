@@ -9,8 +9,8 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 
----@type BeastkeeperCompat
-local C = { PetInfo = {}, SpellBook = {}, TooltipInfo = {}, StableInfo = {} } --[[@as BeastkeeperCompat]]
+---@type AddonCompat
+local C = { PetInfo = {}, SpellBook = {}, TooltipInfo = {}, StableInfo = {} } --[[@as AddonCompat]]
 Addon.C = C
 
 ---The client's C_PetInfo function `name`, nil without it.
@@ -147,16 +147,16 @@ local function BookType(_)
 end
 
 -- The entry Classic's GetSpellBookItemName fills, refilled for each call.
----@type BeastkeeperBookItem
+---@type AddonBookItem
 local bookItem = { name = nil, subName = nil, spellID = nil }
 
 ---A spellbook entry: its name, rank text and spell ID; a command has a name only. On Classic the
 ---same table each time, refilled. Nil for an entry the client lacks.
 ---@param index number
 ---@param bank number Enum.SpellBookSpellBank
----@return BeastkeeperBookItem?
+---@return AddonBookItem?
 function C.SpellBook.GetSpellBookItemInfo(index, bank)
-    ---@type (fun(index: number, bank: number): BeastkeeperBookItem?)?
+    ---@type (fun(index: number, bank: number): AddonBookItem?)?
     local modern = SpellBook("GetSpellBookItemInfo")
     if modern then return modern(index, bank) end
     if not GetSpellBookItemName then return nil end
@@ -182,7 +182,7 @@ end
 
 -- What GetItemByID gives on a client without C_TooltipInfo: the same table each time, its lines
 -- reused from read to read.
----@type BeastkeeperTooltipData, {leftText: GameValue}[]
+---@type AddonTooltipData, {leftText: GameValue}[]
 local itemInfo, linePool = { lines = {} }, {}
 -- A tooltip of Beastkeeper's own to read an item's lines from; made the first time it is needed.
 ---@type GameTooltip?
@@ -191,9 +191,9 @@ local scanner
 ---An item's tooltip lines. Read off a hidden tooltip where the client has no C_TooltipInfo: then
 ---the same table each time, refilled. No lines while the client has not loaded the item.
 ---@param itemID number
----@return BeastkeeperTooltipData
+---@return AddonTooltipData
 function C.TooltipInfo.GetItemByID(itemID)
-    ---@type (fun(itemID: number): BeastkeeperTooltipData?)?
+    ---@type (fun(itemID: number): AddonTooltipData?)?
     local modern = TooltipInfo("GetItemByID")
     if modern then return modern(itemID) or itemInfo end
     wipe(itemInfo.lines)
@@ -215,14 +215,14 @@ end
 
 -- Classic Era's stable read into the modern lists' shape, reused from read to read: the current
 -- pet (slot 1, also while dismissed) and the stabled ones (slot 2 on). Without pet numbers.
----@type BeastkeeperStablePet[], BeastkeeperStablePet[], BeastkeeperStablePet[]
+---@type AddonStablePet[], AddonStablePet[], AddonStablePet[]
 local activePets, stabledPets, petPool = {}, {}, {}
 
 ---Fills `list` from Classic's GetStablePetInfo slots `first` to `last`.
----@param list BeastkeeperStablePet[]
+---@param list AddonStablePet[]
 ---@param first number
 ---@param last number
----@return BeastkeeperStablePet[]
+---@return AddonStablePet[]
 local function ReadSlots(list, first, last)
     wipe(list)
     if not GetStablePetInfo then return list end
@@ -241,9 +241,9 @@ end
 
 ---The pets out or ready to call: C_StableInfo's anywhere on WoW: Forever; on Classic Era the
 ---current pet while the stable master is open, without its number.
----@return BeastkeeperStablePet[]
+---@return AddonStablePet[]
 function C.StableInfo.GetActivePetList()
-    ---@type (fun(): BeastkeeperStablePet[])?
+    ---@type (fun(): AddonStablePet[])?
     local modern = C_StableInfo and C_StableInfo.GetActivePetList
     if modern then return modern() end
     return ReadSlots(activePets, 1, 1)
@@ -251,9 +251,9 @@ end
 
 ---The pets in the stable: C_StableInfo's anywhere on WoW: Forever; on Classic Era the stable's
 ---slots while the stable master is open, without their numbers.
----@return BeastkeeperStablePet[]
+---@return AddonStablePet[]
 function C.StableInfo.GetStabledPetList()
-    ---@type (fun(): BeastkeeperStablePet[])?
+    ---@type (fun(): AddonStablePet[])?
     local modern = C_StableInfo and C_StableInfo.GetStabledPetList
     if modern then return modern() end
     return ReadSlots(stabledPets, 2, 1 + (GetNumStableSlots and GetNumStableSlots() or 0))
@@ -261,9 +261,9 @@ end
 
 ---A hyperlink's tooltip data; nil on a client without C_TooltipInfo (Classic Era).
 ---@param link string
----@return BeastkeeperTooltipData?
+---@return AddonTooltipData?
 function C.TooltipInfo.GetHyperlink(link)
-    ---@type (fun(link: string): BeastkeeperTooltipData?)?
+    ---@type (fun(link: string): AddonTooltipData?)?
     local modern = TooltipInfo("GetHyperlink")
     if modern then return modern(link) end
 end

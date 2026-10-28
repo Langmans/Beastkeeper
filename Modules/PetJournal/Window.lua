@@ -10,7 +10,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("PetJournal") --[[@as BeastkeeperPetJournal]]
+local M = Addon:GetModule("PetJournal") --[[@as AddonPetJournal]]
 
 local LIST_WIDTH, ROW_HEIGHT, ROWS, MODEL_SIZE = 180, 20, 16, 180
 -- How far a pixel of drag turns the model, in radians.
@@ -47,7 +47,7 @@ M.PetOrder = Order
 ---Shows the pet's model: the pet out, else its stable model, else the beast it was; none without.
 ---@param model PlayerModel
 ---@param key string
----@param entry BeastkeeperJournalEntry
+---@param entry AddonJournalEntry
 local function ShowModel(model, key, entry)
     model:ClearModel()
     if key == M.current and UnitExists("pet") then
@@ -65,7 +65,7 @@ end
 M.ShowModel = ShowModel
 
 ---Turns the model while the mouse drags it.
----@param model BeastkeeperPetModel
+---@param model AddonPetModel
 local function OnUpdate(model)
     if not model.dragX then return end
     local x = GetCursorPosition()
@@ -73,18 +73,18 @@ local function OnUpdate(model)
     model.dragX = x
 end
 
----@param model BeastkeeperPetModel
+---@param model AddonPetModel
 local function OnMouseDown(model)
     model.dragX = GetCursorPosition()
 end
 
----@param model BeastkeeperPetModel
+---@param model AddonPetModel
 local function OnMouseUp(model)
     model.dragX = nil
 end
 
 ---A text on the card, in the skin's font.
----@param panel BeastkeeperPetsPanel
+---@param panel AddonPetsPanel
 ---@param template string
 ---@param size number
 ---@return FontString
@@ -97,13 +97,13 @@ local function Text(panel, template, size)
 end
 
 ---Builds the panel: the list's rows, the model and the card's texts.
----@param panel BeastkeeperPetsPanel
----@param skin BeastkeeperButtonHolderSkin
+---@param panel AddonPetsPanel
+---@param skin AddonButtonHolderSkin
 local function Create(panel, skin)
     panel.skin = skin
     panel.rows = {}
     for index = 1, ROWS do
-        local row = CreateFrame("Button", nil, panel) --[[@as BeastkeeperPetRow]]
+        local row = CreateFrame("Button", nil, panel) --[[@as AddonPetRow]]
         row:SetSize(LIST_WIDTH, ROW_HEIGHT)
         row:SetPoint("TOPLEFT", 0, -(index - 1) * ROW_HEIGHT)
         row.label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -116,7 +116,7 @@ local function Create(panel, skin)
         end)
         panel.rows[index] = row
     end
-    local model = CreateFrame("PlayerModel", nil, panel) --[[@as BeastkeeperPetModel]]
+    local model = CreateFrame("PlayerModel", nil, panel) --[[@as AddonPetModel]]
     model:SetSize(MODEL_SIZE, MODEL_SIZE)
     model:SetPoint("TOPRIGHT")
     model:EnableMouse(true)
@@ -137,7 +137,7 @@ local function Create(panel, skin)
 end
 
 ---Fills the list and the chosen pet's card.
----@param panel BeastkeeperPetsPanel
+---@param panel AddonPetsPanel
 local function Refresh(panel)
     local pets = M:Pets()
     local keys = Order()

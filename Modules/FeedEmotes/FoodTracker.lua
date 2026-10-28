@@ -10,12 +10,12 @@ local _, ns = ...
 
 ---@type Addon
 local Addon = ns
-local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
+local M = Addon:GetModule("FeedEmotes") --[[@as AddonFeedEmotes]]
 
 local FOOD_WINDOW = 3 -- seconds after an item is picked (or let go of) a cast may still claim it
 local EATEN_WINDOW = 1 -- seconds an item that left the bags counts as eaten, before or after the cast
 
----@class BeastkeeperFoodTracker
+---@class AddonFoodTracker
 ---@field targetedFood number?
 ---@field targetedAt number?
 ---@field cursorFood number?

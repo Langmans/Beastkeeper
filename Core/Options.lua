@@ -54,9 +54,9 @@ end
 ---A getter and setter for one of a module's settings (module:Settings()[key]), for an option on
 ---its page. `changed`, when given, runs after a set while the module is on, for settings that
 ---change what the module shows now.
----@param module BeastkeeperSettingsModule
+---@param module AddonSettingsModule
 ---@param key string
----@param changed fun(module: BeastkeeperSettingsModule)?
+---@param changed fun(module: AddonSettingsModule)?
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set
 function Addon:Setting(module, key, changed)
@@ -76,13 +76,13 @@ function Addon:Setting(module, key, changed)
 end
 
 -- What a per-kind skin choice stores for "the same as every toast". It is kept as it is, not as
--- no entry, so it can override the look a module gives that kind (BeastkeeperModule.toastSkins); being
+-- no entry, so it can override the look a module gives that kind (AddonModule.toastSkins); being
 -- no skin, ToastSkinFor passes it on to the choice for every toast.
 local SAME = "same"
 
 ---The skin choices: a select for every toast, one per kind of toast the modules show (from order
 ---10), and the options of skins that have their own (GetOptions, from order 50, by skin id).
----@param settings BeastkeeperToastSettings
+---@param settings AddonToastSettings
 ---@param args table<string, table> the toast box's options, added to
 function Addon:AddSkinOptions(settings, args)
     ---@type table<string, string>
@@ -218,7 +218,7 @@ end
 ---A select between "auto" and the registered skins of one kind, stored under `key`.
 ---@param key "skin"|"holder"
 ---@param name string
----@param register table<string, BeastkeeperButtonSkin|BeastkeeperButtonHolderSkin>
+---@param register table<string, AddonButtonSkin|AddonButtonHolderSkin>
 ---@param order number
 ---@return table
 local function ButtonSkinSelect(key, name, register, order)
@@ -307,7 +307,7 @@ end
 ---@param options table
 ---@param switches table
 ---@param name string
----@param module BeastkeeperModule
+---@param module AddonModule
 function Addon:AddModuleOptions(options, switches, name, module)
     switches[name] = {
         type = "toggle",

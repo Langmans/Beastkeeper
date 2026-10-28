@@ -13,12 +13,12 @@ local L = Addon.L
 local color = { r = 1, g = 1, b = 1 }
 
 -- Forever's frame, with the AddMessage its mixin (RaidWarningFrameMixin) gives it.
----@class BeastkeeperRaidWarningFrame: Frame
----@field AddMessage fun(self: BeastkeeperRaidWarningFrame, text: string, color: table)
+---@class AddonRaidWarningFrame: Frame
+---@field AddMessage fun(self: AddonRaidWarningFrame, text: string, color: table)
 
-local skin = { name = L.TOAST_SKIN_RAIDWARNING, instant = true } --[[@as BeastkeeperToastSkin]]
+local skin = { name = L.TOAST_SKIN_RAIDWARNING, instant = true } --[[@as AddonToastSkin]]
 
----@param info BeastkeeperToastInfo
+---@param info AddonToastInfo
 function skin:Show(info)
     local accent = info.accent or Addon.DefaultToastAccent()
     color.r, color.g, color.b = accent[1], accent[2], accent[3]
@@ -27,7 +27,7 @@ function skin:Show(info)
     if RaidNotice_AddMessage then
         RaidNotice_AddMessage(RaidWarningFrame, text, color)
     else
-        local frame = RaidWarningFrame --[[@as BeastkeeperRaidWarningFrame]]
+        local frame = RaidWarningFrame --[[@as AddonRaidWarningFrame]]
         frame:AddMessage(text, color)
     end
 end

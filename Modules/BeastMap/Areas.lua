@@ -14,7 +14,7 @@ local _, ns = ...
 
 ---@type Addon
 local Addon = ns
-local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
+local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
 local DISC = "Interface\\CHARACTERFRAME\\TempPortraitAlphaMask"
 local COLOUR = { 0.35, 1, 0.35, 0.3 }
@@ -79,7 +79,7 @@ local function HideFrom(pool, first)
 end
 
 ---The beast hunted now, while the module is on.
----@return BeastkeeperBeast?
+---@return AddonBeast?
 local function Hunted()
     local hunt = M:IsEnabled() and M:Hunt()
     return hunt and Addon.data.beasts[hunt.npc] or nil

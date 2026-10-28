@@ -7,13 +7,13 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 
----@param frame BeastkeeperToastFrame
+---@param frame AddonToastFrame
 local function OnDragStart(frame)
     frame.dragging = true
     frame:StartMoving()
 end
 
----@param frame BeastkeeperToastFrame
+---@param frame AddonToastFrame
 local function OnDragStop(frame)
     frame.dragging = false
     frame:StopMovingOrSizing()
@@ -47,7 +47,7 @@ end
 
 ---Places a skin's frame where it was dragged to, or at the skin's own standard spot; `lift`
 ---raises it that many pixels (for a slide in). Not while the mouse drags it.
----@param frame BeastkeeperToastFrame
+---@param frame AddonToastFrame
 ---@param point string the standard spot: an anchor point on UIParent
 ---@param x number
 ---@param y number
@@ -66,7 +66,7 @@ end
 
 local CIRCLE_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 
----A round badge for a unit's portrait (BeastkeeperToastInfo.portrait) on the lower right of `icon`, in
+---A round badge for a unit's portrait (AddonToastInfo.portrait) on the lower right of `icon`, in
 ---a ring; it becomes frame.Portrait and frame.PortraitRing, shown by ShowToastPortrait.
 ---@param frame Frame the skin's frame
 ---@param icon Region what the badge sits on
@@ -89,7 +89,7 @@ end
 
 ---Shows `unit`'s portrait on the badge, the ring in `accent`, while that unit exists; hides the
 ---badge otherwise.
----@param frame BeastkeeperPortraitFrame
+---@param frame AddonPortraitFrame
 ---@param unit string?
 ---@param accent number[]
 function Addon:ShowToastPortrait(frame, unit, accent)
@@ -110,18 +110,18 @@ end
 -- What a skin that draws in one frame, kept in self.frame, does like every other.
 local SkinBase = {}
 
----@param self BeastkeeperFrameSkin
+---@param self AddonFrameSkin
 function SkinBase.Hide(self)
     (self.frame --[[@as Frame]]):Hide()
 end
 
----@param self BeastkeeperFrameSkin
+---@param self AddonFrameSkin
 ---@return boolean
 function SkinBase.IsMouseOver(self)
     return (self.frame --[[@as Frame]]):IsMouseOver()
 end
 
----@param self BeastkeeperFrameSkin
+---@param self AddonFrameSkin
 ---@return Frame?
 function SkinBase.Frame(self)
     return self.frame
@@ -129,7 +129,7 @@ end
 
 ---A skin drawing in self.frame, with Hide, IsMouseOver and Frame; it adds Show and Update.
 ---@param name string shown in the look choice; localized
----@return BeastkeeperFrameSkin
+---@return AddonFrameSkin
 function Addon:NewToastSkin(name)
-    return setmetatable({ name = name }, { __index = SkinBase }) --[[@as BeastkeeperFrameSkin]]
+    return setmetatable({ name = name }, { __index = SkinBase }) --[[@as AddonFrameSkin]]
 end

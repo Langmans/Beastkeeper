@@ -17,7 +17,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("AbilityLearned") --[[@as BeastkeeperAbilityLearned]]
+local M = Addon:GetModule("AbilityLearned") --[[@as AddonAbilityLearned]]
 
 local HISTORY_MAX = 200
 local BEAST_TRAINING_ICON = "Interface\\Icons\\Ability_Hunter_BeastTraining"
@@ -29,9 +29,9 @@ local lastSaid = {}
 local scanTip = CreateFrame("GameTooltip", Addon.Global("ScanTooltip"), nil, "GameTooltipTemplate")
 
 ---This character's data.
----@return BeastkeeperAbilityLearnedChar
+---@return AddonAbilityLearnedChar
 local function Char()
-    return M.db.char --[[@as BeastkeeperAbilityLearnedChar]]
+    return M.db.char --[[@as AddonAbilityLearnedChar]]
 end
 
 ---The number in a rank text, whatever the language calls it: "Rank 2", "Rang 2", "2 레벨" -> 2.
@@ -70,7 +70,7 @@ end
 
 ---Sends BEASTKEEPER_RANKS_KNOWN with the ranks that were news (docs\04-hooking.md).
 ---@param source "learn"|"training"
----@param ranks BeastkeeperKnownRank[]
+---@param ranks AddonKnownRank[]
 local function RanksKnown(source, ranks)
     Addon:SendMessage(Addon.messages.ranksKnown, { module = M:GetName(), source = source, ranks = ranks })
 end
@@ -96,7 +96,7 @@ end
 
 ---Adds a learn to the history, keeping the last HISTORY_MAX, and to what is known; sends
 ---BEASTKEEPER_ABILITY_LEARNED (docs\04-hooking.md).
----@param entry BeastkeeperLearnEntry
+---@param entry AddonLearnEntry
 function M:RecordLearn(entry)
     local history = Char().history
     history[#history + 1] = entry
@@ -116,7 +116,7 @@ function M:RecordLearn(entry)
 end
 
 ---One history line: "2026-10-07 14:03  Claw (Rank 2), from Fluffy, Darkshore".
----@param entry BeastkeeperLearnEntry
+---@param entry AddonLearnEntry
 ---@return string
 local function HistoryLine(entry)
     ---@type string
@@ -133,7 +133,7 @@ end
 ---@param npc number
 ---@return boolean
 local function KnownTeacher(name, rank, npc)
-    local data = Addon.data --[[@as BeastkeeperData]]
+    local data = Addon.data --[[@as AddonData]]
     for _, info in pairs(data.petAbilityRanks) do
         if info.rank == rank and Addon.SpellInfo(info.ability) == name then
             for _, teacher in ipairs(info.teachers) do
@@ -188,7 +188,7 @@ end
 function M:ReadBeastTraining()
     if UnitExists("npc") then return end
     local read = 0
-    ---@type BeastkeeperKnownRank[]
+    ---@type AddonKnownRank[]
     local news = {}
     for index = 1, GetNumTrainerServices() do
         local ok, name, kind = pcall(GetTrainerServiceInfo, index)
@@ -251,8 +251,8 @@ local LoyaltyLabel = Addon.LoyaltyLabel
 ---@param title string
 ---@param text string
 ---@param hint string?
----@param sound BeastkeeperSound?
----@return BeastkeeperToastInfo
+---@param sound AddonSound?
+---@return AddonToastInfo
 local function GrowthToast(kind, title, text, hint, sound)
     return {
         key = "AbilityLearned:" .. kind,
@@ -272,7 +272,7 @@ end
 ---level), and one when its loyalty level dropped, with the points that cost. A level-up at loyalty
 ---level 1 brings no points and says nothing.
 ---@param _ string the message
----@param event BeastkeeperPetGrowthEvent
+---@param event AddonPetGrowthEvent
 function M:OnGrowth(_, event)
     local settings = self:Settings()
     local pet, level, loyalty, loyaltyName = event.pet, event.level, event.loyalty, event.loyaltyName

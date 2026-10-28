@@ -10,7 +10,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("CareButton") --[[@as BeastkeeperCareButton]]
+local M = Addon:GetModule("CareButton") --[[@as AddonCareButton]]
 
 local SIZE = 36
 local HINT_COLOR = { 0.5, 0.5, 0.5 }

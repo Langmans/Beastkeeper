@@ -6,7 +6,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("Feeding") --[[@as BeastkeeperFeeding]]
+local M = Addon:GetModule("Feeding") --[[@as AddonFeeding]]
 
 ---A toggle for one toast's setting.
 ---@param key "content"|"unhappy"|"noFood"

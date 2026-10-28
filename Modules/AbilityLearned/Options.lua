@@ -7,7 +7,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("AbilityLearned") --[[@as BeastkeeperAbilityLearned]]
+local M = Addon:GetModule("AbilityLearned") --[[@as AddonAbilityLearned]]
 
 ---A getter and setter for one profile setting (Beastkeeper:Setting).
 ---@param key string

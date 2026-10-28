@@ -12,7 +12,7 @@ if not Masque then return end
 local Addon = ns
 
 ---@param button Button
----@param parts BeastkeeperButtonParts
+---@param parts AddonButtonParts
 ---@return fun(r: number, g: number, b: number)
 local function Style(button, parts)
     local border = button:CreateTexture(nil, "OVERLAY")

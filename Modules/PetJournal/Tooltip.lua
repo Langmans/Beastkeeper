@@ -6,7 +6,7 @@ local _, ns = ...
 
 ---@type Addon
 local Addon = ns
-local M = Addon:GetModule("PetJournal") --[[@as BeastkeeperPetJournal]]
+local M = Addon:GetModule("PetJournal") --[[@as AddonPetJournal]]
 
 local GREY = { 0.6, 0.6, 0.6 }
 

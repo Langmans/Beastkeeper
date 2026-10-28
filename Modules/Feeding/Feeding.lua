@@ -15,7 +15,7 @@ local _, ns = ...
 local Addon = ns
 local L = Addon.L
 
----@type BeastkeeperFeeding
+---@type AddonFeeding
 local M = Addon:NewModule("Feeding")
 M.title = L.FEEDING_TITLE
 M.description = L.FEEDING_DESC
@@ -36,9 +36,9 @@ local BITES = { { below = 10, bite = 35 }, { below = 20, bite = 17 }, { below = 
 local HAPPY, CONTENT, UNHAPPY = Addon.happiness.happy, Addon.happiness.content, Addon.happiness.unhappy
 
 ---The settings of the profile in use.
----@return BeastkeeperFeedingSettings
+---@return AddonFeedingSettings
 function M:Settings()
-    return self.db.profile --[[@as BeastkeeperFeedingSettings]]
+    return self.db.profile --[[@as AddonFeedingSettings]]
 end
 
 ---Feed Pet's name as the client calls it, for the button's macro.
@@ -81,12 +81,12 @@ local function MakesWellFed(itemID)
 end
 
 -- The food in the bags, in feeding order; the entries are reused from scan to scan.
----@type BeastkeeperFood[]
+---@type AddonFood[]
 local foods, pool = {}, {}
 
 ---Two foods in feeding order.
----@param a BeastkeeperFood
----@param b BeastkeeperFood
+---@param a AddonFood
+---@param b AddonFood
 ---@return boolean
 local function Before(a, b)
     if a.wellFed ~= b.wellFed then return b.wellFed end
@@ -127,7 +127,7 @@ local function AddSlot(bag, slot, petLevel)
 end
 
 ---Reads the bags again: the food the pet out eats, in feeding order. Empty without a pet.
----@return BeastkeeperFood[]
+---@return AddonFood[]
 function M:Scan()
     wipe(foods)
     local petLevel = UnitExists("pet") and UnitLevel("pet")
@@ -142,20 +142,20 @@ function M:Scan()
 end
 
 ---The food in feeding order, as of the last scan.
----@return BeastkeeperFood[]
+---@return AddonFood[]
 function M:Foods()
     return foods
 end
 
 ---A food's name, as the client gives it.
----@param food BeastkeeperFood
+---@param food AddonFood
 ---@return string
 function M.FoodName(food)
     return C_Item.GetItemInfo(food.itemID) or ("item:" .. food.itemID)
 end
 
 ---The macro that feeds a food: Feed Pet, then its bag slot as the item it waits for.
----@param food BeastkeeperFood
+---@param food AddonFood
 ---@return string
 function M.FeedMacro(food)
     return ("/cast %s\n/use %d %d"):format(M.FeedPetName(), food.bag, food.slot)
@@ -166,7 +166,7 @@ local BITE_COLORS = { [35] = { 0, 1, 0 }, [17] = { 1, 1, 0 }, [8] = { 1, 0.5, 0 
 local WELL_FED_COLOR = { 0.6, 0.6, 0.6 }
 
 ---A food's colour in the tooltip and the list.
----@param food BeastkeeperFood
+---@param food AddonFood
 ---@return number r, number g, number b
 function M.FoodColor(food)
     local color = food.wellFed and WELL_FED_COLOR or BITE_COLORS[food.bite]
@@ -186,7 +186,7 @@ local TOASTS = {
 
 ---The toast for `kind`: for a happiness drop with the food the button feeds next as its hint.
 ---@param kind "content"|"unhappy"|"nofood"
----@return BeastkeeperToastInfo
+---@return AddonToastInfo
 function M:Toast(kind)
     local first = foods[1]
     local hint = first and L.FEEDING_NEXT:format(M.FoodName(first)) or L.FEEDING_HINT_NO_FOOD

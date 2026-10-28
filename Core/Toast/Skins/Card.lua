@@ -2,7 +2,7 @@ local _, ns = ...
 
 -- The card: a card near the top of the screen, a coloured bar down its left side, a square icon
 -- (with a unit's portrait as a round badge, when the toast brings one), a title in that colour, a line of text, a grey hint and a timer bar along the bottom. It slides
--- in from a little higher. NewCardSkin makes one in any style (BeastkeeperSkinStyle), such as
+-- in from a little higher. NewCardSkin makes one in any style (AddonSkinStyle), such as
 -- EllesmereUI's (Integrations\EllesmereUI\).
 
 ---@type Addon
@@ -30,7 +30,7 @@ end
 
 ---A line of text, in the style's font when it has one.
 ---@param frame Frame
----@param style BeastkeeperSkinStyle
+---@param style AddonSkinStyle
 ---@param template string the game's font, without a style font
 ---@param size number the size in the style's font
 ---@return FontString
@@ -44,10 +44,10 @@ local function Line(frame, style, template, size)
 end
 
 ---Makes the frame, the first time it shows.
----@param style BeastkeeperSkinStyle
----@return BeastkeeperCardFrame
+---@param style AddonSkinStyle
+---@return AddonCardFrame
 local function Build(style)
-    local frame = Addon:NewToastFrame(style.frameName) --[[@as BeastkeeperCardFrame]]
+    local frame = Addon:NewToastFrame(style.frameName) --[[@as AddonCardFrame]]
     frame:SetSize(WIDTH, ICON_SIZE + 2 * PAD)
 
     -- The edge: the frame filled in its colour with the panel one pixel inside, or drawn by the style.
@@ -86,9 +86,9 @@ local function Build(style)
     return frame
 end
 
----@param self BeastkeeperCardSkin
----@param info BeastkeeperToastInfo
----@param settings BeastkeeperToastSettings
+---@param self AddonCardSkin
+---@param info AddonToastInfo
+---@param settings AddonToastSettings
 local function Show(self, info, settings)
     self.frame = self.frame or Build(self.style)
     local frame = self.frame
@@ -109,12 +109,12 @@ local function Show(self, info, settings)
     frame:Show()
 end
 
----@param self BeastkeeperCardSkin
+---@param self AddonCardSkin
 ---@param intro number
 ---@param fade number
 ---@param left number
 local function Update(self, intro, fade, left)
-    local frame = self.frame --[[@as BeastkeeperCardFrame]]
+    local frame = self.frame --[[@as AddonCardFrame]]
     local slide = 1 - (1 - intro) * (1 - intro)
     -- Placed while it slides in only, so the mouse can drag it once it is there.
     if intro < 1 or not frame.placed then
@@ -127,10 +127,10 @@ end
 
 ---A card skin in `style`; register it with RegisterToastSkin.
 ---@param name string shown in the look choice
----@param style BeastkeeperSkinStyle
----@return BeastkeeperCardSkin
+---@param style AddonSkinStyle
+---@return AddonCardSkin
 function Addon:NewCardSkin(name, style)
-    local skin = self:NewToastSkin(name) --[[@as BeastkeeperCardSkin]]
+    local skin = self:NewToastSkin(name) --[[@as AddonCardSkin]]
     skin.style, skin.Show, skin.Update = style, Show, Update
     return skin
 end

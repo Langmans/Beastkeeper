@@ -7,16 +7,16 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("BeastMap") --[[@as BeastkeeperBeastMap]]
+local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
----@alias BeastkeeperBeastMapSetting "pins"|"mapButton"|"usefulOnly"|"gaps"|"aboveLevel"|"untilTame"|"levelToast"|"levelChat"|"tooltip"|"rareToast"|"trainers"|"stables"
+---@alias AddonBeastMapSetting "pins"|"mapButton"|"usefulOnly"|"gaps"|"aboveLevel"|"untilTame"|"levelToast"|"levelChat"|"tooltip"|"rareToast"|"trainers"|"stables"
 
 -- How far a refining option sits in from the one it refines, and how wide it is then (AceConfig's
 -- widths, in units of its column).
 local INDENT, INDENTED_WIDTH = 0.15, 3
 
 ---A toggle for one setting; changing it redraws the pins.
----@param key BeastkeeperBeastMapSetting
+---@param key AddonBeastMapSetting
 ---@param name string
 ---@param desc string
 ---@param order number
@@ -43,8 +43,8 @@ end
 ---A toggle that refines `parent`'s: indented under it (an empty line part before it), greyed
 ---while `parent` is off. Adds the toggle and its indent to `args`.
 ---@param args table
----@param key BeastkeeperBeastMapSetting
----@param parent BeastkeeperBeastMapSetting
+---@param key AddonBeastMapSetting
+---@param parent AddonBeastMapSetting
 ---@param name string
 ---@param desc string
 ---@param order number

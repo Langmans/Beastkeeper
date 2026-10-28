@@ -25,9 +25,9 @@ local THORIUM_HEADED_ARROW = 18042
 local ICE_THREADED_ARROW = 19316
 local ICE_THREADED_BULLET = 19317
 
----@type table<number, BeastkeeperAmmoItem>
+---@type table<number, AddonAmmoItem>
 local I = {}
----@type table<number, BeastkeeperAmmoVendor>
+---@type table<number, AddonAmmoVendor>
 local V = {}
 Addon.data = Addon.data or {}
 Addon.data.ammo, Addon.data.ammoVendors = I, V

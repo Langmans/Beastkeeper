@@ -8,7 +8,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("AutocastCheck") --[[@as BeastkeeperAutocastCheck]]
+local M = Addon:GetModule("AutocastCheck") --[[@as AddonAutocastCheck]]
 
 local button = CreateFrame("Button", Addon.Global("AutocastButton"), UIParent, "SecureActionButtonTemplate")
 button:RegisterForClicks("AnyUp", "AnyDown")

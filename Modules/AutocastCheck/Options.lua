@@ -7,7 +7,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("AutocastCheck") --[[@as BeastkeeperAutocastCheck]]
+local M = Addon:GetModule("AutocastCheck") --[[@as AddonAutocastCheck]]
 
 ---Checks again after a change, since what counts as wrong may have changed.
 local function Recheck()

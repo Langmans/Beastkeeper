@@ -5,7 +5,7 @@ local _, ns = ...
 
 ---@type Addon
 local Addon = ns
-local M = Addon:GetModule("FeedEmotes") --[[@as BeastkeeperFeedEmotes]]
+local M = Addon:GetModule("FeedEmotes") --[[@as AddonFeedEmotes]]
 local SEX = Addon.sex
 
 ---Adds the lines of `list`, if there is one, to the end of `pool`.
@@ -20,7 +20,7 @@ end
 ---What the lines are chosen by for one feeding: the pet's sex, the food's type and the pet's
 ---family ID (the same in every language, unlike the name); each nil when unknown or hidden.
 ---@param itemID number?
----@return BeastkeeperFeedSituation
+---@return AddonFeedSituation
 local function SituationOf(itemID)
     local _, familyID = UnitCreatureFamily("pet")
     return {

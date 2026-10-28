@@ -12,7 +12,7 @@ end
 ---A skin that records, per module, the button it styled and the colour last given its border.
 ---@param priority number
 ---@param calls table<string, {button: table, icon: table, color: number[]?}>
----@return BeastkeeperButtonSkin
+---@return AddonButtonSkin
 local function recording(priority, calls)
     return {
         name = "Recording",

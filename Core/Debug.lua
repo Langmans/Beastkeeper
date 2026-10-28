@@ -146,7 +146,7 @@ end
 
 ---A chat line Beastkeeper printed: to OAP Debug's chat tab, and to DebugLog as a Chat line.
 ---@param _ string the message
----@param event BeastkeeperPrintEvent
+---@param event AddonPrintEvent
 local function OnPrint(_, event)
     if api then api.Chat(SOURCE, event.line) end
     ToDebugLog("Chat~" .. event.line)

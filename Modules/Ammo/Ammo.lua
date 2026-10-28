@@ -12,7 +12,7 @@ local _, ns = ...
 local Addon = ns
 local L = Addon.L
 
----@type BeastkeeperAmmo
+---@type AddonAmmo
 local M = Addon:NewModule("Ammo")
 M.title = L.AMMO_TITLE
 M.description = L.AMMO_DESC
@@ -21,9 +21,9 @@ M.toastTypes = { low = L.AMMO_TOASTTYPE_LOW, critical = L.AMMO_TOASTTYPE_CRITICA
 M.defaults = { profile = { low = 500, critical = 250, toasts = true, buy = true, stacks = 1 } }
 
 ---The settings of the profile in use.
----@return BeastkeeperAmmoSettings
+---@return AddonAmmoSettings
 function M:Settings()
-    return self.db.profile --[[@as BeastkeeperAmmoSettings]]
+    return self.db.profile --[[@as AddonAmmoSettings]]
 end
 
 local GoThere = LibStub("LibGoThere-1.0") --[[@as LibGoThere]]
@@ -40,7 +40,7 @@ local EVENTS = { "BAG_UPDATE_DELAYED", "PLAYER_EQUIPMENT_CHANGED" }
 
 ---The kind of ammo the hunter's ranged weapon shoots (a Beastkeeper.ammoKinds value), nil without a
 ---bow, gun or crossbow.
----@return BeastkeeperAmmoKind?
+---@return AddonAmmoKind?
 function M.Kind()
     local id = GetInventoryItemID("player", RANGED_SLOT)
     if not id then return nil end
@@ -61,7 +61,7 @@ end
 function M.AmmoName(itemID)
     local name = C_Item.GetItemInfo(itemID)
     if name then return name end
-    local ammo = Addon.data.ammo[itemID] --[[@as BeastkeeperAmmoItem?]]
+    local ammo = Addon.data.ammo[itemID] --[[@as AddonAmmoItem?]]
     return ammo and ammo.name or "?"
 end
 
@@ -122,7 +122,7 @@ end
 
 -- The vendors' spots per kind of ammo for the hunter's faction, built on first use and again when
 -- the data changes.
----@type table<BeastkeeperAmmoKind, LibGoTherePoint[]>
+---@type table<AddonAmmoKind, LibGoTherePoint[]>
 local pointsByKind = {}
 ---@type table?
 local pointsFrom
@@ -132,22 +132,22 @@ local pointsFrom
 local continentOf, worldX, worldY = {}, {}, {}
 
 ---Whether a vendor sells ammo of `kind`.
----@param vendor BeastkeeperAmmoVendor
----@param kind BeastkeeperAmmoKind
+---@param vendor AddonAmmoVendor
+---@param kind AddonAmmoKind
 ---@return boolean
 local function Sells(vendor, kind)
     for _, itemID in ipairs(vendor.sells) do
-        local ammo = Addon.data.ammo[itemID] --[[@as BeastkeeperAmmoItem?]]
+        local ammo = Addon.data.ammo[itemID] --[[@as AddonAmmoItem?]]
         if ammo and ammo.kind == kind then return true end
     end
     return false
 end
 
 ---Every pin of every vendor of the hunter's faction that sells its kind of ammo.
----@param kind BeastkeeperAmmoKind
+---@param kind AddonAmmoKind
 ---@return LibGoTherePoint[]
 local function VendorPoints(kind)
-    local vendors = Addon.data.ammoVendors --[[@as table<number, BeastkeeperAmmoVendor>]]
+    local vendors = Addon.data.ammoVendors --[[@as table<number, AddonAmmoVendor>]]
     if pointsByKind[kind] then return pointsByKind[kind] end
     ---@type LibGoTherePoint[]
     local points = {}
@@ -232,7 +232,7 @@ end
 -- at most KEEP seconds, for one kind of ammo: a route addon's travel times take a while, and RANGE
 -- yards are a few seconds of travel. The spot is a continent and x, y in yards (Beastkeeper.PlayerInWorld).
 local RANGE, KEEP = 100, 60
----@type number?, number, number, BeastkeeperAmmoKind?, number, LibGoTherePoint?, number?
+---@type number?, number, number, AddonAmmoKind?, number, LibGoTherePoint?, number?
 local keptPlace, keptX, keptY, keptKind, keptSince, keptPoint, keptSeconds = nil, 0, 0, nil, 0, nil, nil
 
 ---The nearest vendor for the hunter's kind of ammo, and the seconds to it when known.
@@ -315,7 +315,7 @@ end
 ---The toast for crossing into `state`.
 ---@param state "low"|"critical"
 ---@param count number
----@return BeastkeeperToastInfo
+---@return AddonToastInfo
 local function Toast(state, count)
     local lasts = Lasts(count)
     return {

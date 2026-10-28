@@ -320,7 +320,7 @@ How Beastkeeper is built, how to add to it, and how other addons can hook into i
 4. [Hooking into Beastkeeper](https://github.com/Langmans/Beastkeeper/blob/main/docs/04-hooking.md):
    the messages other addons (and Beastkeeper's own modules) listen to through
    `Beastkeeper:Listen`, a flowchart of who sends what, an example addon
-   and [their types](https://github.com/Langmans/Beastkeeper/blob/main/docs/BeastkeeperMessages.lua)
+   and [their types](https://github.com/Langmans/Beastkeeper/blob/main/docs/AddonMessages.lua)
    for a language server.
 5. [Toast skins](https://github.com/Langmans/Beastkeeper/blob/main/docs/05-toast-skins.md):
    drawing Beastkeeper's toast in your own look.

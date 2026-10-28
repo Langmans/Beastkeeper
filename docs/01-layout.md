@@ -57,7 +57,7 @@ Modules\<Name>\   a module: <Name>.xml, Locale.lua, <Name>.lua, Options.lua
                   (FeedEmotes adds Lines\<locale>.lua: its emote lines with
                   each language's grammar, kept out of the translation page;
                   DevScreenshots is one --@debug@ block, absent from releases)
-docs\             this documentation, and BeastkeeperMessages.lua: the types of the
+docs\             this documentation, and AddonMessages.lua: the types of the
                   messages for other addons (shipped, never loaded in game)
 annotations\      editor-only types (not in the .toc, not in releases)
 tests\            the specs, the simulated client and the tooling (check.lua)

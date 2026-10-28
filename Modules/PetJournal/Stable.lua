@@ -8,14 +8,14 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("PetJournal") --[[@as BeastkeeperPetJournal]]
+local M = Addon:GetModule("PetJournal") --[[@as AddonPetJournal]]
 
 local COLUMNS, ROWS, CARD_HEIGHT, MODEL_SIZE, GAP = 3, 2, 190, 80, 8
 
 ---A text on a card, in the skin's font, from `top` down (its offset from the card's top, or below
 ---the text `under`); `right` keeps it clear of the model.
 ---@param card Frame
----@param skin BeastkeeperButtonHolderSkin
+---@param skin AddonButtonHolderSkin
 ---@param top number|FontString
 ---@param right number the gap to the card's right edge
 ---@param template string?
@@ -36,14 +36,14 @@ local function Text(card, skin, top, right, template, size)
 end
 
 ---Builds the panel: a grid of cards.
----@param panel BeastkeeperStablePanel
----@param skin BeastkeeperButtonHolderSkin
+---@param panel AddonStablePanel
+---@param skin AddonButtonHolderSkin
 local function Create(panel, skin)
     panel.cards = {}
     local width = (Addon.WINDOW_PANEL_WIDTH - (COLUMNS - 1) * GAP) / COLUMNS
     for index = 1, COLUMNS * ROWS do
         local column, row = (index - 1) % COLUMNS, math.floor((index - 1) / COLUMNS)
-        local card = CreateFrame("Button", nil, panel) --[[@as BeastkeeperStableCard]]
+        local card = CreateFrame("Button", nil, panel) --[[@as AddonStableCard]]
         card:SetSize(width, CARD_HEIGHT)
         card:SetPoint("TOPLEFT", column * (width + GAP), -row * (CARD_HEIGHT + GAP))
         skin.Style(card)
@@ -69,7 +69,7 @@ local function Create(panel, skin)
 end
 
 ---Fills the cards, one per pet in list order; the rest hidden.
----@param panel BeastkeeperStablePanel
+---@param panel AddonStablePanel
 local function Refresh(panel)
     local pets = M:Pets()
     local keys = M.PetOrder()

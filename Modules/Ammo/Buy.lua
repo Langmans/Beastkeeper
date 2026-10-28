@@ -8,7 +8,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("Ammo") --[[@as BeastkeeperAmmo]]
+local M = Addon:GetModule("Ammo") --[[@as AddonAmmo]]
 
 local STACK = 200 -- ammo stacks to 200
 local K = Addon.ammoKinds
@@ -16,7 +16,7 @@ local K = Addon.ammoKinds
 local BAG_TYPES = { [K.arrow] = 1, [K.bullet] = 2 }
 
 ---The slots of the hunter's ammo bag for `kind`, nil without one.
----@param kind BeastkeeperAmmoKind
+---@param kind AddonAmmoKind
 ---@return number?
 local function AmmoBagSlots(kind)
     for bag = 1, NUM_BAG_SLOTS do
@@ -27,7 +27,7 @@ end
 
 ---The vendor's best ammo of `kind` for the hunter's level: its index in the vendor's list and its
 ---item ID; nil when it sells none.
----@param kind BeastkeeperAmmoKind
+---@param kind AddonAmmoKind
 ---@return number? index
 ---@return number? itemID
 local function BestOnSale(kind)
@@ -36,7 +36,7 @@ local function BestOnSale(kind)
     local index, itemID, best
     for i = 1, GetMerchantNumItems() do
         local id = GetMerchantItemID(i)
-        local ammo = id and Addon.data.ammo[id] --[[@as BeastkeeperAmmoItem?]]
+        local ammo = id and Addon.data.ammo[id] --[[@as AddonAmmoItem?]]
         if ammo and ammo.kind == kind and ammo.level <= level and (not best or ammo.level > best) then
             index, itemID, best = i, id, ammo.level
         end

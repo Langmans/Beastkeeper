@@ -9,7 +9,7 @@ local _, ns = ...
 ---@type Addon
 local Addon = ns
 local L = Addon.L
-local M = Addon:GetModule("Feeding") --[[@as BeastkeeperFeeding]]
+local M = Addon:GetModule("Feeding") --[[@as AddonFeeding]]
 
 local ROW_HEIGHT, WIDTH, PAD = 24, 220, 4
 
@@ -19,10 +19,10 @@ list:SetFrameStrata("DIALOG")
 list:Hide()
 table.insert(UISpecialFrames, Addon.Global("FeedList"))
 -- The chosen holder skin (Core\Buttons.lua), applied the first time the list opens.
----@type BeastkeeperButtonHolderSkin?
+---@type AddonButtonHolderSkin?
 local skin
 
----@type BeastkeeperFoodRow[]
+---@type AddonFoodRow[]
 local rows = {}
 
 local function Close()
@@ -31,10 +31,10 @@ end
 
 ---The row at `index`, made the first time.
 ---@param index number
----@return BeastkeeperFoodRow
+---@return AddonFoodRow
 local function Row(index)
     if rows[index] then return rows[index] end
-    local row = CreateFrame("Button", Addon.Global("FeedChoice") .. index, list, "SecureActionButtonTemplate") --[[@as BeastkeeperFoodRow]]
+    local row = CreateFrame("Button", Addon.Global("FeedChoice") .. index, list, "SecureActionButtonTemplate") --[[@as AddonFoodRow]]
     row:SetSize(WIDTH - 2 * PAD, ROW_HEIGHT)
     row:SetPoint("TOPLEFT", PAD, -PAD - (index - 1) * ROW_HEIGHT)
     -- As the feed button: down and up registered, acting on the up (ActionButtonUseKeyDown).
@@ -46,7 +46,7 @@ local function Row(index)
     row.icon:SetPoint("LEFT", 2, 0)
     row.label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     row.label:SetPoint("LEFT", row.icon, "RIGHT", 6, 0)
-    local look = skin --[[@as BeastkeeperButtonHolderSkin]]
+    local look = skin --[[@as AddonButtonHolderSkin]]
     look.Font(row.label, 12)
     Addon:CropIcon(row.icon, look.CropIcon)
     row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")

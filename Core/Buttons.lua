@@ -1,9 +1,9 @@
 local _, ns = ...
 
 -- Button skins: the look of Beastkeeper's buttons and of what holds them, registered like toast skins
--- (Core\Toast\Skins.lua). A button skin styles one button (BeastkeeperButtonSkin) and gives back how
+-- (Core\Toast\Skins.lua). A button skin styles one button (AddonButtonSkin) and gives back how
 -- to colour its border; a holder skin styles a panel of buttons and the text and icons in its
--- rows (BeastkeeperButtonHolderSkin). Beastkeeper brings its own of both; integrations add another UI's
+-- rows (AddonButtonHolderSkin). Beastkeeper brings its own of both; integrations add another UI's
 -- (Integrations\). The choice on Beastkeeper's page is a skin, or "auto": the registered one with the
 -- highest priority. A module styles a button once, the first time it shows it, so a new choice
 -- shows after /reload. A skin that errors is reported and Beastkeeper's own takes over.
@@ -14,7 +14,7 @@ local Addon = ns
 Addon.BUTTON_DEFAULT_SKIN = Addon.NAME:lower()
 local AUTO = "auto"
 
----@type table<string, BeastkeeperButtonSkin>, table<string, BeastkeeperButtonHolderSkin>
+---@type table<string, AddonButtonSkin>, table<string, AddonButtonHolderSkin>
 local buttonSkins, holderSkins = {}, {}
 
 ---Checks a skin against its contract and keeps it; raises an error naming what is missing.
@@ -42,37 +42,37 @@ local BUTTON_FUNCTIONS, HOLDER_FUNCTIONS = { "Style" }, { "Style", "Font" }
 ---Makes a button skin available. Another addon calls this on Beastkeeper's addon object, before
 ---Beastkeeper's modules show their buttons (at load, or from its OptionalDeps).
 ---@param id string kept in the saved settings; a short lowercase word
----@param skin BeastkeeperButtonSkin
+---@param skin AddonButtonSkin
 function Addon:RegisterButtonSkin(id, skin)
     Register("RegisterButtonSkin", buttonSkins, id, skin, BUTTON_FUNCTIONS)
 end
 
 ---Makes a holder skin available, as RegisterButtonSkin.
 ---@param id string
----@param skin BeastkeeperButtonHolderSkin
+---@param skin AddonButtonHolderSkin
 function Addon:RegisterButtonHolderSkin(id, skin)
     Register("RegisterButtonHolderSkin", holderSkins, id, skin, HOLDER_FUNCTIONS)
 end
 
----@return table<string, BeastkeeperButtonSkin>
+---@return table<string, AddonButtonSkin>
 function Addon:ButtonSkins()
     return buttonSkins
 end
 
----@return table<string, BeastkeeperButtonHolderSkin>
+---@return table<string, AddonButtonHolderSkin>
 function Addon:ButtonHolderSkins()
     return holderSkins
 end
 
 ---The button settings in the profile in use.
----@return BeastkeeperButtonSettings
+---@return AddonButtonSettings
 function Addon:ButtonSettings()
-    return self.db.profile.buttons --[[@as BeastkeeperButtonSettings]]
+    return self.db.profile.buttons --[[@as AddonButtonSettings]]
 end
 
 ---The id a choice comes to: the chosen skin while it is registered, else the one with the
 ---highest priority (by id when equal).
----@param register table<string, BeastkeeperButtonSkin|BeastkeeperButtonHolderSkin>
+---@param register table<string, AddonButtonSkin|AddonButtonHolderSkin>
 ---@param chosen string
 ---@return string
 local function Pick(register, chosen)
@@ -104,7 +104,7 @@ local function NoBorder() end
 
 ---Styles a button with the chosen skin, or Beastkeeper's own when that one errors.
 ---@param button Button
----@param parts BeastkeeperButtonParts
+---@param parts AddonButtonParts
 ---@return fun(r: number, g: number, b: number) recolour sets the border's colour
 function Addon:StyleButton(button, parts)
     local skin = buttonSkins[self:ButtonSkinFor()]
@@ -143,7 +143,7 @@ end
 ---Styles a holder with the chosen skin, or Beastkeeper's own when that one errors; gives the skin
 ---used, for the rows' text and icons.
 ---@param frame Frame
----@return BeastkeeperButtonHolderSkin
+---@return AddonButtonHolderSkin
 function Addon:StyleButtonHolder(frame)
     local skin = holderSkins[self:ButtonHolderSkinFor()]
     local ok, err = pcall(skin.Style, frame)
