@@ -210,6 +210,17 @@ describe("Ammo", function()
             assert.are.equal("No bow or gun", broker().text)
         end)
 
+        it("counts every kind of ammo the weapon shoots and the hunter's level allows", function()
+            local client = hunter(1200)
+            client:stock(SHARP, 495)
+            assert.are.equal("1695", broker().text, "Rough and Sharp Arrows, not the ammo slot's alone")
+            client:stock(LIGHT_SHOT, 300)
+            assert.are.equal("1695", broker().text, "bullets do not go in a bow")
+            client.playerLevel = 9
+            client:stock(SHARP, 495)
+            assert.are.equal("1200", broker().text, "Sharp Arrows need level 10")
+        end)
+
         it("is zero, and critical, with no ammo in the ammo slot", function()
             local client = hunter(1000)
             client.ammoID = nil

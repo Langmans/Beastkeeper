@@ -900,6 +900,8 @@ function NewClient(opts)
     end
     -- Ranged weapons by item ID, with their subclass: a bow, a gun, a crossbow, a sword.
     local RANGED_KINDS = { [2504] = 2, [2508] = 3, [15808] = 18, [25] = 7 }
+    -- Ammo by item ID, with its subclass: Rough and Sharp Arrow, Light and Heavy Shot, Razor Arrow.
+    local AMMO_KINDS = { [2512] = 2, [2515] = 2, [2516] = 3, [2519] = 3, [3030] = 2 }
     -- An item in client.unloadedItems is not loaded yet: GetItemInfo has nothing for it, and
     -- Item:ContinueOnItemLoad waits until client:loadItem.
     client.unloadedItems, client.itemWaiters = {}, {}
@@ -925,10 +927,13 @@ function NewClient(opts)
         GetItemIconByID = function(itemID)
             return 133000 + itemID
         end,
-        -- The class (2 weapon) and subclass of a ranged weapon (RANGED_KINDS, below).
+        -- The class (2 weapon) and subclass of a ranged weapon (RANGED_KINDS, below), and of ammo
+        -- (6 projectile; subclass 2 arrow, 3 bullet: AMMO_KINDS).
         GetItemInfoInstant = function(itemID)
             local subclass = RANGED_KINDS[itemID]
             if subclass then return itemID, "Weapon", "", "INVTYPE_RANGED", 133000 + itemID, 2, subclass end
+            subclass = AMMO_KINDS[itemID]
+            if subclass then return itemID, "Projectile", "", "INVTYPE_AMMO", 133000 + itemID, 6, subclass end
         end,
         GetItemCount = function(itemID)
             local total = 0

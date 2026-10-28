@@ -123,6 +123,8 @@
 - Care Button: Alt-click opens Beast Training while the pet has training
   points to spend; the tooltip says how many.
 - Data Broker: a middle-click opens the window on the pet abilities.
+- Ammo: counts every kind of ammo your weapon shoots and your level allows,
+  not only the one in the ammo slot.
 - Pets tab: the pets you no longer have (released, or lost) under a Past pets
   heading; the Stable tab shows only the pets you have.
 - An About page in the settings: title, notes, version, author, license and

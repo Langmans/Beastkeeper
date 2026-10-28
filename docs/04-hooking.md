@@ -223,7 +223,7 @@ low, or back to enough after restocking. Also once when the module starts.
 | Field | Type | |
 |---|---|---|
 | `module` | string | `"Ammo"` |
-| `count` | number | the ammo in the ammo slot, counted in the bags |
+| `count` | number | the ammo the weapon shoots and the hunter's level allows, every kind of it in the bags |
 | `state` | string | `"ok"`, `"low"` or `"critical"` |
 | `kind` | number | `Beastkeeper.ammoKinds.arrow` (2: bow, crossbow) or `.bullet` (3: gun), the Projectile item subclass |
 

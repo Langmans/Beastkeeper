@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- The hunter's ammo count as a data broker source ("Beastkeeper Ammo"), which displays such as
--- EllesmereUI's data bars and Titan Panel show: the count of the ammo in the ammo slot, orange
+-- EllesmereUI's data bars and Titan Panel show: the count of the ammo the weapon shoots (Count), orange
 -- below the low line and red below the critical one, with a toast each time it crosses one
 -- (taken away once restocked) and BEASTKEEPER_AMMO for other addons. Its tooltip names the nearest
 -- vendor of the hunter's faction that sells its kind of ammo (arrows for a bow or crossbow,
@@ -49,10 +49,35 @@ function M.Kind()
     return KINDS[subclassID]
 end
 
----How much of the ammo in the ammo slot the hunter carries.
+---Whether the hunter can shoot this item: ammo of the kind the weapon takes, and the level it needs
+---(the client's, else the data's) reached.
+---@param itemID number
+---@param kind AddonAmmoKind
+---@param level number the hunter's
+---@return boolean
+local function Usable(itemID, kind, level)
+    local _, _, _, _, _, classID, subclassID = C_Item.GetItemInfoInstant(itemID)
+    if classID ~= Enum.ItemClass.Projectile or subclassID ~= kind then return false end
+    local _, _, _, _, needs = C_Item.GetItemInfo(itemID)
+    local data = Addon.data.ammo[itemID] --[[@as AddonAmmoItem?]]
+    return (needs or (data and data.level) or 1) <= level
+end
+
+---How much ammo the hunter carries that the weapon shoots: every kind of it in the bags (a quiver
+---or pouch too) the hunter's level allows, not only the one in the ammo slot. None without ammo
+---in the ammo slot (nothing to shoot) or without a bow, gun or crossbow.
 ---@return number
 local function Count()
-    return GetInventoryItemCount("player", AMMO_SLOT) or 0
+    local kind = M.Kind()
+    if not kind or not GetInventoryItemID("player", AMMO_SLOT) then return 0 end
+    local level, total = UnitLevel("player"), 0
+    for bag = 0, NUM_BAG_SLOTS do
+        for slot = 1, C_Container.GetContainerNumSlots(bag) do
+            local item = C_Container.GetContainerItemInfo(bag, slot)
+            if item and Usable(item.itemID, kind, level) then total = total + item.stackCount end
+        end
+    end
+    return total
 end
 
 ---An ammo's name as the client words it, else the data's.
