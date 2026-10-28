@@ -164,7 +164,7 @@ function M:Open(key)
         pets[key], pets[stableKey] = pets[stableKey], nil
     end
     if not pets[key] and not key:find("^Creature%-") then Adopt(pets, key) end
-    self:Entry(key)
+    self:Entry(key).past = nil
     self.current, self.outSince = key, GetTime()
     self:Record()
     C_Timer.After(BOOK_WAIT, SnapshotLater)
@@ -278,7 +278,9 @@ end
 ---Reads the stable's lists (Beastkeeper.C.StableInfo: WoW: Forever gives them anywhere, Classic Era
 ---while the stable master is open), then merges an entry they do not know (kept under the GUID's
 ---number, which is not the pet's on Forever) into the stable's entry of the same name and family.
----A pet tamed this session (a Creature GUID key) waits for Adopt.
+---A pet tamed this session (a Creature GUID key) waits for Adopt. A pet neither in the lists nor
+---out is one the hunter no longer has (released, or lost): it is marked past, until it is seen
+---again.
 function M:ReadStable()
     local stable = Addon.C.StableInfo
     wipe(stableKeys)
@@ -292,6 +294,10 @@ function M:ReadStable()
             pets[key] = nil
             if self.current == key then self.current = twin end
         end
+    end
+    for key, entry in pairs(pets) do
+        local owned = stableKeys[key] or key == self.current or key:find("^Creature%-")
+        entry.past = not owned or nil
     end
 end
 

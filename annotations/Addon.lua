@@ -224,6 +224,7 @@
 ---@field abilities string[] "Claw (Rank 2)", sorted, as of the last time out
 ---@field ranks table<string, string>? each ability's rank text by name ("" without ranks)
 ---@field displayID number? its model, as the stable's lists gave it
+---@field past true? no longer the hunter's: in neither stable list at the last read, and not out
 
 ---PetJournal's saved settings, its namespace's profile.
 ---@class AddonPetJournalSettings

@@ -22,6 +22,8 @@ L.PETJOURNAL_PET_ENTRY = "%s (level %d %s)"
 -- family); the card when there is no pet in the journal yet.
 L.PETJOURNAL_TAB = "Pets"
 L.PETJOURNAL_ROW = "%s, %d %s"
+-- The Pets tab's list: the heading above the pets the hunter no longer has (released, or lost).
+L.PETJOURNAL_PAST = "Past pets"
 L.PETJOURNAL_NONE = "No pets yet: summon one."
 -- Beastkeeper's window, the Stable tab: its name; under a pet's card how many ranks it could still
 -- teach the hunter (%d; |4rank:ranks; is WoW's own plural), or that it has none.

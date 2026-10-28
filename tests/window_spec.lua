@@ -162,6 +162,32 @@ describe("the Pets tab", function()
         assert.are.equal("Ferocity", panel.spec.text)
     end)
 
+    it("puts the pets the stable no longer lists under Past pets, and takes them back", function()
+        local client = withStable()
+        open(client)
+        local panel = pets(client)
+        client.stable.stabled = { client.stable.stabled[2] } -- Shadow released
+        client:fire("PET_STABLE_UPDATE")
+        assert.are.same({ "Fluffy, 15 Cat", "Ash, 9 Boar", "Past pets", "Shadow, 12 Wolf" }, rows(panel))
+        local heading = panel.rows[3]
+        assert.is_nil(heading.key)
+        click(heading)
+        assert.are_not.equal(SHADOW, client.Addon:GetModule("PetJournal").picked, "the heading picks nothing")
+        click(panel.rows[4])
+        assert.are.equal("Shadow", panel.name.text, "a past pet's card still shows")
+        client.Addon:OpenWindow("stable")
+        local cards = client.Addon.window.panels.stable.cards
+        assert.are.same(
+            { true, true, false },
+            { cards[1].shown, cards[2].shown, cards[3].shown },
+            "the stable: pets owned"
+        )
+        client.stable.stabled[2] = { petNumber = 77, name = "Shadow", level = 12, familyName = "Wolf" }
+        client:fire("PET_STABLE_UPDATE")
+        client.Addon:OpenWindow("pets")
+        assert.are.same({ "Fluffy, 15 Cat", "Ash, 9 Boar", "Shadow, 12 Wolf" }, rows(panel), "back in the stable")
+    end)
+
     it("gives the family's category and modifiers on Classic Era, on the Pets and Stable cards", function()
         local client = NewClient({ era = true }):login():advance(1)
         client.Addon:OpenWindow("pets")

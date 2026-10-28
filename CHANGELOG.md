@@ -123,6 +123,8 @@
 - Care Button: Alt-click opens Beast Training while the pet has training
   points to spend; the tooltip says how many.
 - Data Broker: a middle-click opens the window on the pet abilities.
+- Pets tab: the pets you no longer have (released, or lost) under a Past pets
+  heading; the Stable tab shows only the pets you have.
 - An About page in the settings: title, notes, version, author, license and
   website (LibAboutPanel-2.0).
 - Messages with a table of details, heard through Beastkeeper:Listen:

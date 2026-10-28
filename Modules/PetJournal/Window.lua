@@ -1,7 +1,8 @@
 local _, ns = ...
 
 -- The Pets tab of Beastkeeper's window (Core\Window.lua): every pet in the journal on the left, the pet
--- out first, and a card for the chosen one on the right: its model, name, level and loyalty, its
+-- out first, the ones the hunter no longer has under a Past pets heading at the end, and a card
+-- for the chosen one on the right: its model, name, level and loyalty, its
 -- family's specialization (Ferocity, Cunning, Tenacity: Beastkeeper.SpecName), the journal (Journal.lua)
 -- and its abilities, those it could teach you in green. The model is the pet
 -- out itself; a stabled pet's as the stable showed it (its displayID), else the beast it was
@@ -15,33 +16,47 @@ local M = Addon:GetModule("PetJournal") --[[@as AddonPetJournal]]
 local LIST_WIDTH, ROW_HEIGHT, ROWS, MODEL_SIZE = 180, 20, 16, 180
 -- How far a pixel of drag turns the model, in radians.
 local TURN = 0.01
-local OUT, AWAY = { 1, 1, 1 }, { 0.6, 0.6, 0.6 }
+local OUT, AWAY, HEADING = { 1, 1, 1 }, { 0.6, 0.6, 0.6 }, { 1, 0.82, 0 }
+-- In the list, where the past pets start: a row with a heading instead of a pet. No journal key
+-- looks like it (numbers, GUIDs, "stable:...").
+local PAST = "past"
 
 -- The pets in list order, refilled for each look.
 ---@type string[]
 local order = {}
 
----The pet out before every other pet, the rest by name.
+---The pet out before every other pet, the hunter's pets before the past ones, each by name.
 ---@param a string
 ---@param b string
 ---@return boolean
 local function Earlier(a, b)
     if a == M.current or b == M.current then return a == M.current end
     local pets = M:Pets()
+    local pastA, pastB = pets[a].past == true, pets[b].past == true
+    if pastA ~= pastB then return pastB end
     return (pets[a].name or "") < (pets[b].name or "")
 end
 
----The journal's pets: the pet out first, then by name.
+---The journal's pets in list order: the pet out first, the hunter's other pets by name; with
+---`withPast`, then PAST and the pets the hunter no longer has, by name.
+---@param withPast boolean?
 ---@return string[]
-local function Order()
+local function Order(withPast)
     wipe(order)
-    for key in pairs(M:Pets()) do
-        order[#order + 1] = key
+    local pets = M:Pets()
+    for key, entry in pairs(pets) do
+        if withPast or not entry.past then order[#order + 1] = key end
     end
     table.sort(order, Earlier)
+    for index, key in ipairs(order) do
+        if pets[key].past then
+            table.insert(order, index, PAST)
+            break
+        end
+    end
     return order
 end
--- The Stable tab (Stable.lua) lists the pets in the same order.
+-- The Stable tab (Stable.lua) lists the hunter's pets in the same order, without the past ones.
 M.PetOrder = Order
 
 ---Shows the pet's model: the pet out, else its stable model, else the beast it was; none without.
@@ -111,6 +126,7 @@ local function Create(panel, skin)
         skin.Font(row.label, 12)
         row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
         row:SetScript("OnClick", function()
+            if not row.key then return end -- the Past pets heading
             M.picked = row.key
             Addon:RefreshWindow("pets")
         end)
@@ -140,12 +156,15 @@ end
 ---@param panel AddonPetsPanel
 local function Refresh(panel)
     local pets = M:Pets()
-    local keys = Order()
+    local keys = Order(true)
     for index, row in ipairs(panel.rows) do
         local key = keys[index]
-        row.key = key
+        row.key = key ~= PAST and key or nil
         row:SetShown(key ~= nil)
-        if key then
+        if key == PAST then
+            row.label:SetText(L.PETJOURNAL_PAST)
+            row.label:SetTextColor(HEADING[1], HEADING[2], HEADING[3])
+        elseif key then
             local entry = pets[key]
             row.label:SetText(L.PETJOURNAL_ROW:format(entry.name or "?", entry.level or 0, entry.family or "?"))
             local colour = key == M.current and OUT or AWAY
