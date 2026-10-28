@@ -16,6 +16,9 @@ local _, ns = ...
 --   combat      the first fight's: whether the pet's health and the player's place still read
 --   pet         the raw returns of happiness, loyalty and training points, C_PetInfo's and the
 --               old globals'
+--   petEvents   in the first minute after a login or /reload, each UNIT_PET,
+--               UNIT_PET_TRAINING_POINTS and PET_UI_UPDATE: the seconds since login and the
+--               points, loyalty and pet level the client gives then (which event brings them)
 --   trainer     the trainer window's first rows, as GetTrainerServiceInfo gives them
 --   tames       after a tame: the spells the pet knows beside the ranks LibTameable says the beast
 --               teaches, and whether they match (the server's word on the CMaNGOS data)
@@ -44,6 +47,7 @@ M.defaults = {
         guids = {},
         client = {},
         pet = {},
+        petEvents = {},
         trainer = {},
         tames = {},
         beasts = {},
@@ -162,6 +166,26 @@ local function NotePet()
         loyalty = { modern = Returns(info and info.GetPetLoyalty), old = Returns(GetPetLoyalty) },
         trainingPoints = { modern = Returns(info and info.GetPetTrainingPoints), old = Returns(GetPetTrainingPoints) },
     }
+end
+
+local EVENT_WINDOW = 60 -- seconds after login in which the pet's events are noted
+
+---Notes a pet event in the first minute after login: when, and the points, loyalty and level the
+---client gives then.
+---@param event string
+local function NotePetEvent(event)
+    local after = GetTime() - (Addon.loginTime or 0)
+    if after > EVENT_WINDOW then return end
+    local info = C_PetInfo
+    local entry = {
+        event = event,
+        after = after,
+        points = Returns(info and info.GetPetTrainingPoints or GetPetTrainingPoints),
+        loyalty = Returns(info and info.GetPetLoyalty or GetPetLoyalty),
+        level = Returns(UnitLevel, "pet"),
+    }
+    Push(Data().petEvents, entry)
+    Addon:Log("info", "probe: {1} after {2} s: points {3}, loyalty {4}", event, after, entry.points, entry.loyalty)
 end
 
 ---Keeps the first fight's: whether the pet's health and the player's place still read.
@@ -351,6 +375,7 @@ end
 ---@param unit string
 function M:UNIT_PET(_, unit)
     if unit ~= "player" then return end
+    NotePetEvent("UNIT_PET")
     NoteGUID("UNIT_PET")
     NoteFoods()
     NotePet()
@@ -368,6 +393,16 @@ end
 
 function M:PET_BAR_UPDATE()
     self:CompareSpells()
+end
+
+---@param _ string the event
+---@param unit string
+function M:UNIT_PET_TRAINING_POINTS(_, unit)
+    if unit == "pet" then NotePetEvent("UNIT_PET_TRAINING_POINTS") end
+end
+
+function M:PET_UI_UPDATE()
+    NotePetEvent("PET_UI_UPDATE")
 end
 
 local TRAINER_ROWS = 5 -- the trainer's rows kept
@@ -411,6 +446,8 @@ local EVENTS = {
     "UNIT_PET",
     "UNIT_LEVEL",
     "PET_BAR_UPDATE",
+    "UNIT_PET_TRAINING_POINTS",
+    "PET_UI_UPDATE",
     "TRAINER_UPDATE",
     "TRAINER_SHOW",
     "PET_STABLE_UPDATE",

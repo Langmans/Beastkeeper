@@ -711,6 +711,7 @@
 ---@field client table at each login: build, project, season, tameable, api, unitPosition, mapPosition, ammo, rangedSpeed, bags
 ---@field combat table? the first fight's: petHealth, unitPosition, mapPosition
 ---@field pet table happiness, loyalty, trainingPoints, each { modern, old }
+---@field petEvents table[] { event, after, points, loyalty, level } per pet event in the first minute after login
 ---@field trainer (table|string)[] the trainer's first rows, raw
 ---@field tames table[] { npc, family, knows, expected, match, t }
 ---@field beasts table<number, table> per NPC its first sighting: { name, map, x, y, onDataMap, dataMaps, t }

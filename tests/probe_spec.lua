@@ -142,6 +142,30 @@ describe("the Dev Probe", function()
         assert.is_table(pet.trainingPoints)
     end)
 
+    it("notes the pet's events in the first minute after login, with what the client gives then", function()
+        local client, probe = probing()
+        client.trainingPoints, client.loyalty = { 0, 0 }, nil
+        client:advance(2):fire("UNIT_PET", "player")
+        client.trainingPoints, client.loyalty = { 50, 7 }, "Loyalty Level 4 (Dependable)"
+        client:advance(4):fire("UNIT_PET_TRAINING_POINTS", "pet"):fire("PET_UI_UPDATE")
+        local events = probe.petEvents
+        assert.are.equal(3, #events)
+        assert.are.same({ "UNIT_PET", "UNIT_PET_TRAINING_POINTS", "PET_UI_UPDATE" }, {
+            events[1].event,
+            events[2].event,
+            events[3].event,
+        })
+        assert.is_true(events[1].after >= 2, "seconds since login")
+        assert.near(events[1].after + 4, events[2].after, 1e-9)
+        assert.are.same({ 0, 0 }, events[1].points)
+        assert.are.same({}, events[1].loyalty, "no loyalty yet")
+        assert.are.same({ 50, 7 }, events[2].points)
+        assert.are.same({ "Loyalty Level 4 (Dependable)" }, events[2].loyalty)
+        assert.are.same({ 15 }, events[2].level)
+        client:advance(60):fire("PET_UI_UPDATE")
+        assert.are.equal(3, #probe.petEvents, "not after the first minute")
+    end)
+
     it("keeps the trainer's first rows as the client gives them", function()
         local client, probe = probing()
         client:advance(5)
