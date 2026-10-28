@@ -295,6 +295,15 @@ function NewClient(opts)
     -- client.familyID: the pet's CreatureFamily ID (2 = cat). client.inGroup, client.instance:
     -- the group and the instance type ("party", "raid", "pvp", "arena", or "none" outside).
     client.familyID, client.inGroup, client.instance = 2, false, "none"
+    -- The spell the player channels (client.channel, a spell ID), as UnitChannelInfo gives it: the
+    -- spell ID is its eighth return. Casting nothing (UnitCastingInfo) otherwise.
+    function UnitChannelInfo(unit)
+        if unit ~= "player" or not client.channel then return nil end
+        return "Channel", "Channel", 136000, 0, 20000, false, false, client.channel
+    end
+    function UnitCastingInfo()
+        return nil
+    end
     function UnitExists(unit)
         if unit == "npc" then return client.trainer ~= nil and client.trainer.npc == true end
         return unit == "player" or (unit == "pet" and client.pet ~= nil)

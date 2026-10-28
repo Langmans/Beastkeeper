@@ -142,6 +142,16 @@ describe("CareButton", function()
             assert.are.equal("Revive Pet", client:press())
         end)
 
+        it("say nothing at the pull while the hunter is taming a beast", function()
+            local client = NewClient({ noPet = true }):login()
+            client.channel = 1515 -- Tame Beast: the beast attacks while the hunter channels
+            client:enterCombat()
+            assert.is_nil(client:toastTitle())
+            client.channel = nil
+            client:leaveCombat():enterCombat()
+            assert.are.equal("You have no pet out", client:toastTitle(), "a pull without taming")
+        end)
+
         it("say at the pull that there is no pet, or that it is still dead", function()
             local client = NewClient({ noPet = true }):login():enterCombat()
             assert.are.equal("You have no pet out", client:toastTitle())

@@ -173,9 +173,9 @@ local function IsPetDeadError(message)
 end
 
 -- Combat starts: the moment a missing pet, or one on Passive, costs something. A hunter without
--- Call Pet has no pet to miss yet.
+-- Call Pet has no pet to miss yet; one taming a beast is in combat with it, and getting a pet.
 function M:PLAYER_REGEN_DISABLED()
-    if not Kennel.KnowsSpell(Kennel.CALL_PET) then return end
+    if not Kennel.KnowsSpell(Kennel.CALL_PET) or Kennel.IsTaming() then return end
     local settings = self:Settings()
     if UnitExists("pet") then
         if settings.passive and not UnitIsDead("pet") and OnPassive() then Kennel:ShowToast(self:Toast("passive")) end

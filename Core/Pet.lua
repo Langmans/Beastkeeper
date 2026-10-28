@@ -54,6 +54,16 @@ end
 -- hunter's taming quests at 10 (Training the Beast), with Revive Pet.
 Kennel.CALL_PET, Kennel.TAME_BEAST, Kennel.BEAST_TRAINING, Kennel.FEED_PET = 883, 1515, 5149, 6991
 
+---Whether the player is taming a beast now: Tame Beast cast or channelled (the spell ID is the 9th
+---return of UnitCastingInfo, the 8th of UnitChannelInfo). The beast fights back meanwhile.
+---@return boolean
+function Kennel.IsTaming()
+    local cast = select(9, UnitCastingInfo("player"))
+    local channel = select(8, UnitChannelInfo("player"))
+    return (Kennel.Readable(cast) and cast == Kennel.TAME_BEAST)
+        or (Kennel.Readable(channel) and channel == Kennel.TAME_BEAST)
+end
+
 ---Whether the player knows a spell (Kennel.C.SpellBook.IsSpellKnown); true on a client that cannot
 ---tell.
 ---@param spellID number
