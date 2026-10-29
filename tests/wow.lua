@@ -303,13 +303,15 @@ function NewClient(opts)
     -- the group and the instance type ("party", "raid", "pvp", "arena", or "none" outside).
     client.familyID, client.inGroup, client.instance = 2, false, "none"
     -- The spell the player channels (client.channel, a spell ID), as UnitChannelInfo gives it: the
-    -- spell ID is its eighth return. Casting nothing (UnitCastingInfo) otherwise.
+    -- spell ID is its eighth return. The spell the player casts (client.cast), as UnitCastingInfo
+    -- gives it: the spell ID is its ninth.
     function UnitChannelInfo(unit)
         if unit ~= "player" or not client.channel then return nil end
         return "Channel", "Channel", 136000, 0, 20000, false, false, client.channel
     end
-    function UnitCastingInfo()
-        return nil
+    function UnitCastingInfo(unit)
+        if unit ~= "player" or not client.cast then return nil end
+        return "Cast", "Cast", 136000, 0, 20000, false, "Cast-1", false, client.cast
     end
     function UnitExists(unit)
         if unit == "npc" then return client.trainer ~= nil and client.trainer.npc == true end

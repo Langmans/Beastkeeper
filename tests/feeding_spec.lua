@@ -284,6 +284,22 @@ describe("Feeding", function()
             assert.are.equal(2, #seen, "not again while it stays down")
         end)
 
+        it("wait while the hunter casts Revive Pet or tames, and come once the pet is back", function()
+            local client = NewClient():login():stock(MUTTON, 5)
+            local seen = toasts(client)
+            client.cast = 982 -- Revive Pet
+            client:setHappiness(1)
+            assert.are.same({}, seen, "not while reviving")
+            client.cast = nil
+            client:fire("UNIT_PET", "player")
+            assert.are.equal("Fluffy is unhappy", toastFor(seen, "Feeding:unhappy").title, "the pet revived, hungry")
+            client = NewClient():login():stock(MUTTON, 5)
+            seen = toasts(client)
+            client.channel = 1515 -- Tame Beast
+            client:setHappiness(2)
+            assert.are.same({}, seen, "not while taming")
+        end)
+
         it("go once the pet is happy again", function()
             local client = NewClient():login():setHappiness(2)
             assert.are.equal("Fluffy is content", client:toastTitle())

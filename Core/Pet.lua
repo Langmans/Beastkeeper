@@ -53,15 +53,22 @@ end
 -- Tame Beast: learned at the same level. Beast Training and Feed Pet: from the quest that ends the
 -- hunter's taming quests at 10 (Training the Beast), with Revive Pet.
 Addon.CALL_PET, Addon.TAME_BEAST, Addon.BEAST_TRAINING, Addon.FEED_PET = 883, 1515, 5149, 6991
+Addon.REVIVE_PET = 982
 
----Whether the player is taming a beast now: Tame Beast cast or channelled (the spell ID is the 9th
----return of UnitCastingInfo, the 8th of UnitChannelInfo). The beast fights back meanwhile.
+---Whether the player is casting or channelling this spell now (the spell ID is the 9th return of
+---UnitCastingInfo, the 8th of UnitChannelInfo).
+---@param spellID number
 ---@return boolean
-function Addon.IsTaming()
+function Addon.IsCasting(spellID)
     local cast = select(9, UnitCastingInfo("player"))
     local channel = select(8, UnitChannelInfo("player"))
-    return (Addon.Readable(cast) and cast == Addon.TAME_BEAST)
-        or (Addon.Readable(channel) and channel == Addon.TAME_BEAST)
+    return (Addon.Readable(cast) and cast == spellID) or (Addon.Readable(channel) and channel == spellID)
+end
+
+---Whether the player is taming a beast now. The beast fights back meanwhile.
+---@return boolean
+function Addon.IsTaming()
+    return Addon.IsCasting(Addon.TAME_BEAST)
 end
 
 ---Whether the player knows a spell (Beastkeeper.C.SpellBook.IsSpellKnown); true on a client that cannot

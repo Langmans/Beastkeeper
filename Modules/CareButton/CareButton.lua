@@ -30,7 +30,7 @@ M.defaults = {
     char = { petDead = false },
 }
 
-M.MEND_PET, M.REVIVE_PET, M.CALL_PET = 136, 982, 883
+M.MEND_PET, M.REVIVE_PET, M.CALL_PET = 136, Addon.REVIVE_PET, Addon.CALL_PET
 local RAID_WARNING = SOUNDKIT.RAID_WARNING --[[@as number]]
 -- The English names, for a client that cannot name the spell itself.
 local FALLBACK_NAMES = { [136] = "Mend Pet", [982] = "Revive Pet", [883] = "Call Pet", [5149] = "Beast Training" }

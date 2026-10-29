@@ -202,9 +202,12 @@ function M:Toast(kind)
     }
 end
 
----Toasts a happiness drop (once per level reached) and takes away the toasts a rise answers.
+---Toasts a happiness drop (once per level reached) and takes away the toasts a rise answers. Not
+---while the hunter revives the pet or tames a beast: the drop is not taken in then, so the pet
+---that comes back hungry still gets its toast (UNIT_PET checks again).
 function M:CheckHappiness()
     self:ApplyButton()
+    if Addon.IsCasting(Addon.REVIVE_PET) or Addon.IsTaming() then return end
     local happiness = Happiness()
     if not happiness then return end
     local last = self.happiness or HAPPY
