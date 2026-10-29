@@ -107,6 +107,9 @@ end
 ---The spellbook changed: the button's macro texts again, and the macro's line.
 function M:ApplyMacroTexts()
     Addon:OutOfCombat("CareButton:texts", function()
+        -- Not before Setup gave the header its snippets (a login in combat waits for its end);
+        -- Setup writes the texts itself.
+        if not header:GetAttribute("apply") then return end
         header:SetAttribute("textAlive", M:MacroText(false))
         header:SetAttribute("textDead", M:MacroText(true))
         SecureHandlerExecute(header, RUN_APPLY)
