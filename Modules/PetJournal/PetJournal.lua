@@ -41,6 +41,14 @@ function M:Pets()
     return self.db.char.pets --[[@as table<string, AddonJournalEntry>]]
 end
 
+---Whether a Creature GUID can be a pet of the hunter's: on WoW: Forever a fresh tame keeps one until
+---the next login. On the classic clients a tamed pet's GUID is a Pet's at once; a Creature there is
+---the beast a hunter taming quest lends through its Taming Rod.
+---@return boolean
+local function CreaturesArePets()
+    return (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient() == "forever"
+end
+
 ---The pet out's key, or nil: its number; for a pet tamed this session, which keeps the beast's
 ---Creature GUID until the next relog, that GUID.
 ---@return string?
@@ -48,11 +56,7 @@ local function Key()
     local number = Addon.PetNumber()
     if number then return tostring(number) end
     local guid = UnitGUID("pet")
-    -- A Creature GUID is a fresh tame's on WoW: Forever, until the next login. On the classic
-    -- clients a tamed pet's GUID is a Pet's at once; a Creature there is the beast a hunter taming
-    -- quest lends through its Taming Rod, not a pet of the hunter's.
-    local forever = (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient() == "forever"
-    if forever and Addon.NPCFromGUID(guid, "Creature") then
+    if CreaturesArePets() and Addon.NPCFromGUID(guid, "Creature") then
         return guid --[[@as string]]
     end
 end
@@ -280,7 +284,8 @@ end
 ---number, which is not the pet's on Forever) into the stable's entry of the same name and family.
 ---A pet tamed this session (a Creature GUID key) waits for Adopt. A pet neither in the lists nor
 ---out is one the hunter no longer has (released, or lost): it is marked past, until it is seen
----again.
+---again. On the classic clients an entry under a Creature GUID, a taming quest's beast kept
+---before the journal left those out, goes.
 function M:ReadStable()
     local stable = Addon.C.StableInfo
     wipe(stableKeys)
@@ -295,9 +300,14 @@ function M:ReadStable()
             if self.current == key then self.current = twin end
         end
     end
+    local creatures = CreaturesArePets()
     for key, entry in pairs(pets) do
-        local owned = stableKeys[key] or key == self.current or key:find("^Creature%-")
-        entry.past = not owned or nil
+        local creature = key:find("^Creature%-") ~= nil
+        if creature and not creatures then
+            pets[key] = nil
+        else
+            entry.past = not (stableKeys[key] or key == self.current or creature) or nil
+        end
     end
 end
 

@@ -110,6 +110,30 @@ describe("Classic Era", function()
         assert.are.equal(tostring(0xAABBCC), pets.Kaldor[1], "under its own number (the GUID's low 32 bits) now")
     end)
 
+    it("drops a taming quest's beast the journal kept under its Creature GUID, at the stable", function()
+        local client = NewClient({ era = true, noPet = true }):login()
+        local pets = client.Addon:GetModule("PetJournal"):Pets()
+        -- Kept before the journal left these beasts out on Classic Era.
+        pets["Creature-0-5211-1-143-1998-00005E1A20"] = {
+            name = "Webwood Lurker",
+            family = "Spider",
+            first = { t = 0 },
+            out = 0,
+            deaths = 0,
+            rises = {},
+            abilities = {},
+        }
+        client.stableOpen = true
+        client.eraStable.current = { "Kaldor", 11, "Boar", "(Loyalty Level 6) Best Friend" }
+        client:fire("PET_STABLE_SHOW")
+        assert.is_nil(pets["Creature-0-5211-1-143-1998-00005E1A20"], "never a pet of the hunter's")
+        local names = {}
+        for _, entry in pairs(pets) do
+            names[#names + 1] = entry.name
+        end
+        assert.are.same({ "Kaldor" }, names)
+    end)
+
     it("takes the loyalty name after the brackets in the stable's Classic Era wording", function()
         local client = NewClient({ era = true, noPet = true }):login()
         client.stableOpen = true
