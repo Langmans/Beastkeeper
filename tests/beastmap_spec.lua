@@ -715,6 +715,34 @@ describe("Beast Map", function()
             assert.are.equal(BITE_ICON, panel.titleIcon.texture)
         end)
 
+        it("marks with a quest giver's ! an ability with a rank to learn now, its tooltip saying which", function()
+            local client = hunter(10)
+            client:openTrainer({ { "Claw", "used", CLAW } }):closeTrainer()
+            local panel = tab(client)
+            local marks = {}
+            for i = 1, 3 do
+                marks[i] = panel.rows[i].learnable.shown
+            end
+            -- Bite from the Spider (5); Charge only from level-12 boars; Claw 2 from Low Cat (5), Claw 3
+            -- from Rare Cat (10).
+            assert.are.same({ true, false, true }, marks)
+            assert.are.equal("Interface\\GossipFrame\\AvailableQuestIcon", panel.rows[1].learnable.texture)
+            ---The tooltip over a row: its title, then its lines.
+            local function hover(row)
+                client.tooltipLines, GameTooltip.text = {}, nil
+                row:GetScript("OnEnter")(row)
+                local lines = { GameTooltip.text }
+                for _, line in ipairs(client.tooltipLines) do
+                    lines[#lines + 1] = line.text
+                end
+                return lines
+            end
+            assert.are.same({ "Claw", "Known: Rank 1", "Learn now: Rank 2, Rank 3" }, hover(panel.rows[3]))
+            assert.are.same({ "Charge", "Known: none" }, hover(panel.rows[2]))
+            panel.rows[2]:GetScript("OnLeave")(panel.rows[2])
+            assert.is_false(GameTooltip:IsShown())
+        end)
+
         it("marks the chosen ability with a bar, and a fully known one in green", function()
             local client = hunter(10)
             client:openTrainer({ { "Bite", "used", BITE } }):closeTrainer()

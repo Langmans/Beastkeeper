@@ -126,6 +126,9 @@
 - Ammo: "Count only the ammo in the ammo slot" (on by default); switched off,
   it counts every kind of ammo your weapon shoots and your level allows. The
   low-ammo toast names the ammo it counts ("Rough Arrow low: 400 left").
+- Abilities tab: a quest giver's "!" on an ability with a rank you can learn
+  now (from a beast at or below your level); its tooltip names the rank you
+  know and those to learn.
 - Pets tab: the pets you no longer have (released, or lost) under a Past pets
   heading; the Stable tab shows only the pets you have.
 - An About page in the settings: title, notes, version, author, license and

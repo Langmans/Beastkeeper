@@ -106,6 +106,10 @@ L.BEASTMAP_RARE_ELITE = ", rare elite"
 -- of the ranks' columns; a rank's go button's tooltip (%s the beast).
 L.BEASTMAP_TAB_ABILITIES = "Abilities"
 L.BEASTMAP_ABILITY_COUNT = "%d/%d"
+-- The tooltip over an ability in that list. %s: the highest rank known (BEASTMAP_RANK, or BEASTMAP_ABILITY_NONE); then the ranks a beast at or below your level teaches, such as "Rank 2, Rank 3".
+L.BEASTMAP_ABILITY_KNOWN = "Known: %s"
+L.BEASTMAP_ABILITY_NONE = "none"
+L.BEASTMAP_ABILITY_LEARN = "Learn now: %s"
 L.BEASTMAP_RANK = "Rank %d"
 L.BEASTMAP_KNOWN = "Known"
 L.BEASTMAP_COLUMN_RANK = "Rank"

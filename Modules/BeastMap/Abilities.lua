@@ -6,7 +6,9 @@ local _, ns = ...
 -- the beast's place, the travel time when a route addon gives one, and in a column of its own how
 -- many more teach it. A rank's button sends the hunter there; its tooltip lists every teacher.
 -- Each rank keeps to one line (a long place is cut short; the tooltip has it whole), every other
--- row striped, under column heads; the chosen ability has a bar in the look's accent.
+-- row striped, under column heads; the chosen ability has a bar in the look's accent. An ability
+-- with a rank to learn now (above the highest known, from a beast at or below the hunter's level)
+-- has a quest giver's "!" in the list; its row's tooltip names the rank known and those to learn.
 
 ---@type Addon
 local Addon = ns
@@ -23,6 +25,11 @@ local LEVEL_COLUMN = LEVEL_WIDTH - 14
 local GO_ICON = "Interface\\Icons\\INV_Misc_Map_01"
 local KNOWN, MISSING, DIM, ABOVE = { 0.25, 1, 0.25 }, { 1, 1, 1 }, { 0.6, 0.6, 0.6 }, { 1, 0.6, 0.3 }
 local GOLD = { 1, 0.82, 0 }
+local LEARN_ICON, LEARN_SIZE = "Interface\\GossipFrame\\AvailableQuestIcon", 14
+
+-- The ranks named in an ability row's tooltip, refilled for each.
+---@type string[]
+local rankNames = {}
 
 -- Per ability (its rank 1's spell ID), its rank spells in rank order; built the first time.
 ---@type table<number, number[]>?
@@ -102,6 +109,51 @@ local function Counts(ability)
         if not M.Lacking(spellID) then known = known + 1 end
     end
     return known, #spells
+end
+
+---Whether the hunter can learn a rank now: above the highest it knows of the ability, and taught
+---by a beast at or below the hunter's level.
+---@param spellID number
+---@return boolean
+local function Learnable(spellID)
+    if M.Lacking(spellID) ~= "above" then return false end
+    local level = M:PlayerLevel()
+    for _, npc in ipairs(Addon.data.petAbilityRanks[spellID].teachers) do
+        local beast = Addon.data.beasts[npc] --[[@as AddonBeast?]]
+        if beast and beast.minLevel <= level then return true end
+    end
+    return false
+end
+
+---Whether the hunter can learn any rank of an ability now.
+---@param ability number
+---@return boolean
+local function AnyLearnable(ability)
+    for _, spellID in ipairs(Groups()[ability]) do
+        if Learnable(spellID) then return true end
+    end
+    return false
+end
+
+---An ability row's tooltip: the highest rank known, and the ranks to learn now.
+---@param row AddonAbilityRow
+local function OnAbilityEnter(row)
+    local ranks = Addon.data.petAbilityRanks --[[@as table<number, AddonPetAbilityRank>]]
+    local highest = 0
+    wipe(rankNames)
+    for _, spellID in ipairs(Groups()[row.ability]) do
+        local rank = ranks[spellID].rank
+        if not M.Lacking(spellID) then highest = math.max(highest, rank) end
+        if Learnable(spellID) then rankNames[#rankNames + 1] = L.BEASTMAP_RANK:format(rank) end
+    end
+    GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
+    GameTooltip:SetText(AbilityName(row.ability --[[@as number]]))
+    local known = highest > 0 and L.BEASTMAP_RANK:format(highest) or L.BEASTMAP_ABILITY_NONE
+    GameTooltip:AddLine(L.BEASTMAP_ABILITY_KNOWN:format(known), 1, 1, 1)
+    if #rankNames > 0 then
+        GameTooltip:AddLine(L.BEASTMAP_ABILITY_LEARN:format(table.concat(rankNames, ", ")), GOLD[1], GOLD[2], GOLD[3])
+    end
+    GameTooltip:Show()
 end
 
 ---The text of a missing rank's row: the nearest teacher's place, its travel time, whether it is
@@ -192,11 +244,17 @@ local function AbilityRow(panel, skin, index)
     row.label:SetPoint("LEFT", row.icon, "RIGHT", 5, 0)
     row.count = Text(row, skin, "RIGHT")
     row.count:SetPoint("RIGHT", -6, 0)
+    row.learnable = row:CreateTexture(nil, "OVERLAY")
+    row.learnable:SetSize(LEARN_SIZE, LEARN_SIZE)
+    row.learnable:SetTexture(LEARN_ICON)
+    row.learnable:SetPoint("RIGHT", row.count, "LEFT", -2, 0)
     row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
     row:SetScript("OnClick", function()
         panel.chosen = row.ability
         Addon:RefreshWindow("abilities")
     end)
+    row:SetScript("OnEnter", OnAbilityEnter)
+    row:SetScript("OnLeave", OnLeave)
     return row
 end
 
@@ -425,6 +483,7 @@ local function Refresh(panel)
             row.label:SetText(AbilityName(ability))
             row.icon:SetTexture(AbilityIcon(ability))
             row.count:SetText(L.BEASTMAP_ABILITY_COUNT:format(known, total))
+            row.learnable:SetShown(AnyLearnable(ability))
             local chosen = ability == panel.chosen
             local colour = chosen and MISSING or DIM
             row.label:SetTextColor(colour[1], colour[2], colour[3])

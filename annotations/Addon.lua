@@ -824,6 +824,7 @@
 ---@field icon Texture the ability's
 ---@field label FontString the ability
 ---@field count FontString how many of its ranks the hunter knows
+---@field learnable Texture a quest giver's "!" while a rank can be learned now
 ---@field selected Texture the bar behind the chosen one
 ---@field ability number?
 
