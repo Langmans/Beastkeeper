@@ -54,6 +54,9 @@ local function withStable()
         { petNumber = 78, name = "Ash", level = 9, familyName = "Boar", specialization = "Default" },
     }
     client:fire("PET_STABLE_UPDATE")
+    -- Tamed one after the other: Shadow first, then Ash, Fluffy last.
+    local journal = client.Addon:GetModule("PetJournal"):Pets()
+    journal[FLUFFY].first.t, journal["78"].first.t, journal[SHADOW].first.t = 300, 200, 100
     return client
 end
 
@@ -145,7 +148,7 @@ describe("Beastkeeper's window", function()
 end)
 
 describe("the Pets tab", function()
-    it("lists every pet, the pet out first, and shows the chosen one's card", function()
+    it("lists every pet, the newest tame first, and shows the chosen one's card", function()
         local client = withStable()
         open(client)
         local panel = pets(client)
@@ -160,6 +163,27 @@ describe("the Pets tab", function()
         assert.are.equal("Shadow", panel.name.text)
         assert.are.equal("Level 12 Wolf, loyalty ?.", panel.level.text)
         assert.are.equal("Ferocity", panel.spec.text)
+    end)
+
+    it("lists the newest tame first, the past pets last, each group from new to old", function()
+        local client = withStable()
+        local journal = client.Addon:GetModule("PetJournal"):Pets()
+        open(client)
+        assert.are.same({ "Fluffy, 15 Cat", "Ash, 9 Boar", "Shadow, 12 Wolf" }, rows(pets(client)))
+        journal[FLUFFY].first.t = 50
+        client.Addon:RefreshWindow("pets")
+        assert.are.same(
+            { "Ash, 9 Boar", "Shadow, 12 Wolf", "Fluffy, 15 Cat" },
+            rows(pets(client)),
+            "not the pet out first"
+        )
+        journal[FLUFFY].first.t = 200
+        client.Addon:RefreshWindow("pets")
+        assert.are.same({ "Ash, 9 Boar", "Fluffy, 15 Cat", "Shadow, 12 Wolf" }, rows(pets(client)), "a tie: by name")
+        journal[FLUFFY].first.t = 300
+        client.stable.stabled = { client.stable.stabled[2] } -- Shadow released
+        client:fire("PET_STABLE_UPDATE")
+        assert.are.same({ "Fluffy, 15 Cat", "Ash, 9 Boar", "Past pets", "Shadow, 12 Wolf" }, rows(pets(client)))
     end)
 
     it("puts the pets the stable no longer lists under Past pets, and takes them back", function()
@@ -280,6 +304,7 @@ describe("the Pets tab", function()
         local client = NewClient():login():advance(1)
         open(client)
         client.petGUID = "Pet-0-5250-0-1-3825-0100ABCDEF"
+        client.serverTime = client.serverTime + 60 -- seen after Fluffy
         client:summon("Whiskers", {}):advance(1)
         assert.are.equal("Whiskers", pets(client).name.text)
         assert.are.equal("Whiskers, 15 Cat", rows(pets(client))[1])
@@ -311,7 +336,7 @@ describe("the Stable tab", function()
         return client.Addon.window.panels.stable
     end
 
-    it("shows every pet side by side, the pet out first, with what each could teach you", function()
+    it("shows every pet side by side, the newest tame first, with what each could teach you", function()
         local client = withStable()
         client.Addon:GetModule("PetJournal"):Pets()[SHADOW].abilities = { "Bite (Rank 2)", "Dash (Rank 1)" }
         local panel = stable(client)

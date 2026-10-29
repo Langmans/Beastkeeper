@@ -1,7 +1,7 @@
 local _, ns = ...
 
--- The Pets tab of Beastkeeper's window (Core\Window.lua): every pet in the journal on the left, the pet
--- out first, the ones the hunter no longer has under a Past pets heading at the end, and a card
+-- The Pets tab of Beastkeeper's window (Core\Window.lua): every pet in the journal on the left, the
+-- newest tame first, the ones the hunter no longer has under a Past pets heading at the end, and a card
 -- for the chosen one on the right: its model, name, level and loyalty, its
 -- family's specialization (Ferocity, Cunning, Tenacity: Beastkeeper.SpecName), the journal (Journal.lua)
 -- and its abilities, those it could teach you in green. The model is the pet
@@ -25,20 +25,22 @@ local PAST = "past"
 ---@type string[]
 local order = {}
 
----The pet out before every other pet, the hunter's pets before the past ones, each by name.
+---The hunter's pets before the past ones, each group from the newest tame (or first sighting) to
+---the oldest, then by name.
 ---@param a string
 ---@param b string
 ---@return boolean
 local function Earlier(a, b)
-    if a == M.current or b == M.current then return a == M.current end
     local pets = M:Pets()
-    local pastA, pastB = pets[a].past == true, pets[b].past == true
+    local entryA, entryB = pets[a], pets[b]
+    local pastA, pastB = entryA.past == true, entryB.past == true
     if pastA ~= pastB then return pastB end
-    return (pets[a].name or "") < (pets[b].name or "")
+    if entryA.first.t ~= entryB.first.t then return entryA.first.t > entryB.first.t end
+    return (entryA.name or "") < (entryB.name or "")
 end
 
----The journal's pets in list order: the pet out first, the hunter's other pets by name; with
----`withPast`, then PAST and the pets the hunter no longer has, by name.
+---The journal's pets in list order: the hunter's pets from new to old; with `withPast`, then PAST
+---and the pets the hunter no longer has, from new to old.
 ---@param withPast boolean?
 ---@return string[]
 local function Order(withPast)

@@ -242,9 +242,10 @@ took), and the abilities it had the last time it was out, so your stabled
 pets are there too, with the ranks each could still teach you. Hover your
 pet or its portrait for the short version in its tooltip.
 
-In Beastkeeper's window, the Pets tab lists them, the pet out first, with a card
-for each: its model (drag to turn it), level, loyalty, its specialization
-(Ferocity, Cunning or Tenacity), the journal, and its abilities, the ones it
+In Beastkeeper's window, the Pets tab lists them, the newest tame first and the
+pets you no longer have under Past pets, with a card for each: its model (drag
+to turn it), level, loyalty, its specialization (Ferocity, Cunning or Tenacity;
+before Wrath its category and modifiers), the journal, and its abilities, the ones it
 could still teach you in green. Visit a stable master once: Beastkeeper then
 knows your stabled pets' models and names too. The Stable tab puts all your
 pets side by side, with how many ranks each could still teach you.
