@@ -145,16 +145,17 @@ describe("BEASTKEEPER_PET_GROWTH", function()
         assert.are.equal(14, heard[1].points)
     end)
 
-    it("waits out the first seconds after login, then tells what changed since the last session", function()
-        local client = NewClient():login():advance(5)
+    it("waits for the pet's first UNIT_PET after login, then tells what changed since the last session", function()
+        local client = NewClient():login():advance(1)
         client:logout()
-        client = NewClient({ saved = Saved() })
+        -- The client's UNIT_PET comes some seconds after login (8 on Classic Era after a /reload).
+        client = NewClient({ saved = Saved(), petLate = true })
         client.trainingPoints = { 52, 7 }
         client:login()
         local _, heard = listen(client, "BEASTKEEPER_PET_GROWTH")
-        client:fire("UNIT_PET_TRAINING_POINTS", "pet")
-        assert.are.same({}, heard, "not in the login wait")
-        client:advance(5)
+        client:fire("UNIT_PET_TRAINING_POINTS", "pet"):advance(10)
+        assert.are.same({}, heard, "not before the pet's first UNIT_PET, however long")
+        client:fire("UNIT_PET", "player"):advance(1)
         assert.are.equal(52, heard[1].points)
     end)
 

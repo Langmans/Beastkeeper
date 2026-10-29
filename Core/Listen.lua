@@ -139,11 +139,23 @@ end
 
 -- BEASTKEEPER_PET_GROWTH: the pet out's training points total, level or loyalty level changed since it
 -- was last seen, kept per pet name in BeastkeeperDB (char.growth), so a pet summoned again, or the pet
--- after a relog, tells what changed while away. A pet seen the first time is only noted. Not in the
--- first seconds after login, while the client replays its values; then once. Spending points
--- changes only what is free, not the total: no growth.
-local LOGIN_WAIT = 5 -- seconds
+-- after a relog, tells what changed while away. A pet seen the first time is only noted. Not before
+-- the session's first UNIT_PET: until then the client may not have the pet's values (Classic Era
+-- sends it 8 seconds after a /reload, the values complete). Spending points changes only what is
+-- free, not the total: no growth.
 local SUMMON_WAIT = 1 -- seconds for a new pet's values to fill in
+
+---Sets Addon.petArrived at the session's first UNIT_PET, whether anyone listens yet or not.
+---@param _ Frame
+---@param _event string
+---@param unit string
+local function OnArrival(_, _event, unit)
+    if unit == "player" then Addon.petArrived = true end
+end
+local arrival = CreateFrame("Frame")
+arrival:RegisterEvent("UNIT_PET")
+arrival:SetScript("OnEvent", OnArrival)
+
 ---@type AddonSource
 local growth = { events = { "UNIT_PET_TRAINING_POINTS", "PET_UI_UPDATE", "UNIT_LEVEL", "UNIT_PET" } }
 sources.BEASTKEEPER_PET_GROWTH = growth
@@ -161,19 +173,15 @@ function growth:CheckAfter(delay)
     C_Timer.After(delay, CheckGrowthLater)
 end
 
+-- Takes stock at once when the pet's first UNIT_PET has come; else UNIT_PET will.
 function growth:Start()
     self.pending = false
-    local waited = GetTime() - (Addon.loginTime or 0)
-    if waited < LOGIN_WAIT then
-        self:CheckAfter(LOGIN_WAIT - waited)
-    else
-        self:Check()
-    end
+    self:Check()
 end
 
 ---Compares the pet out with how it stood last time and sends what changed.
 function growth:Check()
-    if self.pending then return end
+    if self.pending or not Addon.petArrived then return end
     local free, total = Addon.PetTrainingPoints()
     if not total then return end
     -- Right after a /reload a classic client may give no loyalty yet and the points as 0, which

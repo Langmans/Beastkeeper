@@ -911,7 +911,8 @@
 ---@class Addon: AceAddon, AceConsole-3.0, AceEvent-3.0
 ---@field NAME string the folder's name, which every name the game sees is made from (Core\Addon.lua)
 ---@field SLASH_ALIAS string the slash command's short form, beside NAME in lower case
----@field messages AddonMessages the messages Addon sends, by key
+---@field messages AddonMessages the messages Beastkeeper sends, by key
+---@field petArrived boolean? the session's first UNIT_PET has come: the pet's values can be read (Core\Listen.lua)
 ---@field L table<string, string> the AceLocale strings
 ---@field db AceDBObject-3.0 BeastkeeperDB; profile.modules[name] holds each module's switch
 ---@field modules table<string, AddonModule> AceAddon's own module table, by name

@@ -102,6 +102,7 @@ end
 ---@field lsToastColors boolean? LS: Toasts colours borders by the toast (its Colors settings); true by default
 ---@field handyNotes boolean? HandyNotes loaded before Addon
 ---@field noPet boolean? no pet unit at the start
+---@field petLate boolean? the pet out sends no UNIT_PET at login: the test sends it, as the client does some seconds later
 ---@field inCombat boolean? in combat from the start
 ---@field oldTrainingAPI boolean? GetPetTrainingPoints instead of C_PetInfo's
 ---@field noTrainingAPI boolean? neither
@@ -1948,6 +1949,9 @@ function NewClient(opts)
         self.loggedIn = true
         self:fire("PLAYER_LOGIN")
         self:fire("UPDATE_MACROS")
+        -- The pet out comes with a UNIT_PET (on Classic Era 8 seconds after a /reload); petLate
+        -- leaves it to the test.
+        if self.pet and not opts.petLate then self:fire("UNIT_PET", "player") end
         return self:advance(0.2)
     end
 

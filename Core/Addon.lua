@@ -93,7 +93,7 @@ Addon:SetDefaultModulePrototype({
 })
 
 function Addon:OnInitialize()
-    -- The client replays some values in the first seconds after login (Core\Listen.lua waits).
+    -- When the session began, for the Dev Probe's times since login.
     self.loginTime = GetTime()
     self:FindFeatures()
     -- A module is on unless it says otherwise; the saved file keeps only switches that differ.
