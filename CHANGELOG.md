@@ -138,6 +138,11 @@
   know and those to learn.
 - Pets tab: the pets you no longer have (released, or lost) under a Past pets
   heading; the Stable tab shows only the pets you have.
+- Toasts at the right moments only: the low-ammo toast not on the way back
+  up while restocking; the pet's low health only in combat (not right after
+  Revive Pet), or at the pull; no "content" for a pet that was content when
+  logged in with or summoned; no training points or loyalty drop for a newly
+  tamed pet that has the name of one released before it.
 - An About page in the settings: title, notes, version, author, license and
   website (LibAboutPanel-2.0).
 - Messages with a table of details, heard through Beastkeeper:Listen:

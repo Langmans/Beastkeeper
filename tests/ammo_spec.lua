@@ -137,6 +137,17 @@ describe("Ammo", function()
             assert.are.equal(3, #seen, "low again after a restock")
         end)
 
+        it("does not toast low on the way up from critical, while restocking", function()
+            local client = hunter(200)
+            local seen = toasts(client)
+            client:stock(ROUGH, 400)
+            assert.are.equal(0, #seen)
+            assert.are.equal("|cffff8000400|r", broker().text, "the counter still turns orange")
+            client:stock(ROUGH, 1000)
+            client:stock(ROUGH, 400)
+            assert.are.equal(1, #seen, "low again once it was fine")
+        end)
+
         it("says how long the ammo lasts at the weapon's speed, in the toast and the tooltip", function()
             local client = hunter(1000)
             client.rangedSpeed = 2.5

@@ -291,13 +291,31 @@ describe("Feeding", function()
             client:setHappiness(1)
             assert.are.same({}, seen, "not while reviving")
             client.cast = nil
-            client:fire("UNIT_PET", "player")
+            client:petGone():fire("UNIT_PET", "player") -- the body was gone
+            client:petBack():fire("UNIT_PET", "player")
             assert.are.equal("Fluffy is unhappy", toastFor(seen, "Feeding:unhappy").title, "the pet revived, hungry")
             client = NewClient():login():stock(MUTTON, 5)
             seen = toasts(client)
             client.channel = 1515 -- Tame Beast
             client:setHappiness(2)
             assert.are.same({}, seen, "not while taming")
+        end)
+
+        it("say nothing of how a pet comes in: logged in with, or a summon of, another content pet", function()
+            local client = NewClient()
+            client.happiness = 2
+            client:login():stock(MUTTON, 5)
+            assert.is_nil(client:toastTitle(), "content at login: nothing became content")
+            local seen = toasts(client)
+            client:petGone():fire("UNIT_PET", "player")
+            client.petGUID = "Pet-0-5250-0-1-3126-02002ED5F4"
+            client.happiness = 1
+            client:summon("Snapper", {})
+            assert.are.same({}, seen, "another pet, unhappy already")
+            client:setHappiness(2)
+            assert.are.same({}, seen, "it got happier")
+            client:setHappiness(1)
+            assert.are.equal("Snapper is unhappy", toastFor(seen, "Feeding:unhappy").title)
         end)
 
         it("go once the pet is happy again", function()

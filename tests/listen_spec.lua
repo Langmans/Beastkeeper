@@ -145,6 +145,17 @@ describe("BEASTKEEPER_PET_GROWTH", function()
         assert.are.equal(14, heard[1].points)
     end)
 
+    it("starts afresh for a tamed pet that has the name of one before it", function()
+        local client, heard = growing()
+        client:petGone()
+        client:fire("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-1", TAME_BEAST)
+        client.trainingPoints, client.loyalty = { 0, 0 }, "Loyalty Level 1 (Rebellious)"
+        client:summon("Fluffy", {}):advance(1)
+        assert.are.same({}, heard, "a new pet: no loyalty drop, no lost points")
+        client:petLevelUp(4)
+        assert.are.equal(0, heard[1].before.points, "from the new pet's stand")
+    end)
+
     it("waits for the pet's first UNIT_PET after login, then tells what changed since the last session", function()
         local client = NewClient():login():advance(1)
         client:logout()

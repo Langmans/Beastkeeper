@@ -112,13 +112,17 @@ local function OnPassive()
     return false
 end
 
----Toasts or takes away the low toast, from the pet's health; the marker follows it too.
-function M:CheckHealth()
+---Toasts or takes away the low toast, from the pet's health; the marker follows it too. The toast
+---comes in combat only: out of it the pet heals by itself, and a revived pet starts low. A pet still
+---low at the pull gets it then.
+---@param pull boolean? combat starts now (InCombatLockdown is still false while the event runs)
+function M:CheckHealth(pull)
     self:UpdateMarker()
     local line = self:Settings().low
     if line == 0 or not UnitExists("pet") or UnitIsDead("pet") then
         self.lowShown = false
-        return Addon:DropToast("CareButton:low")
+        Addon:DropToast("CareButton:low")
+        return
     end
     local health, max = UnitHealth("pet"), UnitHealthMax("pet")
     if not canaccessvalue(health) or not canaccessvalue(max) or max <= 0 then return end
@@ -126,7 +130,7 @@ function M:CheckHealth()
     if percent > line then
         self.lowShown = false
         Addon:DropToast("CareButton:low")
-    elseif not self.lowShown then
+    elseif not self.lowShown and (pull or InCombatLockdown()) then
         self.lowShown = true
         Addon:ShowToast(self:Toast("low", nil, percent))
     end
@@ -195,8 +199,10 @@ local function SeeingToIt()
 end
 
 ---Combat starts: BEASTKEEPER_PET_AT_PULL for other addons when something is wrong with the pet,
----and its toast when that is switched on. Not while the hunter tames, revives or calls.
+---and its toast when that is switched on. Not while the hunter tames, revives or calls. A pet that
+---went into the fight low gets the low toast.
 function M:PLAYER_REGEN_DISABLED()
+    self:CheckHealth(true)
     if not Addon.KnowsSpell(Addon.CALL_PET) or SeeingToIt() then return end
     local state = PullState()
     if not state then return end

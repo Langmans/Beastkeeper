@@ -33,6 +33,9 @@ local K, W = Addon.ammoKinds, Enum.ItemWeaponSubclass
 local KINDS = { [W.Bows] = K.arrow, [W.Crossbow] = K.arrow, [W.Guns] = K.bullet }
 local ICON = "Interface\\Icons\\INV_Ammo_Arrow_02"
 local COLORS = { low = "|cffff8000%d|r", critical = "|cffff2020%d|r" }
+-- How bad each state is: a toast only when the count falls into a worse one.
+---@type table<string, number>
+local SEVERITY = { ok = 0, low = 1, critical = 2 }
 -- A shot takes one from the bags: BAG_UPDATE_DELAYED comes once after it (also for a stack bought or
 -- looted); other ammo in the ammo slot, or another weapon, is PLAYER_EQUIPMENT_CHANGED. A
 -- display redraws only when the text changes.
@@ -358,8 +361,8 @@ local function Toast(state, count)
     }
 end
 
----Brings the text and icon up to date; when the count crossed a line: the toast (once per line,
----taken away once restocked) and BEASTKEEPER_AMMO.
+---Brings the text and icon up to date; when the count crossed a line: BEASTKEEPER_AMMO, the old
+---toast taken away, and a new one when it fell below a line (not on the way up while restocking).
 function M:Update()
     local object = self.object
     if not object then return end
@@ -377,9 +380,13 @@ function M:Update()
     local state = self:State(count)
     object.text = COLORS[state] and COLORS[state]:format(count) or tostring(count)
     if state == self.state then return end
+    local worse = SEVERITY[state] > SEVERITY[self.state or "ok"] ---@type boolean
     self.state = state
     Addon:DropToasts("Ammo:")
-    if state ~= "ok" and self:Settings().toasts then Addon:ShowToast(Toast(state, count)) end
+    -- Worse than before is never "ok".
+    if worse and self:Settings().toasts then
+        Addon:ShowToast(Toast(state --[[@as "low"|"critical"]], count))
+    end
     Addon:SendMessage(Addon.messages.ammo, { module = self:GetName(), count = count, state = state, kind = kind })
 end
 

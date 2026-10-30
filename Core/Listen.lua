@@ -139,7 +139,8 @@ end
 
 -- BEASTKEEPER_PET_GROWTH: the pet out's training points total, level or loyalty level changed since it
 -- was last seen, kept per pet name in BeastkeeperDB (char.growth), so a pet summoned again, or the pet
--- after a relog, tells what changed while away. A pet seen the first time is only noted. Not before
+-- after a relog, tells what changed while away. A pet seen the first time is only noted, and so is a
+-- pet just tamed, whatever an earlier pet of the same name left behind. Not before
 -- the session's first UNIT_PET: until then the client may not have the pet's values (Classic Era
 -- sends it 8 seconds after a /reload, the values complete). Spending points changes only what is
 -- free, not the total: no growth.
@@ -157,7 +158,9 @@ arrival:RegisterEvent("UNIT_PET")
 arrival:SetScript("OnEvent", OnArrival)
 
 ---@type AddonSource
-local growth = { events = { "UNIT_PET_TRAINING_POINTS", "PET_UI_UPDATE", "UNIT_LEVEL", "UNIT_PET" } }
+local growth = {
+    events = { "UNIT_PET_TRAINING_POINTS", "PET_UI_UPDATE", "UNIT_LEVEL", "UNIT_PET", "UNIT_SPELLCAST_SUCCEEDED" },
+}
 sources.BEASTKEEPER_PET_GROWTH = growth
 
 local function CheckGrowthLater()
@@ -194,7 +197,9 @@ function growth:Check()
     local loyalty, loyaltyName = Addon.PetLoyalty(total, level)
     local pets = Addon.db.char.growth --[[@as table<string, AddonGrowthSeen>]]
     local seen = pets[pet]
-    if not seen then
+    -- A tamed pet may carry the name of one released before it: it starts afresh.
+    if not seen or self.tamed then
+        self.tamed = false
         pets[pet] = { total = total, level = level, loyalty = loyalty }
         return
     end
@@ -227,6 +232,15 @@ end
 ---@param unit string
 function growth:UNIT_PET(_, unit)
     if unit == "player" then self:CheckAfter(SUMMON_WAIT) end
+end
+
+-- Tame Beast needs the pet away, so the next pet the check reads is the tamed one.
+---@param _ string the event
+---@param unit string
+---@param _castGUID GameValue
+---@param spellID GameValue
+function growth:UNIT_SPELLCAST_SUCCEEDED(_, unit, _castGUID, spellID)
+    if unit == "player" and Addon.Readable(spellID) and spellID == TAME_BEAST then self.tamed = true end
 end
 
 -- BEASTKEEPER_PET_TAMED: the pet that came out after a Tame Beast cast. It has no pet number until the

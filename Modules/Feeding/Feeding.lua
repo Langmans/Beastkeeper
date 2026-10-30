@@ -202,20 +202,26 @@ function M:Toast(kind)
     }
 end
 
----Toasts a happiness drop (once per level reached) and takes away the toasts a rise answers. Not
+---Toasts a happiness drop (once per level reached) and takes away the toasts a rise answers. The
+---first reading of a pet (at login, or another pet summoned) only takes note: nothing dropped. Not
 ---while the hunter revives the pet or tames a beast: the drop is not taken in then, so the pet
 ---that comes back hungry still gets its toast (UNIT_PET checks again).
 function M:CheckHappiness()
     self:ApplyButton()
     if Addon.IsCasting(Addon.REVIVE_PET) or Addon.IsTaming() then return end
+    -- Here and not in UNIT_PET: the core's happiness message may come before that event.
+    local guid = UnitGUID("pet")
+    if guid and Addon.Readable(guid) and guid ~= self.happinessPet then
+        self.happiness, self.happinessPet = nil, guid
+    end
     local happiness = Happiness()
     if not happiness then return end
-    local last = self.happiness or HAPPY
+    local last = self.happiness
     self.happiness = happiness
     local settings = self:Settings()
     if happiness > UNHAPPY then Addon:DropToast("Feeding:unhappy") end
     if happiness > CONTENT then Addon:DropToast("Feeding:content") end
-    if happiness >= last or not Addon.KnowsSpell(M.FEED_PET) then return end
+    if not last or happiness >= last or not Addon.KnowsSpell(M.FEED_PET) then return end
     if happiness == CONTENT and settings.content then Addon:ShowToast(self:Toast("content")) end
     if happiness == UNHAPPY and settings.unhappy then Addon:ShowToast(self:Toast("unhappy")) end
 end
@@ -237,12 +243,12 @@ function M:BAG_UPDATE_DELAYED()
     self:Update()
 end
 
--- A pet summoned or dismissed: another pet, another diet and level.
+-- A pet summoned or dismissed: another pet, another diet and level. The same pet back (revived,
+-- or summoned again) keeps its last happiness, so a drop meanwhile still toasts.
 ---@param _ string the event
 ---@param unit string
 function M:UNIT_PET(_, unit)
     if unit ~= "player" then return end
-    self.happiness = nil
     wipe(foods)
     self:Update()
     self:CheckHappiness()
