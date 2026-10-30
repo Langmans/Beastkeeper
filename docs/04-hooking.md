@@ -223,9 +223,20 @@ low, or back to enough after restocking. Also once when the module starts.
 | Field | Type | |
 |---|---|---|
 | `module` | string | `"Ammo"` |
-| `count` | number | the ammo the weapon shoots and the hunter's level allows, every kind of it in the bags |
+| `count` | number | the ammo it counts: by default the kind in the ammo slot; with that switched off on the Ammo page, every kind the weapon shoots and the hunter's level allows |
 | `state` | string | `"ok"`, `"low"` or `"critical"` |
 | `kind` | number | `Beastkeeper.ammoKinds.arrow` (2: bow, crossbow) or `.bullet` (3: gun), the Projectile item subclass |
+
+### `BEASTKEEPER_PET_AT_PULL`
+
+Combat started while something is wrong with the pet: none out, dead, or on
+Passive. Sent by the Care Button, also with its toasts off; not while the
+hunter tames a beast.
+
+| Field | Type | |
+|---|---|---|
+| `module` | string | `"CareButton"` |
+| `state` | string | `"missing"` (no pet out), `"dead"` (it died and its body is gone) or `"passive"` (out, on Passive) |
 
 ### `BEASTKEEPER_PET_HAPPINESS` (core)
 

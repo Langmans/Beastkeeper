@@ -77,6 +77,11 @@
 ---@field state "ok"|"low"|"critical"
 ---@field kind number what the hunter's ranged weapon shoots: Addon.ammoKinds.arrow (2) or .bullet (3)
 
+---BEASTKEEPER_PET_AT_PULL: combat started while something is wrong with the pet.
+---@class AddonPetAtPullEvent
+---@field module string "CareButton"
+---@field state "missing"|"dead"|"passive" none out, dead (its body gone), or on Passive
+
 ---BEASTKEEPER_PET_HAPPINESS (core, through Beastkeeper:Listen): the pet out's happiness changed.
 ---@class AddonPetHappinessEvent
 ---@field happiness number Addon.happiness.unhappy (1), .content (2) or .happy (3)

@@ -129,6 +129,8 @@
 - Beast Training is read on Classic Era and Burning Crusade too (the craft
   window), and its training point costs are kept: the pet's journal says what
   its free points can buy ("Can buy with 43 free points: Bite rank 2 (10)").
+- BEASTKEEPER_PET_AT_PULL for other addons: combat started without a pet, with
+  a dead one, or with one on Passive.
 - Beast Map: during a hunt the tame key shows as a button on screen: a click
   targets and marks the beast, Shift-click casts Tame Beast; Shift-drag moves it.
 - Abilities tab: a quest giver's "!" on an ability with a rank you can learn

@@ -215,6 +215,31 @@ describe("CareButton", function()
             assert.is_nil(client:enterCombat():toastTitle(), "no pet bar to read")
         end)
 
+        it("tell other addons at the pull what is wrong with the pet, the toasts on or off", function()
+            ---A client whose pulls BEASTKEEPER_PET_AT_PULL is heard for.
+            local function listening(opts)
+                local client, heard = NewClient(opts):login(), {}
+                client.Addon:Listen({}, "BEASTKEEPER_PET_AT_PULL", function(_, event)
+                    heard[#heard + 1] = event.state
+                    assert.are.equal("CareButton", event.module)
+                end)
+                return client, heard
+            end
+            local client, heard = listening({ noPet = true, saved = saved({ nopet = false }) })
+            client:enterCombat():leaveCombat()
+            client:petBack():petDies():petGone():enterCombat():leaveCombat()
+            client:petBack()
+            client.petBar[6] = { token = "PET_MODE_PASSIVE", active = true }
+            client:enterCombat():leaveCombat()
+            client.petBar[6].active = false
+            client:enterCombat():leaveCombat()
+            assert.are.same({ "missing", "dead", "passive" }, heard, "a pet on Defensive: nothing")
+            client, heard = listening({ noPet = true })
+            client.channel = 1515 -- Tame Beast
+            client:enterCombat()
+            assert.are.same({}, heard, "not while taming")
+        end)
+
         it("say once that the pet's health is low, again only after it went back up", function()
             local client = NewClient():login()
             client:petHealth(60)

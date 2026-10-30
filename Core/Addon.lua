@@ -38,6 +38,7 @@ for _, key in ipairs({
     "petDied",
     "petTamed",
     "ammo",
+    "petAtPull",
 }) do
     Addon.messages[key] = addonName:upper() .. "_" .. key:gsub("%u", "_%0"):upper()
 end

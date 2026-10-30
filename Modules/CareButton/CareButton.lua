@@ -174,18 +174,29 @@ end
 
 -- Combat starts: the moment a missing pet, or one on Passive, costs something. A hunter without
 -- Call Pet has no pet to miss yet; one taming a beast is in combat with it, and getting a pet.
+---What is wrong with the pet as combat starts: "passive" (on Passive), "dead" (a remembered
+---death, the body gone), "missing" (none out); nil when nothing is.
+---@return "passive"|"dead"|"missing"|nil
+local function PullState()
+    if UnitExists("pet") then
+        if not UnitIsDead("pet") and OnPassive() then return "passive" end
+        return nil
+    end
+    return M:PetDead() and "dead" or "missing"
+end
+
+-- Per pull state: the setting of its toast, and the toast's kind.
+local PULL_TOASTS = { passive = { "passive", "passive" }, dead = { "died", "dead" }, missing = { "nopet", "nopet" } }
+
+---Combat starts: BEASTKEEPER_PET_AT_PULL for other addons when something is wrong with the pet,
+---and its toast when that is switched on. Not while the hunter tames a beast.
 function M:PLAYER_REGEN_DISABLED()
     if not Addon.KnowsSpell(Addon.CALL_PET) or Addon.IsTaming() then return end
-    local settings = self:Settings()
-    if UnitExists("pet") then
-        if settings.passive and not UnitIsDead("pet") and OnPassive() then Addon:ShowToast(self:Toast("passive")) end
-        return
-    end
-    if self:PetDead() then
-        if settings.died then Addon:ShowToast(self:Toast("dead")) end
-    elseif settings.nopet then
-        Addon:ShowToast(self:Toast("nopet"))
-    end
+    local state = PullState()
+    if not state then return end
+    Addon:SendMessage(Addon.messages.petAtPull, { module = self:GetName(), state = state })
+    local setting, kind = PULL_TOASTS[state][1], PULL_TOASTS[state][2]
+    if self:Settings()[setting] then Addon:ShowToast(self:Toast(kind)) end
 end
 
 ---@param _ string the event

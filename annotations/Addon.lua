@@ -918,6 +918,7 @@
 ---@field petDied string
 ---@field petTamed string
 ---@field ammo string
+---@field petAtPull string
 
 ---Any value the game hands over, before the addon checks its type.
 ---@alias GameValue string|number|boolean|table|nil
