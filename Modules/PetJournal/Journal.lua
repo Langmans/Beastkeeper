@@ -119,16 +119,31 @@ function M.TeachCount(entry)
     return count
 end
 
----For the pet out: what its free training points can buy (AbilityLearned, from Beast Training's
----costs); nil for another pet, without that module, or when nothing fits.
+-- Each kind of training advice's name, by its AbilityLearned adviceRoles value.
+local ADVICE_NAMES = {
+    upgrades = L.PETJOURNAL_ADVICE_UPGRADES,
+    tank = L.PETJOURNAL_ADVICE_TANK,
+    dps = L.PETJOURNAL_ADVICE_DPS,
+}
+M.ADVICE_NAMES = ADVICE_NAMES
+
+---For the pet out: what to train with its free points, by the kind of advice chosen for it
+---(AbilityLearned, from Beast Training's costs), and what to save for; nil for another pet,
+---without that module, or for what there is none of.
 ---@param key string
----@return string?
-local function AffordableLine(key)
+---@param entry AddonJournalEntry
+---@return string? train
+---@return string? saving
+local function AdviceLines(key, entry)
     local learned = Addon:GetModule("AbilityLearned", true) --[[@as AddonAbilityLearned?]]
-    if key ~= M.current or not learned or not learned:IsEnabled() then return nil end
-    local list = learned:Affordable()
-    if #list == 0 then return nil end
-    return L.PETJOURNAL_AFFORDABLE:format(Addon.PetTrainingPoints() or 0, table.concat(list, ", "))
+    if key ~= M.current or not learned or not learned:IsEnabled() then return nil, nil end
+    local role = entry.advice or learned.adviceRoles.upgrades
+    local advice = learned:Advice(role)
+    local train = #advice.buy > 0
+            and L.PETJOURNAL_ADVICE:format(ADVICE_NAMES[role], advice.free, table.concat(advice.buy, ", "), advice.left)
+        or nil
+    local saving = advice.saving and L.PETJOURNAL_SAVING:format(advice.saving, advice.short) or nil
+    return train, saving
 end
 
 ---A pet's journal as lines; the same table each time, refilled. Empty for a pet not in it.
@@ -153,7 +168,9 @@ function M:JournalLines(key, brief)
     lines[#lines + 1] = Forecast(key, entry)
     if not brief then lines[#lines + 1] = M.AbilitiesLine(entry) end
     lines[#lines + 1] = CanTeachLine(entry)
-    lines[#lines + 1] = AffordableLine(key)
+    local train, saving = AdviceLines(key, entry)
+    lines[#lines + 1] = train
+    lines[#lines + 1] = saving
     return lines
 end
 

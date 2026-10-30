@@ -113,6 +113,19 @@ local function Text(panel, template, size)
     return text
 end
 
+-- The kinds of training advice on the card, in order (AbilityLearned's adviceRoles values).
+local ADVICE_ORDER = { "upgrades", "tank", "dps" }
+
+---A kind of advice clicked: the chosen pet keeps it (none for Upgrades, the default).
+---@param button AddonAdviceButton
+local function OnAdviceClick(button)
+    local key = M:Chosen()
+    local entry = key and M:Pets()[key]
+    if not entry then return end
+    entry.advice = button.role ~= ADVICE_ORDER[1] and button.role or nil
+    Addon:RefreshWindow("pets")
+end
+
 ---Builds the panel: the list's rows, the model and the card's texts.
 ---@param panel AddonPetsPanel
 ---@param skin AddonButtonHolderSkin
@@ -148,8 +161,28 @@ local function Create(panel, skin)
     panel.level:SetPoint("TOPLEFT", panel.name, "BOTTOMLEFT", 0, -4)
     panel.spec = Text(panel, "GameFontNormal", 12)
     panel.spec:SetPoint("TOPLEFT", panel.level, "BOTTOMLEFT", 0, -4)
+    panel.adviceLabel = Text(panel, "GameFontNormal", 12)
+    panel.adviceLabel:SetWidth(0)
+    panel.adviceLabel:SetPoint("TOPLEFT", panel.spec, "BOTTOMLEFT", 0, -8)
+    panel.adviceLabel:SetText(L.PETJOURNAL_ADVICE_LABEL)
+    panel.advice = {}
+    ---@type Region
+    local before = panel.adviceLabel
+    for index, role in ipairs(ADVICE_ORDER) do
+        local button = CreateFrame("Button", nil, panel) --[[@as AddonAdviceButton]]
+        button.role = role
+        button.label = button:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        button.label:SetPoint("LEFT")
+        skin.Font(button.label, 12)
+        button.label:SetText(M.ADVICE_NAMES[role])
+        button:SetSize(button.label:GetStringWidth() + 4, 16)
+        button:SetPoint("LEFT", before, "RIGHT", index == 1 and 0 or 8, 0)
+        button:SetScript("OnClick", OnAdviceClick)
+        panel.advice[index] = button
+        before = button
+    end
     panel.journal = Text(panel, "GameFontHighlight", 12)
-    panel.journal:SetPoint("TOPLEFT", panel.spec, "BOTTOMLEFT", 0, -10)
+    panel.journal:SetPoint("TOPLEFT", panel.adviceLabel, "BOTTOMLEFT", 0, -10)
     panel.abilities = Text(panel, "GameFontHighlight", 12)
     panel.abilities:SetPoint("TOPLEFT", panel.journal, "BOTTOMLEFT", 0, -10)
 end
@@ -175,6 +208,10 @@ local function Refresh(panel)
     end
     local key = M:Chosen()
     local entry = key and pets[key]
+    panel.adviceLabel:SetShown(entry ~= nil)
+    for _, button in ipairs(panel.advice) do
+        button:SetShown(entry ~= nil)
+    end
     if not key or not entry then
         panel.name:SetText(L.PETJOURNAL_NONE)
         panel.level:SetText("")
@@ -183,6 +220,12 @@ local function Refresh(panel)
         panel.abilities:SetText("")
         panel.model:Hide()
         return
+    end
+    local chosen = entry.advice or ADVICE_ORDER[1]
+    local accent = panel.skin.Accent and panel.skin.Accent() or HEADING
+    for _, button in ipairs(panel.advice) do
+        local colour = button.role == chosen and accent or AWAY
+        button.label:SetTextColor(colour[1], colour[2], colour[3])
     end
     panel.name:SetText(entry.name or "?")
     panel.level:SetText(M.LevelLine(entry))

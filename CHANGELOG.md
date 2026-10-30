@@ -127,8 +127,11 @@
   it counts every kind of ammo your weapon shoots and your level allows. The
   low-ammo toast names the ammo it counts ("Rough Arrow low: 400 left").
 - Beast Training is read on Classic Era and Burning Crusade too (the craft
-  window), and its training point costs are kept: the pet's journal says what
-  its free points can buy ("Can buy with 43 free points: Bite rank 2 (10)").
+  window), and its training point costs are kept: the pet's journal advises
+  what to train with its free points ("Train (Upgrades), 43 free points: Bite
+  rank 2 (10); 33 left.") and what to save for. On the Pets card a choice per
+  pet: Upgrades (what it has first), Tank (Growl, armor, resistances first) or
+  DPS (Bite, Claw, Dash first).
 - BEASTKEEPER_PET_AT_PULL for other addons: combat started without a pet, with
   a dead one, or with one on Passive.
 - Beast Map: during a hunt the tame key shows as a button on screen: a click

@@ -14,8 +14,8 @@ local _, ns = ...
 -- Beast Training is a rank the hunter has learned. GetTrainerServiceInfo gives the name, not the
 -- rank, so the row's spell comes from a hidden tooltip and the rank from that spell. On Classic Era
 -- and Burning Crusade, Beast Training is the craft window, whose rows give name and rank text.
--- Either way each rank's training point cost and pet level are kept, for what the pet out's free
--- points can buy (Affordable).
+-- Either way each rank's training point cost and pet level are kept, for what to train with the
+-- pet out's free points (Advice).
 
 ---@type Addon
 local Addon = ns
@@ -259,39 +259,135 @@ function M:ReadBeastCraft()
     Finish(read)
 end
 
--- What the free points can buy, refilled for each ask.
----@type string[]
-local affordable = {}
+-- The kinds of training advice: Upgrades (the default) puts what the pet has first; Tank and DPS
+-- put their role's abilities before that.
+M.adviceRoles = { upgrades = "upgrades", tank = "tank", dps = "dps" }
 
----What the pet out's free training points can buy: per ability its family is shown in Beast
----Training, the highest rank the hunter knows that the pet does not have yet, its level allows and
----the free points cover (Beast Training's own test: the rank's cost against the free points), as
----"Bite rank 2 (10)", sorted. Empty while a cost, the family or the pet's values are unknown.
----@return string[]
-function M:Affordable()
-    wipe(affordable)
+-- Each ability's role by a spell of it (any rank: only its name is used, in the client's
+-- language). Abilities not here (Cower, Warp, Forever's family abilities) are neutral. Ranks of
+-- Burning Crusade's abilities are unknown to Classic Era and simply left out there.
+local ROLE_SPELLS = {
+    tank = {
+        2649, -- Growl
+        24547, -- Natural Armor
+        4187, -- Great Stamina
+        24493, -- Arcane Resistance
+        24440, -- Fire Resistance
+        24475, -- Frost Resistance
+        24494, -- Nature Resistance
+        24490, -- Shadow Resistance
+        26064, -- Shell Shield
+        26090, -- Thunderstomp
+        32233, -- Avoidance (Burning Crusade)
+    },
+    dps = {
+        17253, -- Bite
+        16827, -- Claw
+        23099, -- Dash
+        23145, -- Dive
+        24604, -- Furious Howl
+        7371, -- Charge
+        24423, -- Screech
+        24844, -- Lightning Breath
+        24640, -- Scorpid Poison
+        24450, -- Prowl
+        25076, -- Cobra Reflexes (Burning Crusade)
+        35290, -- Gore (Burning Crusade)
+        34889, -- Fire Breath (Burning Crusade)
+        35387, -- Poison Spit (Burning Crusade)
+    },
+}
+
+-- Each ability name's role, built on the first advice: by then the spell names are readable.
+---@type table<string, string>?
+local roleOf
+
+---@return table<string, string>
+local function RoleOf()
+    if roleOf then return roleOf end
+    roleOf = {}
+    for role, ids in pairs(ROLE_SPELLS) do
+        for _, id in ipairs(ids) do
+            local name = Addon.SpellInfo(id)
+            if name then roleOf[name] = role end
+        end
+    end
+    return roleOf
+end
+
+-- One advice, refilled for each ask, and the abilities it weighs, in its order.
+---@type AddonAdvice
+local advice = { buy = {}, free = 0, left = 0 }
+---@type string[], table<string, number>, string
+local candidates, hasRank, adviceRole = {}, {}, M.adviceRoles.upgrades
+
+---The order of the advice: the role's abilities first, then those the pet has (upgrades), then
+---by name.
+---@param a string
+---@param b string
+---@return boolean
+local function AdviceBefore(a, b)
+    local roles = RoleOf()
+    local roleA, roleB = roles[a] == adviceRole, roles[b] == adviceRole
+    if roleA ~= roleB then return roleA end
+    local hasA, hasB = hasRank[a] > 0, hasRank[b] > 0
+    if hasA ~= hasB then return hasA end
+    return a < b
+end
+
+---What to train with the pet out's free points, for `role` (Upgrades by default): in order, per
+---ability its family is shown in Beast Training, the highest rank the hunter knows that the pet
+---lacks and its level allows; bought while the points last (Beast Training's own test: the rank's
+---cost against what is free), as "Bite rank 2 (10)". The first best rank that did not fit is what
+---to save for, with the points short of it. Empty while a cost, the family or the pet's values are
+---unknown.
+---@param role string? an M.adviceRoles value
+---@return AddonAdvice
+function M:Advice(role)
+    wipe(advice.buy)
+    wipe(candidates)
+    wipe(hasRank)
+    advice.saving, advice.short = nil, nil
     local free = Addon.PetTrainingPoints()
     local family, level = Addon.PetFamilyID(), UnitLevel("pet")
     local global = self.db.global --[[@as AddonAbilityLearnedGlobal]]
     local taught = family and global.taught[family]
-    if not free or not taught or type(level) ~= "number" or not Addon.Readable(level) then return affordable end
+    advice.free, advice.left = free or 0, free or 0
+    if not free or not taught or type(level) ~= "number" or not Addon.Readable(level) then return advice end
     local petSpells = Addon.PetSpells()
     for name in pairs(taught) do
         local spell = petSpells[name]
-        local has = spell and RankNumber(spell.rank) or 0
+        hasRank[name] = spell and RankNumber(spell.rank) or 0
+        candidates[#candidates + 1] = name
+    end
+    adviceRole = role or M.adviceRoles.upgrades
+    table.sort(candidates, AdviceBefore)
+    ---@type number?
+    local savingCost
+    for _, name in ipairs(candidates) do
         local costs = global.costs[name] or {}
         ---@type number?, number?
-        local best, price
+        local best, bought
         for rank in pairs(Char().ranks[name] or {}) do
             local row = costs[rank]
-            if row and rank > has and row.cost <= free and row.level <= level and (not best or rank > best) then
-                best, price = rank, row.cost
+            if row and rank > hasRank[name] and row.level <= level then
+                if not best or rank > best then best = rank end
+                if row.cost <= advice.left and (not bought or rank > bought) then bought = rank end
             end
         end
-        if best then affordable[#affordable + 1] = L.ABILITYLEARNED_AFFORDABLE:format(name, best, price) end
+        if bought then
+            local cost = costs[bought].cost
+            advice.left = advice.left - cost
+            advice.buy[#advice.buy + 1] = L.ABILITYLEARNED_AFFORDABLE:format(name, bought, cost)
+        end
+        if best and best ~= bought and not savingCost then
+            savingCost = costs[best].cost
+            advice.saving = L.ABILITYLEARNED_AFFORDABLE:format(name, best, savingCost)
+        end
     end
-    table.sort(affordable)
-    return affordable
+    -- Short of it once the advised ranks are bought.
+    if savingCost then advice.short = savingCost - advice.left end
+    return advice
 end
 
 ---The wild abilities the pet out has at a higher rank than this character knows, as

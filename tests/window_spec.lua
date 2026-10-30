@@ -165,6 +165,30 @@ describe("the Pets tab", function()
         assert.are.equal("Ferocity", panel.spec.text)
     end)
 
+    it("has a training advice choice per pet: Upgrades, Tank or DPS, the chosen one lit", function()
+        local client = withStable()
+        open(client)
+        local panel = pets(client)
+        local journal = client.Addon:GetModule("PetJournal"):Pets()
+        local advice = panel.advice
+        assert.are.equal("Train: ", panel.adviceLabel.text)
+        assert.are.same(
+            { "Upgrades", "Tank", "DPS" },
+            { advice[1].label.text, advice[2].label.text, advice[3].label.text }
+        )
+        local gold, grey = { 1, 0.82, 0 }, { 0.6, 0.6, 0.6 }
+        assert.are.same(gold, advice[1].label.textColor, "Upgrades without a choice")
+        click(advice[2])
+        assert.are.equal("tank", journal[FLUFFY].advice)
+        assert.are.same(gold, advice[2].label.textColor)
+        assert.are.same(grey, advice[1].label.textColor)
+        click(panel.rows[3])
+        assert.are.same(gold, advice[1].label.textColor, "Shadow has its own")
+        click(panel.rows[1])
+        click(advice[1])
+        assert.is_nil(journal[FLUFFY].advice, "Upgrades is the default, kept as none")
+    end)
+
     it("lists the newest tame first, the past pets last, each group from new to old", function()
         local client = withStable()
         local journal = client.Addon:GetModule("PetJournal"):Pets()

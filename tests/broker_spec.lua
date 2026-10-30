@@ -53,13 +53,21 @@ describe("Data Broker", function()
         assert.are.equal("No pet out", tooltip(client)[1])
     end)
 
-    it("says what the free training points can buy, once Beast Training gave the costs", function()
+    it("advises what to train with the free points, once Beast Training gave the costs", function()
         local client = NewClient({ era = true }):login():advance(1)
         local text = table.concat(tooltip(client), "\n")
-        assert.is_nil(text:find("Can buy", 1, true), "no costs known yet")
-        client:openCraft({ { "Bite", "Rank 1", "used", 1, 1 }, { "Bite", "Rank 2", "available", 10, 8 } })
+        assert.is_nil(text:find("free points", 1, true), "no costs known yet")
+        client:openCraft({
+            { "Bite", "Rank 1", "used", 1, 1 },
+            { "Bite", "Rank 2", "available", 10, 8 },
+            { "Dash", "Rank 1", "available", 40, 1 },
+        })
         text = table.concat(tooltip(client), "\n")
-        assert.truthy(text:find("Can buy with 43 free points: Bite rank 2 (10).", 1, true), text)
+        assert.truthy(text:find("Train (Upgrades), 43 free points: Bite rank 2 (10); 33 left.", 1, true), text)
+        assert.truthy(text:find("Saving for Dash rank 1 (40): 7 points short.", 1, true), text)
+        client.Addon:GetModule("PetJournal"):Pets()[client.Addon:GetModule("PetJournal").current].advice = "dps"
+        text = table.concat(tooltip(client), "\n")
+        assert.truthy(text:find("Train (DPS), 43 free points: Bite rank 2 (10); 33 left.", 1, true), text)
     end)
 
     it("has a minimap button, through LibDBIcon, which the page hides", function()

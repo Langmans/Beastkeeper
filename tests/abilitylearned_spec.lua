@@ -374,19 +374,55 @@ describe("AbilityLearned", function()
             assert.is_false(module(client).db.char.trainingRead)
         end)
 
-        it("says what the free points can buy: per ability the highest known rank that fits", function()
-            local client = ready({ era = true }) -- Fluffy: level 15, 43 points free, Claw 2 and Bite 1
-            client:openCraft({
-                { "Bite", "Rank 1", "used", 1, 1 },
-                { "Bite", "Rank 2", "available", 10, 8 },
-                { "Bite", "Rank 3", "unavailable", 20, 16 }, -- the pet's level is too low
-                { "Claw", "Rank 2", "used", 8, 8 },
-                { "Growl", "Rank 2", "available", 50, 10 }, -- more than is free
-                { "Cower", "Rank 1", "available", 5, 5 },
-            })
-            assert.are.same({ "Bite rank 2 (10)", "Cower rank 1 (5)" }, module(client):Affordable())
-            client.trainingPoints = { 50, 50 }
-            assert.are.same({}, module(client):Affordable(), "nothing free")
+        describe("advises what to train with the free points", function()
+            ---Fluffy: level 15, 43 points free, Claw 2 and Bite 1; Beast Training read.
+            local function training()
+                local client = ready({ era = true })
+                client:openCraft({
+                    { "Bite", "Rank 1", "used", 1, 1 },
+                    { "Bite", "Rank 2", "available", 10, 8 },
+                    { "Bite", "Rank 3", "unavailable", 20, 16 }, -- the pet's level is too low
+                    { "Claw", "Rank 2", "used", 8, 8 },
+                    { "Growl", "Rank 2", "available", 30, 10 },
+                    { "Cower", "Rank 1", "available", 5, 5 },
+                })
+                return client
+            end
+
+            it(
+                "upgrades first, then new abilities, each its highest known rank that fits, within the points",
+                function()
+                    local advice = module(training()):Advice()
+                    assert.are.same({ "Bite rank 2 (10)", "Cower rank 1 (5)" }, advice.buy)
+                    assert.are.equal(43, advice.free)
+                    assert.are.equal(28, advice.left)
+                    assert.are.equal("Growl rank 2 (30)", advice.saving, "next in line, not yet in reach")
+                    assert.are.equal(2, advice.short)
+                end
+            )
+
+            it("puts the role's abilities first: Growl for a tank, then the rest as for upgrades", function()
+                local client = training()
+                local advice = module(client):Advice("tank")
+                assert.are.same({ "Growl rank 2 (30)", "Bite rank 2 (10)" }, advice.buy)
+                assert.are.equal(3, advice.left)
+                assert.are.equal("Cower rank 1 (5)", advice.saving)
+                assert.are.equal(2, advice.short)
+                advice = module(client):Advice("dps")
+                assert.are.same({ "Bite rank 2 (10)", "Cower rank 1 (5)" }, advice.buy, "Bite is damage")
+            end)
+
+            it("has nothing to buy or save for without points, costs or a pet", function()
+                local client = training()
+                client.trainingPoints = { 50, 50 }
+                local advice = module(client):Advice()
+                assert.are.same({}, advice.buy, "nothing free")
+                assert.are.equal("Bite rank 2 (10)", advice.saving)
+                assert.are.equal(10, advice.short)
+                advice = module(ready({ era = true })):Advice()
+                assert.are.same({}, advice.buy, "Beast Training not read")
+                assert.is_nil(advice.saving)
+            end)
         end)
 
         it("never lowers a rank, and leaves a pet trainer's ranks for sale alone", function()

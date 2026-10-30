@@ -225,6 +225,7 @@
 ---@field ranks table<string, string>? each ability's rank text by name ("" without ranks)
 ---@field displayID number? its model, as the stable's lists gave it
 ---@field past true? no longer the hunter's: in neither stable list at the last read, and not out
+---@field advice string? its training advice, an AbilityLearned adviceRoles value; nil for upgrades
 
 ---PetJournal's saved settings, its namespace's profile.
 ---@class AddonPetJournalSettings
@@ -243,6 +244,7 @@
 ---@field TeachCount fun(entry: AddonJournalEntry): number
 ---@field PetOrder fun(): string[] the journal's pets, the pet out first, then by name
 ---@field ShowModel fun(model: PlayerModel, key: string, entry: AddonJournalEntry)
+---@field ADVICE_NAMES table<string, string> each kind of training advice's name, by its adviceRoles value
 ---@field OnDied fun(self: AddonPetJournal)
 ---@field OnTamed fun(self: AddonPetJournal, message: string, event: AddonPetTamedEvent)
 ---@field OnGrowth fun(self: AddonPetJournal)
@@ -385,6 +387,14 @@
 ---@field costs table<string, table<number, AddonTrainingCost>> per ability name and rank
 ---@field taught table<number, table<string, true>> per pet family, the abilities Beast Training shows it
 
+---What to train with the pet out's free points (AbilityLearned:Advice): the same table each time.
+---@class AddonAdvice
+---@field buy string[] the ranks to buy, in order: "Bite rank 2 (10)"
+---@field free number the free points
+---@field left number what is left once they are bought
+---@field saving string? the next rank in line the points do not reach yet
+---@field short number? the points short of it
+
 ---@class AddonAbilityLearned: AddonSettingsModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field ready boolean the login wait is over
@@ -400,7 +410,8 @@
 ---@field Simulate fun(self: AddonAbilityLearned)
 ---@field MarkKnown fun(self: AddonAbilityLearned, name: string, rank: number): boolean
 ---@field ReadBeastCraft fun(self: AddonAbilityLearned) Beast Training's craft window (Classic Era, Burning Crusade)
----@field Affordable fun(self: AddonAbilityLearned): string[] what the pet out's free training points can buy
+---@field Advice fun(self: AddonAbilityLearned, role: string?): AddonAdvice what to train with the pet out's free points
+---@field adviceRoles {upgrades: string, tank: string, dps: string} the kinds of advice
 ---@field HighestRank fun(self: AddonAbilityLearned, name: string): number?
 ---@field CanTeach fun(self: AddonAbilityLearned, name: string, rank: string?): boolean
 ---@field HasRank fun(self: AddonAbilityLearned, name: string, rank: number): boolean
@@ -802,8 +813,14 @@
 ---@field name FontString
 ---@field level FontString
 ---@field spec FontString
+---@field adviceLabel FontString
+---@field advice AddonAdviceButton[] the kinds of training advice, Upgrades first
 ---@field journal FontString
 ---@field abilities FontString
+
+---@class AddonAdviceButton: Button
+---@field label FontString
+---@field role string the kind of advice, an AbilityLearned adviceRoles value
 
 ---@class AddonPetRow: Button
 ---@field label FontString

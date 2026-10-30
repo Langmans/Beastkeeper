@@ -39,8 +39,16 @@ L.PETJOURNAL_FIRST = "First seen %s in %s."
 L.PETJOURNAL_LEVEL = "Level %d %s, loyalty %s."
 -- %s: a duration, PETJOURNAL_HOURS or PETJOURNAL_MINUTES.
 L.PETJOURNAL_OUT = "Out together: %s."
--- The pet out's journal: what its free training points can buy in Beast Training. %d: the free points; %s: the ranks, such as "Bite rank 2 (10), Cower rank 1 (5)".
-L.PETJOURNAL_AFFORDABLE = "Can buy with %d free points: %s."
+-- The pet out's journal: what to train with its free training points in Beast Training. First %s: the kind of advice (PETJOURNAL_ADVICE_UPGRADES and so on); %d: the free points; second %s: the ranks, such as "Bite rank 2 (10), Cower rank 1 (5)"; last %d: the points left after them.
+L.PETJOURNAL_ADVICE = "Train (%s), %d free points: %s; %d left."
+-- The next rank in line that the points do not reach yet. %s: the rank, such as "Claw rank 5 (20)"; %d: the points short.
+L.PETJOURNAL_SAVING = "Saving for %s: %d points short."
+-- The Pets tab's card: the choice of training advice for the pet, before its three kinds.
+L.PETJOURNAL_ADVICE_LABEL = "Train: "
+-- The kinds of training advice: what the pet has first, the tank's abilities first (Growl, armor, resistances), the damage abilities first (Bite, Claw, Dash).
+L.PETJOURNAL_ADVICE_UPGRADES = "Upgrades"
+L.PETJOURNAL_ADVICE_TANK = "Tank"
+L.PETJOURNAL_ADVICE_DPS = "DPS"
 L.PETJOURNAL_HOURS = "%d h %d min"
 L.PETJOURNAL_MINUTES = "%d min"
 -- %d: how often. |4time:times; is WoW's own plural (singular:plural).
