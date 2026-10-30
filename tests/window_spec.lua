@@ -189,6 +189,22 @@ describe("the Pets tab", function()
         assert.is_nil(journal[FLUFFY].advice, "Upgrades is the default, kept as none")
     end)
 
+    it("shows the advice right under the choice, indented, and not again in the journal", function()
+        local client = withStable()
+        local learned = client.Addon:GetModule("AbilityLearned")
+        learned.db.global.costs.Dash = { [1] = { cost = 5, level = 1 } }
+        learned.db.global.taught[2] = { Dash = true }
+        learned:MarkKnown("Dash", 1)
+        open(client)
+        local panel = pets(client)
+        assert.is_truthy(panel.adviceText.text:find("Train (Upgrades)", 1, true), panel.adviceText.text)
+        assert.is_nil(panel.journal.text:find("Train (", 1, true), "once on the card")
+        assert.are.same({ "TOPLEFT", panel.adviceLabel, "BOTTOMLEFT", 10, -4 }, panel.adviceText.points[1])
+        assert.are.equal(panel.adviceText, panel.journal.points[1][2], "the journal below it")
+        click(panel.rows[3])
+        assert.are.equal("", panel.adviceText.text, "no advice for a pet not out")
+    end)
+
     it("lists the newest tame first, the past pets last, each group from new to old", function()
         local client = withStable()
         local journal = client.Addon:GetModule("PetJournal"):Pets()

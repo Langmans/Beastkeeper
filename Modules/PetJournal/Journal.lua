@@ -145,12 +145,14 @@ local function AdviceLines(key, entry)
     local saving = advice.saving and L.PETJOURNAL_SAVING:format(advice.saving, advice.short) or nil
     return train, saving
 end
+M.AdviceLines = AdviceLines
 
 ---A pet's journal as lines; the same table each time, refilled. Empty for a pet not in it.
 ---@param key string
 ---@param brief boolean? for a tooltip or the window's card: without the level and the abilities
+---@param noAdvice boolean? without the training advice (the card shows it under its choice)
 ---@return string[]
-function M:JournalLines(key, brief)
+function M:JournalLines(key, brief, noAdvice)
     wipe(lines)
     local entry = self:Pets()[key]
     if not entry then return lines end
@@ -168,6 +170,7 @@ function M:JournalLines(key, brief)
     lines[#lines + 1] = Forecast(key, entry)
     if not brief then lines[#lines + 1] = M.AbilitiesLine(entry) end
     lines[#lines + 1] = CanTeachLine(entry)
+    if noAdvice then return lines end
     local train, saving = AdviceLines(key, entry)
     lines[#lines + 1] = train
     lines[#lines + 1] = saving

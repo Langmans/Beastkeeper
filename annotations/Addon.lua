@@ -255,7 +255,8 @@
 ---@field Close fun(self: AddonPetJournal)
 ---@field Open fun(self: AddonPetJournal, key: string)
 ---@field Settings fun(self: AddonPetJournal): AddonPetJournalSettings
----@field JournalLines fun(self: AddonPetJournal, key: string, brief: boolean?): string[]
+---@field JournalLines fun(self: AddonPetJournal, key: string, brief: boolean?, noAdvice: boolean?): string[]
+---@field AdviceLines fun(key: string, entry: AddonJournalEntry): string?, string? the pet out's training advice and what to save for
 ---@field JournalText fun(self: AddonPetJournal, key: string): string
 ---@field Chosen fun(self: AddonPetJournal): string?
 ---@field GetOptions fun(self: AddonPetJournal): table
@@ -815,6 +816,7 @@
 ---@field spec FontString
 ---@field adviceLabel FontString
 ---@field advice AddonAdviceButton[] the kinds of training advice, Upgrades first
+---@field adviceText FontString the advice for the pet out, indented under the choice
 ---@field journal FontString
 ---@field abilities FontString
 

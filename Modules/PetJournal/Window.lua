@@ -113,8 +113,10 @@ local function Text(panel, template, size)
     return text
 end
 
--- The kinds of training advice on the card, in order (AbilityLearned's adviceRoles values).
+-- The kinds of training advice on the card, in order (AbilityLearned's adviceRoles values), and
+-- how far the advice below them is indented.
 local ADVICE_ORDER = { "upgrades", "tank", "dps" }
+local ADVICE_INDENT = 10
 
 ---A kind of advice clicked: the chosen pet keeps it (none for Upgrades, the default).
 ---@param button AddonAdviceButton
@@ -181,8 +183,11 @@ local function Create(panel, skin)
         panel.advice[index] = button
         before = button
     end
+    panel.adviceText = Text(panel, "GameFontHighlight", 12)
+    panel.adviceText:SetWidth(panel.adviceText:GetWidth() - ADVICE_INDENT)
+    panel.adviceText:SetPoint("TOPLEFT", panel.adviceLabel, "BOTTOMLEFT", ADVICE_INDENT, -4)
     panel.journal = Text(panel, "GameFontHighlight", 12)
-    panel.journal:SetPoint("TOPLEFT", panel.adviceLabel, "BOTTOMLEFT", 0, -10)
+    panel.journal:SetPoint("TOPLEFT", panel.adviceText, "BOTTOMLEFT", -ADVICE_INDENT, -10)
     panel.abilities = Text(panel, "GameFontHighlight", 12)
     panel.abilities:SetPoint("TOPLEFT", panel.journal, "BOTTOMLEFT", 0, -10)
 end
@@ -216,6 +221,7 @@ local function Refresh(panel)
         panel.name:SetText(L.PETJOURNAL_NONE)
         panel.level:SetText("")
         panel.spec:SetText("")
+        panel.adviceText:SetText("")
         panel.journal:SetText("")
         panel.abilities:SetText("")
         panel.model:Hide()
@@ -230,7 +236,9 @@ local function Refresh(panel)
     panel.name:SetText(entry.name or "?")
     panel.level:SetText(M.LevelLine(entry))
     panel.spec:SetText(Addon.FamilyLine(Addon.FamilyID(entry.family)))
-    panel.journal:SetText(table.concat(M:JournalLines(key, true), "\n"))
+    local train, saving = M.AdviceLines(key, entry)
+    panel.adviceText:SetText(train and saving and (train .. "\n" .. saving) or train or saving or "")
+    panel.journal:SetText(table.concat(M:JournalLines(key, true, true), "\n"))
     panel.abilities:SetText(M.AbilitiesLine(entry, true) or "")
     ShowModel(panel.model, key, entry)
 end
