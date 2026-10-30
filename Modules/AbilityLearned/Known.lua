@@ -191,9 +191,41 @@ end
 ---@type AddonKnownRank[]
 local news = {}
 
+-- Per wild ability's name (the client's language) the families that can learn a rank of it, from
+-- LibTameable's ranks; built on first use, when the spell names are readable. A rank that names no
+-- family is for every family. Trainer abilities (Growl, Great Stamina) are not in it.
+---@type table<string, table<number, true>|true>?
+local learnedBy
+
+---Whether the pet family can learn the ability: Era's Beast Training also lists, without a cost,
+---the hunter's ranks of abilities the pet out's family cannot learn (Claw for a boar).
+---@param name string
+---@param family number
+---@return boolean
+local function FamilyCanLearn(name, family)
+    if not learnedBy then
+        learnedBy = {}
+        for _, rank in pairs(Addon.data.petAbilityRanks or {}) do
+            local ability = Addon.SpellInfo(rank.ability)
+            if ability and #rank.families == 0 then
+                learnedBy[ability] = true
+            elseif ability and learnedBy[ability] ~= true then
+                local set = learnedBy[ability] or {} --[[@as table<number, true>]]
+                for _, id in ipairs(rank.families) do
+                    set[id] = true
+                end
+                learnedBy[ability] = set
+            end
+        end
+    end
+    local set = learnedBy[name]
+    return set == nil or set == true or set[family] == true
+end
+
 ---Keeps a rank Beast Training lists: known to the hunter, its training point cost and the pet
 ---level it needs (the same for every character: the namespace's global), and that the pet out's
----family is shown the ability.
+---family is shown the ability. A rank the family cannot learn is only known: the cost shown for it
+---there is none, not the real one.
 ---@param name string
 ---@param rank number
 ---@param cost GameValue
@@ -201,10 +233,11 @@ local news = {}
 local function KeepRow(name, rank, cost, level)
     if M:MarkKnown(name, rank) then news[#news + 1] = { name = name, rank = rank } end
     if type(cost) ~= "number" or not Addon.Readable(cost) then return end
+    local family = Addon.PetFamilyID()
+    if family and not FamilyCanLearn(name, family) then return end
     local global = M.db.global --[[@as AddonAbilityLearnedGlobal]]
     global.costs[name] = global.costs[name] or {}
     global.costs[name][rank] = { cost = cost, level = Addon.Readable(level) and tonumber(level) or 0 }
-    local family = Addon.PetFamilyID()
     if not family then return end
     global.taught[family] = global.taught[family] or {}
     global.taught[family][name] = true
@@ -356,9 +389,11 @@ function M:Advice(role)
     if not free or not taught or type(level) ~= "number" or not Addon.Readable(level) then return advice end
     local petSpells = Addon.PetSpells()
     for name in pairs(taught) do
-        local spell = petSpells[name]
-        hasRank[name] = spell and RankNumber(spell.rank) or 0
-        candidates[#candidates + 1] = name
+        if FamilyCanLearn(name, family) then
+            local spell = petSpells[name]
+            hasRank[name] = spell and RankNumber(spell.rank) or 0
+            candidates[#candidates + 1] = name
+        end
     end
     adviceRole = role or M.adviceRoles.upgrades
     table.sort(candidates, AdviceBefore)

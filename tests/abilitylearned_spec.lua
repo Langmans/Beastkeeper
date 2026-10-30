@@ -412,6 +412,27 @@ describe("AbilityLearned", function()
                 assert.are.same({ "Bite rank 2 (10)", "Cower rank 1 (5)" }, advice.buy, "Bite is damage")
             end)
 
+            it("leaves out what the family cannot learn, and keeps the cost a family that can showed", function()
+                local client = training()
+                -- A boar: Era's Beast Training lists the hunter's Claw ranks too, without a cost.
+                client.familyID, client.petBook = 5, { { 17253 } }
+                client:openCraft({
+                    { "Bite", "Rank 2", "available", 10, 8 },
+                    { "Claw", "Rank 2", "available", 0, 8 },
+                    { "Claw", "Rank 3", "available", 0, 8 },
+                })
+                local M = module(client)
+                assert.are.same({ cost = 8, level = 8 }, M.db.global.costs.Claw[2], "the cat's cost stays")
+                assert.is_nil(M.db.global.costs.Claw[3])
+                assert.is_nil(M.db.global.taught[5].Claw)
+                assert.are.same({ "Bite rank 2 (10)" }, M:Advice().buy)
+                M.db.global.taught[5].Claw = true -- a family entry from saved data
+                M.db.global.costs.Claw[3] = { cost = 0, level = 8 }
+                local advice = M:Advice()
+                assert.are.same({ "Bite rank 2 (10)" }, advice.buy, "no Claw for a boar")
+                assert.is_nil(advice.saving)
+            end)
+
             it("has nothing to buy or save for without points, costs or a pet", function()
                 local client = training()
                 client.trainingPoints = { 50, 50 }

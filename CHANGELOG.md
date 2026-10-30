@@ -131,7 +131,8 @@
   what to train with its free points ("Train (Upgrades), 43 free points: Bite
   rank 2 (10); 33 left.") and what to save for. On the Pets card a choice per
   pet: Upgrades (what it has first), Tank (Growl, armor, resistances first) or
-  DPS (Bite, Claw, Dash first).
+  DPS (Bite, Claw, Dash first). Only abilities the pet's family can learn:
+  Classic Era's Beast Training also lists the others, without a cost.
 - BEASTKEEPER_PET_AT_PULL for other addons: combat started without a pet, with
   a dead one, or with one on Passive.
 - Beast Map: during a hunt the tame key shows as a button on screen: a click
