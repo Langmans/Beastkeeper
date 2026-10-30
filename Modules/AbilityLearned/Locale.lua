@@ -48,6 +48,8 @@ L.ABILITYLEARNED_POINTS_LOST = "-%d training |4point:points;, %d free."
 -- Chat, when a pet is summoned or tamed. %s: the pet's name; second %s: a list like "Claw (Rank 3), Dash (Rank 1)".
 L.ABILITYLEARNED_TEACHES = "%s can teach you: %s."
 L.ABILITYLEARNED_OPEN_TRAINING = "Open Beast Training once so Beastkeeper knows your ranks."
+-- A rank the pet's free training points can buy, in a list such as "Bite rank 2 (10), Cower rank 1 (5)". %s: the ability; first %d: the rank; second %d: its cost in training points.
+L.ABILITYLEARNED_AFFORDABLE = "%s rank %d (%d)"
 -- Chat, after the "What can my pet teach?" button. %s: the pet's name.
 L.ABILITYLEARNED_NOTHING = "%s has nothing left to teach you."
 L.ABILITYLEARNED_NO_PET = "No pet out to check."

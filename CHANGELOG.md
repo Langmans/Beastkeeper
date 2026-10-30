@@ -126,6 +126,9 @@
 - Ammo: "Count only the ammo in the ammo slot" (on by default); switched off,
   it counts every kind of ammo your weapon shoots and your level allows. The
   low-ammo toast names the ammo it counts ("Rough Arrow low: 400 left").
+- Beast Training is read on Classic Era and Burning Crusade too (the craft
+  window), and its training point costs are kept: the pet's journal says what
+  its free points can buy ("Can buy with 43 free points: Bite rank 2 (10)").
 - Abilities tab: a quest giver's "!" on an ability with a rank you can learn
   now (from a beast at or below your level); its tooltip names the rank you
   know and those to learn.

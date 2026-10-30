@@ -348,6 +348,47 @@ describe("AbilityLearned", function()
             assert.are.same({}, client.printed)
         end)
 
+        it("keeps each rank's training point cost and pet level, and the abilities the family is shown", function()
+            local client = ready()
+            client:openTrainer({ { "Claw", "used", CLAW_3, cost = 15, level = 16 } })
+            local global = module(client).db.global
+            assert.are.same({ cost = 15, level = 16 }, global.costs.Claw[3])
+            assert.is_true(global.taught[2].Claw, "the cat's family")
+        end)
+
+        it("reads Classic Era's Beast Training, the craft window, and leaves Enchanting alone", function()
+            local client = ready({ era = true })
+            client:openCraft({
+                { "Claw", "Rank 3", "available", 15, 16 },
+                { "Pets", nil, "header" },
+                { "Bite", "Rank 2", "used", 10, 8 },
+            })
+            local M = module(client)
+            assert.are.equal(3, M:HighestRank("Claw"))
+            assert.are.equal(2, M:HighestRank("Bite"))
+            assert.is_true(M.db.char.trainingRead)
+            assert.are.same({ cost = 10, level = 8 }, M.db.global.costs.Bite[2])
+            client = ready({ era = true })
+            client:openCraft({ { "Enchant Bracer - Minor Health", "", "optimal" } })
+            assert.is_nil(module(client):HighestRank("Enchant Bracer - Minor Health"))
+            assert.is_false(module(client).db.char.trainingRead)
+        end)
+
+        it("says what the free points can buy: per ability the highest known rank that fits", function()
+            local client = ready({ era = true }) -- Fluffy: level 15, 43 points free, Claw 2 and Bite 1
+            client:openCraft({
+                { "Bite", "Rank 1", "used", 1, 1 },
+                { "Bite", "Rank 2", "available", 10, 8 },
+                { "Bite", "Rank 3", "unavailable", 20, 16 }, -- the pet's level is too low
+                { "Claw", "Rank 2", "used", 8, 8 },
+                { "Growl", "Rank 2", "available", 50, 10 }, -- more than is free
+                { "Cower", "Rank 1", "available", 5, 5 },
+            })
+            assert.are.same({ "Bite rank 2 (10)", "Cower rank 1 (5)" }, module(client):Affordable())
+            client.trainingPoints = { 50, 50 }
+            assert.are.same({}, module(client):Affordable(), "nothing free")
+        end)
+
         it("never lowers a rank, and leaves a pet trainer's ranks for sale alone", function()
             local client = ready()
             module(client).db.char.known = { Claw = 3 }

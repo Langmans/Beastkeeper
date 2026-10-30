@@ -1015,6 +1015,26 @@ function NewClient(opts)
         assert(not row.broken, "this row's lookup errors")
         return row[1], row[2]
     end
+    -- A Beast Training row's training point cost (row.cost) and pet level (row.level), as the pet
+    -- trainer type gives them.
+    function GetTrainerServiceCost(index)
+        return client.trainer.rows[index].cost or 0, false
+    end
+    function GetTrainerServiceLevelReq(index)
+        return client.trainer.rows[index].level or 0
+    end
+    -- Classic Era's Beast Training is the craft window: client.craft is nil while it is closed,
+    -- else its rows { name, rank text, kind, cost, pet level } (Enchanting's have no cost).
+    GetNumCrafts, GetCraftInfo = nil, nil
+    if opts.era then
+        function GetNumCrafts()
+            return client.craft and #client.craft or 0
+        end
+        function GetCraftInfo(index)
+            local row = client.craft[index]
+            return row[1], row[2], row[3], 0, nil, row[4], row[5]
+        end
+    end
     function UnitClass()
         local classFile = opts.class or "HUNTER"
         return classFile, classFile
@@ -2047,6 +2067,12 @@ function NewClient(opts)
         self.trainer = { rows = rows, npc = npc == true }
         ClassTrainerFrame:Show()
         return self:fire("TRAINER_SHOW")
+    end
+
+    ---Opens Classic Era's craft window with `rows` ({ name, rank text, kind, cost, pet level }).
+    function client:openCraft(rows)
+        self.craft = rows
+        return self:fire("CRAFT_SHOW")
     end
 
     ---Closes the trainer window; `event` is what the client sends, TRAINER_CLOSED by default.

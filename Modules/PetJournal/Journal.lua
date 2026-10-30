@@ -119,6 +119,18 @@ function M.TeachCount(entry)
     return count
 end
 
+---For the pet out: what its free training points can buy (AbilityLearned, from Beast Training's
+---costs); nil for another pet, without that module, or when nothing fits.
+---@param key string
+---@return string?
+local function AffordableLine(key)
+    local learned = Addon:GetModule("AbilityLearned", true) --[[@as AddonAbilityLearned?]]
+    if key ~= M.current or not learned or not learned:IsEnabled() then return nil end
+    local list = learned:Affordable()
+    if #list == 0 then return nil end
+    return L.PETJOURNAL_AFFORDABLE:format(Addon.PetTrainingPoints() or 0, table.concat(list, ", "))
+end
+
 ---A pet's journal as lines; the same table each time, refilled. Empty for a pet not in it.
 ---@param key string
 ---@param brief boolean? for a tooltip or the window's card: without the level and the abilities
@@ -141,6 +153,7 @@ function M:JournalLines(key, brief)
     lines[#lines + 1] = Forecast(key, entry)
     if not brief then lines[#lines + 1] = M.AbilitiesLine(entry) end
     lines[#lines + 1] = CanTeachLine(entry)
+    lines[#lines + 1] = AffordableLine(key)
     return lines
 end
 

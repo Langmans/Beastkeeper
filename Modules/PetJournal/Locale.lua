@@ -39,6 +39,8 @@ L.PETJOURNAL_FIRST = "First seen %s in %s."
 L.PETJOURNAL_LEVEL = "Level %d %s, loyalty %s."
 -- %s: a duration, PETJOURNAL_HOURS or PETJOURNAL_MINUTES.
 L.PETJOURNAL_OUT = "Out together: %s."
+-- The pet out's journal: what its free training points can buy in Beast Training. %d: the free points; %s: the ranks, such as "Bite rank 2 (10), Cower rank 1 (5)".
+L.PETJOURNAL_AFFORDABLE = "Can buy with %d free points: %s."
 L.PETJOURNAL_HOURS = "%d h %d min"
 L.PETJOURNAL_MINUTES = "%d min"
 -- %d: how often. |4time:times; is WoW's own plural (singular:plural).

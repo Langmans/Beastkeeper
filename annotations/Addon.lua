@@ -375,6 +375,16 @@
 ---@field zone string?
 ---@field t number GetServerTime()
 
+---A rank's price in Beast Training.
+---@class AddonTrainingCost
+---@field cost number training points
+---@field level number the pet level it needs
+
+---AbilityLearned's global data: the same for every character.
+---@class AddonAbilityLearnedGlobal
+---@field costs table<string, table<number, AddonTrainingCost>> per ability name and rank
+---@field taught table<number, table<string, true>> per pet family, the abilities Beast Training shows it
+
 ---@class AddonAbilityLearned: AddonSettingsModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field ready boolean the login wait is over
@@ -389,6 +399,8 @@
 ---@field Example fun(): string, string, number|string|nil, AddonPetSpell?
 ---@field Simulate fun(self: AddonAbilityLearned)
 ---@field MarkKnown fun(self: AddonAbilityLearned, name: string, rank: number): boolean
+---@field ReadBeastCraft fun(self: AddonAbilityLearned) Beast Training's craft window (Classic Era, Burning Crusade)
+---@field Affordable fun(self: AddonAbilityLearned): string[] what the pet out's free training points can buy
 ---@field HighestRank fun(self: AddonAbilityLearned, name: string): number?
 ---@field CanTeach fun(self: AddonAbilityLearned, name: string, rank: string?): boolean
 ---@field HasRank fun(self: AddonAbilityLearned, name: string, rank: number): boolean

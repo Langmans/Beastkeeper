@@ -36,6 +36,9 @@ M.defaults = {
         loyaltySound = "family",
     },
     char = { history = {}, known = {}, ranks = {}, trainingRead = false },
+    -- Beast Training's training point cost and pet level per ability and rank, and per pet family
+    -- the abilities it is shown: the same for every character.
+    global = { costs = {}, taught = {} },
 }
 
 local LEVEL_UP = 888 -- SOUNDKIT.LEVEL_UP
@@ -48,6 +51,8 @@ local EVENTS = {
     "LEARNED_SPELL_IN_SKILL_LINE",
     "TRAINER_SHOW",
     "TRAINER_UPDATE",
+    "CRAFT_SHOW",
+    "CRAFT_UPDATE",
     "TRAINER_CLOSED",
     "TRADE_SKILL_CLOSE",
     "UNIT_PET",
@@ -138,6 +143,12 @@ end
 function M:TRAINER_UPDATE()
     self:ReadBeastTraining()
 end
+
+-- The craft window: Beast Training on Classic Era and Burning Crusade, or Enchanting.
+function M:CRAFT_SHOW()
+    self:ReadBeastCraft()
+end
+M.CRAFT_UPDATE = M.CRAFT_SHOW
 
 function M:TRAINER_CLOSED()
     self.atTrainer = false

@@ -12,7 +12,10 @@ local _, ns = ...
 -- On WoW: Forever, Beast Training is the trainer window without an NPC; a pet trainer's is the same
 -- window with one, selling ranks the hunter does not have yet, and is left alone. Each row of
 -- Beast Training is a rank the hunter has learned. GetTrainerServiceInfo gives the name, not the
--- rank, so the row's spell comes from a hidden tooltip and the rank from that spell.
+-- rank, so the row's spell comes from a hidden tooltip and the rank from that spell. On Classic Era
+-- and Burning Crusade, Beast Training is the craft window, whose rows give name and rank text.
+-- Either way each rank's training point cost and pet level are kept, for what the pet out's free
+-- points can buy (Affordable).
 
 ---@type Addon
 local Addon = ns
@@ -184,24 +187,111 @@ local function RowSpellID(index)
     return spellID
 end
 
----Reads the hunter's learned ranks from Beast Training. A row that cannot be read is skipped.
+-- The ranks a Beast Training read found new, refilled for each read.
+---@type AddonKnownRank[]
+local news = {}
+
+---Keeps a rank Beast Training lists: known to the hunter, its training point cost and the pet
+---level it needs (the same for every character: the namespace's global), and that the pet out's
+---family is shown the ability.
+---@param name string
+---@param rank number
+---@param cost GameValue
+---@param level GameValue
+local function KeepRow(name, rank, cost, level)
+    if M:MarkKnown(name, rank) then news[#news + 1] = { name = name, rank = rank } end
+    if type(cost) ~= "number" or not Addon.Readable(cost) then return end
+    local global = M.db.global --[[@as AddonAbilityLearnedGlobal]]
+    global.costs[name] = global.costs[name] or {}
+    global.costs[name][rank] = { cost = cost, level = Addon.Readable(level) and tonumber(level) or 0 }
+    local family = Addon.PetFamilyID()
+    if not family then return end
+    global.taught[family] = global.taught[family] or {}
+    global.taught[family][name] = true
+end
+
+---After a Beast Training read: whether it read anything, and the news.
+---@param read number rows read
+local function Finish(read)
+    if read > 0 then Char().trainingRead = true end
+    if #news > 0 then RanksKnown("training", news) end
+end
+
+---Reads the hunter's learned ranks from Beast Training, WoW: Forever's (the trainer window without
+---an NPC; the pet trainer type's cost is its training points). A row that cannot be read is skipped.
 function M:ReadBeastTraining()
     if UnitExists("npc") then return end
     local read = 0
-    ---@type AddonKnownRank[]
-    local news = {}
+    wipe(news)
     for index = 1, GetNumTrainerServices() do
         local ok, name, kind = pcall(GetTrainerServiceInfo, index)
         local spellID = ok and type(name) == "string" and kind ~= "header" and RowSpellID(index)
         if spellID then
             local _, _, rankText = Addon.SpellInfo(spellID)
-            local rank = RankNumber(rankText)
-            if self:MarkKnown(name, rank) then news[#news + 1] = { name = name, rank = rank } end
+            KeepRow(
+                name --[[@as string]],
+                RankNumber(rankText),
+                GetTrainerServiceCost(index),
+                GetTrainerServiceLevelReq(index)
+            )
             read = read + 1
         end
     end
-    if read > 0 then Char().trainingRead = true end
-    if #news > 0 then RanksKnown("training", news) end
+    Finish(read)
+end
+
+---Reads Beast Training on Classic Era and Burning Crusade, the craft window: each row a rank the
+---hunter learned, with its cost and pet level (GetCraftInfo's 6th and 7th returns). Enchanting's
+---window has no cost, and is left alone.
+function M:ReadBeastCraft()
+    local read = 0
+    wipe(news)
+    -- The craft window is there only on the clients that send CRAFT_SHOW (Classic Era, Burning Crusade).
+    ---@diagnostic disable-next-line: wrong-flavor-api
+    for index = 1, GetNumCrafts() do
+        ---@diagnostic disable-next-line: wrong-flavor-api
+        local name, rankText, kind, _, _, cost, level = GetCraftInfo(index)
+        if type(name) == "string" and kind ~= "header" and type(cost) == "number" then
+            KeepRow(name, RankNumber(rankText), cost, level)
+            read = read + 1
+        end
+    end
+    Finish(read)
+end
+
+-- What the free points can buy, refilled for each ask.
+---@type string[]
+local affordable = {}
+
+---What the pet out's free training points can buy: per ability its family is shown in Beast
+---Training, the highest rank the hunter knows that the pet does not have yet, its level allows and
+---the free points cover (Beast Training's own test: the rank's cost against the free points), as
+---"Bite rank 2 (10)", sorted. Empty while a cost, the family or the pet's values are unknown.
+---@return string[]
+function M:Affordable()
+    wipe(affordable)
+    local free = Addon.PetTrainingPoints()
+    local family, level = Addon.PetFamilyID(), UnitLevel("pet")
+    local global = self.db.global --[[@as AddonAbilityLearnedGlobal]]
+    local taught = family and global.taught[family]
+    if not free or not taught or type(level) ~= "number" or not Addon.Readable(level) then return affordable end
+    local petSpells = Addon.PetSpells()
+    for name in pairs(taught) do
+        local spell = petSpells[name]
+        local has = spell and RankNumber(spell.rank) or 0
+        local costs = global.costs[name] or {}
+        ---@type number?, number?
+        local best, price
+        for rank in pairs(Char().ranks[name] or {}) do
+            local row = costs[rank]
+            if row and rank > has and row.cost <= free and row.level <= level and (not best or rank > best) then
+                best, price = rank, row.cost
+            end
+        end
+        if best then affordable[#affordable + 1] = L.ABILITYLEARNED_AFFORDABLE:format(name, best, price) end
+    end
+    table.sort(affordable)
+    return affordable
 end
 
 ---The wild abilities the pet out has at a higher rank than this character knows, as
