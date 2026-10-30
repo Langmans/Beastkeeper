@@ -563,6 +563,8 @@
 ---@field rareToast boolean a toast when a rare beast worth taming comes in sight
 ---@field trainers boolean pins for pet trainers
 ---@field stables boolean pins for stable masters
+---@field tameButton boolean the tame key's button on screen during a hunt
+---@field tamePosition [string, string, number, number]? where the tame button was put: point, relative point, x, y
 ---@field pins boolean the pins shown at all (the map button switches this)
 ---@field mapButton boolean the button on the world map
 ---@field usefulOnly boolean only beasts that teach a rank the hunter lacks

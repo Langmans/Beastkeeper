@@ -39,6 +39,7 @@ M.defaults = {
         rareToast = true,
         trainers = true,
         stables = true,
+        tameButton = true,
     },
 }
 

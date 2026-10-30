@@ -415,6 +415,36 @@ describe("Beast Map", function()
             assert.is_true(panel.ranks[3].go.active.shown, "the hunted rank's button lit")
         end)
 
+        it("shows the tame key's button on screen while hunting, movable, and hides it after", function()
+            local client = hunter(10)
+            local button = _G.BeastkeeperTameButton
+            assert.is_false(button:IsShown(), "no hunt yet")
+            local panel = abilities(client, 3)
+            click(panel.ranks[3].go)
+            assert.is_true(button:IsShown())
+            assert.are.equal(132164, button.icon.texture, "Tame Beast's icon")
+            client.tooltipLines, GameTooltip.text = {}, nil
+            button:GetScript("OnEnter")(button)
+            assert.are.equal("Rare Cat", GameTooltip.text)
+            assert.are.equal(
+                "Click: target and mark. Shift-click: Tame Beast. Shift-drag to move.",
+                client.tooltipLines[1].text
+            )
+            button:GetScript("OnLeave")(button)
+            assert.is_false(GameTooltip:IsShown())
+            client.mods.shift = true
+            button:GetScript("OnDragStart")(button)
+            button:GetScript("OnDragStop")(button)
+            local M = client.Addon:GetModule("BeastMap")
+            assert.are.same({ "TOPLEFT", "BOTTOMLEFT", 300, 700 }, M.db.profile.tamePosition)
+            click(panel.ranks[3].go)
+            assert.is_false(button:IsShown(), "the hunt stopped")
+            click(panel.ranks[3].go)
+            assert.are.same({ "TOPLEFT", UIParent, "BOTTOMLEFT", 300, 700 }, { button:GetPoint() }, "where it was put")
+            M:GetOptions().args.tameButton.set(nil, false)
+            assert.is_false(button:IsShown(), "switched off, at once")
+        end)
+
         it("stops on that button again, or with /beastkeeper hunt stop", function()
             local client = hunter(10)
             local events = heard(client)

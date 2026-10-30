@@ -65,6 +65,11 @@ L.BEASTMAP_STABLE_MASTER = "Stable Master"
 L.BEASTMAP_TAME_BINDING = "Beast Map: target and mark the beast to tame"
 L.BEASTMAP_TAME_SET = "The tame key now targets %s."
 L.BEASTMAP_TAME_NONE = "No beast to target yet: a rare alarm or a click on a beast's pin on the map sets one."
+-- The tooltip of the tame key's button on screen during a hunt, under the beast's name.
+L.BEASTMAP_TAME_HINT = "Click: target and mark. Shift-click: Tame Beast. Shift-drag to move."
+-- The module's page: the switch for that button.
+L.BEASTMAP_OPTION_TAME_BUTTON = "Show the tame button during a hunt"
+L.BEASTMAP_OPTION_TAME_BUTTON_DESC = "A button on screen that does what the tame key does: a click targets and marks the hunted beast, Shift-click casts Tame Beast. Shift-drag to move it."
 
 -- Settings: the rare alarm.
 L.BEASTMAP_OPTION_RARE = "Toast when a rare beast I could learn from is near"

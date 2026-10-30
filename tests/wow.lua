@@ -140,6 +140,7 @@ local SPELLS = {
         [982] = { "Revive Pet", 132163, "" },
         [883] = { "Call Pet", 132161, "" },
         [5149] = { "Beast Training", 132162, "" },
+        [1515] = { "Tame Beast", 132164, "" },
     },
     deDE = {
         [5149] = { "Tierausbildung", 132162, "" },

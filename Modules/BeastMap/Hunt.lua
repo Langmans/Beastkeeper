@@ -44,6 +44,7 @@ function M:StartHunt(npc, spellID, map, x, y)
         { module = self:GetName(), npc = npc, spellID = spellID, name = name }
     )
     self:ShowHunt()
+    self:ApplyTameButton()
     Addon:RefreshWindow("abilities")
 end
 
@@ -67,6 +68,7 @@ function M:StopHunt(reason)
         { module = self:GetName(), npc = hunt.npc, spellID = hunt.spellID, name = name, reason = reason or "stopped" }
     )
     self:ShowHunt()
+    self:ApplyTameButton()
     Addon:RefreshWindow("abilities")
 end
 
