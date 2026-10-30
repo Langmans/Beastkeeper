@@ -240,6 +240,27 @@ describe("CareButton", function()
             assert.are.same({}, heard, "not while taming")
         end)
 
+        it("say nothing at the pull while the hunter revives or calls the pet", function()
+            local client = NewClient():login():petDies():petGone()
+            local heard = {}
+            client.Addon:Listen({}, "BEASTKEEPER_PET_AT_PULL", function(_, event)
+                heard[#heard + 1] = event.state
+            end)
+            client.Addon:HideToast()
+            client.cast = 982 -- Revive Pet
+            client:enterCombat()
+            assert.is_nil(client:toastTitle(), "reviving already")
+            client:leaveCombat()
+            client.cast = 883 -- Call Pet
+            client:enterCombat()
+            assert.is_nil(client:toastTitle(), "calling already")
+            assert.are.same({}, heard)
+            client:leaveCombat()
+            client.cast = nil
+            client:enterCombat()
+            assert.are.equal("Your pet is dead", client:toastTitle(), "a pull without either")
+        end)
+
         it("say once that the pet's health is low, again only after it went back up", function()
             local client = NewClient():login()
             client:petHealth(60)

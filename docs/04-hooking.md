@@ -231,7 +231,7 @@ low, or back to enough after restocking. Also once when the module starts.
 
 Combat started while something is wrong with the pet: none out, dead, or on
 Passive. Sent by the Care Button, also with its toasts off; not while the
-hunter tames a beast.
+hunter tames a beast, revives the pet or calls it.
 
 | Field | Type | |
 |---|---|---|

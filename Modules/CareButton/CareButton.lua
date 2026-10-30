@@ -188,10 +188,16 @@ end
 -- Per pull state: the setting of its toast, and the toast's kind.
 local PULL_TOASTS = { passive = { "passive", "passive" }, dead = { "died", "dead" }, missing = { "nopet", "nopet" } }
 
+---Whether the hunter is already seeing to it: taming a beast, reviving or calling the pet.
+---@return boolean
+local function SeeingToIt()
+    return Addon.IsTaming() or Addon.IsCasting(M.REVIVE_PET) or Addon.IsCasting(M.CALL_PET)
+end
+
 ---Combat starts: BEASTKEEPER_PET_AT_PULL for other addons when something is wrong with the pet,
----and its toast when that is switched on. Not while the hunter tames a beast.
+---and its toast when that is switched on. Not while the hunter tames, revives or calls.
 function M:PLAYER_REGEN_DISABLED()
-    if not Addon.KnowsSpell(Addon.CALL_PET) or Addon.IsTaming() then return end
+    if not Addon.KnowsSpell(Addon.CALL_PET) or SeeingToIt() then return end
     local state = PullState()
     if not state then return end
     Addon:SendMessage(Addon.messages.petAtPull, { module = self:GetName(), state = state })
