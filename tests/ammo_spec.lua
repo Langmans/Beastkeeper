@@ -3,7 +3,7 @@
 -- that sells its kind of ammo; at a vendor it buys the best ammo for its level to fill the ammo bag
 -- (or the stacks set without one). The hunter here has a bow (2504) and Rough Arrows (2512).
 
-local ROUGH, SHARP, LIGHT_SHOT = 2512, 2515, 2516
+local ROUGH, SHARP, LIGHT_SHOT, RAZOR = 2512, 2515, 2516, 3030
 local BOW, GUN, CROSSBOW, SWORD = 2504, 2508, 15808, 25
 
 ---Beastkeeper's ammo data object.
@@ -419,6 +419,23 @@ describe("Ammo", function()
             client:fire("MERCHANT_SHOW")
             assert.are.same({ { SHARP, 200 } }, client.bought)
             assert.is_true(client:printedContains("Bought 200 Sharp Arrow."))
+        end)
+
+        it("passes over ammo the hunter cannot buy: a reputation lacking, or tokens to pay", function()
+            for _, era in ipairs({ false, true }) do
+                local client = hunter(0, { era = era })
+                client.playerLevel = 30
+                client.merchant = { SHARP, RAZOR }
+                client.merchantLocked[RAZOR] = true
+                client:fire("MERCHANT_SHOW")
+                assert.are.same({ { SHARP, 200 } }, client.bought, "the best it may buy")
+                client = hunter(0, { era = era })
+                client.playerLevel = 30
+                client.merchant = { SHARP, RAZOR }
+                client.merchantTokens[RAZOR] = true
+                client:fire("MERCHANT_SHOW")
+                assert.are.same({ { SHARP, 200 } }, client.bought)
+            end
         end)
 
         it("says what it bought once the client has loaded the ammo, in the client's name", function()

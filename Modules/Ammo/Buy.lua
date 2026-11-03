@@ -25,8 +25,23 @@ local function AmmoBagSlots(kind)
     end
 end
 
----The vendor's best ammo of `kind` for the hunter's level: its index in the vendor's list and its
----item ID; nil when it sells none.
+---Whether the hunter can buy the vendor's item at `index` for gold: not one its reputation does not
+---reach (Burning Crusade's Warden's Arrow), nor one paid in tokens (Halaa's ammo). WoW: Forever
+---gives the item as a table; the classic clients as GetMerchantItemInfo's returns.
+---@param index number
+---@return boolean
+local function ForGold(index)
+    if C_MerchantFrame and C_MerchantFrame.GetItemInfo then
+        local info = C_MerchantFrame.GetItemInfo(index)
+        return info ~= nil and info.isPurchasable == true and not info.hasExtendedCost
+    end
+    ---@diagnostic disable-next-line: wrong-flavor-api
+    local _, _, _, _, _, purchasable, _, extendedCost = GetMerchantItemInfo(index)
+    return purchasable ~= false and not extendedCost
+end
+
+---The vendor's best ammo of `kind` for the hunter's level that it can buy: its index in the
+---vendor's list and its item ID; nil when it sells none.
 ---@param kind AddonAmmoKind
 ---@return number? index
 ---@return number? itemID
@@ -37,8 +52,9 @@ local function BestOnSale(kind)
     for i = 1, GetMerchantNumItems() do
         local id = GetMerchantItemID(i)
         local ammo = id and Addon.data.ammo[id] --[[@as AddonAmmoItem?]]
-        if ammo and ammo.kind == kind and ammo.level <= level and (not best or ammo.level > best) then
-            index, itemID, best = i, id, ammo.level
+        local better = ammo and ammo.kind == kind and ammo.level <= level and (not best or ammo.level > best)
+        if better and ForGold(i) then
+            index, itemID, best = i, id, (ammo --[[@as AddonAmmoItem]]).level
         end
     end
     return index, itemID

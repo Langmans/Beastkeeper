@@ -957,7 +957,9 @@ function NewClient(opts)
     -- subclass), client.ammoID the ammo in the ammo slot,
     -- counted from the bag as the client counts it; client.ammoBag a quiver or ammo pouch in bag
     -- slot 1 ({ slots, type }: type 1 quiver, 2 ammo pouch). client.merchant: the item IDs the open
-    -- vendor sells, or nil; client.bought: what was bought, { itemID, quantity } each.
+    -- vendor sells, or nil; client.bought: what was bought, { itemID, quantity } each;
+    -- client.merchantLocked[itemID]: the vendor lists it, but not for the hunter (a reputation it
+    -- lacks), and client.merchantTokens[itemID]: it costs tokens (an extended cost).
     -- client.rangedSpeed: seconds between two Auto Shots (UnitRangedDamage), 0 without a weapon.
     client.ranged, client.ammoID, client.ammoBag, client.bought = opts.ranged, opts.ammo, nil, {}
     client.rangedSpeed = 3
@@ -984,6 +986,29 @@ function NewClient(opts)
     function GetMerchantItemID(index)
         return client.merchant and client.merchant[index]
     end
+    client.merchantLocked, client.merchantTokens = {}, {}
+    -- A vendor's item as the classic clients give it (Blizzard's MerchantFrame reads name, texture,
+    -- price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost), and as WoW: Forever
+    -- gives it instead: C_MerchantFrame.GetItemInfo's MerchantItemInfo table.
+    local function merchantItem(index)
+        local itemID = client.merchant and client.merchant[index]
+        if not itemID then return nil end
+        return not client.merchantLocked[itemID], client.merchantTokens[itemID] == true
+    end
+    GetMerchantItemInfo = opts.era
+            and function(index)
+                local purchasable, tokens = merchantItem(index)
+                return "Item", 133000, 10, 200, -1, purchasable, purchasable, tokens
+            end
+        or nil
+    C_MerchantFrame = not opts.era
+            and {
+                GetItemInfo = function(index)
+                    local purchasable, tokens = merchantItem(index)
+                    return { isPurchasable = purchasable, isUsable = purchasable, hasExtendedCost = tokens }
+                end,
+            }
+        or nil
     function BuyMerchantItem(index, quantity)
         local itemID = client.merchant[index]
         client.bought[#client.bought + 1] = { itemID, quantity }
