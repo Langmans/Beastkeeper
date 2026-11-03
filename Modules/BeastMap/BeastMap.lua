@@ -748,7 +748,8 @@ end
 function M:PLAYER_LEVEL_UP(_, level)
     self.level = level
     self:Refresh()
-    if self:Settings().levelToast then self:ToastReach(level) end
+    -- Before Beast Training (the quest Training the Beast) no beast can teach the hunter anything.
+    if self:Settings().levelToast and Addon.KnowsSpell(Addon.BEAST_TRAINING) then self:ToastReach(level) end
 end
 
 -- Registered once: HandyNotes keeps a plugin for the session.

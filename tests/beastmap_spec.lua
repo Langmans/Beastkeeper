@@ -659,6 +659,22 @@ describe("Beast Map", function()
             assert.are.equal(2, #seen, "another spawn")
         end)
 
+        it("waits for Beast Training: before it, a beast can teach the hunter nothing", function()
+            local client = hunter(10)
+            client.unknownSpells[5149] = true -- Beast Training comes with the quest Training the Beast
+            local seen, heard = toasts(client), {}
+            client.Addon:Listen(heard, "BEASTKEEPER_RARE_SEEN", function(_, event)
+                heard[#heard + 1] = event
+            end)
+            nameplate(client, RARE_CAT)
+            assert.are.same({}, seen)
+            assert.are.same({}, heard)
+            client.unknownSpells[5149] = nil
+            client:fire("SPELLS_CHANGED")
+            nameplate(client, RARE_CAT)
+            assert.are.equal(1, #seen, "the same spawn, once it can teach")
+        end)
+
         it("is told to other addons as BEASTKEEPER_RARE_SEEN, also with the toast off", function()
             local client = hunter(10)
             local heard = {}
@@ -1262,6 +1278,12 @@ describe("Beast Map", function()
                 "Claw (Rank 1): Low Cat in Elwynn Forest\nClaw (Rank 2): Low Cat in Elwynn Forest\nBite (Rank 1): Spider in Elwynn Forest",
                 text
             )
+        end)
+
+        it("says nothing before Beast Training: no beast can teach the hunter yet", function()
+            local client = hunter(11)
+            client.unknownSpells[5149] = true -- Beast Training comes with the quest Training the Beast
+            assert.is_nil(levelUp(client, 12))
         end)
 
         it("names the rank from the data while the client has no subtext for the spell yet", function()

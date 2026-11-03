@@ -190,7 +190,9 @@ What Autocast Check wants on autocast changed, or what decided it.
 
 Beast Map saw a rare beast that teaches a rank the hunter lacks: on the
 minimap, as a nameplate, the target or under the mouse. Once per spawn; sent
-also with the rare toast off. Beast Map's tame key listens to it.
+also with the rare toast off, but not before the hunter knows Beast Training
+(until then no beast can teach it anything). Beast Map's tame key listens to
+it.
 
 | Field | Type | |
 |---|---|---|

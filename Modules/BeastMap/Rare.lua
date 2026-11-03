@@ -45,10 +45,11 @@ local function WantedRanks(npc)
 end
 
 ---Sends BEASTKEEPER_RARE_SEEN for the creature with `guid` when it is a rare beast worth taming, and
----not yet this spawn; toasts it too when the rare toast is on.
+---not yet this spawn; toasts it too when the rare toast is on. Not before Beast Training: until
+---then a beast can teach the hunter nothing, and the spawn is not marked seen.
 ---@param guid GameValue
 function M:SeeCreature(guid)
-    if not self:IsEnabled() then return end
+    if not self:IsEnabled() or not Addon.KnowsSpell(Addon.BEAST_TRAINING) then return end
     local npc = Addon.NPCFromGUID(guid, "Creature")
     if not npc then return end
     -- A GUID that gave an NPC ID is a readable string.
