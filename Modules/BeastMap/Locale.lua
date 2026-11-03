@@ -105,6 +105,8 @@ L.BEASTMAP_CLICK = "Click to go there."
 L.BEASTMAP_RARE = ", rare"
 L.BEASTMAP_ELITE = ", elite"
 L.BEASTMAP_RARE_ELITE = ", rare elite"
+-- Added after that on Classic Era, where a tamed beast keeps its melee attack speed, for one that is not the usual 2.0. %.1f: the seconds between its attacks, such as 1.2.
+L.BEASTMAP_SPEED = ", attack speed %.1f"
 
 -- Beastkeeper's window, the Abilities tab: its name; beside an ability in the list, first %d the ranks
 -- the hunter knows, second the ranks beasts teach; a rank (%d); a rank the hunter knows; the heads

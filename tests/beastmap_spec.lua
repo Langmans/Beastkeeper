@@ -258,6 +258,13 @@ describe("Beast Map", function()
         title, lines = client:hoverPin(TIRISFAL, rare.coord)
         assert.are.equal("Rare Cat", title)
         assert.are.equal("Level 10, rare elite", lines[1].text)
+        -- Classic Era: a tamed beast keeps its attack speed; the usual 2.0 goes unsaid.
+        client.Addon.data.beasts[104].speed = 1.225
+        client.Addon.data.beasts[101].speed = 2
+        title, lines = client:hoverPin(TIRISFAL, rare.coord)
+        assert.are.equal("Level 10, rare elite, attack speed 1.2", lines[1].text)
+        _, lines = client:hoverPin(ELWYNN, low.coord)
+        assert.are.equal("Level 5-6", lines[1].text)
         local spider = client:mapPins(ELWYNN)[2]
         _, lines = client:hoverPin(ELWYNN, spider.coord)
         assert.are.equal("Level 5", lines[1].text)

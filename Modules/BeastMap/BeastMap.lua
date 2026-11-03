@@ -310,7 +310,7 @@ function handler:GetNodes2(uiMapID)
     return NextPin, Pins(handyNotes)[uiMapID] or NO_PINS, nil
 end
 
----"Level 5-6", "Level 10, rare elite".
+---"Level 5-6", "Level 10, rare elite", "Level 37, rare, attack speed 1.0".
 ---@param beast AddonBeast
 ---@return string
 local function LevelText(beast)
@@ -320,7 +320,9 @@ local function LevelText(beast)
         or beast.rare and L.BEASTMAP_RARE
         or beast.elite and L.BEASTMAP_ELITE
         or ""
-    return L.BEASTMAP_LEVEL:format(level) .. kind
+    -- Classic Era: a tamed beast keeps its attack speed, worth knowing where it is not the usual 2.0.
+    local speed = beast.speed and beast.speed ~= 2 and L.BEASTMAP_SPEED:format(beast.speed) or ""
+    return L.BEASTMAP_LEVEL:format(level) .. kind .. speed
 end
 
 ---A beast's name as the client words it, else as the data has it (English).
