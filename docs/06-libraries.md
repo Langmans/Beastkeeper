@@ -28,9 +28,7 @@ data object with it.
 
 LibAboutPanel-2.0 (Myrroddin's GitHub repository) makes the About page from
 the `.toc`'s fields (Title, Notes, Version, Author, X-License, X-Website); its
-external is pinned to the commit of a release tag. On a German, Spanish,
-French or Italian client some of its own strings are `true` instead of text
-and it fails; `Core\Options.lua` then leaves the page out.
+external is pinned to the commit of a release tag.
 
 Krowi_WorldMapButtons-1.4 (TheKrowi's GitHub repository, BSD-3-Clause) places
 Beast Map's button on the world map: one row with Blizzard's map buttons and

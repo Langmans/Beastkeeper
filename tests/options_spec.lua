@@ -175,10 +175,11 @@ describe("the About page", function()
         assert.truthy(about():find("github.com/Langmans/Beastkeeper", 1, true))
     end)
 
-    it("is left out, and the rest works, where LibAboutPanel fails (its German strings)", function()
-        local client = NewClient({ locale = "deDE" }):login()
-        assert.is_nil(client.Addon:GetOptionsTable().args.about)
-        assert.is_table(client.Addon:GetOptionsTable().args.profiles)
-        assert.are.same({}, client.errors)
+    it("is there in every language LibAboutPanel had `true` strings in", function()
+        for _, locale in ipairs({ "deDE", "esES", "frFR", "itIT" }) do
+            local client = NewClient({ locale = locale }):login()
+            assert.are.equal("group", client.Addon:GetOptionsTable().args.about.type, locale)
+            assert.are.same({}, client.errors, locale)
+        end
     end)
 end)

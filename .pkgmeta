@@ -62,10 +62,10 @@ externals:
     tag: v12.1.1
     type: svn
   # The About page, from the .toc's fields (github.com/Myrroddin/libaboutpanel-2.0); pinned to
-  # the commit of its tag 1.0.90.
+  # the commit of its tag 1.0.92.
   Libs/LibAboutPanel-2.0:
     url: https://github.com/Myrroddin/libaboutpanel-2.0.git
-    commit: 3776b0ae122a0b2dcf8f268d859b32a5b043a47e
+    commit: 38ec916c1b035a327d2856fa81d4a09fb99e89bc
     path: LibAboutPanel-2.0
   # The route library, Beastkeeper's own (github.com/Langmans/LibGoThere-1.0); pinned to a commit.
   Libs/LibGoThere-1.0:

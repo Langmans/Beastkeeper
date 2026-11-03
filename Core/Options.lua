@@ -281,13 +281,11 @@ function Addon:GetButtonOptions()
 end
 
 ---The About page: the .toc's title, notes, version, author, license and website, from
----LibAboutPanel. Nil where the library fails: on a German, Spanish, French or Italian client
----some of its own strings are `true` instead of text, which breaks its string building.
----@return table?
+---LibAboutPanel.
+---@return table
 local function AboutPage()
     local panel = LibStub("LibAboutPanel-2.0")
-    local ok, page = pcall(panel.AboutOptionsTable, panel, addonName)
-    return ok and page or nil
+    return panel:AboutOptionsTable(addonName)
 end
 
 ---@return AceConfig.OptionsTable
@@ -368,7 +366,7 @@ function Addon:SetupOptions()
         end
     end
     dialog:AddToBlizOptions(addonName, args.profiles.name, addonName, "profiles")
-    if args.about then dialog:AddToBlizOptions(addonName, args.about.name, addonName, "about") end
+    dialog:AddToBlizOptions(addonName, args.about.name, addonName, "about")
 end
 
 ---Opens the settings window on Beastkeeper's page, or on a module's.
