@@ -137,9 +137,9 @@
   a dead one, or with one on Passive.
 - Beast Map: during a hunt the tame key shows as a button on screen: a click
   targets and marks the beast, Shift-click casts Tame Beast; Shift-drag moves it.
-- Classic Era: a beast's attack speed beside its level where it is not the
-  usual 2.0 ("Level 37, rare, attack speed 1.0"), in the pin's tooltip, the
-  Families tab and the rare alarm: a tamed beast keeps it there.
+- Classic Era and WoW: Forever: a beast's attack speed beside its level where
+  it is not the usual 2.0 ("Level 37, rare, attack speed 1.0"), in the pin's
+  tooltip, the Families tab and the rare alarm: a tamed beast keeps it there.
 - Families tab: the list by family or by role (Offense, Defense, General on
   Classic, the strongest first; or named Ferocity, Tenacity, Cunning with a
   switch on the Beast Map page), scrolled with the mouse wheel, and with

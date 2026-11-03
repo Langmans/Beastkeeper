@@ -320,7 +320,8 @@ local function LevelText(beast)
         or beast.rare and L.BEASTMAP_RARE
         or beast.elite and L.BEASTMAP_ELITE
         or ""
-    -- Classic Era: a tamed beast keeps its attack speed, worth knowing where it is not the usual 2.0.
+    -- Classic Era and WoW: Forever: a tamed beast keeps its attack speed, worth knowing where it is
+    -- not the usual 2.0. Burning Crusade's data has none: every pet attacks at 2.0 there.
     local speed = beast.speed and beast.speed ~= 2 and L.BEASTMAP_SPEED:format(beast.speed) or ""
     return L.BEASTMAP_LEVEL:format(level) .. kind .. speed
 end
