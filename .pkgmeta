@@ -98,3 +98,4 @@ ignore:
   - stylua.toml
   - tasks
   - Locales/README.md
+  - docs/images

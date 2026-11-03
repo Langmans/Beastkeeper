@@ -249,6 +249,10 @@ could still teach you in green. Visit a stable master once: Beastkeeper then
 knows your stabled pets' models and names too. The Stable tab puts all your
 pets side by side, with how many ranks each could still teach you.
 
+![The Pets tab: a boar's card with its loyalty, family modifiers, training advice choice, journal and abilities](docs/images/pets-tab.webp)
+
+![The Stable tab: each pet you have, with its model, loyalty and abilities](docs/images/stable-tab.webp)
+
 ### Beast Map
 
 With [HandyNotes](https://www.curseforge.com/wow/addons/handynotes): a pin on
@@ -290,6 +294,8 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
   item per group when "Rares" is ticked: that group's rare beasts, nearest
   first. On Classic the roles are named Offense, Defense and General, or
   Ferocity, Tenacity and Cunning with that switch on the Beast Map page.
+
+  ![The Abilities tab: Bite's ranks, the ones known in green, each missing rank's nearest teacher with a hunt button](docs/images/abilities-tab.webp)
 - **Rare alarm**, also without HandyNotes: a toast with the raid warning
   sound when a rare beast that teaches a rank you lack comes in sight (on the
   minimap, as a nameplate, your target or under the mouse), once per spawn.
