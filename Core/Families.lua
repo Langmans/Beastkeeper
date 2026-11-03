@@ -55,6 +55,37 @@ function Addon.FamilyLine(familyID)
     return Addon.SpecName(familyID) or ""
 end
 
+-- Before Wrath a category stands for the specialization that took its place: the damage pets,
+-- the tanks, the rest.
+local ROLE_OF_CATEGORY = { [K.offense] = S.ferocity, [K.defense] = S.tenacity, [K.general] = S.cunning }
+
+---A family's role, a Beastkeeper.petSpecs value: before Wrath (Classic Era, Burning Crusade) from its
+---category (Offense as Ferocity, Defense as Tenacity, General as Cunning), from Wrath on its
+---specialization; nil without either.
+---@param familyID number
+---@return string?
+function Addon.FamilyRole(familyID)
+    local client = (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient()
+    if client == "era" or client == "tbc" then
+        local mods = Addon.familyMods[familyID]
+        return mods and ROLE_OF_CATEGORY[mods.category]
+    end
+    local info = Addon.familyInfo[familyID]
+    return info and info.spec
+end
+
+local CATEGORY_OF_ROLE = { [S.ferocity] = K.offense, [S.tenacity] = K.defense, [S.cunning] = K.general }
+
+---A role's name: Ferocity, Cunning or Tenacity; with `asCategory` the category it stands for
+---before Wrath: Offense, General or Defense.
+---@param role string a Beastkeeper.petSpecs value
+---@param asCategory boolean?
+---@return string
+function Addon.RoleName(role, asCategory)
+    if asCategory then return CATEGORY_NAMES[CATEGORY_OF_ROLE[role]] end
+    return SPEC_NAMES[role]
+end
+
 ---A family's specialization, named: Ferocity, Cunning or Tenacity, as Wowhead sorts the families
 ---(the client says "Default" for every pet); nil without one.
 ---@param familyID number?

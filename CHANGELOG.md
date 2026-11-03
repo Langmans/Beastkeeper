@@ -137,6 +137,10 @@
   a dead one, or with one on Passive.
 - Beast Map: during a hunt the tame key shows as a button on screen: a click
   targets and marks the beast, Shift-click casts Tame Beast; Shift-drag moves it.
+- Families tab: the list by family or by role (Offense, Defense, General on
+  Classic, the strongest first; or named Ferocity, Tenacity, Cunning with a
+  switch on the Beast Map page), scrolled with the mouse wheel, and with
+  "Rares" ticked a Rares item per group that shows its rare beasts.
 - Beast Map's level-up toast and rare alarm wait for Beast Training: before
   the quest Training the Beast no beast can teach your hunter anything.
 - Beast Map's button on the world map lines up with the map buttons of other

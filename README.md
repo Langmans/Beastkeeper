@@ -286,7 +286,11 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
   it to every beast that teaches it, each with its own hunt button (scroll
   with the mouse wheel). The Families tab shows
   per family its specialization, diet, what it can learn and where to tame
-  one.
+  one. Its list goes by family or by role (on Classic the damage families
+  first by their damage bonus, the tanks by armor and health), with a Rares
+  item per group when "Rares" is ticked: that group's rare beasts, nearest
+  first. On Classic the roles are named Offense, Defense and General, or
+  Ferocity, Tenacity and Cunning with that switch on the Beast Map page.
 - **Rare alarm**, also without HandyNotes: a toast with the raid warning
   sound when a rare beast that teaches a rank you lack comes in sight (on the
   minimap, as a nameplate, your target or under the mouse), once per spawn.

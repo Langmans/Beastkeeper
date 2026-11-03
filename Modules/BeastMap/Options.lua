@@ -9,7 +9,7 @@ local Addon = ns
 local L = Addon.L
 local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
----@alias AddonBeastMapSetting "pins"|"mapButton"|"usefulOnly"|"gaps"|"aboveLevel"|"untilTame"|"levelToast"|"levelChat"|"tooltip"|"rareToast"|"trainers"|"stables"|"tameButton"
+---@alias AddonBeastMapSetting "pins"|"mapButton"|"usefulOnly"|"gaps"|"aboveLevel"|"untilTame"|"levelToast"|"levelChat"|"tooltip"|"rareToast"|"trainers"|"stables"|"tameButton"|"familySpecNames"
 
 -- How far a refining option sits in from the one it refines, and how wide it is then (AceConfig's
 -- widths, in units of its column).
@@ -90,5 +90,18 @@ function M:GetOptions()
         M:ApplyTameButton()
     end
     args.tameButton = tameButton
+    local specNames = Toggle("familySpecNames", L.BEASTMAP_OPTION_SPEC_NAMES, L.BEASTMAP_OPTION_SPEC_NAMES_DESC, 8)
+    ---@param _ table AceConfig's info about the option
+    ---@param value boolean
+    specNames.set = function(_, value)
+        M:Settings().familySpecNames = value
+        Addon:RefreshWindow("families")
+    end
+    -- Only the classic clients have categories; WoW: Forever names the specializations anyway.
+    specNames.hidden = function()
+        local client = (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient()
+        return client ~= "era" and client ~= "tbc"
+    end
+    args.familySpecNames = specNames
     return { args = args }
 end

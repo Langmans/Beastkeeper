@@ -1210,6 +1210,132 @@ describe("Beast Map", function()
             local client = hunter(10, { noPet = true })
             assert.are.equal("Bat", tab(client).title.text)
         end)
+
+        ---The list's rows as shown: a heading as "# Name", a group's rares as "> Rares", a family as
+        ---its name.
+        local function listed(panel)
+            local out = {}
+            for _, row in ipairs(panel.rows) do
+                if row.shown then
+                    local kind = row.heading and "# " or row.rares and "> " or ""
+                    out[#out + 1] = kind .. row.label.text
+                end
+            end
+            return out
+        end
+
+        it("groups the families by role on Classic: by category, named so or as Wrath's specializations", function()
+            local client = hunter(10, { era = true })
+            local panel = tab(client)
+            assert.are.equal("Family", panel.groupBy[1].label.text)
+            assert.are.equal("Role", panel.groupBy[2].label.text)
+            click(panel.groupBy[2])
+            assert.are.equal("role", client.Addon:GetModule("BeastMap"):Settings().familyGroup, "kept")
+            local rows = listed(panel)
+            assert.are.same({ "# Offense", "Cat (1)", "Raptor", "Bat", "Bird of Prey", "Spider", "Wind Serpent" }, {
+                unpack(rows, 1, 7),
+            }, "the most damage first")
+            assert.are.same({ "# Defense", "Bear", "Boar", "Turtle" }, { unpack(rows, 8, 11) })
+            set(client, "familySpecNames", true)
+            rows = listed(panel)
+            assert.are.same({ "# Ferocity", "# Tenacity" }, { rows[1], rows[8] }, "the same groups, other names")
+            local cat, boar
+            for _, row in ipairs(panel.rows) do
+                if row.familyID == 2 then cat = row end
+                if row.familyID == 5 then boar = row end
+            end
+            assert.are.equal("+10% damage", cat.note.text)
+            assert.are.equal("+9% armor", boar.note.text)
+            assert.are.same({ 1, 0.82, 0 }, panel.rows[1].label.textColor, "a heading in gold")
+            click(panel.rows[1])
+            assert.are.equal("Cat", panel.title.text, "a heading picks nothing")
+            assert.is_true(client.Addon:GetModule("BeastMap"):GetOptions().args.familySpecNames.hidden() == false)
+            click(panel.groupBy[1])
+            assert.are.equal("Bat", listed(panel)[1], "by name again")
+            assert.are.equal("", cat.note.text)
+        end)
+
+        it("scrolls the list with the mouse wheel", function()
+            local client = hunter(10, { era = true })
+            local panel = tab(client)
+            click(panel.groupBy[2])
+            local wheel = panel.list:GetScript("OnMouseWheel")
+            wheel(panel.list, -1)
+            assert.are.equal("Cat (1)", listed(panel)[1])
+            wheel(panel.list, -10)
+            local rows = listed(panel)
+            assert.are.equal("Wolf", rows[#rows], "no further than the end")
+            wheel(panel.list, 10)
+            assert.are.equal("# Offense", listed(panel)[1])
+        end)
+
+        it("groups by the family's own specialization on WoW: Forever", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            click(panel.groupBy[2])
+            local heading
+            for _, row in ipairs(panel.rows) do
+                if row.heading then heading = row.label.text end
+                if row.familyID == 5 then break end
+            end
+            assert.are.equal("Cunning", heading, "the Boar is Cunning there")
+            assert.is_true(client.Addon:GetModule("BeastMap"):GetOptions().args.familySpecNames.hidden(), "no choice")
+        end)
+
+        ---The first shown row of the list for which `test` holds.
+        local function rowWhere(panel, test)
+            for _, row in ipairs(panel.rows) do
+                if row.shown and test(row) then return row end
+            end
+        end
+
+        it("gives each family with rares a Rares item with Rares ticked: its rares, nearest first", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            assert.are.equal("Rares", panel.rares.label.text)
+            assert.is_false(panel.rares.check.shown)
+            assert.is_nil(rowWhere(panel, function(row)
+                return row.rares
+            end))
+            click(panel.rares)
+            assert.is_true(panel.rares.check.shown)
+            assert.is_true(client.Addon:GetModule("BeastMap"):Settings().familyRares, "kept")
+            local rows, at = listed(panel), nil
+            for index, text in ipairs(rows) do
+                if text == "Cat (1)" then at = index end
+            end
+            assert.are.equal("> Rares", rows[at + 1], "under the Cat, which has one")
+            assert.are.equal("Bear", rows[2], "none under the Bat, without rares")
+            click(rowWhere(panel, function(row)
+                return row.rares == 2
+            end))
+            assert.are.equal("Cat: rares", panel.title.text)
+            assert.are.same({ "Rare Cat in Tirisfal Glades: Level 10, rare elite" }, shown(panel.beasts, "text"))
+            assert.are.same({ creature = 104 }, panel.model.shownModel)
+        end)
+
+        it("gives each role a Rares item: the rares of all its families", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            click(panel.groupBy[2])
+            click(panel.rares)
+            local item = rowWhere(panel, function(row)
+                return row.rares == "ferocity"
+            end)
+            assert.are.equal("Rares", item.label.text)
+            click(item)
+            assert.are.equal("Ferocity: rares", panel.title.text)
+            assert.are.same({ "Rare Cat in Tirisfal Glades: Level 10, rare elite" }, shown(panel.beasts, "text"))
+            assert.are.equal("", panel.spec.text)
+            click(panel.rares)
+            assert.is_nil(
+                rowWhere(panel, function(row)
+                    return row.rares
+                end),
+                "unticked: gone"
+            )
+            assert.are.equal("Cat", panel.title.text, "back to the family")
+        end)
     end)
 
     it("sends the hunter to a beast with a left click on its pin, through LibGoThere", function()

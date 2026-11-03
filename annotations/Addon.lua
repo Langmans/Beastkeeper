@@ -585,6 +585,9 @@
 ---@field untilTame boolean with usefulOnly: no beast pins before the hunter knows Tame Beast
 ---@field levelToast boolean a toast when a level-up brings a teaching beast in reach
 ---@field levelChat boolean that toast's ranks and beasts in chat too
+---@field familyGroup "family"|"role" how the Families tab groups its list
+---@field familyRares boolean a Rares item in each group of that list
+---@field familySpecNames boolean the classic clients' groups by role named Ferocity, Tenacity, Cunning
 
 ---A map's pins as npc, coord pairs, with the position of each coord's npc.
 ---@class AddonBeastMapPins
@@ -904,11 +907,27 @@
 ---@field abilities FontString
 ---@field none FontString
 ---@field chosen number? the family shown
+---@field chosenRares (number|string)? the group whose rares are shown instead: a family ID or a role
+---@field groupBy AddonTextButton[] Family, Role
+---@field rares AddonCheckText the Rares switch
+---@field offset number rows scrolled past
+---@field list Frame holds the rows; takes the mouse wheel
 
 ---@class AddonFamilyRow: Button
 ---@field icon Texture the family's portrait
 ---@field label FontString
+---@field note FontString the family's strongest modifier, grouped by role on the classic clients
 ---@field familyID number?
+---@field heading true? a group's name, not clickable
+---@field rares (number|string)? a group's Rares item: the family ID or the role
+
+---@class AddonTextButton: Button
+---@field label FontString
+---@field value string
+
+---@class AddonCheckText: Button
+---@field label FontString
+---@field check Texture shown while on
 
 ---@class AddonFamilyBeastRow: Frame
 ---@field text FontString

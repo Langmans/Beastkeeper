@@ -155,6 +155,17 @@ L.BEASTMAP_FOOD_RAWFISH = "Raw Fish"
 L.BEASTMAP_FAMILY_ABILITY = "%s: ranks %d-%d, you know %d"
 -- Under the family's beasts list when Beastkeeper's data has none of that family.
 L.BEASTMAP_NO_BEASTS = "No beast of this family in Beastkeeper's data."
+-- The Families tab: how the list is grouped (by family, or under Ferocity, Tenacity and Cunning), and the switch that adds a Rares item to each group.
+L.BEASTMAP_GROUP_FAMILY = "Family"
+L.BEASTMAP_GROUP_ROLE = "Role"
+L.BEASTMAP_RARES = "Rares"
+-- The page (Classic Era and Burning Crusade only): the Families tab's groups by role named as the pet specializations of Wrath of the Lich King instead of the client's own categories.
+L.BEASTMAP_OPTION_SPEC_NAMES = "Name pet roles Ferocity, Tenacity and Cunning"
+L.BEASTMAP_OPTION_SPEC_NAMES_DESC = "In the Families tab, grouped by role: the names pets have from Wrath of the Lich King on, instead of this game's Offense, Defense and General. The groups stay the same."
+-- The heading for families Beastkeeper knows no role of.
+L.BEASTMAP_ROLE_OTHER = "Other"
+-- The card for a group's rares. %s: the family or the role, such as "Cat" or "Ferocity".
+L.BEASTMAP_RARES_OF = "%s: rares"
 -- A rank's tooltip, a line per beast that teaches it. First %s: the beast and its place; second: its level (BEASTMAP_LEVEL).
 L.BEASTMAP_TEACHER_LINE = "%s: %s"
 

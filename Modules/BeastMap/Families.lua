@@ -11,14 +11,19 @@ local Addon = ns
 local L = Addon.L
 local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
-local LIST_WIDTH, ROW_HEIGHT, LIST_ROWS = 150, 16, 20
+-- The list's rows sit under the line with the grouping and the Rares switch.
+local LIST_WIDTH, ROW_HEIGHT, LIST_ROWS = 150, 16, 19
 local BEAST_ROWS, BEAST_HEIGHT, MODEL_SIZE = 3, 22, 150
 local GO_ICON = "Interface\\Icons\\INV_Misc_Map_01"
-local CHOSEN, OTHER = { 1, 1, 1 }, { 0.6, 0.6, 0.6 }
+local CHECK_BOX, CHECK_MARK = "Interface\\Buttons\\UI-CheckBox-Up", "Interface\\Buttons\\UI-CheckBox-Check"
+local CHOSEN, OTHER, HEADING = { 1, 1, 1 }, { 0.6, 0.6, 0.6 }, { 1, 0.82, 0 }
+-- A Rares item, in the colour of a rare creature's name.
+local RARE = { 0.6, 0.45, 1 }
 
--- The families in list order, the abilities' lines and a family's beasts; refilled for each look.
----@type number[], string[], number[]
-local order, lines, beasts = {}, {}, {}
+-- The families in list order, the abilities' lines, a family's beasts and the families of one
+-- role; refilled for each look.
+---@type number[], string[], number[], number[]
+local order, lines, beasts, group = {}, {}, {}, {}
 
 ---@param a number
 ---@param b number
@@ -38,6 +43,129 @@ local function Order()
     end
     table.sort(order, ByName)
     return order
+end
+
+-- The groups by role, in order; families without a role go under OTHER_ROLE.
+local OTHER_ROLE = "other"
+local ROLES = { Addon.petSpecs.ferocity, Addon.petSpecs.tenacity, Addon.petSpecs.cunning, OTHER_ROLE }
+
+-- The list's items in order, refilled for each look: what each is ("heading", "family" or
+-- "rares") and its value (a role, a family ID, or the group whose rares it shows).
+---@type string[], (number|string)[]
+local kinds, values = {}, {}
+
+---Adds an item to the list.
+---@param kind string
+---@param value number|string
+local function Add(kind, value)
+    kinds[#kinds + 1], values[#values + 1] = kind, value
+end
+
+---A family's role, or OTHER_ROLE.
+---@param familyID number
+---@return string
+local function RoleOf(familyID)
+    return Addon.FamilyRole(familyID) or OTHER_ROLE
+end
+
+---A role's name, for its heading and its rares' card: on the classic clients the category
+---(Offense, Defense, General), or Wrath's specialization when the page says so; elsewhere the
+---specialization.
+---@param role string
+---@return string
+local function RoleName(role)
+    if role == OTHER_ROLE then return L.BEASTMAP_ROLE_OTHER end
+    local client = (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient()
+    local classic = client == "era" or client == "tbc"
+    return Addon.RoleName(role, classic and not M:Settings().familySpecNames)
+end
+
+---How strongly a family fills its role on the classic clients: damage for Ferocity, armor and
+---health for Tenacity; 0 elsewhere and on WoW: Forever, which has no modifiers.
+---@param familyID number
+---@return number
+local function Strength(familyID)
+    local client = (LibStub("LibTameable-1.0") --[[@as LibTameable]]):GetClient()
+    local mods = (client == "era" or client == "tbc") and Addon.familyMods[familyID]
+    if not mods then return 0 end
+    local role = RoleOf(familyID)
+    if role == Addon.petSpecs.ferocity then return mods.damage end
+    if role == Addon.petSpecs.tenacity then return mods.armor + mods.health end
+    return 0
+end
+
+---The family's strongest modifier for its role, as the list shows it grouped by role: "+10%
+---damage", "+9% armor"; "" without one.
+---@param familyID number
+---@return string
+local function Note(familyID)
+    if Strength(familyID) <= 0 then return "" end
+    local mods = Addon.familyMods[familyID] --[[@as AddonFamilyMods]]
+    if RoleOf(familyID) == Addon.petSpecs.ferocity then return L.FAMILY_DAMAGE:format(mods.damage) end
+    if mods.health > mods.armor then return L.FAMILY_HEALTH:format(mods.health) end
+    return L.FAMILY_ARMOR:format(mods.armor)
+end
+
+---Families in a role: the strongest first, then by name.
+---@param a number
+---@param b number
+---@return boolean
+local function Stronger(a, b)
+    local strengthA, strengthB = Strength(a), Strength(b)
+    if strengthA ~= strengthB then return strengthA > strengthB end
+    return ByName(a, b)
+end
+
+---Whether a rare beast of the group is in the data: the family's, or a role's families'.
+---@param group number|string a family ID or a role
+---@param beast AddonBeast
+---@return boolean
+local function InGroup(group, beast)
+    if type(group) == "number" then return beast.family == group end
+    return RoleOf(beast.family) == group
+end
+
+---Whether the group has a rare beast in the data.
+---@param group number|string
+---@return boolean
+local function HasRares(group)
+    for _, beast in
+        pairs(Addon.data.beasts --[[@as table<number, AddonBeast>]])
+    do
+        if beast.rare and InGroup(group, beast) then return true end
+    end
+    return false
+end
+
+---Fills the list's items: by family (each followed by its Rares item), or under each role's
+---heading its families, strongest first, and the role's Rares item.
+---@param byRole boolean
+---@param withRares boolean
+local function Items(byRole, withRares)
+    wipe(kinds)
+    wipe(values)
+    local families = Order()
+    if not byRole then
+        for _, familyID in ipairs(families) do
+            Add("family", familyID)
+            if withRares and HasRares(familyID) then Add("rares", familyID) end
+        end
+        return
+    end
+    for _, role in ipairs(ROLES) do
+        wipe(group)
+        for _, familyID in ipairs(families) do
+            if RoleOf(familyID) == role then group[#group + 1] = familyID end
+        end
+        if #group > 0 then
+            table.sort(group, Stronger)
+            Add("heading", role)
+            for _, familyID in ipairs(group) do
+                Add("family", familyID)
+            end
+            if withRares and HasRares(role) then Add("rares", role) end
+        end
+    end
 end
 
 ---How many of the hunter's pets in the Pet Journal are of the family; 0 while it is off.
@@ -90,14 +218,16 @@ local function AbilitiesText(familyID)
     return table.concat(lines, "\n")
 end
 
----The family's beasts in the data, nearest first.
----@param familyID number
+---The group's beasts in the data, nearest first: a family's, or with `raresOnly` the rares of a
+---family or a role.
+---@param group number|string a family ID or a role
+---@param raresOnly boolean?
 ---@return number[]
-local function Beasts(familyID)
+local function Beasts(group, raresOnly)
     wipe(beasts)
     local all = Addon.data.beasts --[[@as table<number, AddonBeast>]]
     for npc, beast in pairs(all) do
-        if beast.family == familyID then beasts[#beasts + 1] = npc end
+        if InGroup(group, beast) and (beast.rare or not raresOnly) then beasts[#beasts + 1] = npc end
     end
     return M.Nearest(beasts)
 end
@@ -140,24 +270,124 @@ local function Portrait(parent, skin, size)
     return icon
 end
 
----Builds the panel: the families' rows, the card's texts, the beasts' rows and the model.
+---A row clicked: a family shows its card, a Rares item its group's rares; a heading does nothing.
+---@param row AddonFamilyRow
+local function OnRowClick(row)
+    local list = row:GetParent() --[[@as Frame]]
+    local panel = list:GetParent() --[[@as AddonFamiliesPanel]]
+    if row.familyID then
+        panel.chosen, panel.chosenRares = row.familyID, nil
+    elseif row.rares then
+        panel.chosenRares = row.rares
+    else
+        return
+    end
+    Addon:RefreshWindow("families")
+end
+
+---Family or Role clicked: the list grouped so, kept in the profile.
+---@param button AddonTextButton
+local function OnGroupClick(button)
+    M:Settings().familyGroup = button.value --[[@as "family"|"role"]]
+    local panel = button:GetParent() --[[@as AddonFamiliesPanel]]
+    panel.chosenRares, panel.offset = nil, 0
+    Addon:RefreshWindow("families")
+end
+
+---The Rares switch clicked: a Rares item in each group, or none; kept in the profile.
+---@param button AddonCheckText
+local function OnRaresClick(button)
+    local settings = M:Settings()
+    settings.familyRares = not settings.familyRares
+    local panel = button:GetParent() --[[@as AddonFamiliesPanel]]
+    panel.chosenRares = nil
+    Addon:RefreshWindow("families")
+end
+
+---The mouse wheel over the list: scrolls it, within its items.
+---@param list Frame
+---@param delta number
+local function OnWheel(list, delta)
+    local panel = list:GetParent() --[[@as AddonFamiliesPanel]]
+    panel.offset = math.max(0, math.min(#kinds - LIST_ROWS, panel.offset - delta))
+    Addon:RefreshWindow("families")
+end
+
+---A word to click above the list.
+---@param panel AddonFamiliesPanel
+---@param skin AddonButtonHolderSkin
+---@param text string
+---@return Button, FontString
+local function Clickable(panel, skin, text)
+    local button = CreateFrame("Button", nil, panel)
+    local label = Text(button, skin)
+    label:SetPoint("LEFT")
+    label:SetText(text)
+    button:SetSize(label:GetStringWidth() + 4, ROW_HEIGHT)
+    return button, label
+end
+
+---Builds the line above the list: Family and Role to group by, and the Rares switch.
+---@param panel AddonFamiliesPanel
+---@param skin AddonButtonHolderSkin
+local function CreateHeader(panel, skin)
+    panel.groupBy = {}
+    ---@type Region?
+    local before
+    for index, value in ipairs({ "family", "role" }) do
+        local button, label = Clickable(panel, skin, L["BEASTMAP_GROUP_" .. value:upper()])
+        local word = button --[[@as AddonTextButton]]
+        word.label, word.value = label, value
+        if before then
+            word:SetPoint("LEFT", before, "RIGHT", 6, 0)
+        else
+            word:SetPoint("TOPLEFT", 4, 0)
+        end
+        word:SetScript("OnClick", OnGroupClick)
+        panel.groupBy[index], before = word, word
+    end
+    local button, label = Clickable(panel, skin, L.BEASTMAP_RARES)
+    local rares = button --[[@as AddonCheckText]]
+    rares.label = label
+    label:SetPoint("LEFT", ROW_HEIGHT, 0)
+    rares:SetWidth(label:GetStringWidth() + ROW_HEIGHT + 4)
+    local box = rares:CreateTexture(nil, "ARTWORK")
+    box:SetTexture(CHECK_BOX)
+    box:SetSize(ROW_HEIGHT, ROW_HEIGHT)
+    box:SetPoint("LEFT")
+    rares.check = rares:CreateTexture(nil, "OVERLAY")
+    rares.check:SetTexture(CHECK_MARK)
+    rares.check:SetAllPoints(box)
+    rares:SetPoint("LEFT", before, "RIGHT", 12, 0)
+    rares:SetScript("OnClick", OnRaresClick)
+    panel.rares = rares
+end
+
+---Builds the panel: the line above the list, the list's rows, the card's texts, the beasts' rows
+---and the model.
 ---@param panel AddonFamiliesPanel
 ---@param skin AddonButtonHolderSkin
 local function Create(panel, skin)
-    panel.rows, panel.beasts = {}, {}
+    panel.rows, panel.beasts, panel.offset = {}, {}, 0
+    CreateHeader(panel, skin)
+    panel.list = CreateFrame("Frame", nil, panel)
+    panel.list:SetSize(LIST_WIDTH, LIST_ROWS * ROW_HEIGHT)
+    panel.list:SetPoint("TOPLEFT", 0, -(ROW_HEIGHT + 4))
+    panel.list:EnableMouseWheel(true)
+    panel.list:SetScript("OnMouseWheel", OnWheel)
     for index = 1, LIST_ROWS do
-        local row = CreateFrame("Button", nil, panel) --[[@as AddonFamilyRow]]
+        local row = CreateFrame("Button", nil, panel.list) --[[@as AddonFamilyRow]]
         row:SetSize(LIST_WIDTH, ROW_HEIGHT)
         row:SetPoint("TOPLEFT", 0, -(index - 1) * ROW_HEIGHT)
         row.icon = Portrait(row, skin, ROW_HEIGHT - 4)
         row.icon:SetPoint("LEFT", 4, 0)
         row.label = Text(row, skin)
         row.label:SetPoint("LEFT", row.icon, "RIGHT", 5, 0)
+        row.note = Text(row, skin, nil, 10)
+        row.note:SetPoint("RIGHT", -2, 0)
+        row.note:SetTextColor(OTHER[1], OTHER[2], OTHER[3])
         row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
-        row:SetScript("OnClick", function()
-            panel.chosen = row.familyID
-            Addon:RefreshWindow("families")
-        end)
+        row:SetScript("OnClick", OnRowClick)
         panel.rows[index] = row
     end
     local left = LIST_WIDTH + 16
@@ -194,11 +424,12 @@ local function Create(panel, skin)
     end
 end
 
----Fills the beasts' rows and the model from the family's beasts.
+---Fills the beasts' rows and the model from the group's beasts: a family's, or a group's rares.
 ---@param panel AddonFamiliesPanel
----@param familyID number
-local function FillBeasts(panel, familyID)
-    local list = Beasts(familyID)
+---@param group number|string
+---@param raresOnly boolean?
+local function FillBeasts(panel, group, raresOnly)
+    local list = Beasts(group, raresOnly)
     for index, row in ipairs(panel.beasts) do
         local npc = list[index]
         row.npc = npc
@@ -226,25 +457,79 @@ local function FillBeasts(panel, familyID)
     end
 end
 
----Fills the list and the chosen family's card.
+---Fills a row of the list from the item at `index`; hides it past the end.
+---@param panel AddonFamiliesPanel
+---@param row AddonFamilyRow
+---@param index number
+---@param byRole boolean
+local function FillRow(panel, row, index, byRole)
+    local kind, value = kinds[index], values[index]
+    row:SetShown(kind ~= nil)
+    row.heading = kind == "heading" or nil
+    row.familyID = kind == "family" and value --[[@as number]] or nil
+    row.rares = kind == "rares" and value or nil
+    row.note:SetText("")
+    row.icon:SetShown(kind == "family")
+    ---@type number[]
+    local colour
+    if kind == "heading" then
+        row.label:SetText(RoleName(value --[[@as string]]))
+        colour = HEADING
+    elseif kind == "rares" then
+        row.label:SetText(L.BEASTMAP_RARES)
+        colour = value == panel.chosenRares and CHOSEN or RARE
+    elseif kind == "family" then
+        local familyID = value --[[@as number]]
+        local name, count = Addon.FamilyName(familyID) or "?", PetCount(familyID)
+        row.label:SetText(count > 0 and L.BEASTMAP_FAMILY_ROW:format(name, count) or name)
+        row.icon:SetTexture(Addon.FamilyIcon(familyID))
+        if byRole then row.note:SetText(Note(familyID)) end
+        colour = familyID == panel.chosen and not panel.chosenRares and CHOSEN or OTHER
+    else
+        return
+    end
+    row.label:SetTextColor(colour[1], colour[2], colour[3])
+end
+
+---Fills the card with a group's rares: its title, and the rares nearest first.
+---@param panel AddonFamiliesPanel
+---@param group number|string
+local function FillRares(panel, group)
+    local isFamily = type(group) == "number"
+    local name = isFamily and (
+            Addon.FamilyName(group --[[@as number]]) or "?"
+        ) or RoleName(group --[[@as string]])
+    panel.title:SetText(L.BEASTMAP_RARES_OF:format(name))
+    panel.titleIcon:SetTexture(isFamily and Addon.FamilyIcon(group --[[@as number]]) or nil)
+    panel.spec:SetText("")
+    panel.diet:SetText("")
+    panel.abilities:SetText("")
+    FillBeasts(panel, group, true)
+end
+
+---Fills the list and the card: the chosen family's, or the rares of the Rares item chosen.
 ---@param panel AddonFamiliesPanel
 local function Refresh(panel)
-    local families = Order()
+    local settings = M:Settings()
+    local byRole = settings.familyGroup == "role"
+    if not settings.familyRares then panel.chosenRares = nil end
+    Items(byRole, settings.familyRares)
+    panel.offset = math.max(0, math.min(#kinds - LIST_ROWS, panel.offset))
+    for index, word in ipairs(panel.groupBy) do
+        local colour = (index == 2) == byRole and HEADING or OTHER
+        word.label:SetTextColor(colour[1], colour[2], colour[3])
+    end
+    panel.rares.check:SetShown(settings.familyRares)
     if not panel.chosen then
         local out = Addon.PetFamilyID()
-        panel.chosen = out and Addon.familyInfo[out] and out or families[1]
+        panel.chosen = out and Addon.familyInfo[out] and out or Order()[1]
     end
     for index, row in ipairs(panel.rows) do
-        local familyID = families[index]
-        row.familyID = familyID
-        row:SetShown(familyID ~= nil)
-        if familyID then
-            local name, count = Addon.FamilyName(familyID) or "?", PetCount(familyID)
-            row.label:SetText(count > 0 and L.BEASTMAP_FAMILY_ROW:format(name, count) or name)
-            row.icon:SetTexture(Addon.FamilyIcon(familyID))
-            local colour = familyID == panel.chosen and CHOSEN or OTHER
-            row.label:SetTextColor(colour[1], colour[2], colour[3])
-        end
+        FillRow(panel, row, index + panel.offset, byRole)
+    end
+    if panel.chosenRares then
+        FillRares(panel, panel.chosenRares)
+        return
     end
     local familyID = panel.chosen --[[@as number]]
     local info = Addon.familyInfo[familyID]

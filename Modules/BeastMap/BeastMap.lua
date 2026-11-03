@@ -40,6 +40,9 @@ M.defaults = {
         trainers = true,
         stables = true,
         tameButton = true,
+        familyGroup = "family",
+        familyRares = false,
+        familySpecNames = false,
     },
 }
 
