@@ -1264,6 +1264,12 @@ describe("Beast Map", function()
             )
         end)
 
+        it("names the rank from the data while the client has no subtext for the spell yet", function()
+            local client = hunter(11)
+            client.uncached[7371] = true -- Charge
+            assert.are.equal("Now in reach: Charge (Rank 1)", (levelUp(client, 12)))
+        end)
+
         it("leaves out ranks the hunter has, and ranks a lower beast taught already", function()
             local client = hunter(4)
             client:openTrainer({ { "Claw", "used", CLAW_2 } }):closeTrainer()

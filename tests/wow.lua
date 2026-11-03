@@ -418,9 +418,14 @@ function NewClient(opts)
     local function spellIcon(id)
         return spells[id] and spells[id][2]
     end
+    -- client.uncached[id]: the client has the spell's name but not yet its subtext, as for a
+    -- spell it has not cached: the rank comes back empty.
+    client.uncached = {}
     local function spellRank(id)
+        if client.uncached[id] then return "" end
         return spells[id] and spells[id][3]
     end
+    RANK = "Rank"
     C_Spell, GetSpellInfo, GetSpellSubtext = nil, nil, nil
     if opts.oldSpellAPI then
         function GetSpellInfo(id)

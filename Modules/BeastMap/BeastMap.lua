@@ -332,6 +332,9 @@ end
 ---@return string?
 local function RankText(spellID)
     local name, _, rank = Addon.SpellInfo(spellID)
+    -- A spell the client has not cached yet has no subtext: the rank number from the data then.
+    local data = Addon.data.petAbilityRanks[spellID] --[[@as AddonPetAbilityRank?]]
+    if not rank and data and RANK then rank = ("%s %d"):format(RANK, data.rank) end
     return name and rank and ("%s (%s)"):format(name, rank) or name
 end
 
