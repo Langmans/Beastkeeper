@@ -1522,6 +1522,8 @@ function NewClient(opts)
     -- runs OnMapChanged as the client does.
     WorldMapFrame = newRegion({ shown = false })
     WorldMapFrame.shown = false
+    -- Classic's map has no overlay frames; map buttons go above its scroll frame.
+    WorldMapFrame.ScrollContainer = newRegion()
     local container = newRegion()
     local mapCanvas = newRegion()
     mapCanvas:SetSize(1000, 667)

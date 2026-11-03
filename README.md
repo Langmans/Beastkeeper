@@ -293,8 +293,9 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
 - **On a beast's tooltip**, also without HandyNotes: a line per rank it
   teaches, green when you lack it, yellow for a lower rank you never
   learned, grey when you know it.
-- **A round button** in the world map's top-right corner shows or hides the
-  pins (greyed while they are off). The button itself can be switched off on
+- **A round button** in the world map's top-right corner, in one row with
+  the map buttons of other addons, shows or hides the pins (greyed while
+  they are off). The button itself can be switched off on
   the page.
 - **At a level-up**, also without HandyNotes: a toast when the new level
   brings a beast in reach that teaches a rank you lack and no lower beast

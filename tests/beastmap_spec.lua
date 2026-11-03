@@ -89,7 +89,7 @@ end
 ---@return table?
 local function mapButton(client)
     for _, frame in ipairs(client.frames) do
-        if frame.parent == WorldMapFrame then return frame end
+        if frame.icon and (frame.name or ""):find("^Krowi_WorldMapButtons") then return frame end
     end
 end
 
@@ -124,6 +124,21 @@ describe("Beast Map", function()
             assert.are.equal(3, #client:mapPins(ELWYNN))
             button:GetScript("OnLeave")(button)
             assert.is_false(GameTooltip:IsShown())
+        end)
+
+        it("takes its place in the row other addons' map buttons share (Krowi_WorldMapButtons)", function()
+            local client = hunter(10)
+            local button = mapButton(client) --[[@as table]]
+            local corner = WorldMapFrame:GetCanvasContainer()
+            assert.are.equal(WorldMapFrame.ScrollContainer, button.parent, "Classic's map: above its scroll frame")
+            local other = LibStub("Krowi_WorldMapButtons-1.4"):Add(nil, "Button")
+            other.Refresh = function() end
+            assert.are.same({ "TOPRIGHT", corner, -4, -2 }, button.points[#button.points])
+            assert.are.same({ "TOPRIGHT", corner, -36, -2 }, other.points[#other.points], "the next one to its left")
+            set(client, "mapButton", false)
+            assert.are.same({ "TOPRIGHT", corner, -4, -2 }, other.points[#other.points], "no gap where it was")
+            client:showWorldMap(ELWYNN)
+            assert.is_false(button:IsShown(), "a map change keeps it hidden")
         end)
 
         it("is a setting, also on the page; the pins switch is there too", function()

@@ -71,6 +71,12 @@ externals:
   Libs/LibGoThere-1.0:
     url: https://github.com/Langmans/LibGoThere-1.0.git
     commit: 510d0318645d1a2ce01d159c761d3b5da9567d53
+  # The world map button's place: one row with Blizzard's and other addons' map buttons
+  # (MapNotes, RareScanner, Questie use it too); github.com/TheKrowi/Krowi_WorldMapButtons,
+  # BSD-3-Clause, pinned to the commit of its tag 1.4.12.
+  Libs/Krowi_WorldMapButtons:
+    url: https://github.com/TheKrowi/Krowi_WorldMapButtons.git
+    commit: 8c6eee65fecf8d3a70423993a16d538d0a3dcb0a
   # The pet ability ranks and the beasts that teach them, Beastkeeper's own
   # (github.com/Langmans/LibTameable-1.0, GPL-3.0); pinned to a commit.
   Libs/LibTameable-1.0:

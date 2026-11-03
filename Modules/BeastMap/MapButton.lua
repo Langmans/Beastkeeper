@@ -1,10 +1,12 @@
 local _, ns = ...
 
--- A round button in the world map's top-right corner that shows or hides Beast Map's pins, on the
--- world map and the minimap; HandyNotes has its own switch only deep in its settings. WoW: Forever
--- moved Blizzard's map pin button to the top-left, so that corner is free. The look is that of
--- Blizzard's own map buttons (WorldMapTrackingPinButtonTemplate). The button is a plain child of
--- WorldMapFrame: nothing is added to Blizzard's own tables, which keeps the map's code untainted.
+-- A round button on the world map that shows or hides Beast Map's pins, on the world map and the
+-- minimap; HandyNotes has its own switch only deep in its settings. Krowi_WorldMapButtons places
+-- it: one row with Blizzard's map buttons and those of other addons that use the library
+-- (MapNotes, RareScanner, Questie), top-right on the classic clients, a column top-left on WoW:
+-- Forever; a hidden button leaves no gap. The look is that of Blizzard's own map buttons
+-- (WorldMapTrackingPinButtonTemplate). Nothing is added to Blizzard's own tables, which keeps the
+-- map's code untainted.
 
 ---@type Addon
 local Addon = ns
@@ -13,7 +15,7 @@ local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
 local ICON = "Interface\\Icons\\Ability_Hunter_BeastTraining"
 
----@type Button?
+---@type AddonMapButton?
 local button
 
 ---The tooltip: what the pins are now, and what a click does.
@@ -53,12 +55,16 @@ local function Layer(layer, file, size, x, y)
     return texture
 end
 
+---After every map change, before the library lays out the row again.
+local function Refresh()
+    M:UpdateMapButton()
+end
+
 ---Makes the button, once; called when the module joins HandyNotes.
 function M:CreateMapButton()
-    button = CreateFrame("Button", nil, WorldMapFrame)
+    button = LibStub("Krowi_WorldMapButtons-1.4"):Add(nil, "Button") --[[@as AddonMapButton]]
+    button.Refresh = Refresh
     button:SetSize(32, 32)
-    button:SetFrameStrata("HIGH")
-    button:SetPoint("TOPRIGHT", WorldMapFrame:GetCanvasContainer(), "TOPRIGHT", -4, -2)
     Layer("BACKGROUND", "Interface\\Minimap\\UI-Minimap-Background", 25, 3, -4)
     button.icon = Layer("ARTWORK", ICON, 20, 7, -6)
     Layer("OVERLAY", "Interface\\Minimap\\MiniMap-TrackingBorder", 54, 0, 0)
@@ -70,9 +76,13 @@ function M:CreateMapButton()
 end
 
 ---Shown while the module is on and the setting asks for it; the icon greyed while the pins are off.
+---A change of shown closes or opens its place in the row.
 function M:UpdateMapButton()
     if not button then return end
     local settings = self:Settings()
-    button:SetShown(self:IsEnabled() and settings.mapButton)
+    local shown = self:IsEnabled() and settings.mapButton
     button.icon:SetDesaturated(not settings.pins)
+    if shown == button:IsShown() then return end
+    button:SetShown(shown)
+    LibStub("Krowi_WorldMapButtons-1.4").SetPoints()
 end

@@ -1,7 +1,7 @@
 # Libraries
 
 Ace3, LibSink-2.0, LibDataBroker-1.1, LibDBIcon-1.0, LibAboutPanel-2.0,
-LibGoThere-1.0 and LibTameable-1.0.
+Krowi_WorldMapButtons-1.4, LibGoThere-1.0 and LibTameable-1.0.
 
 Ace3 is not committed. `.pkgmeta` lists each library as an external, pinned
 to a commit of the Ace3 GitHub mirror. The packager fetches them for a
@@ -31,6 +31,13 @@ the `.toc`'s fields (Title, Notes, Version, Author, X-License, X-Website); its
 external is pinned to the commit of a release tag. On a German, Spanish,
 French or Italian client some of its own strings are `true` instead of text
 and it fails; `Core\Options.lua` then leaves the page out.
+
+Krowi_WorldMapButtons-1.4 (TheKrowi's GitHub repository, BSD-3-Clause) places
+Beast Map's button on the world map: one row with Blizzard's map buttons and
+those of other addons that embed it (MapNotes, RareScanner, Questie), so no
+button covers another. Its external is pinned to the commit of a release tag.
+LibStub keeps the highest MINOR of all copies loaded, and each copy places
+every button made with any of them.
 
 LibGoThere-1.0 is Beastkeeper's own route library, in a repository of its own
 ([github.com/Langmans/LibGoThere-1.0](https://github.com/Langmans/LibGoThere-1.0)),

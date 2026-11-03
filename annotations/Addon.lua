@@ -820,6 +820,11 @@
 ---@field journal FontString
 ---@field abilities FontString
 
+---Beast Map's button on the world map, made by Krowi_WorldMapButtons.
+---@class AddonMapButton: Button
+---@field icon Texture
+---@field Refresh fun() the library's call after every map change
+
 ---@class AddonAdviceButton: Button
 ---@field label FontString
 ---@field role string the kind of advice, an AbilityLearned adviceRoles value

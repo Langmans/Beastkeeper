@@ -137,6 +137,9 @@
   a dead one, or with one on Passive.
 - Beast Map: during a hunt the tame key shows as a button on screen: a click
   targets and marks the beast, Shift-click casts Tame Beast; Shift-drag moves it.
+- Beast Map's button on the world map lines up with the map buttons of other
+  addons (MapNotes, RareScanner, Questie) instead of sitting under them,
+  through Krowi_WorldMapButtons.
 - Abilities tab: a quest giver's "!" on an ability with a rank you can learn
   now (from a beast at or below your level); its tooltip names the rank you
   know and those to learn.
