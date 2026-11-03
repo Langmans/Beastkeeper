@@ -3,12 +3,18 @@ local _, ns = ...
 -- The key that sets Growl and Cower as fits. Only a macro or a secure button the player presses may
 -- change autocast, so this is a secure button whose macro text always holds the two lines for what
 -- fits now; the module rewrites them outside combat (a secure button cannot change in it). The
--- BeastkeeperAutocast macro clicks it, for an action bar.
+-- BeastkeeperAutocast macro, for an action bar, holds the same two lines itself: a /click from a
+-- macro runs no macro text (a macro inside a macro), so it is kept in step the same way. Only its
+-- /petautocaston and /petautocastoff lines (or an old /click of this button) are rewritten; the
+-- player's own lines stay, and a macro with none of ours is left alone.
 
 ---@type Addon
 local Addon = ns
 local L = Addon.L
 local M = Addon:GetModule("AutocastCheck") --[[@as AddonAutocastCheck]]
+
+local MACRO = Addon.Global("Autocast")
+local CLICK = "/click " .. Addon.Global("AutocastButton")
 
 local button = CreateFrame("Button", Addon.Global("AutocastButton"), UIParent, "SecureActionButtonTemplate")
 button:RegisterForClicks("AnyUp", "AnyDown")
@@ -16,8 +22,48 @@ button:RegisterForClicks("AnyUp", "AnyDown")
 ---@type ("growl"|"cower")?
 local on
 
----Puts the lines for what fits now on the button, or takes them away while the module is off or
----the character is no hunter; after combat when in it.
+-- The macro's lines while UpdatedBody works on them; kept, not built anew for each change.
+---@type string[]
+local lines = {}
+
+---Whether a macro line is one the module writes.
+---@param line string
+---@return boolean
+local function Ours(line)
+    local lower = line:lower()
+    return lower:find("^/petautocaston ") ~= nil or lower:find("^/petautocastoff ") ~= nil or line == CLICK
+end
+
+---The macro text with its autocast lines for `ability`, where the first of ours stood; nil for a
+---macro without a line of ours (left alone).
+---@param body string
+---@param ability "growl"|"cower"
+---@return string?
+local function UpdatedBody(body, ability)
+    wipe(lines)
+    local placed = false
+    for line in (body .. "\n"):gmatch("(.-)\n") do
+        if not Ours(line) then
+            lines[#lines + 1] = line
+        elseif not placed then
+            lines[#lines + 1], placed = M.AutocastLines(ability), true
+        end
+    end
+    return placed and table.concat(lines, "\n") or nil
+end
+
+---Puts the macro's autocast lines in step with the button.
+---@param ability "growl"|"cower"
+local function UpdateMacro(ability)
+    local index = GetMacroIndexByName(MACRO)
+    if index == 0 then return end
+    local _, _, current = GetMacroInfo(index)
+    local body = UpdatedBody(current, ability)
+    if body and body ~= current then EditMacro(index, nil, nil, body) end
+end
+
+---Puts the lines for what fits now on the button and in the macro, or takes them off the button
+---while the module is off or the character is no hunter; after combat when in it.
 function M:ApplyButton()
     Addon:OutOfCombat("AutocastCheck:button", function()
         local _, class = UnitClass("player")
@@ -27,6 +73,7 @@ function M:ApplyButton()
             button:SetAttribute("useOnKeyDown", false)
             button:SetAttribute("type", "macro")
             button:SetAttribute("macrotext", M.AutocastLines(on))
+            UpdateMacro(on)
         else
             on = nil
             button:SetAttribute("type", nil)

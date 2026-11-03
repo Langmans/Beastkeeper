@@ -378,7 +378,8 @@ function M:Macros()
         {
             name = Addon.Global("Autocast"),
             icon = BEAST_TRAINING_ICON,
-            body = "/click " .. Addon.Global("AutocastButton"),
+            -- The lines themselves: a /click from a macro runs no macro text (Button.lua).
+            body = M.AutocastLines((self:Wanted())),
             desc = L.AUTOCAST_MACRO_AUTOCAST,
         },
     }

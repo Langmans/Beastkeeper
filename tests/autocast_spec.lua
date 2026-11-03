@@ -412,6 +412,43 @@ describe("AutocastCheck", function()
         end)
     end)
 
+    -- A macro cannot run a button's macro text (/click from a macro runs no macro inside it: Classic
+    -- Era, 2026-11-03), so BeastkeeperAutocast holds the two lines itself, kept in step with the
+    -- button as BeastkeeperCare is.
+    describe("the BeastkeeperAutocast macro", function()
+        local GROWL_LINES = "/petautocaston Growl\n/petautocastoff Cower"
+        local COWER_LINES = "/petautocaston Cower\n/petautocastoff Growl"
+
+        it("holds the lines for what fits, rewritten when that changes, after combat", function()
+            local client = NewClient():login()
+            assert.are.equal(GROWL_LINES, client:macroBody("BeastkeeperAutocast"))
+            client:slash("autocast cower")
+            assert.are.equal(COWER_LINES, client:macroBody("BeastkeeperAutocast"))
+            client:enterCombat()
+            client:slash("autocast growl")
+            assert.are.equal(COWER_LINES, client:macroBody("BeastkeeperAutocast"), "not edited in combat")
+            client:leaveCombat()
+            assert.are.equal(GROWL_LINES, client:macroBody("BeastkeeperAutocast"))
+        end)
+
+        it("turns an old /click into the lines, and keeps the player's own lines", function()
+            local client = NewClient()
+            client.charMacros = {
+                { name = "BeastkeeperAutocast", icon = 1, body = "/click BeastkeeperAutocastButton" },
+                { name = "BeastkeeperKite", icon = 1, body = "x" },
+                { name = "BeastkeeperGrowl", icon = 1, body = "x" },
+            }
+            client:login()
+            assert.are.equal(GROWL_LINES, client:macroBody("BeastkeeperAutocast"))
+            client:macro("BeastkeeperAutocast").body = "/say Here we go\n" .. GROWL_LINES
+            client:slash("autocast cower")
+            assert.are.equal("/say Here we go\n" .. COWER_LINES, client:macroBody("BeastkeeperAutocast"))
+            client:macro("BeastkeeperAutocast").body = "/say Mine now"
+            client:slash("autocast growl")
+            assert.are.equal("/say Mine now", client:macroBody("BeastkeeperAutocast"), "no line of ours: left alone")
+        end)
+    end)
+
     describe("the settings page", function()
         local client, args
 

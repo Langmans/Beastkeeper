@@ -33,7 +33,7 @@ describe("module macros", function()
         assert.are.same({
             name = "BeastkeeperAutocast",
             icon = 132162, -- Ability_Hunter_BeastTraining
-            body = "/click BeastkeeperAutocastButton",
+            body = "/petautocaston Growl\n/petautocastoff Cower",
         }, client:macro("BeastkeeperAutocast"))
         assert.is_true(
             client:printedContains(
