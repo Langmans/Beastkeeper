@@ -18,8 +18,7 @@ modules move in one at a time.
 
 | Client | What runs |
 |---|---|
-| WoW: Forever, Classic Era (Season of Discovery, Hardcore) | every module, with beast, trainer, ammo vendor and (Classic Era) food data of its own |
-| Burning Crusade Classic | every module; Beast Map has the beasts but no trainer pins yet |
+| WoW: Forever, Classic Era (Season of Discovery, Hardcore), Burning Crusade Classic | every module, with beast, trainer, ammo vendor and (Classic Era, Burning Crusade) food data of its own |
 | Mists of Pandaria Classic, retail, and any other | Care Button, Autocast Check, Pet Journal, Data Broker: the game has no pet happiness, training points or ammo any more |
 
 A module whose part of the game the client lacks stays off and is left off the

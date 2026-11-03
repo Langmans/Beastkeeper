@@ -9,10 +9,12 @@
 
 ### Clients
 
-- WoW: Forever and Classic Era (Season of Discovery, Hardcore too), each with
-  its own data: the beasts that teach pet abilities, pet trainers, ammo
-  vendors, and on Classic Era each food's kind. Burning Crusade, Mists of
-  Pandaria Classic and retail load too, with the modules their game has.
+- WoW: Forever, Classic Era (Season of Discovery, Hardcore too) and Burning
+  Crusade Classic, each with its own data: the beasts that teach pet
+  abilities, pet trainers and stable masters (Outland's too), ammo vendors
+  (Burning Crusade's new arrows and bullets too), and on Classic Era and
+  Burning Crusade each food's kind. Mists of Pandaria Classic and retail load
+  too, with the modules their game has.
 - The beasts that teach pet abilities come from LibTameable-1.0, for Classic
   Era, Burning Crusade and WoW: Forever; Burning Crusade gets Beast Map and
   its families (Dragonhawk, Ravager, Warp Stalker, Sporebat, Nether Ray,
