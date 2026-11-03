@@ -77,14 +77,15 @@ end
 ---@param quiet boolean?
 function happiness:Read(quiet)
     if not UnitExists("pet") then
-        self.guid, self.last = nil, nil
+        self.number, self.last = nil, nil
         return
     end
     local now = Addon.PetHappiness()
     if not now then return end
-    local guid = UnitGUID("pet")
-    local before = guid == self.guid and self.last or nil
-    self.guid, self.last = guid, now
+    -- The pet number, not the GUID: each summon or revive gives the pet a new GUID.
+    local number = Addon.PetNumber()
+    local before = number == self.number and self.last or nil
+    self.number, self.last = number, now
     if now ~= before and not quiet then
         Addon:SendMessage(Addon.messages.petHappiness, { happiness = now, before = before })
     end

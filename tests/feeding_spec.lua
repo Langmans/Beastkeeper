@@ -292,6 +292,8 @@ describe("Feeding", function()
             assert.are.same({}, seen, "not while reviving")
             client.cast = nil
             client:petGone():fire("UNIT_PET", "player") -- the body was gone
+            -- Each summon counts up the GUID's last field's first byte; the pet number stays.
+            client.petGUID = "Pet-0-5250-0-1-165189-02002ED5F4"
             client:petBack():fire("UNIT_PET", "player")
             assert.are.equal("Fluffy is unhappy", toastFor(seen, "Feeding:unhappy").title, "the pet revived, hungry")
             client = NewClient():login():stock(MUTTON, 5)
@@ -308,7 +310,7 @@ describe("Feeding", function()
             assert.is_nil(client:toastTitle(), "content at login: nothing became content")
             local seen = toasts(client)
             client:petGone():fire("UNIT_PET", "player")
-            client.petGUID = "Pet-0-5250-0-1-3126-02002ED5F4"
+            client.petGUID = "Pet-0-5250-0-1-3126-0100ABCDEF"
             client.happiness = 1
             client:summon("Snapper", {})
             assert.are.same({}, seen, "another pet, unhappy already")

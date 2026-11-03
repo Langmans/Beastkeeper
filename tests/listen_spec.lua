@@ -91,6 +91,15 @@ describe("BEASTKEEPER_PET_HAPPINESS", function()
         assert.are.same({ { happiness = 2, before = 3 }, { happiness = 1, before = 2 } }, heard)
     end)
 
+    it("knows the pet again through a new GUID, as each summon or revive gives it", function()
+        local client = bare()
+        local _, heard = listen(client, "BEASTKEEPER_PET_HAPPINESS")
+        client.petGUID = "Pet-0-5250-0-1-165189-02002ED5F4" -- the pet number stays 0x002ED5F4
+        client.happiness = 2
+        client:fire("UNIT_PET", "player")
+        assert.are.same({ { happiness = 2, before = 3 } }, heard)
+    end)
+
     it("has no before for a pet just summoned, and says nothing without a pet", function()
         local client = bare()
         local _, heard = listen(client, "BEASTKEEPER_PET_HAPPINESS")
