@@ -386,6 +386,9 @@ local function Create(panel, skin)
         row.note = Text(row, skin, nil, 10)
         row.note:SetPoint("RIGHT", -2, 0)
         row.note:SetTextColor(OTHER[1], OTHER[2], OTHER[3])
+        -- A long name ("Wind Serpent") is cut short before the note instead of running under it.
+        row.label:SetPoint("RIGHT", row.note, "LEFT", -4, 0)
+        row.label:SetWordWrap(false)
         row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
         row:SetScript("OnClick", OnRowClick)
         panel.rows[index] = row

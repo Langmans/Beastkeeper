@@ -1253,6 +1253,9 @@ describe("Beast Map", function()
             end
             assert.are.equal("+10% damage", cat.note.text)
             assert.are.equal("+9% armor", boar.note.text)
+            -- A long name ("Wind Serpent") stops short of its note instead of running under it.
+            assert.are.same({ "RIGHT", cat.note, "LEFT", -4, 0 }, cat.label.points[2])
+            assert.is_false(cat.label.wordWrap)
             assert.are.same({ 1, 0.82, 0 }, panel.rows[1].label.textColor, "a heading in gold")
             click(panel.rows[1])
             assert.are.equal("Cat", panel.title.text, "a heading picks nothing")
