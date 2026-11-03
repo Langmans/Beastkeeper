@@ -202,6 +202,18 @@ function Addon.PetNumber()
     return Addon.PetNumberFromGUID(UnitGUID("pet"))
 end
 
+---What tells the active pet from another: its number, else its GUID (a beast tamed this session,
+---or for a taming quest, is a Creature with no pet number; its GUID stays). Not a Pet GUID itself:
+---that changes with every summon or revive. Nil without a pet or when the client hides both.
+---@return number|string|nil
+function Addon.PetKey()
+    local number = Addon.PetNumber()
+    if number then return number end
+    local guid = UnitGUID("pet")
+    if type(guid) == "string" and Addon.Readable(guid) then return guid end
+    return nil
+end
+
 ---A pet's number from its GUID, as PetNumber; nil for another kind of GUID or a hidden one.
 ---@param guid GameValue
 ---@return number?

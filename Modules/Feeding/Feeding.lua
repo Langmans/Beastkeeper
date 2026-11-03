@@ -209,11 +209,10 @@ end
 function M:CheckHappiness()
     self:ApplyButton()
     if Addon.IsCasting(Addon.REVIVE_PET) or Addon.IsTaming() then return end
-    -- Here and not in UNIT_PET: the core's happiness message may come before that event. By pet
-    -- number, not GUID: each summon or revive gives the pet a new GUID.
-    local number = Addon.PetNumber()
-    if number and number ~= self.happinessPet then
-        self.happiness, self.happinessPet = nil, number
+    -- Here and not in UNIT_PET: the core's happiness message may come before that event.
+    local key = Addon.PetKey()
+    if key and key ~= self.happinessPet then
+        self.happiness, self.happinessPet = nil, key
     end
     local happiness = Happiness()
     if not happiness then return end

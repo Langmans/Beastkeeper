@@ -318,6 +318,13 @@ describe("Feeding", function()
             assert.are.same({}, seen, "it got happier")
             client:setHappiness(1)
             assert.are.equal("Snapper is unhappy", toastFor(seen, "Feeding:unhappy").title)
+            -- A beast tamed for a taming quest: a Creature, no pet number.
+            client:setHappiness(3)
+            client:petGone():fire("UNIT_PET", "player")
+            client.petGUID = "Creature-0-5250-0-1-1998-00005E1A20"
+            client.happiness = 2
+            client:summon("Webwood Lurker", {})
+            assert.is_nil(toastFor(seen, "Feeding:content"), "content from the start, not compared with Snapper")
         end)
 
         it("go once the pet is happy again", function()
