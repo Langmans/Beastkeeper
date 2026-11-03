@@ -189,6 +189,16 @@ describe("the Pets tab", function()
         assert.is_nil(journal[FLUFFY].advice, "Upgrades is the default, kept as none")
     end)
 
+    it("shows what the pet out knows now, also a rank bought at Beast Training while out", function()
+        local client = withStable()
+        open(client)
+        local panel = pets(client)
+        assert.is_nil(panel.abilities.text:find("Charge", 1, true), panel.abilities.text)
+        client.petBook[#client.petBook + 1] = { 7371 } -- Charge, bought while the pet is out
+        client.Addon:RefreshWindow("pets")
+        assert.is_truthy(panel.abilities.text:find("Charge", 1, true), panel.abilities.text)
+    end)
+
     it("shows the advice right under the choice, indented, and not again in the journal", function()
         local client = withStable()
         local learned = client.Addon:GetModule("AbilityLearned")

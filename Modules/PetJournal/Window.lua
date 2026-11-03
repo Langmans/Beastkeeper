@@ -212,6 +212,8 @@ local function Refresh(panel)
         end
     end
     local key = M:Chosen()
+    -- The pet out's abilities as they are now: a rank bought at Beast Training while it is out.
+    if key and key == M.current then M:Snapshot() end
     local entry = key and pets[key]
     panel.adviceLabel:SetShown(entry ~= nil)
     for _, button in ipairs(panel.advice) do
