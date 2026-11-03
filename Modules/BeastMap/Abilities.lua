@@ -135,8 +135,9 @@ local function AnyLearnable(ability)
     return false
 end
 
----An ability row's tooltip: the highest rank known, and the ranks to learn now.
----@param row AddonAbilityRow
+---An ability row's tooltip (this tab's, or the Families tab's): the highest rank known, and the
+---ranks to learn now.
+---@param row AddonAbilityRow|AddonFamilyAbilityRow
 local function OnAbilityEnter(row)
     local ranks = Addon.data.petAbilityRanks --[[@as table<number, AddonPetAbilityRank>]]
     local highest = 0
@@ -468,6 +469,9 @@ end
 ---Fills the list and the chosen ability's ranks.
 ---@param panel AddonAbilitiesPanel
 local function Refresh(panel)
+    if M.pickAbility then
+        panel.chosen, M.pickAbility = M.pickAbility, nil
+    end
     local abilities = Order()
     if not panel.chosen or not Groups()[panel.chosen] then panel.chosen = abilities[1] end
     if panel.chosen ~= panel.shownAbility then
@@ -508,6 +512,17 @@ local function Refresh(panel)
             row:Hide()
         end
     end
+end
+
+-- For the Families tab (Families.lua): an ability's name, icon, whether a rank of it can be
+-- learned now, and its tooltip, as this tab has them.
+M.AbilityName, M.AbilityIcon, M.AnyLearnable, M.OnAbilityEnter = AbilityName, AbilityIcon, AnyLearnable, OnAbilityEnter
+
+---Opens the window on this tab with `ability` chosen.
+---@param ability number the spell ID of the ability's rank 1
+function M:ShowAbility(ability)
+    M.pickAbility = ability
+    Addon:OpenWindow("abilities")
 end
 
 Addon:RegisterWindowTab({

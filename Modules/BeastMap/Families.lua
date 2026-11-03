@@ -13,17 +13,23 @@ local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
 -- The list's rows sit under the line with the grouping and the Rares switch.
 local LIST_WIDTH, ROW_HEIGHT, LIST_ROWS = 150, 16, 19
-local BEAST_ROWS, BEAST_HEIGHT, MODEL_SIZE = 3, 22, 150
+local BEAST_ROWS, BEAST_HEIGHT, MODEL_SIZE = 6, 22, 150
+-- A family's abilities, a row each (no family learns more from beasts), and the quest giver's "!"
+-- on one with a rank to learn now, as in the Abilities tab.
+local ABILITY_ROWS, ABILITY_HEIGHT, ABILITY_WIDTH = 7, 18, 200
+local LEARN_ICON, LEARN_SIZE = "Interface\\GossipFrame\\AvailableQuestIcon", 14
 local GO_ICON = "Interface\\Icons\\INV_Misc_Map_01"
 local CHECK_BOX, CHECK_MARK = "Interface\\Buttons\\UI-CheckBox-Up", "Interface\\Buttons\\UI-CheckBox-Check"
 local CHOSEN, OTHER, HEADING = { 1, 1, 1 }, { 0.6, 0.6, 0.6 }, { 1, 0.82, 0 }
 -- A Rares item, in the colour of a rare creature's name.
 local RARE = { 0.6, 0.45, 1 }
 
--- The families in list order, the abilities' lines, a family's beasts and the families of one
--- role; refilled for each look.
----@type number[], string[], number[], number[]
-local order, lines, beasts, group = {}, {}, {}, {}
+-- The families in list order, a family's beasts, the families of one role, and a family's
+-- abilities with each one's count of ranks and of known ranks; refilled for each look.
+---@type number[], number[], number[], number[]
+local order, beasts, group, abilities = {}, {}, {}, {}
+---@type table<number, number>, table<number, number>
+local rankCount, knownCount = {}, {}
 
 ---@param a number
 ---@param b number
@@ -193,29 +199,50 @@ local function ForFamily(rank, familyID)
     return false
 end
 
----The lines of the abilities beasts teach the family: per ability its ranks and how many the
----hunter knows, by ability name.
+---@param a number
+---@param b number
+---@return boolean
+local function ByAbilityName(a, b)
+    return M.AbilityName(a) < M.AbilityName(b)
+end
+
+---The abilities beasts teach the family, by name, with per ability how many of the family's ranks
+---there are and how many the hunter knows (in rankCount and knownCount).
 ---@param familyID number
----@return string
-local function AbilitiesText(familyID)
-    ---@type table<number, {low: number, high: number, known: number}>
-    local found = {}
+---@return number[]
+local function FamilyAbilities(familyID)
+    wipe(abilities)
+    wipe(rankCount)
+    wipe(knownCount)
     local ranks = Addon.data.petAbilityRanks --[[@as table<number, AddonPetAbilityRank>]]
     for spellID, rank in pairs(ranks) do
         if ForFamily(rank, familyID) then
-            local seen = found[rank.ability] or { low = rank.rank, high = rank.rank, known = 0 }
-            found[rank.ability] = seen
-            seen.low, seen.high = math.min(seen.low, rank.rank), math.max(seen.high, rank.rank)
-            if not M.Lacking(spellID) then seen.known = seen.known + 1 end
+            local ability = rank.ability
+            if not rankCount[ability] then abilities[#abilities + 1] = ability end
+            rankCount[ability] = (rankCount[ability] or 0) + 1
+            knownCount[ability] = (knownCount[ability] or 0) + (M.Lacking(spellID) and 0 or 1)
         end
     end
-    wipe(lines)
-    for ability, seen in pairs(found) do
-        local name = Addon.SpellInfo(ability) or "?"
-        lines[#lines + 1] = L.BEASTMAP_FAMILY_ABILITY:format(name, seen.low, seen.high, seen.known)
+    table.sort(abilities, ByAbilityName)
+    return abilities
+end
+
+---Fills the ability rows from the family's abilities; hides the rest.
+---@param panel AddonFamiliesPanel
+---@param familyID number?
+local function FillAbilities(panel, familyID)
+    local list = familyID and FamilyAbilities(familyID) or wipe(abilities)
+    for index, row in ipairs(panel.abilityRows) do
+        local ability = list[index] ---@type number?
+        row.ability = ability
+        row:SetShown(ability ~= nil)
+        if ability then
+            row.icon:SetTexture(M.AbilityIcon(ability))
+            row.label:SetText(M.AbilityName(ability))
+            row.count:SetText(L.BEASTMAP_ABILITY_COUNT:format(knownCount[ability], rankCount[ability]))
+            row.learnable:SetShown(M.AnyLearnable(ability))
+        end
     end
-    table.sort(lines)
-    return table.concat(lines, "\n")
 end
 
 ---The group's beasts in the data, nearest first: a family's, or with `raresOnly` the rares of a
@@ -327,6 +354,43 @@ local function Clickable(panel, skin, text)
     return button, label
 end
 
+local function OnAbilityLeave()
+    GameTooltip:Hide()
+end
+
+---An ability clicked: its teachers in the Abilities tab.
+---@param row AddonFamilyAbilityRow
+local function OnAbilityClick(row)
+    M:ShowAbility(row.ability --[[@as number]])
+end
+
+---A row of the family's abilities, under its diet: icon, name, the "!" and "known/total", as in
+---the Abilities tab's list, with that tab's tooltip.
+---@param panel AddonFamiliesPanel
+---@param skin AddonButtonHolderSkin
+---@param index number
+---@return AddonFamilyAbilityRow
+local function AbilityRow(panel, skin, index)
+    local row = CreateFrame("Button", nil, panel) --[[@as AddonFamilyAbilityRow]]
+    row:SetSize(ABILITY_WIDTH, ABILITY_HEIGHT)
+    row:SetPoint("TOPLEFT", panel.diet, "BOTTOMLEFT", 0, -8 - (index - 1) * ABILITY_HEIGHT)
+    row.icon = Portrait(row, skin, ABILITY_HEIGHT - 2)
+    row.icon:SetPoint("LEFT")
+    row.label = Text(row, skin)
+    row.label:SetPoint("LEFT", row.icon, "RIGHT", 5, 0)
+    row.count = Text(row, skin)
+    row.count:SetPoint("RIGHT", -4, 0)
+    row.learnable = row:CreateTexture(nil, "OVERLAY")
+    row.learnable:SetSize(LEARN_SIZE, LEARN_SIZE)
+    row.learnable:SetTexture(LEARN_ICON)
+    row.learnable:SetPoint("RIGHT", row.count, "LEFT", -2, 0)
+    row:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
+    row:SetScript("OnClick", OnAbilityClick)
+    row:SetScript("OnEnter", M.OnAbilityEnter)
+    row:SetScript("OnLeave", OnAbilityLeave)
+    return row
+end
+
 ---Builds the line above the list: Family and Role to group by, and the Rares switch.
 ---@param panel AddonFamiliesPanel
 ---@param skin AddonButtonHolderSkin
@@ -405,8 +469,10 @@ local function Create(panel, skin)
     panel.spec:SetPoint("TOPLEFT", panel.title, "BOTTOMLEFT", 0, -4)
     panel.diet = Text(panel, skin)
     panel.diet:SetPoint("TOPLEFT", panel.spec, "BOTTOMLEFT", 0, -4)
-    panel.abilities = Text(panel, skin)
-    panel.abilities:SetPoint("TOPLEFT", panel.diet, "BOTTOMLEFT", 0, -10)
+    panel.abilityRows = {}
+    for index = 1, ABILITY_ROWS do
+        panel.abilityRows[index] = AbilityRow(panel, skin, index)
+    end
     panel.none = Text(panel, skin)
     panel.none:SetPoint("BOTTOMLEFT", left, BEAST_ROWS * BEAST_HEIGHT + 4)
     for index = 1, BEAST_ROWS do
@@ -506,7 +572,7 @@ local function FillRares(panel, group)
     panel.titleIcon:SetTexture(isFamily and Addon.FamilyIcon(group --[[@as number]]) or nil)
     panel.spec:SetText("")
     panel.diet:SetText("")
-    panel.abilities:SetText("")
+    FillAbilities(panel, nil)
     FillBeasts(panel, group, true)
 end
 
@@ -540,7 +606,7 @@ local function Refresh(panel)
     panel.titleIcon:SetTexture(Addon.FamilyIcon(familyID))
     panel.spec:SetText(Addon.FamilyLine(familyID))
     panel.diet:SetText(DietText(info))
-    panel.abilities:SetText(AbilitiesText(familyID))
+    FillAbilities(panel, familyID)
     FillBeasts(panel, familyID)
 end
 

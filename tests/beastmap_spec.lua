@@ -1145,13 +1145,44 @@ describe("Beast Map", function()
             assert.are.equal(134400, panel.rows[1].icon.texture, "the question mark without the client's icon")
         end)
 
-        it("says its specialization, diet and what it can learn", function()
+        it("says its specialization, diet and what it can learn, an ability a row", function()
             local client = hunter(10)
             client:openTrainer({ { "Claw", "used", CLAW } }):closeTrainer()
             local panel = tab(client)
             assert.are.equal("Ferocity", panel.spec.text)
             assert.are.equal("Eats: Meat, Fish", panel.diet.text)
-            assert.are.equal("Claw: ranks 1-3, you know 1", panel.abilities.text)
+            local row = panel.abilityRows[1]
+            assert.is_true(row.shown)
+            assert.are.equal("Claw", row.label.text)
+            assert.are.equal("1/3", row.count.text)
+            assert.are.equal(CLAW_ICON, row.icon.texture)
+            assert.is_true(row.learnable.shown, "Claw 2 from a beast at level 5")
+            assert.is_false(panel.abilityRows[2].shown, "the cat learns nothing else here")
+            client.tooltipLines, GameTooltip.text = {}, nil
+            row:GetScript("OnEnter")(row)
+            assert.are.equal("Claw", GameTooltip.text)
+            assert.are.equal("Known: Rank 1", client.tooltipLines[1].text)
+            row:GetScript("OnLeave")(row)
+            assert.is_false(GameTooltip:IsShown())
+            -- A rank for every family (no families listed) is the cat's too: by name, Bite first.
+            client.Addon.data.petAbilityRanks[BITE].families = {}
+            client.Addon:RefreshWindow("families")
+            assert.are.same({ "Bite", "Claw" }, { panel.abilityRows[1].label.text, panel.abilityRows[2].label.text })
+        end)
+
+        it("opens an ability's teachers in the Abilities tab on a click", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            click(panel.abilityRows[1])
+            local abilities = client.Addon.window.panels.abilities
+            assert.is_true(abilities.shown)
+            assert.are.equal("Claw", abilities.title.text)
+        end)
+
+        it("names up to six beasts of the family, nearest first", function()
+            local client = hunter(10)
+            local panel = tab(client)
+            assert.are.equal(6, #panel.beasts)
         end)
 
         it("says the family's category and modifiers where pets have no specialization", function()
@@ -1184,6 +1215,7 @@ describe("Beast Map", function()
                 "Low Cat in Elwynn Forest: Level 5-6",
                 "Rare Cat in Tirisfal Glades: Level 10, rare elite",
                 "Late Cat: Level 11",
+                "High Cat in Elwynn Forest: Level 65-66",
             }, shown(panel.beasts, "text"))
             assert.are.same({ creature = 101 }, panel.model.shownModel)
             click(panel.beasts[2].go)
@@ -1207,7 +1239,7 @@ describe("Beast Map", function()
             assert.are.equal("Fuchs", panel.title.text)
             assert.are.equal("", panel.spec.text)
             assert.are.equal("", panel.diet.text)
-            assert.are.equal("", panel.abilities.text)
+            assert.is_false(panel.abilityRows[1].shown, "no abilities known for it")
             assert.are.same({}, shown(panel.beasts, "text"))
             assert.are.equal("No beast of this family in Beastkeeper's data.", panel.none.text)
             assert.is_false(panel.model.shown)

@@ -153,8 +153,6 @@ L.BEASTMAP_FOOD_BREAD = "Bread"
 L.BEASTMAP_FOOD_FUNGUS = "Fungus"
 L.BEASTMAP_FOOD_FRUIT = "Fruit"
 L.BEASTMAP_FOOD_RAWFISH = "Raw Fish"
--- A line per ability beasts teach the family. %s: the ability; first %d its lowest rank, second its highest, third how many the hunter knows.
-L.BEASTMAP_FAMILY_ABILITY = "%s: ranks %d-%d, you know %d"
 -- Under the family's beasts list when Beastkeeper's data has none of that family.
 L.BEASTMAP_NO_BEASTS = "No beast of this family in Beastkeeper's data."
 -- The Families tab: how the list is grouped (by family, or under Ferocity, Tenacity and Cunning), and the switch that adds a Rares item to each group.

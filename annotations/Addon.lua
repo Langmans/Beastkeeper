@@ -528,6 +528,12 @@
 ---BeastMap: a HandyNotes plugin with a pin for every beast that can teach the hunter a rank.
 ---@class AddonBeastMap: AddonSettingsModule
 ---@field db AceDBObject-3.0
+---@field AbilityName fun(ability: number): string the Abilities tab's: the client's name, else "?"
+---@field AbilityIcon fun(ability: number): number|string the Abilities tab's: the icon, else the question mark
+---@field AnyLearnable fun(ability: number): boolean whether a rank of it can be learned now
+---@field OnAbilityEnter fun(row: {ability: number?}) the Abilities tab's tooltip for an ability row
+---@field ShowAbility fun(self: AddonBeastMap, ability: number) opens the Abilities tab on that ability
+---@field pickAbility number? the ability the Abilities tab shows at its next refresh
 ---@field level number? the level PLAYER_LEVEL_UP gave, until UnitLevel catches up
 ---@field canTame boolean? whether the hunter knows Tame Beast, as SPELLS_CHANGED last found
 ---@field SPELLS_CHANGED fun(self: AddonBeastMap)
@@ -905,7 +911,7 @@
 ---@field titleIcon Texture the chosen family's portrait
 ---@field spec FontString
 ---@field diet FontString
----@field abilities FontString
+---@field abilityRows AddonFamilyAbilityRow[] the family's abilities, a row each
 ---@field none FontString
 ---@field chosen number? the family shown
 ---@field chosenRares (number|string)? the group whose rares are shown instead: a family ID or a role
@@ -929,6 +935,14 @@
 ---@class AddonCheckText: Button
 ---@field label FontString
 ---@field check Texture shown while on
+
+---A family's ability in the Families tab; a click shows its teachers in the Abilities tab.
+---@class AddonFamilyAbilityRow: Button
+---@field icon Texture
+---@field label FontString
+---@field count FontString known ranks of the family's
+---@field learnable Texture the quest giver's "!" while a rank can be learned now
+---@field ability number? the spell ID of its rank 1
 
 ---@class AddonFamilyBeastRow: Frame
 ---@field text FontString
