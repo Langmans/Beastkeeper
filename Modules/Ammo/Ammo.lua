@@ -18,7 +18,9 @@ M.title = L.AMMO_TITLE
 M.description = L.AMMO_DESC
 M.requires = { "ammo" }
 M.toastTypes = { low = L.AMMO_TOASTTYPE_LOW, critical = L.AMMO_TOASTTYPE_CRITICAL }
-M.defaults = { profile = { low = 500, critical = 250, toasts = true, buy = true, stacks = 1, equippedOnly = true } }
+M.defaults = {
+    profile = { low = 500, critical = 250, toasts = true, buy = true, bagOnly = true, stacks = 1, equippedOnly = true },
+}
 
 ---The settings of the profile in use.
 ---@return AddonAmmoSettings

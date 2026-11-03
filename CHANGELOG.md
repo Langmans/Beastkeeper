@@ -140,7 +140,10 @@
 - Beast Map: during a hunt the tame key shows as a button on screen: a click
   targets and marks the beast, Shift-click casts Tame Beast; Shift-drag moves it.
 - Ammo at a vendor: passes over ammo you cannot buy for gold, the reputation
-  ammo your standing does not reach and ammo paid in tokens.
+  ammo your standing does not reach and ammo paid in tokens; never buys ammo
+  worse than the ammo slot's (no Rough Arrows while you shoot Sharp ones);
+  and with "Buy only what fits in the quiver or ammo pouch" (on by default)
+  never more than its free slots hold.
 - Classic Era and WoW: Forever: a beast's attack speed beside its level where
   it is not the usual 2.0 ("Level 37, rare, attack speed 1.0"), in the pin's
   tooltip, the Families tab and the rare alarm: a tamed beast keeps it there.

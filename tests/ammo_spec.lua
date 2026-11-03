@@ -421,6 +421,32 @@ describe("Ammo", function()
             assert.is_true(client:printedContains("Bought 200 Sharp Arrow."))
         end)
 
+        it("never buys worse ammo than the ammo slot holds", function()
+            local client = hunter(0)
+            client.playerLevel = 12
+            client.ammoID = SHARP
+            client:stock(SHARP, 1000)
+            client.merchant = { ROUGH }
+            client:fire("MERCHANT_SHOW")
+            assert.are.same({}, client.bought, "Rough Arrow is worse than the Sharp Arrow shot now")
+        end)
+
+        it("buys no more than the ammo bag's free slots hold, unless switched off", function()
+            local client = hunter(0)
+            client.playerLevel = 12
+            client.ammoBag = { slots = 4, type = 1, free = 1 }
+            client.merchant = { SHARP }
+            client:fire("MERCHANT_SHOW")
+            assert.are.same({ { SHARP, 200 } }, client.bought, "one free slot: one stack")
+            client = hunter(0)
+            client.playerLevel = 12
+            client.ammoBag = { slots = 4, type = 1, free = 1 }
+            client.merchant = { SHARP }
+            client.Addon:GetModule("Ammo"):GetOptions().args.bagOnly.set(nil, false)
+            client:fire("MERCHANT_SHOW")
+            assert.are.equal(4, #client.bought, "the bag's slots, spilling into the other bags")
+        end)
+
         it("passes over ammo the hunter cannot buy: a reputation lacking, or tokens to pay", function()
             for _, era in ipairs({ false, true }) do
                 local client = hunter(0, { era = era })

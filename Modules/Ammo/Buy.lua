@@ -15,14 +15,25 @@ local K = Addon.ammoKinds
 -- The bag type flags of an ammo bag: a quiver holds arrows, an ammo pouch bullets.
 local BAG_TYPES = { [K.arrow] = 1, [K.bullet] = 2 }
 
----The slots of the hunter's ammo bag for `kind`, nil without one.
+---The slots of the hunter's ammo bag for `kind` and how many of them are free; nil without one.
 ---@param kind AddonAmmoKind
----@return number?
+---@return number? slots
+---@return number? free
 local function AmmoBagSlots(kind)
     for bag = 1, NUM_BAG_SLOTS do
-        local _, bagType = C_Container.GetContainerNumFreeSlots(bag)
-        if bagType == BAG_TYPES[kind] then return C_Container.GetContainerNumSlots(bag) end
+        local free, bagType = C_Container.GetContainerNumFreeSlots(bag)
+        if bagType == BAG_TYPES[kind] then return C_Container.GetContainerNumSlots(bag), free end
     end
+end
+
+---Whether the vendor's ammo `itemID` is worse than the ammo slot's (a lower level): bought, it
+---would only fill bags beside the better ammo the hunter shoots.
+---@param itemID number
+---@return boolean
+local function WorseThanEquipped(itemID)
+    local equipped = GetInventoryItemID("player", 0)
+    local ammo = equipped and Addon.data.ammo[equipped] --[[@as AddonAmmoItem?]]
+    return ammo ~= nil and Addon.data.ammo[itemID].level < ammo.level
 end
 
 ---Whether the hunter can buy the vendor's item at `index` for gold: not one its reputation does not
@@ -60,14 +71,17 @@ local function BestOnSale(kind)
     return index, itemID
 end
 
--- A vendor opened: buy what the ammo bag (or the page's stacks) still lacks.
+-- A vendor opened: buy what the ammo bag (or the page's stacks) still lacks; with bagOnly no more
+-- than the ammo bag's free slots hold. Nothing worse than the ammo slot's.
 function M:MERCHANT_SHOW()
     local kind = M.Kind()
-    if not kind or not self:Settings().buy then return end
+    local settings = self:Settings()
+    if not kind or not settings.buy then return end
     local index, itemID = BestOnSale(kind)
-    if not index or not itemID then return end
-    local stacks = AmmoBagSlots(kind) or self:Settings().stacks
-    local need = stacks * STACK - C_Item.GetItemCount(itemID)
+    if not index or not itemID or WorseThanEquipped(itemID) then return end
+    local slots, free = AmmoBagSlots(kind)
+    local need = (slots or settings.stacks) * STACK - C_Item.GetItemCount(itemID)
+    if free and settings.bagOnly then need = math.min(need, free * STACK) end
     if need <= 0 then return end
     local bought = need
     while need > 0 do

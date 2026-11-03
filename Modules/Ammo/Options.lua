@@ -40,6 +40,7 @@ end
 function M:GetOptions()
     local toastsGet, toastsSet = Addon:Setting(M, "toasts")
     local buyGet, buySet = Addon:Setting(M, "buy")
+    local bagOnlyGet, bagOnlySet = Addon:Setting(M, "bagOnly")
     return {
         args = {
             low = Slider("low", L.AMMO_OPTION_LOW, L.AMMO_OPTION_LOW_DESC, 1, 2000, 50),
@@ -62,6 +63,15 @@ function M:GetOptions()
                 set = buySet,
             },
             stacks = Slider("stacks", L.AMMO_OPTION_STACKS, L.AMMO_OPTION_STACKS_DESC, 5, 10, 1),
+            bagOnly = {
+                type = "toggle",
+                name = L.AMMO_OPTION_BAG_ONLY,
+                desc = L.AMMO_OPTION_BAG_ONLY_DESC,
+                order = 4.5,
+                width = "full",
+                get = bagOnlyGet,
+                set = bagOnlySet,
+            },
             equippedOnly = {
                 type = "toggle",
                 name = L.AMMO_OPTION_EQUIPPED,

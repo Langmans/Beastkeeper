@@ -683,6 +683,7 @@
 ---@field critical number red, with a toast, below this
 ---@field toasts boolean
 ---@field buy boolean buy at a vendor
+---@field bagOnly boolean never buy more than the ammo bag's free slots hold
 ---@field stacks number stacks to keep without an ammo bag
 ---@field equippedOnly boolean count only the ammo slot's kind; off: every kind the weapon shoots
 

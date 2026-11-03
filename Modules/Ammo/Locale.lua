@@ -54,6 +54,8 @@ L.AMMO_OPTION_CRITICAL_DESC = "The count turns red, with a toast, below this man
 L.AMMO_OPTION_TOASTS = "Toast when ammo gets low"
 L.AMMO_OPTION_BUY = "Buy ammo at a vendor"
 L.AMMO_OPTION_BUY_DESC = "At a vendor that sells your kind of ammo, buy the best for your level: enough to fill your quiver or ammo pouch, or the stacks below without one."
+L.AMMO_OPTION_BAG_ONLY = "Buy only what fits in the quiver or ammo pouch"
+L.AMMO_OPTION_BAG_ONLY_DESC = "With a quiver or ammo pouch, never buy more than its free slots hold, so no ammo lands in your other bags."
 L.AMMO_OPTION_STACKS = "Stacks without an ammo bag"
 L.AMMO_OPTION_STACKS_DESC = "How many stacks of 200 to keep when you carry no quiver or ammo pouch."
 

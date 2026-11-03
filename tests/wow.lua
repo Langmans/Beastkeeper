@@ -1020,8 +1020,11 @@ function NewClient(opts)
             if bag == 1 and client.ammoBag then return client.ammoBag.slots end
             return bag == 0 and #client.bag or 0
         end,
+        -- client.ammoBag.free: its free slots, all of them by default.
         GetContainerNumFreeSlots = function(bag)
-            if bag == 1 and client.ammoBag then return client.ammoBag.slots, client.ammoBag.type end
+            if bag == 1 and client.ammoBag then
+                return client.ammoBag.free or client.ammoBag.slots, client.ammoBag.type
+            end
             return 0, 0
         end,
         GetContainerItemID = function(bag, slot)
