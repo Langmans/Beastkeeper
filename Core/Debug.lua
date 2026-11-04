@@ -89,9 +89,12 @@ local function Written(value, depth)
 end
 
 ---A line to DebugLog's Beastkeeper tab, as text: "%s" keeps a % in it from being read as a format.
----@param line string
-local function ToDebugLog(line)
-    if dl then dl.DebugLog(SOURCE, "%s", line) end
+---DebugLog reads every "~" as the end of a flag and has no escape, so a "~" in the text ("~8 min")
+---becomes "≈"; the flags ("ERR~", "Chat~") come in separately.
+---@param flags string
+---@param text string
+local function ToDebugLog(flags, text)
+    if dl then dl.DebugLog(SOURCE, "%s", flags .. text:gsub("~", "≈")) end
 end
 
 ---A log line: "error", "warn", "info" or "debug"; values fill {1}, {2}, ... (OAP Debug makes
@@ -115,7 +118,11 @@ function Addon:Log(kind, msg, ...)
     )
     -- "probe: ..." puts the line in DebugLog's category "probe".
     local category, rest = text:match("^([%w_]+): (.*)$")
-    ToDebugLog(FLAGS[kind] .. (category and category .. "~" .. rest or text))
+    if category then
+        ToDebugLog(FLAGS[kind] .. category .. "~", rest)
+    else
+        ToDebugLog(FLAGS[kind], text)
+    end
 end
 
 ---Counts something that happens, from Normal + metrics.
@@ -149,7 +156,7 @@ end
 ---@param event AddonPrintEvent
 local function OnPrint(_, event)
     if api then api.Chat(SOURCE, event.line) end
-    ToDebugLog("Chat~" .. event.line)
+    ToDebugLog("Chat~", event.line)
 end
 
 ---Takes the profile's level; listens to Beastkeeper's messages while a debug addon is there and the

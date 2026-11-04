@@ -212,6 +212,14 @@ describe("DebugLog", function()
         assert.are.same({ "Beastkeeper", "Chat~100% fed" }, lines[#lines])
     end)
 
+    it("keeps a ~ in the text from splitting off a category", function()
+        local client, lines = withDebugLog()
+        client.Addon:ShowToast({ key = "Test:one", title = "One", text = "~8 min" })
+        assert.truthy(lines[#lines][2]:find("^BEASTKEEPER_TOAST~[^~]*text=≈8 min"), lines[#lines][2])
+        client.Addon:Print("~25 s left")
+        assert.are.same({ "Beastkeeper", "Chat~≈25 s left" }, lines[#lines])
+    end)
+
     it("gets only what the level asks for", function()
         local client, lines = withDebugLog("errors")
         local before = #lines
