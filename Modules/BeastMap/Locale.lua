@@ -52,6 +52,26 @@ L.BEASTMAP_TOOLTIP_NEW = "new"
 L.BEASTMAP_TOOLTIP_GAP = "skipped"
 L.BEASTMAP_TOOLTIP_KNOWN = "known"
 
+-- Settings: the lines on a pet ability's tooltip.
+L.BEASTMAP_OPTION_SPELL_TOOLTIP = "Say on a pet ability's tooltip where to learn it"
+L.BEASTMAP_OPTION_SPELL_TOOLTIP_DESC = "Hover a pet ability in the pet's spellbook, on the pet bar or in Beast Training: the pet level it needs (and its training points, once Beast Training showed them), the families that learn it, and whether you know the rank; if not, the nearest beasts that teach it."
+
+-- A pet ability's tooltip. The pet level the rank needs; with its training point cost once Beast
+-- Training showed it.
+L.BEASTMAP_SPELL_LEVEL = "Pet level %d"
+L.BEASTMAP_SPELL_LEVEL_COST = "Pet level %d, %d training points"
+-- The families that learn it, comma-separated, such as "Cat, Wolf"; BEASTMAP_SPELL_ALL_FAMILIES
+-- when every family does.
+L.BEASTMAP_SPELL_FAMILIES = "Families: %s"
+L.BEASTMAP_SPELL_ALL_FAMILIES = "all"
+-- How the hunter stands to the rank: known (grey); above the highest known (green) or a lower rank
+-- never learned (yellow), both followed by the nearest beasts that teach it (BEASTMAP_TEACHER_LINE).
+L.BEASTMAP_SPELL_KNOWN = "You know this rank."
+L.BEASTMAP_SPELL_TAME = "Tame one of these beasts, then let it use the ability:"
+L.BEASTMAP_SPELL_SKIPPED = "You skipped this rank. Tame one of these beasts, then let it use the ability:"
+-- After the first few beasts. %d: how many more teach it.
+L.BEASTMAP_SPELL_MORE = "%d more in Beastkeeper's Abilities tab."
+
 -- Settings: pins for the hunter's other NPCs.
 L.BEASTMAP_OPTION_TRAINERS = "Pet trainers"
 L.BEASTMAP_OPTION_TRAINERS_DESC = "A pin for every pet trainer of your faction, where your pet learns the abilities beasts do not teach."

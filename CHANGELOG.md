@@ -153,6 +153,10 @@
   worse than the ammo slot's (no Rough Arrows while you shoot Sharp ones);
   and with "Buy only what fits in the quiver or ammo pouch" (on by default)
   never more than its free slots hold.
+- Beast Map: a pet ability's tooltip (the pet's spellbook, the pet bar, Beast
+  Training) says the pet level it needs and its training points, the
+  families that learn it, and whether you know the rank; if not, the nearest
+  beasts that teach it. A switch on Beast Map's page, on by default.
 - Classic Era and WoW: Forever: a beast's attack speed beside its level where
   it is not the usual 2.0 ("Level 37, rare, attack speed 1.0"), in the pin's
   tooltip, the Families tab and the rare alarm: a tamed beast keeps it there.

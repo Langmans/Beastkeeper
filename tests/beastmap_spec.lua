@@ -353,6 +353,104 @@ describe("Beast Map", function()
         end)
     end)
 
+    describe("on a pet ability's tooltip", function()
+        local WHITE, GREY, GREEN, YELLOW = { 1, 1, 1 }, { 0.5, 0.5, 0.5 }, { 0, 1, 0 }, { 1, 1, 0 }
+
+        ---The lines' texts and colours, for one comparison.
+        ---@param lines table[]
+        ---@return table[]
+        local function shown(lines)
+            local out = {}
+            for i, line in ipairs(lines) do
+                out[i] = { line.text, line.color }
+            end
+            return out
+        end
+
+        it("says the pet level, the families, and the beasts that teach a rank the hunter lacks", function()
+            local client = hunter(10)
+            client:openTrainer({ { "Claw", "used", CLAW } }):closeTrainer()
+            assert.are.same({
+                { "Pet level 16", WHITE },
+                { "Families: Cat", WHITE },
+                { "Tame one of these beasts, then let it use the ability:", GREEN },
+                { "Rare Cat in Tirisfal Glades: Level 10, rare elite", WHITE },
+                { "Late Cat: Level 11", GREY },
+                { "High Cat in Elwynn Forest: Level 65-66", GREY },
+            }, shown(client:hoverSpell(CLAW_3)), "those in reach first; above the hunter's level in grey")
+        end)
+
+        it("names every family that learns it, and lists a few beasts and how many more", function()
+            local client = hunter(10)
+            local data = client.Addon.data
+            data.beasts[108] = { name = "Far Wolf", family = 1, minLevel = 70, maxLevel = 70, zones = { 718 } }
+            data.beasts[109] = { name = "Farther Wolf", family = 1, minLevel = 71, maxLevel = 71, zones = { 718 } }
+            data.petAbilityRanks[BITE].teachers = { 103, 108, 109, 101, 105 }
+            local lines = client:hoverSpell(BITE)
+            assert.are.equal("Families: Wolf, Spider", lines[2].text)
+            assert.are.equal(7, #lines, "three beasts and the count")
+            assert.are.same({ "2 more in Beastkeeper's Abilities tab.", GREY }, shown(lines)[7])
+        end)
+
+        it("says so for a rank the hunter knows, and in yellow for a lower one it skipped", function()
+            local client = hunter(20)
+            client:openTrainer({ { "Claw", "used", CLAW }, { "Claw", "used", CLAW_3 } }):closeTrainer()
+            assert.are.same({
+                { "Pet level 1", WHITE },
+                { "Families: Cat", WHITE },
+                { "You know this rank.", GREY },
+            }, shown(client:hoverSpell(CLAW)))
+            local skipped = shown(client:hoverSpell(CLAW_2))
+            assert.are.same(
+                { "You skipped this rank. Tame one of these beasts, then let it use the ability:", YELLOW },
+                skipped[3]
+            )
+            assert.are.equal("Low Cat in Elwynn Forest: Level 5-6", skipped[4][1])
+        end)
+
+        it("is on the pet bar's tooltip too", function()
+            local lines = hunter(10):hoverPetAction(4)
+            assert.are.equal("Pet level 8", lines[1].text)
+        end)
+
+        it("says nothing on another spell, another tooltip, or switched off", function()
+            local client = hunter(10)
+            assert.are.same({}, client:hoverSpell(2649), "Growl: no beast teaches it")
+            assert.are.same({}, client:hoverSpell(CLAW, {}), "a tooltip other than the game's")
+            set(client, "spellTooltip", false)
+            assert.are.same({}, client:hoverSpell(CLAW))
+            set(client, "spellTooltip", true)
+            client.Addon:GetModule("BeastMap"):Disable()
+            assert.are.same({}, client:hoverSpell(CLAW))
+            assert.are.same({}, hunter(10, { class = "MAGE" }):hoverSpell(CLAW))
+        end)
+
+        describe("on Classic Era", function()
+            it("works through the tooltip's spell script, the pet bar, and Beast Training with its cost", function()
+                local client = hunter(10, { era = true })
+                assert.are.equal("Pet level 16", client:hoverSpell(CLAW_3)[1].text)
+                assert.are.same({}, client:hoverSpell(CLAW_3, { hooks = {} }), "a tooltip other than the game's")
+                assert.are.equal("Pet level 8", client:hoverPetAction(4)[1].text)
+                assert.are.same({}, client:hoverPetAction(1), "Attack")
+                client:openCraft({ { "Growl", "", "used", 0, 1 }, { "Claw", "Rank 2", "used", 10, 8 } })
+                assert.are.same({
+                    { "Pet level 8, 10 training points", WHITE },
+                    { "Families: Cat", WHITE },
+                    { "You know this rank.", GREY },
+                }, shown(client:hoverCraft(2)))
+                assert.are.same({}, client:hoverCraft(1), "Growl")
+            end)
+
+            it("adds the lines once when the client also runs the spell script", function()
+                local client = hunter(10, { era = true })
+                GameTooltip.spell = CLAW_2
+                local lines = client:hoverPetAction(4)
+                GameTooltip.spell = nil
+                assert.are.same({}, lines, "the spell script's turn, not run here")
+            end)
+        end)
+    end)
+
     describe("the tame key", function()
         local TARGET_RARE_CAT = "/cast [mod:shift] Tame Beast\n/stopmacro [mod:shift]\n/targetexact Rare Cat\n/tm 8"
 

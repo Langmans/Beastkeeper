@@ -497,7 +497,7 @@ function NewClient(opts)
     Enum = {
         SpellBookSpellBank = { Player = 0, Pet = 1 },
         LuaCurveType = { Linear = 0, Step = 1, Cosine = 2, Cubic = 3 },
-        TooltipDataType = { Item = 0, Spell = 1, Unit = 2 },
+        TooltipDataType = { Item = 0, Spell = 1, Unit = 2, PetAction = 11 },
         ItemClass = { Weapon = 2, Projectile = 6 },
         ItemWeaponSubclass = { Bows = 2, Guns = 3, Sword1H = 7, Crossbow = 18 },
     }
@@ -1594,13 +1594,18 @@ function NewClient(opts)
     client.actions, client.tooltipLines = {}, {}
     GameTooltip = newRegion()
     function GameTooltip:SetAction() end
-    -- Classic Era's tooltip has an OnTooltipSetUnit script; Forever's fills unit tooltips through
-    -- TooltipDataProcessor instead.
+    function GameTooltip:SetCraftSpell() end
+    function GameTooltip:SetPetAction() end
+    -- Classic Era's tooltip has OnTooltipSetUnit and OnTooltipSetSpell scripts; Forever's fills unit
+    -- and spell tooltips through TooltipDataProcessor instead.
     function GameTooltip:HasScript(script)
-        return opts.era == true and script == "OnTooltipSetUnit"
+        return opts.era == true and (script == "OnTooltipSetUnit" or script == "OnTooltipSetSpell")
     end
     function GameTooltip:GetUnit()
         if self.unit then return "Someone", self.unit end
+    end
+    function GameTooltip:GetSpell()
+        if self.spell then return spellName(self.spell), self.spell end
     end
     function GameTooltip:AddLine(text, r, g, b, wrap)
         client.tooltipLines[#client.tooltipLines + 1] = { text = text, color = { r, g, b }, wrap = wrap }
@@ -2124,6 +2129,56 @@ function NewClient(opts)
         if macro then self.actions[slot] = { "macro", GetMacroIndexByName(macro) } end
         self.tooltipLines = {}
         GameTooltip:SetAction(slot)
+        return self.tooltipLines
+    end
+
+    ---The mouse over a spell (the pet's spellbook, an action button): Classic Era's tooltip runs its
+    ---OnTooltipSetSpell script, the spell as its GetSpell says; Forever runs the spell post-calls.
+    ---Gives the lines added.
+    ---@param spellID number
+    ---@param tooltip table?
+    ---@return table[]
+    function client:hoverSpell(spellID, tooltip)
+        self.tooltipLines = {}
+        tooltip = tooltip or GameTooltip
+        if opts.era then
+            tooltip.spell = spellID
+            for _, fn in ipairs(tooltip.hooks.OnTooltipSetSpell or {}) do
+                fn(tooltip)
+            end
+            tooltip.spell = nil
+            return self.tooltipLines
+        end
+        for _, fn in ipairs(self.tooltipPostCalls[Enum.TooltipDataType.Spell] or {}) do
+            fn(tooltip, { type = Enum.TooltipDataType.Spell, id = spellID })
+        end
+        return self.tooltipLines
+    end
+
+    ---The mouse over a row of Classic Era's craft window (Beast Training): GameTooltip:SetCraftSpell,
+    ---which runs no spell script. Gives the lines added.
+    ---@param index number
+    ---@return table[]
+    function client:hoverCraft(index)
+        self.tooltipLines = {}
+        GameTooltip:SetCraftSpell(index)
+        return self.tooltipLines
+    end
+
+    ---The mouse over pet bar slot `slot`: Classic Era's GameTooltip:SetPetAction, which runs no
+    ---spell script; Forever's pet action post-calls with the slot's spell. Gives the lines added.
+    ---@param slot number
+    ---@return table[]
+    function client:hoverPetAction(slot)
+        self.tooltipLines = {}
+        if opts.era then
+            GameTooltip:SetPetAction(slot)
+            return self.tooltipLines
+        end
+        local spellID = select(7, GetPetActionInfo(slot))
+        for _, fn in ipairs(self.tooltipPostCalls[Enum.TooltipDataType.PetAction] or {}) do
+            fn(GameTooltip, { type = Enum.TooltipDataType.PetAction, id = spellID })
+        end
         return self.tooltipLines
     end
 

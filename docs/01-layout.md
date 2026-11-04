@@ -24,7 +24,7 @@ Core\Core.xml     the core, in this order:
   Pet.lua         spells (name, icon, rank), the pet's spellbook, family, sound,
                   training points and stable number, on every client
   World.lua       places in the world, to measure across zone borders
-  Tooltip.lua     lines in unit tooltips, the same way on every client
+  Tooltip.lua     lines in unit and spell tooltips, the same way on every client
   Combat.lua      what waits for combat to end
   Chat.lua        chat sent on the player's next key press or click
   Toast\          the toast (Toast.xml):

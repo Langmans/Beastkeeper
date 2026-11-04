@@ -9,7 +9,7 @@ local Addon = ns
 local L = Addon.L
 local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
----@alias AddonBeastMapSetting "pins"|"mapButton"|"usefulOnly"|"gaps"|"aboveLevel"|"untilTame"|"levelToast"|"levelChat"|"tooltip"|"rareToast"|"trainers"|"stables"|"tameButton"|"familySpecNames"
+---@alias AddonBeastMapSetting "pins"|"mapButton"|"usefulOnly"|"gaps"|"aboveLevel"|"untilTame"|"levelToast"|"levelChat"|"tooltip"|"spellTooltip"|"rareToast"|"trainers"|"stables"|"tameButton"|"familySpecNames"
 
 -- How far a refining option sits in from the one it refines, and how wide it is then (AceConfig's
 -- widths, in units of its column).
@@ -74,6 +74,12 @@ function M:GetOptions()
         usefulOnly = Toggle("usefulOnly", L.BEASTMAP_OPTION_USEFUL, L.BEASTMAP_OPTION_USEFUL_DESC, 1),
         levelToast = Toggle("levelToast", L.BEASTMAP_OPTION_TOAST, L.BEASTMAP_OPTION_TOAST_DESC, 4),
         tooltip = Toggle("tooltip", L.BEASTMAP_OPTION_TOOLTIP, L.BEASTMAP_OPTION_TOOLTIP_DESC, 5),
+        spellTooltip = Toggle(
+            "spellTooltip",
+            L.BEASTMAP_OPTION_SPELL_TOOLTIP,
+            L.BEASTMAP_OPTION_SPELL_TOOLTIP_DESC,
+            5.1
+        ),
         rareToast = Toggle("rareToast", L.BEASTMAP_OPTION_RARE, L.BEASTMAP_OPTION_RARE_DESC, 6),
         trainers = Toggle("trainers", L.BEASTMAP_OPTION_TRAINERS, L.BEASTMAP_OPTION_TRAINERS_DESC, 3.5),
         stables = Toggle("stables", L.BEASTMAP_OPTION_STABLES, L.BEASTMAP_OPTION_STABLES_DESC, 3.6),

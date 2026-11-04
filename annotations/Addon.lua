@@ -420,6 +420,7 @@
 ---@field CanTeach fun(self: AddonAbilityLearned, name: string, rank: string?): boolean
 ---@field SurelyTeaches fun(self: AddonAbilityLearned, name: string, rank: string?): boolean
 ---@field HasRank fun(self: AddonAbilityLearned, name: string, rank: number): boolean
+---@field TrainingCost fun(self: AddonAbilityLearned, name: string, rank: number): AddonTrainingCost?
 ---@field RecordLearn fun(self: AddonAbilityLearned, entry: AddonLearnEntry)
 ---@field HistoryText fun(self: AddonAbilityLearned): string
 ---@field ReportMissingTeachers fun(self: AddonAbilityLearned)
@@ -582,6 +583,7 @@
 
 ---@class AddonBeastMapSettings
 ---@field tooltip boolean a beast's tooltip says what it teaches
+---@field spellTooltip boolean a pet ability's tooltip says its pet level, families and teachers
 ---@field rareToast boolean a toast when a rare beast worth taming comes in sight
 ---@field trainers boolean pins for pet trainers
 ---@field stables boolean pins for stable masters

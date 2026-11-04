@@ -36,6 +36,7 @@ M.defaults = {
         levelToast = true,
         levelChat = false,
         tooltip = true,
+        spellTooltip = true,
         rareToast = true,
         trainers = true,
         stables = true,

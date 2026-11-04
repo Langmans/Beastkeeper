@@ -108,6 +108,16 @@ function M:HasRank(name, rank)
     return set ~= nil and set[rank] == true
 end
 
+---A rank's training point cost and pet level as Beast Training last showed them; nil before it
+---showed that rank.
+---@param name string
+---@param rank number
+---@return AddonTrainingCost?
+function M:TrainingCost(name, rank)
+    local costs = (M.db.global --[[@as AddonAbilityLearnedGlobal]]).costs[name]
+    return costs and costs[rank]
+end
+
 ---Adds a learn to the history, keeping the last HISTORY_MAX, and to what is known; sends
 ---BEASTKEEPER_ABILITY_LEARNED (docs\04-hooking.md).
 ---@param entry AddonLearnEntry
