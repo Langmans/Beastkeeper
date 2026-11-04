@@ -47,9 +47,10 @@ describe("/beastkeeper", function()
     end)
 
     for _, line in ipairs({ "nope", "fake", "fake nope", "bare thing" }) do
-        it("reports an unknown command: " .. line, function()
+        it("reports an unknown command and lists the commands: " .. line, function()
             client:slash(line)
             assert.is_true(client:printedContains("Unknown command: " .. line))
+            assert.is_true(client:printedContains("/beastkeeper config - open the options"))
         end)
     end
 

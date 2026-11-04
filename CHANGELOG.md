@@ -27,7 +27,8 @@
 - A settings page under AddOns → Beastkeeper with a switch per module, a page per
   module with options, and profiles.
 - `/beastkeeper` opens Beastkeeper's window, `/beastkeeper config` the settings page;
-  `/beastkeeper help` lists the module commands. The window has a tab per part,
+  `/beastkeeper help` lists the module commands, as does an unknown command
+  after saying so. The window has a tab per part,
   takes the button skin's look, moves by dragging, and opens from the data
   broker and a key binding too.
 - Beastkeeper's macros say what they do in the tooltip of the action button they

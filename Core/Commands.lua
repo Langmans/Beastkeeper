@@ -40,7 +40,8 @@ function Addon:OnSlash(input)
     end
 end
 
----Runs `/beastkeeper <word> <sub> ...`, or says why it cannot.
+---Runs `/beastkeeper <word> <sub> ...`, or says why it cannot: an unknown command with the list
+---of commands.
 ---@param input string the whole line, for the message when nothing matches
 ---@param word string the module's command word, lowercase
 ---@param sub string? the command's name
@@ -50,6 +51,7 @@ function Addon:RunModuleCommand(input, word, sub, rest)
     local command = module and sub and module.commands and module.commands[sub:lower()]
     if not name or not module or not command then
         self:Print(L.UNKNOWN_COMMAND:format(input))
+        self:PrintHelp()
     elseif not self:IsModuleOn(name) then
         self:Print(L.MODULE_OFF:format(module.title or name))
     else
