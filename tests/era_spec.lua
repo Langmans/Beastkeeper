@@ -110,6 +110,45 @@ describe("Classic Era", function()
         assert.are.equal(tostring(0xAABBCC), pets.Kaldor[1], "under its own number (the GUID's low 32 bits) now")
     end)
 
+    it("keeps a released pet apart from a new one of the same name and family, at the stable", function()
+        local client = NewClient({ era = true }):login():advance(60)
+        local journal = client.Addon:GetModule("PetJournal")
+        local old = journal.current
+        -- Released: the pet is gone; then a beast tamed and named the same.
+        client.pet = nil
+        client:fire("UNIT_PET", "player"):advance(1)
+        client.petGUID = "Pet-0-5250-0-1-2237-0100AABBCC"
+        client:summon("Fluffy", {}):advance(60)
+        local new = tostring(0xAABBCC)
+        client.stableOpen = true
+        client.eraStable.current = { "Fluffy", 18, "Cat", "(Loyalty Level 1) Rebellious" }
+        client:fire("PET_STABLE_SHOW")
+        local pets = journal:Pets()
+        assert.is_truthy(pets[old], "the released pet keeps its own page")
+        assert.is_truthy(pets[new], "the new pet keeps its own page")
+        assert.are.equal(2237, pets[new].first.npc)
+        assert.are.equal(1, pets[new].loyalty, "the stable's word went to the pet out")
+        assert.is_true(pets[old].past)
+        assert.are.equal(new, journal.current)
+        -- Stabled now, with another pet out: two pages share the name, so the stabled pet's goes
+        -- under the stable's key, the released pet's stays as it was.
+        local oldOut = pets[old].out
+        client.stableOpen = false
+        client.petGUID, client.familyName, client.familyID = "Pet-0-5250-0-1-3099-0100DDEEFF", "Boar", 5
+        client:summon("Kaldor", {}):advance(1)
+        client.eraStable.current = { "Kaldor", 16, "Boar", "(Loyalty Level 6) Best Friend" }
+        client.eraStable.stabled = { { "Fluffy", 18, "Cat", "(Loyalty Level 1) Rebellious" } }
+        client.stableOpen = true
+        client:fire("PET_STABLE_SHOW")
+        local stabled = pets["stable:Fluffy|Cat"]
+        assert.are.equal(2237, stabled.first.npc, "the new pet's page")
+        assert.are.equal(oldOut, pets[old].out, "nothing of the new pet in the released one's")
+        -- With the released page gone, the one page of that name is the stabled pet's own.
+        pets[old] = nil
+        client:fire("PET_STABLE_SHOW")
+        assert.are.equal(stabled, pets["stable:Fluffy|Cat"])
+    end)
+
     it("drops a taming quest's beast the journal kept under its Creature GUID, at the stable", function()
         local client = NewClient({ era = true, noPet = true }):login()
         local pets = client.Addon:GetModule("PetJournal"):Pets()

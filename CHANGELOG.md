@@ -167,7 +167,9 @@
   now (from a beast at or below your level); its tooltip names the rank you
   know and those to learn.
 - Pets tab: the pets you no longer have (released, or lost) under a Past pets
-  heading; the Stable tab shows only the pets you have.
+  heading; the Stable tab shows only the pets you have. On Classic Era a new
+  pet with the name and family of one you released keeps its own page at the
+  stable master, and a stabled pet's page no longer takes the pet out's beast.
 - Toasts at the right moments only: the low-ammo toast not on the way back
   up while restocking; the pet's low health only in combat (not right after
   Revive Pet), or at the pull; no "content" for a pet that was content when

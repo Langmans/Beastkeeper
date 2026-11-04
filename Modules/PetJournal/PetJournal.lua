@@ -141,14 +141,14 @@ end
 
 ---A pet's entry, made the first time it is seen: out, or in the stable's lists.
 ---@param key string
----@param npc number? the NPC ID it was tamed as; the pet out's when nil
+---@param npc number? the NPC ID it was tamed as, if known
 ---@return AddonJournalEntry
 function M:Entry(key, npc)
     local pets = self:Pets()
     local entry = pets[key]
     if not entry then
         entry = {
-            first = { t = GetServerTime(), zone = Zone(), npc = npc or Addon.PetNPC() },
+            first = { t = GetServerTime(), zone = Zone(), npc = npc },
             out = 0,
             deaths = 0,
             rises = {},
@@ -168,7 +168,7 @@ function M:Open(key)
         pets[key], pets[stableKey] = pets[stableKey], nil
     end
     if not pets[key] and not key:find("^Creature%-") then Adopt(pets, key) end
-    self:Entry(key).past = nil
+    self:Entry(key, Addon.PetNPC()).past = nil
     self.current, self.outSince = key, GetTime()
     self:Record()
     C_Timer.After(BOOK_WAIT, SnapshotLater)
@@ -194,13 +194,19 @@ end
 ---@type table<string, true>
 local stableKeys = {}
 
----The journal key of a stable pet without a number (Classic Era): the one entry of the same name
----and family, else its own under STABLE_KEY.
+---The journal key of a stable pet without a number (Classic Era): the pet out's when it has the
+---same name and family (a released pet may share them), else the one entry of the same name and
+---family, else its own under STABLE_KEY.
 ---@param pets table<string, AddonJournalEntry>
 ---@param name string
 ---@param family string?
+---@param current string? the pet out's key
 ---@return string
-local function NamedKey(pets, name, family)
+local function NamedKey(pets, name, family, current)
+    local out = current and pets[current]
+    if out and out.name == name and out.family == family then
+        return current --[[@as string]]
+    end
     ---@type string?
     local found
     for key, entry in pairs(pets) do
@@ -225,7 +231,7 @@ function M:ReadStableList(list)
         if type(number) == "number" and Addon.Readable(number) then
             key = tostring(number)
         elseif number == nil and info.name then
-            key = NamedKey(self:Pets(), info.name, info.familyName)
+            key = NamedKey(self:Pets(), info.name, info.familyName, self.current)
         end
         if key and info.name then
             stableKeys[key] = true
@@ -245,7 +251,7 @@ end
 
 ---Moves what an entry the stable does not know holds into the stable's entry of the same pet: the
 ---time out, deaths, loyalty rises, abilities seen, the earlier first sight and a tame. The
----stable's NPC ID stays.
+---stable's NPC ID stays where it gave one (Classic Era's stable gives none).
 ---@param into AddonJournalEntry
 ---@param from AddonJournalEntry
 local function Merge(into, from)
@@ -260,6 +266,7 @@ local function Merge(into, from)
         into.first.t, into.first.zone = from.first.t, from.first.zone or into.first.zone
     end
     into.first.tamed = into.first.tamed or from.first.tamed
+    into.first.npc = into.first.npc or from.first.npc
 end
 
 ---The one stable pet with this name and family; nil for none or several.
@@ -282,9 +289,9 @@ end
 ---Reads the stable's lists (Beastkeeper.C.StableInfo: WoW: Forever gives them anywhere, Classic Era
 ---while the stable master is open), then merges an entry they do not know (kept under the GUID's
 ---number, which is not the pet's on Forever) into the stable's entry of the same name and family.
----A pet tamed this session (a Creature GUID key) waits for Adopt. A pet neither in the lists nor
----out is one the hunter no longer has (released, or lost): it is marked past, until it is seen
----again. On the classic clients an entry under a Creature GUID, a taming quest's beast kept
+---A pet tamed this session (a Creature GUID key) waits for Adopt, and a past pet is never merged:
+---a new pet may carry a released one's name. A pet neither in the lists nor out is one the hunter
+---no longer has (released, or lost): it is marked past, until it is seen again. On the classic clients an entry under a Creature GUID, a taming quest's beast kept
 ---before the journal left those out, goes.
 function M:ReadStable()
     local stable = Addon.C.StableInfo
@@ -293,7 +300,7 @@ function M:ReadStable()
     self:ReadStableList(stable.GetStabledPetList())
     local pets = self:Pets()
     for key, entry in pairs(pets) do
-        local twin = not stableKeys[key] and not key:find("^Creature%-") and StableTwin(pets, entry)
+        local twin = not stableKeys[key] and not entry.past and not key:find("^Creature%-") and StableTwin(pets, entry)
         if twin then
             Merge(pets[twin], entry)
             pets[key] = nil
@@ -338,7 +345,7 @@ end
 function M:OnTamed(_, event)
     -- Freshly tamed, the pet has no number yet: it goes under its Creature GUID (Key).
     local key = event.petNumber and tostring(event.petNumber) or Key()
-    if key then self:Entry(key).first.tamed = true end
+    if key then self:Entry(key, Addon.PetNPC()).first.tamed = true end
 end
 
 function M:PLAYER_LOGOUT()
