@@ -33,6 +33,30 @@ function Addon.FamilyModsText(familyID)
     return L.FAMILY_MODS:format(category, table.concat(parts, ", "))
 end
 
+-- Each food type's name, by its Beastkeeper.diets value.
+local FOOD_NAMES = {
+    meat = L.FAMILY_FOOD_MEAT,
+    fish = L.FAMILY_FOOD_FISH,
+    cheese = L.FAMILY_FOOD_CHEESE,
+    bread = L.FAMILY_FOOD_BREAD,
+    fungus = L.FAMILY_FOOD_FUNGUS,
+    fruit = L.FAMILY_FOOD_FRUIT,
+    rawFish = L.FAMILY_FOOD_RAWFISH,
+}
+
+---What a family eats: "Eats: Meat, Fish"; nil for a family Beastkeeper knows no diet of.
+---@param familyID number?
+---@return string?
+function Addon.DietText(familyID)
+    local info = familyID and Addon.familyInfo[familyID]
+    if not info or not info.diet then return nil end
+    wipe(parts)
+    for _, food in ipairs(info.diet) do
+        parts[#parts + 1] = FOOD_NAMES[food]
+    end
+    return L.FAMILY_EATS:format(table.concat(parts, ", "))
+end
+
 ---A family's ID from its name as Beastkeeper.FamilyName gives it (a pet's UnitCreatureFamily, a stable
 ---list's familyName); nil for a name Beastkeeper does not know.
 ---@param name string?

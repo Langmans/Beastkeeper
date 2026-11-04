@@ -170,15 +170,6 @@ L.BEASTMAP_MORE = "+%d"
 -- pets are of it (%s the family, %d the count).
 L.BEASTMAP_TAB_FAMILIES = "Families"
 L.BEASTMAP_FAMILY_ROW = "%s (%d)"
--- What a family eats. %s: a list of the food types below.
-L.BEASTMAP_EATS = "Eats: %s"
-L.BEASTMAP_FOOD_MEAT = "Meat"
-L.BEASTMAP_FOOD_FISH = "Fish"
-L.BEASTMAP_FOOD_CHEESE = "Cheese"
-L.BEASTMAP_FOOD_BREAD = "Bread"
-L.BEASTMAP_FOOD_FUNGUS = "Fungus"
-L.BEASTMAP_FOOD_FRUIT = "Fruit"
-L.BEASTMAP_FOOD_RAWFISH = "Raw Fish"
 -- Under the family's beasts list when Beastkeeper's data has none of that family.
 L.BEASTMAP_NO_BEASTS = "No beast of this family in Beastkeeper's data."
 -- The Families tab: how the list is grouped (by family, or under Ferocity, Tenacity and Cunning), and the switch that adds a Rares item to each group.

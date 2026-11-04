@@ -259,19 +259,6 @@ local function Beasts(group, raresOnly)
     return M.Nearest(beasts)
 end
 
----The diet line: "Eats: Meat, Fish"; empty when Beastkeeper does not know it.
----@param info AddonFamilyInfo
----@return string
-local function DietText(info)
-    if not info.diet then return "" end
-    ---@type string[]
-    local foods = {}
-    for i, food in ipairs(info.diet) do
-        foods[i] = L["BEASTMAP_FOOD_" .. food:upper()]
-    end
-    return L.BEASTMAP_EATS:format(table.concat(foods, ", "))
-end
-
 ---A text in the skin's font.
 ---@param parent Frame
 ---@param skin AddonButtonHolderSkin
@@ -601,11 +588,10 @@ local function Refresh(panel)
         return
     end
     local familyID = panel.chosen --[[@as number]]
-    local info = Addon.familyInfo[familyID]
     panel.title:SetText(Addon.FamilyName(familyID) or "?")
     panel.titleIcon:SetTexture(Addon.FamilyIcon(familyID))
     panel.spec:SetText(Addon.FamilyLine(familyID))
-    panel.diet:SetText(DietText(info))
+    panel.diet:SetText(Addon.DietText(familyID) or "")
     FillAbilities(panel, familyID)
     FillBeasts(panel, familyID)
 end

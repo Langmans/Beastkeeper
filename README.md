@@ -235,7 +235,8 @@ a button on the minimap, which the module's page can hide.
 
 A page for every pet your hunter had out (Beastkeeper > Pet Journal), per
 character: when and where you tamed it (or first had it out with Beastkeeper), its
-level, family and loyalty, how long you were out together and how often it
+level, family and loyalty, what it eats ("Eats: Meat, Fish", also in its
+tooltip and on its card), how long you were out together and how often it
 died, when its next loyalty level may come (from how long the rises Beastkeeper saw
 took), and the abilities it had the last time it was out, so your stabled
 pets are there too, with the ranks each could still teach you. Hover your

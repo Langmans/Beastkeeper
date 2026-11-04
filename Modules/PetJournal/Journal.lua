@@ -165,6 +165,7 @@ function M:JournalLines(key, brief, noAdvice)
         lines[#lines + 1] = L.PETJOURNAL_FIRST:format(when, first.zone or "?")
     end
     if not brief then lines[#lines + 1] = M.LevelLine(entry) end
+    lines[#lines + 1] = Addon.DietText(Addon.FamilyID(entry.family))
     lines[#lines + 1] = L.PETJOURNAL_OUT:format(Duration(self:Out(key)))
     if entry.deaths > 0 then lines[#lines + 1] = L.PETJOURNAL_DIED:format(entry.deaths) end
     lines[#lines + 1] = Forecast(key, entry)

@@ -34,6 +34,7 @@ describe("Pet Journal", function()
         local when = date("%Y-%m-%d %H:%M", client.serverTime)
         assert.is_true(says(client, "First seen " .. when .. " in Darkshore."), journal(client))
         assert.is_true(says(client, "Level 15 Cat, loyalty 4 ("), journal(client))
+        assert.is_true(says(client, "Eats: Meat, Fish"), "the family's diet")
         assert.is_true(
             says(client, "Abilities: Bite (Rank 1), Claw (Rank 2), Cower (Rank 1), Great Stamina (Rank 1), Growl.")
         )
@@ -226,6 +227,7 @@ describe("Pet Journal", function()
             local when = date("%Y-%m-%d %H:%M", client.serverTime)
             assert.are.same({
                 "First seen " .. when .. " in Darkshore.",
+                "Eats: Meat, Fish",
                 "Out together: 1 h 5 min.",
                 "Died 1 |4time:times;.",
                 "Next loyalty level: not enough seen yet.",

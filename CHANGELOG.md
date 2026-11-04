@@ -79,7 +79,7 @@
   ElvUI datatexts): the pet's name, happiness and free training points, more
   in its tooltip, Beastkeeper's window on a click; and as a minimap button.
 - Pet Journal: a page per pet with when and where it was tamed, its level and
-  loyalty, the time out together, its deaths, a forecast of the next loyalty
+  loyalty, what it eats, the time out together, its deaths, a forecast of the next loyalty
   level and its abilities, stabled pets included, with what each could still
   teach you; the short version in the pet's tooltip. In Beastkeeper's window a
   Pets tab with a card per pet: its model, specialization, journal and

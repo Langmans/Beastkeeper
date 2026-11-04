@@ -46,6 +46,16 @@ L.FAMILY_MODS = "%s: %s"
 L.FAMILY_DAMAGE = "%+d%% damage"
 L.FAMILY_HEALTH = "%+d%% health"
 L.FAMILY_ARMOR = "%+d%% armor"
+-- What a family eats: on the Families tab, a pet's card and its tooltip. %s: a list of the food
+-- types below.
+L.FAMILY_EATS = "Eats: %s"
+L.FAMILY_FOOD_MEAT = "Meat"
+L.FAMILY_FOOD_FISH = "Fish"
+L.FAMILY_FOOD_CHEESE = "Cheese"
+L.FAMILY_FOOD_BREAD = "Bread"
+L.FAMILY_FOOD_FUNGUS = "Fungus"
+L.FAMILY_FOOD_FRUIT = "Fruit"
+L.FAMILY_FOOD_RAWFISH = "Raw Fish"
 
 -- Beastkeeper's window: its title, and the name of its key binding (Esc > Options > Keybindings > AddOns).
 L.WINDOW_TITLE = "Beastkeeper"

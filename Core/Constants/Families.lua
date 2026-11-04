@@ -46,8 +46,8 @@ Addon.families = {
 -- The specializations, as Wowhead sorts the families.
 Addon.petSpecs = Addon.SelfKeyedEnum({ "ferocity", "cunning", "tenacity" }) --[[@as AddonPetSpecs]]
 
--- The kinds of food a family eats; upper-cased, each names a BEASTMAP_FOOD_* string, and the emote
--- lines' food types use them as keys.
+-- The kinds of food a family eats; each has a FAMILY_FOOD_* name (Beastkeeper.DietText), and the
+-- emote lines' food types use them as keys.
 Addon.diets = Addon.SelfKeyedEnum({ "meat", "fish", "cheese", "bread", "fungus", "fruit", "rawFish" }) --[[@as AddonDiets]]
 
 local F, S, D = Addon.families, Addon.petSpecs, Addon.diets
