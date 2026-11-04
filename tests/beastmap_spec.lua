@@ -547,7 +547,7 @@ describe("Beast Map", function()
             button:GetScript("OnEnter")(button)
             assert.are.equal("Rare Cat", GameTooltip.text)
             assert.are.equal(
-                "Click: target and mark. Shift-click: Tame Beast. Shift-drag to move.",
+                "Click: target and mark. Shift-click: Tame Beast. Right-click: stop the hunt. Shift-drag to move.",
                 client.tooltipLines[1].text
             )
             button:GetScript("OnLeave")(button)
@@ -586,6 +586,56 @@ describe("Beast Map", function()
             client.printed = {}
             client:slash("hunt stop")
             assert.is_true(client:printedContains("Not hunting a beast."))
+        end)
+
+        it("stops on a right-click on the tame key's button, after combat when in it", function()
+            local client = hunter(10)
+            click(abilities(client, 3).ranks[3].go)
+            local button = _G.BeastkeeperTameButton
+            -- SecureActionButtonTemplate runs the button's own function named by type2 for the
+            -- right button, instead of the macro its type gives every button.
+            local handler = button.attributes.type2
+            assert.are.equal("function", type(rawget(button, handler)))
+            client:enterCombat()
+            rawget(button, handler)(button, nil, "RightButton")
+            local M = client.Addon:GetModule("BeastMap")
+            assert.is_nil(M.db.char.hunt)
+            assert.is_true(client:printedContains("Stopped hunting Rare Cat."))
+            assert.is_true(button:IsShown(), "hidden only after combat")
+            client:leaveCombat()
+            assert.is_false(button:IsShown())
+        end)
+
+        ---Tame Beast brings beast `npc` as the pet.
+        local function tame(client, npc)
+            client:fire("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-1", TAME_BEAST)
+            client.petGUID = ("Pet-0-5250-0-1-%d-0100ABCDEF"):format(npc)
+            return client:summon("Whiskers", {})
+        end
+
+        it("ends when a beast that teaches the rank is tamed, the hunted one or another", function()
+            local client = hunter(10)
+            local events = heard(client)
+            click(abilities(client, 3).ranks[3].go) -- Rare Cat, Claw 3
+            local M = client.Addon:GetModule("BeastMap")
+            tame(client, 103) -- Spider: Bite only
+            assert.is_not_nil(M.db.char.hunt)
+            tame(client, 106) -- Late Cat: Claw 3 too
+            assert.is_nil(M.db.char.hunt)
+            assert.is_true(
+                client:printedContains(
+                    "Tamed Whiskers, which teaches Claw (Rank 3): the hunt for Rare Cat is over. Let it use the ability to learn it."
+                )
+            )
+            assert.are.equal("tamed", events[2][2].reason)
+        end)
+
+        it("goes on after such a tame with its switch off", function()
+            local client = hunter(10)
+            set(client, "huntEndsAtTame", false)
+            click(abilities(client, 3).ranks[3].go)
+            tame(client, 104)
+            assert.is_not_nil(client.Addon:GetModule("BeastMap").db.char.hunt)
         end)
 
         it("ends the hunt on when another starts", function()

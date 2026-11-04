@@ -68,7 +68,7 @@
 
 ---BEASTKEEPER_HUNT_ENDED: that hunt is over.
 ---@class AddonHuntEndedEvent: AddonHuntStartedEvent
----@field reason "learned"|"stopped" the hunter knows the rank now, or stopped the hunt
+---@field reason "learned"|"tamed"|"stopped" the hunter knows the rank now, tamed a beast that teaches it, or stopped the hunt
 
 ---BEASTKEEPER_AMMO: the hunter's ammo count crossed a line: low, critically low, or back to enough.
 ---@class AddonAmmoEvent

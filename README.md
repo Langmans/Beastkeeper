@@ -277,8 +277,10 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
 - **The hunt**: pick the beast you mean to tame for a rank, with a rank's
   button in the Abilities tab or a click on the beast's pin. Beastkeeper shows the
   way there, gives it to the tame key, and marks the areas it lives in on the
-  world map and the minimap. The hunt ends once you know the rank, or with
-  the button again or `/beastkeeper hunt stop`.
+  world map and the minimap. The hunt ends once you know the rank, or
+  already when you tame a beast that teaches it (the hunted one or another;
+  a switch, on by default), or with the button again, a right-click on the
+  tame button or `/beastkeeper hunt stop`.
 - **Pet trainers and stable masters** of your faction get a pin too (Beast
   Training's and Call Pet's icons), each kind with its own switch.
 - **In Beastkeeper's window**, also without HandyNotes: the Abilities tab lists

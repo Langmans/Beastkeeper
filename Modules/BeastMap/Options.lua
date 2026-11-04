@@ -9,7 +9,7 @@ local Addon = ns
 local L = Addon.L
 local M = Addon:GetModule("BeastMap") --[[@as AddonBeastMap]]
 
----@alias AddonBeastMapSetting "pins"|"mapButton"|"usefulOnly"|"gaps"|"aboveLevel"|"untilTame"|"levelToast"|"levelChat"|"tooltip"|"spellTooltip"|"rareToast"|"trainers"|"stables"|"tameButton"|"familySpecNames"
+---@alias AddonBeastMapSetting "pins"|"mapButton"|"usefulOnly"|"gaps"|"aboveLevel"|"untilTame"|"levelToast"|"levelChat"|"tooltip"|"spellTooltip"|"rareToast"|"trainers"|"stables"|"tameButton"|"huntEndsAtTame"|"familySpecNames"
 
 -- How far a refining option sits in from the one it refines, and how wide it is then (AceConfig's
 -- widths, in units of its column).
@@ -96,6 +96,7 @@ function M:GetOptions()
         M:ApplyTameButton()
     end
     args.tameButton = tameButton
+    args.huntEndsAtTame = Toggle("huntEndsAtTame", L.BEASTMAP_OPTION_HUNT_TAME, L.BEASTMAP_OPTION_HUNT_TAME_DESC, 7.1)
     local specNames = Toggle("familySpecNames", L.BEASTMAP_OPTION_SPEC_NAMES, L.BEASTMAP_OPTION_SPEC_NAMES_DESC, 8)
     ---@param _ table AceConfig's info about the option
     ---@param value boolean

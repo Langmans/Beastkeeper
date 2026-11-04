@@ -41,6 +41,7 @@ M.defaults = {
         trainers = true,
         stables = true,
         tameButton = true,
+        huntEndsAtTame = true,
         familyGroup = "family",
         familyRares = false,
         familySpecNames = false,
@@ -780,6 +781,7 @@ function M:OnEnable()
     self:RegisterEvent("SPELLS_CHANGED")
     Addon:Listen(self, Addon.messages.ranksKnown, "OnRanksKnown")
     Addon:Listen(self, Addon.messages.rareSeen, "OnRareSeen")
+    Addon:Listen(self, Addon.messages.petTamed, "OnPetTamed")
     self:WatchRares()
     self:ApplyTameButton()
     self:Refresh()

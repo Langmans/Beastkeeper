@@ -140,6 +140,10 @@
   a dead one, or with one on Passive.
 - Beast Map: during a hunt the tame key shows as a button on screen: a click
   targets and marks the beast, Shift-click casts Tame Beast; Shift-drag moves it.
+  A right-click stops the hunt.
+- Beast Map: the hunt ends when you tame a beast that teaches its rank, the
+  hunted one or another ("Tamed Whiskers, which teaches Claw (Rank 3): the
+  hunt for Rare Cat is over."). A switch on Beast Map's page, on by default.
 - The BeastkeeperAutocast macro set nothing: a macro that /clicks a button
   cannot run that button's macro lines. It holds the /petautocaston and
   /petautocastoff lines itself now, rewritten after combat when what fits

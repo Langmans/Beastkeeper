@@ -86,10 +86,13 @@ L.BEASTMAP_TAME_BINDING = "Beast Map: target and mark the beast to tame"
 L.BEASTMAP_TAME_SET = "The tame key now targets %s."
 L.BEASTMAP_TAME_NONE = "No beast to target yet: a rare alarm or a click on a beast's pin on the map sets one."
 -- The tooltip of the tame key's button on screen during a hunt, under the beast's name.
-L.BEASTMAP_TAME_HINT = "Click: target and mark. Shift-click: Tame Beast. Shift-drag to move."
+L.BEASTMAP_TAME_HINT =
+    "Click: target and mark. Shift-click: Tame Beast. Right-click: stop the hunt. Shift-drag to move."
 -- The module's page: the switch for that button.
 L.BEASTMAP_OPTION_TAME_BUTTON = "Show the tame button during a hunt"
-L.BEASTMAP_OPTION_TAME_BUTTON_DESC = "A button on screen that does what the tame key does: a click targets and marks the hunted beast, Shift-click casts Tame Beast. Shift-drag to move it."
+L.BEASTMAP_OPTION_TAME_BUTTON_DESC = "A button on screen that does what the tame key does: a click targets and marks the hunted beast, Shift-click casts Tame Beast. A right-click stops the hunt. Shift-drag to move it."
+L.BEASTMAP_OPTION_HUNT_TAME = "End the hunt at a tame that teaches the rank"
+L.BEASTMAP_OPTION_HUNT_TAME_DESC = "The hunt is over once you tame a beast that teaches its rank, the hunted beast or another one. Off: it lasts until you know the rank, which takes the pet using the ability."
 
 -- Settings: the rare alarm.
 L.BEASTMAP_OPTION_RARE = "Toast when a rare beast I could learn from is near"
@@ -150,6 +153,9 @@ L.BEASTMAP_GO_STOP = "Stop hunting %s"
 L.BEASTMAP_HUNT_START = "Hunting %s for %s."
 L.BEASTMAP_HUNT_STOPPED = "Stopped hunting %s."
 L.BEASTMAP_HUNT_LEARNED = "Learned %s: the hunt for %s is over."
+-- A tamed pet teaches the hunted rank. First %s: the pet's name; second: the rank, such as
+-- "Claw (Rank 3)"; third: the hunted beast.
+L.BEASTMAP_HUNT_TAMED = "Tamed %s, which teaches %s: the hunt for %s is over. Let it use the ability to learn it."
 L.BEASTMAP_HUNT_NONE = "Not hunting a beast."
 L.BEASTMAP_CMD_STOP = "stop the hunt for a beast"
 -- A rank the hunter lacks that no beast in Beastkeeper's data teaches (Forever's family abilities: the pet may get them itself).

@@ -5,8 +5,12 @@ local _, ns = ...
 -- with Shift it casts Tame Beast instead. Only a secure button may target, so its macro text holds
 -- the beast's name, rewritten outside combat. For an action bar: a macro with
 -- /click BeastkeeperTameButton. During a hunt the same button shows on screen too, with Tame
--- Beast's icon (the profile's tameButton switch); Shift-drag moves it, its place kept per profile.
--- Showing, hiding and moving it wait for combat to end, like the macro text.
+-- Beast's icon (the profile's tameButton switch); Shift-drag moves it, its place kept per profile,
+-- and a right-click stops the hunt. Showing, hiding and moving it wait for combat to end, like the
+-- macro text.
+--
+-- The right-click: SecureActionButtonTemplate looks up type2 for the right button before type (the
+-- macro), and for a type it does not know it runs the button's own function of that name.
 
 ---@type Addon
 local Addon = ns
@@ -26,6 +30,10 @@ button:SetFrameStrata("MEDIUM")
 button:SetMovable(true)
 button:RegisterForDrag("LeftButton")
 button:Hide()
+---A right-click: the hunt ends (type2, set with the macro in ApplyTameButton).
+button.stopHunt = function()
+    M:StopHunt()
+end
 local icon = button:CreateTexture(nil, "ARTWORK")
 icon:SetAllPoints()
 button.icon = icon
@@ -71,6 +79,7 @@ function M:ApplyTameButton()
         local name = self:IsEnabled() and self.tameTarget
         button:SetAttribute("useOnKeyDown", false)
         button:SetAttribute("type", name and "macro" or nil)
+        button:SetAttribute("type2", name and "stopHunt" or nil)
         button:SetAttribute("macrotext", name and MacroText(name) or nil)
         ShowOnScreen()
     end)

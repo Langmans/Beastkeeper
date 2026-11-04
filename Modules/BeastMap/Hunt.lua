@@ -3,8 +3,11 @@ local _, ns = ...
 -- The hunt: the hunter picks one beast to tame for one rank ("I'm taming this one for Claw 3"),
 -- from a rank's button in the Abilities tab or a beast's pin. Beastkeeper then shows the way there,
 -- gives the beast to the tame key, and marks the beast's areas on the world map and the minimap
--- (Areas.lua). The hunt is kept per character and ends once the hunter knows the rank, or on the
--- button again or /beastkeeper hunt stop. BEASTKEEPER_HUNT_STARTED and BEASTKEEPER_HUNT_ENDED tell other addons.
+-- (Areas.lua). The hunt is kept per character and ends once the hunter knows the rank; with the
+-- huntEndsAtTame switch already when a beast that teaches the rank is tamed, the hunted one or any
+-- other (the pet still has to use the ability to teach it). It also ends on the button again, a
+-- right-click on the tame key's button, or /beastkeeper hunt stop. BEASTKEEPER_HUNT_STARTED and
+-- BEASTKEEPER_HUNT_ENDED tell other addons.
 
 ---@type Addon
 local Addon = ns
@@ -48,9 +51,11 @@ function M:StartHunt(npc, spellID, map, x, y)
     Addon:RefreshWindow("abilities")
 end
 
----Ends the hunt on: "learned" when the hunter knows the rank now, else "stopped".
----@param reason "learned"|"stopped"?
-function M:StopHunt(reason)
+---Ends the hunt on: "learned" when the hunter knows the rank now, "tamed" when a pet that teaches
+---it was tamed, else "stopped".
+---@param reason "learned"|"tamed"|"stopped"?
+---@param pet string? the tamed pet's name, for "tamed"
+function M:StopHunt(reason, pet)
     local hunt = self:Hunt()
     if not hunt then
         self:Print(L.BEASTMAP_HUNT_NONE)
@@ -60,6 +65,8 @@ function M:StopHunt(reason)
     local name = M.BeastName(hunt.npc)
     if reason == "learned" then
         self:Print(L.BEASTMAP_HUNT_LEARNED:format(M.RankText(hunt.spellID) or "?", name))
+    elseif reason == "tamed" then
+        self:Print(L.BEASTMAP_HUNT_TAMED:format(pet or "?", M.RankText(hunt.spellID) or "?", name))
     else
         self:Print(L.BEASTMAP_HUNT_STOPPED:format(name))
     end
@@ -77,6 +84,22 @@ function M:OnRanksKnown()
     self:Refresh()
     local hunt = self:Hunt()
     if hunt and not M.Lacking(hunt.spellID) then self:StopHunt("learned") end
+end
+
+---BEASTKEEPER_PET_TAMED: with its switch on, the hunt is over once the tamed beast teaches its rank.
+---@param _ string the message
+---@param event AddonPetTamedEvent
+function M:OnPetTamed(_, event)
+    local hunt = self:Hunt()
+    ---@type number[]?
+    local teaches = event.npc and M.TeachesOf(event.npc) or nil
+    if not hunt or not teaches or not self:Settings().huntEndsAtTame then return end
+    for _, spellID in ipairs(teaches) do
+        if spellID == hunt.spellID then
+            self:StopHunt("tamed", event.pet)
+            return
+        end
+    end
 end
 
 M.command = "hunt"

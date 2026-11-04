@@ -562,7 +562,8 @@
 ---@field Hunt fun(self: AddonBeastMap): AddonHunt? the hunt on (Hunt.lua)
 ---@field IsHunting fun(self: AddonBeastMap, npc: number?, spellID: number?): boolean
 ---@field StartHunt fun(self: AddonBeastMap, npc: number, spellID: number, map: number?, x: number?, y: number?)
----@field StopHunt fun(self: AddonBeastMap, reason: "learned"|"stopped"?)
+---@field StopHunt fun(self: AddonBeastMap, reason: "learned"|"tamed"|"stopped"?, pet: string?)
+---@field OnPetTamed fun(self: AddonBeastMap, message: string, event: AddonPetTamedEvent)
 ---@field OnRanksKnown fun(self: AddonBeastMap)
 ---@field ShowHunt fun(self: AddonBeastMap) the hunted beast's areas (Areas.lua)
 ---@field DrawWorldAreas fun(self: AddonBeastMap)
@@ -588,6 +589,7 @@
 ---@field trainers boolean pins for pet trainers
 ---@field stables boolean pins for stable masters
 ---@field tameButton boolean the tame key's button on screen during a hunt
+---@field huntEndsAtTame boolean the hunt ends once a beast that teaches its rank is tamed
 ---@field tamePosition [string, string, number, number]? where the tame button was put: point, relative point, x, y
 ---@field pins boolean the pins shown at all (the map button switches this)
 ---@field mapButton boolean the button on the world map
