@@ -1,4 +1,4 @@
--- A simulated WoW client: the API Beastkeeper and the Ace3 libraries touch, with every value a test
+-- A simulated WoW client: the API Huntsworn and the Ace3 libraries touch, with every value a test
 -- may want to vary exposed on the client object. NewClient() resets the globals and loads the
 -- .toc's files (Ace3 included) into a fresh namespace, so tests never share state. The load order
 -- and the .toc's metadata come from tests/helper.lua (TOC_FILES, TOC_METADATA, TOC_SAVED).
@@ -80,7 +80,7 @@ end
 ---@class TestClientOptions
 ---@field locale string? the client's language, enUS by default
 ---@field addonName string? the addon's folder name, Addon by default: every name it shows the game comes from it
----@field saved table? BeastkeeperDB as the saved file left it
+---@field saved table? HuntswornDB as the saved file left it
 ---@field modules fun(Addon: Addon)? creates test modules after the files load, before login
 ---@field noSettingsPanel boolean? Settings without C_SettingsUtil.OpenSettingsPanel, like Forever
 ---@field class string? the player's class file, HUNTER by default
@@ -628,7 +628,7 @@ function NewClient(opts)
     -- The client's "Your pet is dead" error, under the name the addon checks first.
     ERR_PET_SPELL_DEAD, PETTAME_DEAD = "Your pet is dead.", nil
 
-    -- Macro conditions, as far as Beastkeeper uses them: [@pet], dead, exists, pet, nopet,
+    -- Macro conditions, as far as Huntsworn uses them: [@pet], dead, exists, pet, nopet,
     -- mod:shift, mod:ctrl, mod:alt. Brackets are alternatives, commas inside one all have to hold.
     -- client.mods: the modifier keys held ({ shift = true }).
     client.mods = {}
@@ -1352,7 +1352,7 @@ function NewClient(opts)
         self.events[event] = unit
     end
 
-    -- The secure side, closely enough to run Beastkeeper's own snippets: state drivers report changes
+    -- The secure side, closely enough to run Huntsworn's own snippets: state drivers report changes
     -- through `state-*` attributes, snippets run in an environment with nothing but `self` (a frame
     -- handle) and their arguments, and in combat an insecure SetAttribute on a protected frame is
     -- blocked and recorded in client.blocked, as the real client blocks it.
@@ -1673,7 +1673,7 @@ function NewClient(opts)
     }
     C_SettingsUtil = not opts.noSettingsPanel and { OpenSettingsPanel = noop } or nil
 
-    local addonName = opts.addonName or "Beastkeeper"
+    local addonName = opts.addonName or "Huntsworn"
     local function getMetadata(name, key)
         if name == addonName then return (opts.era and ERA_TOC_METADATA or TOC_METADATA)[key] end
     end
@@ -1732,7 +1732,7 @@ function NewClient(opts)
     GAME_VERSION_LABEL, CATEGORY = "Version", "Category"
     _G[TOC_SAVED] = opts.saved
 
-    -- EllesmereUI, as far as Beastkeeper uses it, when opts.ellesmere says it is loaded. client.eui
+    -- EllesmereUI, as far as Huntsworn uses it, when opts.ellesmere says it is loaded. client.eui
     -- records what was asked of it: the fonts set, the borders made, the shadows primed.
     EllesmereUI, EllesmereUIUnitFrames_Pet = nil, nil
     -- MessageQueue, when opts.messageQueue says it is loaded: client.queued records what was
@@ -1948,7 +1948,7 @@ function NewClient(opts)
     ---What pressing the CareButton casts now, with the modifier keys in `mods`; nil when the button
     ---runs nothing.
     function client:press(mods)
-        local button = _G.BeastkeeperCareButton
+        local button = _G.HuntswornCareButton
         local text = button.attributes.type == "macro" and button.attributes.macrotext
         if not text then return nil end
         assert(button.attributes.useOnKeyDown == false, "the button acts on the key binding's release")
@@ -2207,7 +2207,7 @@ function NewClient(opts)
         return self.tooltipLines
     end
 
-    ---The pins Beastkeeper's HandyNotes plugin gives for a map, as HandyNotes reads them: a list of
+    ---The pins Huntsworn's HandyNotes plugin gives for a map, as HandyNotes reads them: a list of
     ---{ coord, x, y, icon }, x and y in percent.
     ---@param uiMapID number
     ---@param minimap boolean?
@@ -2223,7 +2223,7 @@ function NewClient(opts)
         return pins
     end
 
-    ---The mouse over a pin of Beastkeeper's plugin: HandyNotes calls OnEnter with the pin as self.
+    ---The mouse over a pin of Huntsworn's plugin: HandyNotes calls OnEnter with the pin as self.
     ---Gives the tooltip's title and its lines.
     ---@param uiMapID number
     ---@param coord number
@@ -2237,7 +2237,7 @@ function NewClient(opts)
         return GameTooltip.text, self.tooltipLines
     end
 
-    ---A click on a pin of Beastkeeper's plugin: HandyNotes calls OnClick with the pin as self, once as
+    ---A click on a pin of Huntsworn's plugin: HandyNotes calls OnClick with the pin as self, once as
     ---the button goes down and once as it comes up.
     ---@param uiMapID number
     ---@param coord number

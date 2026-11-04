@@ -11,7 +11,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 L.FEEDING_TITLE = "Feeding"
 L.FEEDING_DESC = "A button beside your pet's portrait that feeds it the next food from your bags: the cheapest that still makes it happy, Well Fed food last. Its tooltip shows the order. And a toast when your pet is no longer happy, or when your bags run out of food it eats."
 
--- Settings window, Beastkeeper's page: the kind of toast, for choosing its look. Shown after "Feeding: ".
+-- Settings window, Huntsworn's page: the kind of toast, for choosing its look. Shown after "Feeding: ".
 L.FEEDING_TOASTTYPE_CONTENT = "pet content"
 L.FEEDING_TOASTTYPE_UNHAPPY = "pet unhappy"
 L.FEEDING_TOASTTYPE_NOFOOD = "no food left"

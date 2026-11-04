@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- Feeding's page in the settings window (Beastkeeper > Feeding): a switch per toast, and the button's
+-- Feeding's page in the settings window (Huntsworn > Feeding): a switch per toast, and the button's
 -- place back beside the pet frame.
 
 ---@type Addon

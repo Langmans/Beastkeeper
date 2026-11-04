@@ -1,6 +1,6 @@
 -- Screenshots for development (Modules\DevScreenshots): a module only in a copy straight from the
 -- repository, never in a release (the packager comments it out), off until switched on. It hears
--- the core's BEASTKEEPER_TOAST and BEASTKEEPER_PRINT messages and takes a screenshot of a toast or a chat line
+-- the core's HUNTSWORN_TOAST and HUNTSWORN_PRINT messages and takes a screenshot of a toast or a chat line
 -- the first time its kind shows, with a grey line in chat first saying what it was for.
 
 ---A development copy with the module switched on.
@@ -16,17 +16,17 @@ describe("development screenshots", function()
     it("take one of a toast once it has faded in, after saying which", function()
         local client = shooting()
         client.Addon:ShowToast({ key = "Test:one", title = "One" })
-        assert.is_true(client:printedContains("[Beastkeeper dev] toast Test:one"))
+        assert.is_true(client:printedContains("[Huntsworn dev] toast Test:one"))
         assert.are.equal(0, client.screenshots, "not while it fades in")
         client:animate(0.5)
         assert.are.equal(1, client.screenshots)
     end)
 
-    it("take one after a line Beastkeeper prints, at most one every two seconds", function()
+    it("take one after a line Huntsworn prints, at most one every two seconds", function()
         local client = shooting()
         client.Addon:Print("first")
         client.Addon:Print("second")
-        assert.is_true(client:printedContains("[Beastkeeper dev] chat: first"))
+        assert.is_true(client:printedContains("[Huntsworn dev] chat: first"))
         client:advance(0.5)
         assert.are.equal(1, client.screenshots)
         client:advance(1)
@@ -69,7 +69,7 @@ describe("development screenshots", function()
         )
         local shots = client.Addon:GetModule("DevScreenshots").db.global.shots
         assert.is_true(shots["chat: Elia feeds Kaldor [Meat] x#"])
-        assert.is_true(client:printedContains("|cff888888[Beastkeeper dev] chat: Elia feeds Kaldor [Meat] x#|r"))
+        assert.is_true(client:printedContains("|cff888888[Huntsworn dev] chat: Elia feeds Kaldor [Meat] x#|r"))
     end)
 
     it("take none while switched off, and are not there in a release", function()
@@ -78,7 +78,7 @@ describe("development screenshots", function()
         client.Addon:Print("a line")
         client:animate(1):advance(1)
         assert.are.equal(0, client.screenshots)
-        assert.is_false(client:printedContains("[Beastkeeper dev]"))
+        assert.is_false(client:printedContains("[Huntsworn dev]"))
         client.Addon:SetModuleOn("DevScreenshots", true)
         client.Addon:SetModuleOn("DevScreenshots", false)
         client.Addon:Print("another line")
@@ -93,7 +93,7 @@ describe("the core's messages", function()
     it("hand a toast over before it shows, with the module its key names", function()
         local client = NewClient():login()
         local heard = {}
-        client.Addon.RegisterMessage(heard, "BEASTKEEPER_TOAST", function(_, event)
+        client.Addon.RegisterMessage(heard, "HUNTSWORN_TOAST", function(_, event)
             heard.module = event.module
             event.toast.title = "Changed"
         end)
@@ -102,10 +102,10 @@ describe("the core's messages", function()
         assert.are.equal("Changed", client:toastTitle())
     end)
 
-    it("hand over every line Beastkeeper prints, with the module that said it", function()
+    it("hand over every line Huntsworn prints, with the module that said it", function()
         local client = NewClient():login()
         local heard = {}
-        client.Addon.RegisterMessage(heard, "BEASTKEEPER_PRINT", function(_, event)
+        client.Addon.RegisterMessage(heard, "HUNTSWORN_PRINT", function(_, event)
             heard[#heard + 1] = event
         end)
         client.Addon:Print("a", 2, "line")

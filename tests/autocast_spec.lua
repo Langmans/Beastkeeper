@@ -3,7 +3,7 @@
 -- right, its commands, macros, settings and key binding. The simulated pet starts as solo wants
 -- it: Growl on, Cower off.
 
-local HINT = "Press your BeastkeeperAutocast macro."
+local HINT = "Press your HuntswornAutocast macro."
 
 ---A saved file with these AutocastCheck settings in the Default profile.
 local function savedWith(settings)
@@ -58,10 +58,10 @@ describe("AutocastCheck", function()
             assert.are.same({ "growl", "solo" }, { M:Wanted() }, "leaving the group ends it too")
         end)
 
-        it("is told to other addons as BEASTKEEPER_AUTOCAST_WANTED when it changes", function()
+        it("is told to other addons as HUNTSWORN_AUTOCAST_WANTED when it changes", function()
             local client = NewClient():login():advance(0.2)
             local heard = {}
-            client.Addon:Listen(heard, "BEASTKEEPER_AUTOCAST_WANTED", function(_, event)
+            client.Addon:Listen(heard, "HUNTSWORN_AUTOCAST_WANTED", function(_, event)
                 heard[#heard + 1] = event
             end)
             client:fire("PET_BAR_UPDATE"):advance(0.2)
@@ -108,9 +108,9 @@ describe("AutocastCheck", function()
                 client:toast().Text.text
             )
             local both = "/petautocaston Growl\n/petautocaston Cower"
-            assert.are.equal(both, _G.BeastkeeperAutocastButton.attributes.macrotext, "the key puts both on")
-            for _, hook in ipairs(_G.BeastkeeperAutocastButton.hooks.OnClick) do
-                hook(_G.BeastkeeperAutocastButton, "LeftButton", false)
+            assert.are.equal(both, _G.HuntswornAutocastButton.attributes.macrotext, "the key puts both on")
+            for _, hook in ipairs(_G.HuntswornAutocastButton.hooks.OnClick) do
+                hook(_G.HuntswornAutocastButton, "LeftButton", false)
             end
             assert.is_true(client:printedContains("Autocast: Growl on, Cower on."))
             client:autocast(COWER, true):animate(1)
@@ -119,7 +119,7 @@ describe("AutocastCheck", function()
             assert.is_true(module(client).active.cowerOn, "learned: off again")
             assert.are.equal(
                 "/petautocaston Growl\n/petautocastoff Cower",
-                _G.BeastkeeperAutocastButton.attributes.macrotext
+                _G.HuntswornAutocastButton.attributes.macrotext
             )
         end)
 
@@ -136,7 +136,7 @@ describe("AutocastCheck", function()
                 assert.are.equal("Cower is on autocast", client:toastTitle(), "the setting off")
                 assert.are.equal(
                     "/petautocaston Growl\n/petautocastoff Cower",
-                    _G.BeastkeeperAutocastButton.attributes.macrotext
+                    _G.HuntswornAutocastButton.attributes.macrotext
                 )
                 client = NewClient():login()
                 client.Addon:GetModule("AbilityLearned").db.char.known = {}
@@ -148,7 +148,7 @@ describe("AutocastCheck", function()
 
         it("names the button's key in the hint when it has one", function()
             local client = NewClient()
-            client.bindings["CLICK BeastkeeperAutocastButton:LeftButton"] = "G"
+            client.bindings["CLICK HuntswornAutocastButton:LeftButton"] = "G"
             client:login():autocast(GROWL, false)
             assert.are.equal("Press <G>.", client:toast().Hint.text)
         end)
@@ -398,23 +398,20 @@ describe("AutocastCheck", function()
             assert.is_true(client:printedContains("Growl from now on, until you enter or leave a dungeon group."))
         end)
 
-        it(
-            "toast nothing when the macro sets autocast right after, as BeastkeeperKite and BeastkeeperGrowl do",
-            function()
-                local client = NewClient():login():slash("autocast cower")
-                client:advance(0.1):setAutocast(GROWL, false):setAutocast(COWER, true)
-                client:advance(0.3):petBarUpdate():advance(1)
-                assert.is_nil(client:toastTitle())
-                client:slash("autocast growl"):advance(0.4)
-                client:setAutocast(GROWL, true):setAutocast(COWER, false):petBarUpdate():advance(1)
-                assert.is_nil(client:toastTitle())
-            end
-        )
+        it("toast nothing when the macro sets autocast right after, as HuntswornKite and HuntswornGrowl do", function()
+            local client = NewClient():login():slash("autocast cower")
+            client:advance(0.1):setAutocast(GROWL, false):setAutocast(COWER, true)
+            client:advance(0.3):petBarUpdate():advance(1)
+            assert.is_nil(client:toastTitle())
+            client:slash("autocast growl"):advance(0.4)
+            client:setAutocast(GROWL, true):setAutocast(COWER, false):petBarUpdate():advance(1)
+            assert.is_nil(client:toastTitle())
+        end)
 
-        it("are listed in /beastkeeper help", function()
+        it("are listed in /huntsworn help", function()
             local client = NewClient():login():slash("help")
-            assert.is_true(client:printedContains("/beastkeeper autocast growl - "))
-            assert.is_true(client:printedContains("/beastkeeper autocast cower - "))
+            assert.is_true(client:printedContains("/huntsworn autocast growl - "))
+            assert.is_true(client:printedContains("/huntsworn autocast cower - "))
         end)
 
         it("say the module is off instead of choosing", function()
@@ -431,10 +428,10 @@ describe("AutocastCheck", function()
 
         it("sets autocast to what fits now, with a key binding of its own", function()
             local client = NewClient():login()
-            local button = _G.BeastkeeperAutocastButton
+            local button = _G.HuntswornAutocastButton
             assert.are.equal("macro", button.attributes.type)
             assert.are.equal(GROWL_LINES, button.attributes.macrotext)
-            local binding = _G["BINDING_NAME_CLICK BeastkeeperAutocastButton:LeftButton"]
+            local binding = _G["BINDING_NAME_CLICK HuntswornAutocastButton:LeftButton"]
             assert.are.equal("Autocast Check: set Growl and Cower as fits", binding)
             client.instance = "party"
             client:group(true)
@@ -445,7 +442,7 @@ describe("AutocastCheck", function()
 
         it("says in chat what it set, once per press (the key's release)", function()
             local client = NewClient():login()
-            local button = _G.BeastkeeperAutocastButton
+            local button = _G.HuntswornAutocastButton
             client.printed = {}
             for _, down in ipairs({ true, false }) do
                 for _, hook in ipairs(button.hooks.OnClick) do
@@ -458,61 +455,61 @@ describe("AutocastCheck", function()
 
         it("is in the client's language", function()
             NewClient({ locale = "deDE" }):login()
-            local lines = _G.BeastkeeperAutocastButton.attributes.macrotext
+            local lines = _G.HuntswornAutocastButton.attributes.macrotext
             assert.are.equal("/petautocaston Knurren\n/petautocastoff Ducken", lines)
         end)
 
         it("changes after combat, when it cannot before", function()
             local client = NewClient():login():enterCombat()
             client:slash("autocast cower")
-            assert.are.equal(GROWL_LINES, _G.BeastkeeperAutocastButton.attributes.macrotext)
+            assert.are.equal(GROWL_LINES, _G.HuntswornAutocastButton.attributes.macrotext)
             client:leaveCombat()
-            assert.are.equal(COWER_LINES, _G.BeastkeeperAutocastButton.attributes.macrotext)
+            assert.are.equal(COWER_LINES, _G.HuntswornAutocastButton.attributes.macrotext)
         end)
 
         it("does nothing while the module is off", function()
             local client = NewClient():login()
             client.Addon:SetModuleOn("AutocastCheck", false)
-            assert.is_nil(_G.BeastkeeperAutocastButton.attributes.macrotext)
+            assert.is_nil(_G.HuntswornAutocastButton.attributes.macrotext)
             client.Addon:SetModuleOn("AutocastCheck", true)
-            assert.are.equal(GROWL_LINES, _G.BeastkeeperAutocastButton.attributes.macrotext)
+            assert.are.equal(GROWL_LINES, _G.HuntswornAutocastButton.attributes.macrotext)
         end)
     end)
 
     -- A macro cannot run a button's macro text (/click from a macro runs no macro inside it: Classic
-    -- Era, 2026-11-03), so BeastkeeperAutocast holds the two lines itself, kept in step with the
-    -- button as BeastkeeperCare is.
-    describe("the BeastkeeperAutocast macro", function()
+    -- Era, 2026-11-03), so HuntswornAutocast holds the two lines itself, kept in step with the
+    -- button as HuntswornCare is.
+    describe("the HuntswornAutocast macro", function()
         local GROWL_LINES = "/petautocaston Growl\n/petautocastoff Cower"
         local COWER_LINES = "/petautocaston Cower\n/petautocastoff Growl"
 
         it("holds the lines for what fits, rewritten when that changes, after combat", function()
             local client = NewClient():login()
-            assert.are.equal(GROWL_LINES, client:macroBody("BeastkeeperAutocast"))
+            assert.are.equal(GROWL_LINES, client:macroBody("HuntswornAutocast"))
             client:slash("autocast cower")
-            assert.are.equal(COWER_LINES, client:macroBody("BeastkeeperAutocast"))
+            assert.are.equal(COWER_LINES, client:macroBody("HuntswornAutocast"))
             client:enterCombat()
             client:slash("autocast growl")
-            assert.are.equal(COWER_LINES, client:macroBody("BeastkeeperAutocast"), "not edited in combat")
+            assert.are.equal(COWER_LINES, client:macroBody("HuntswornAutocast"), "not edited in combat")
             client:leaveCombat()
-            assert.are.equal(GROWL_LINES, client:macroBody("BeastkeeperAutocast"))
+            assert.are.equal(GROWL_LINES, client:macroBody("HuntswornAutocast"))
         end)
 
         it("turns an old /click into the lines, and keeps the player's own lines", function()
             local client = NewClient()
             client.charMacros = {
-                { name = "BeastkeeperAutocast", icon = 1, body = "/click BeastkeeperAutocastButton" },
-                { name = "BeastkeeperKite", icon = 1, body = "x" },
-                { name = "BeastkeeperGrowl", icon = 1, body = "x" },
+                { name = "HuntswornAutocast", icon = 1, body = "/click HuntswornAutocastButton" },
+                { name = "HuntswornKite", icon = 1, body = "x" },
+                { name = "HuntswornGrowl", icon = 1, body = "x" },
             }
             client:login()
-            assert.are.equal(GROWL_LINES, client:macroBody("BeastkeeperAutocast"))
-            client:macro("BeastkeeperAutocast").body = "/say Here we go\n" .. GROWL_LINES
+            assert.are.equal(GROWL_LINES, client:macroBody("HuntswornAutocast"))
+            client:macro("HuntswornAutocast").body = "/say Here we go\n" .. GROWL_LINES
             client:slash("autocast cower")
-            assert.are.equal("/say Here we go\n" .. COWER_LINES, client:macroBody("BeastkeeperAutocast"))
-            client:macro("BeastkeeperAutocast").body = "/say Mine now"
+            assert.are.equal("/say Here we go\n" .. COWER_LINES, client:macroBody("HuntswornAutocast"))
+            client:macro("HuntswornAutocast").body = "/say Mine now"
             client:slash("autocast growl")
-            assert.are.equal("/say Mine now", client:macroBody("BeastkeeperAutocast"), "no line of ours: left alone")
+            assert.are.equal("/say Mine now", client:macroBody("HuntswornAutocast"), "no line of ours: left alone")
         end)
     end)
 
@@ -525,7 +522,7 @@ describe("AutocastCheck", function()
         end)
 
         it("passes AceConfig's validation", function()
-            LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(client.Addon:GetOptionsTable(), "Beastkeeper")
+            LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(client.Addon:GetOptionsTable(), "Huntsworn")
         end)
 
         it("sets each setting and checks again", function()

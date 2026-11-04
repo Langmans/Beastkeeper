@@ -1,4 +1,4 @@
--- The /beastkeeper slash command.
+-- The /huntsworn slash command.
 
 local function modules(Addon)
     local autocast = Addon:NewModule("Autocast")
@@ -18,7 +18,7 @@ local function modules(Addon)
     Addon:NewModule("Bare").command = "bare"
 end
 
-describe("/beastkeeper", function()
+describe("/huntsworn", function()
     local client, Addon
 
     before_each(function()
@@ -50,18 +50,18 @@ describe("/beastkeeper", function()
         it("reports an unknown command and lists the commands: " .. line, function()
             client:slash(line)
             assert.is_true(client:printedContains("Unknown command: " .. line))
-            assert.is_true(client:printedContains("/beastkeeper config - open the options"))
+            assert.is_true(client:printedContains("/huntsworn config - open the options"))
         end)
     end
 
     it("help lists every module command, sorted", function()
         client:slash("help")
         local printed = table.concat(client.printed, "\n")
-        assert.truthy(printed:find("/beastkeeper - open or close Beastkeeper's window", 1, true))
-        assert.truthy(printed:find("/beastkeeper config - open the options", 1, true))
-        local kite = printed:find("/beastkeeper fake kite - switch kite mode", 1, true)
-        local tank = printed:find("/beastkeeper fake tank - switch tank mode", 1, true)
-        local go = printed:find("/beastkeeper off go - go", 1, true)
+        assert.truthy(printed:find("/huntsworn - open or close Huntsworn's window", 1, true))
+        assert.truthy(printed:find("/huntsworn config - open the options", 1, true))
+        local kite = printed:find("/huntsworn fake kite - switch kite mode", 1, true)
+        local tank = printed:find("/huntsworn fake tank - switch tank mode", 1, true)
+        local go = printed:find("/huntsworn off go - go", 1, true)
         assert.truthy(kite and tank and go and kite < tank and tank < go, printed)
     end)
 end)

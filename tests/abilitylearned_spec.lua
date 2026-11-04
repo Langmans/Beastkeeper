@@ -2,7 +2,7 @@
 -- those learns per character, and what a pet out can still teach.
 
 local LEVEL_UP = 888
-local CAT_CALL = 562387 -- Beastkeeper.sounds.AGGRO_PER_FAMILY[2]
+local CAT_CALL = 562387 -- Huntsworn.sounds.AGGRO_PER_FAMILY[2]
 
 ---A hunter past the login wait, with a cat named Fluffy that has Claw rank 2 and Bite; chat
 ---emptied of the hint said for it.
@@ -19,7 +19,7 @@ local function module(client)
     return client.Addon:GetModule("AbilityLearned")
 end
 
----How the core last saw Fluffy grow (BEASTKEEPER_PET_GROWTH's saved state).
+---How the core last saw Fluffy grow (HUNTSWORN_PET_GROWTH's saved state).
 local function fluffy(client)
     return client.Addon.db.char.growth.Fluffy
 end
@@ -212,10 +212,10 @@ describe("AbilityLearned", function()
             assert.are.equal(1, #module(relogged).db.char.history)
         end)
 
-        it("is told to other addons as BEASTKEEPER_ABILITY_LEARNED, a simulated learn not", function()
+        it("is told to other addons as HUNTSWORN_ABILITY_LEARNED, a simulated learn not", function()
             local client = ready()
             local heard = {}
-            client.Addon:Listen(heard, "BEASTKEEPER_ABILITY_LEARNED", function(_, event)
+            client.Addon:Listen(heard, "HUNTSWORN_ABILITY_LEARNED", function(_, event)
                 heard[#heard + 1] = event
             end)
             settle(client:learnLine("Claw (Rank 2)"))
@@ -245,12 +245,12 @@ describe("AbilityLearned", function()
             assert.are.equal("Claw", history[200].name)
         end)
 
-        it("lists the learns from a beast Beastkeeper's beast data does not have as a teacher", function()
+        it("lists the learns from a beast Huntsworn's beast data does not have as a teacher", function()
             local client = ready()
             local M = module(client)
             local missing = M:GetOptions().args.teachers
             missing.func()
-            assert.is_true(client:printedContains("Every learn from a pet is in Beastkeeper's beast data."))
+            assert.is_true(client:printedContains("Every learn from a pet is in Huntsworn's beast data."))
             M.db.char.history = {
                 -- Greater Fleshripper (154) teaches Claw 3 in the data.
                 { name = "Claw", rank = "Rank 3", pet = "Scraps", npc = 154, zone = "Westfall", t = 1 },
@@ -468,7 +468,7 @@ describe("AbilityLearned", function()
         it("keeps every rank learned, not only the highest, and says when that changed", function()
             local client = ready()
             local M, heard = module(client), {}
-            client.Addon.RegisterMessage({}, "BEASTKEEPER_RANKS_KNOWN", function(_, event)
+            client.Addon.RegisterMessage({}, "HUNTSWORN_RANKS_KNOWN", function(_, event)
                 heard[#heard + 1] = event
             end)
             client:openTrainer({ { "Claw", "used", CLAW }, { "Claw", "used", CLAW_3 } })
@@ -531,7 +531,7 @@ describe("AbilityLearned", function()
             local client = ready()
             client.trainingPoints = { 10, 0 }
             client:summon("Shadow", {}):advance(1)
-            assert.is_nil(client:toast(), "first time Beastkeeper sees Shadow")
+            assert.is_nil(client:toast(), "first time Huntsworn sees Shadow")
             client.trainingPoints = { 50, 7 }
             client:summon("Fluffy", {}):advance(1)
             assert.is_nil(client:toast(), "Fluffy as it was")
@@ -580,9 +580,9 @@ describe("AbilityLearned", function()
             assert.are.equal(count, #client.sounds)
         end)
 
-        it("are toasted from the core's BEASTKEEPER_PET_GROWTH", function()
+        it("are toasted from the core's HUNTSWORN_PET_GROWTH", function()
             local client = ready()
-            client.Addon:SendMessage("BEASTKEEPER_PET_GROWTH", {
+            client.Addon:SendMessage("HUNTSWORN_PET_GROWTH", {
                 pet = "Shadow",
                 level = 30,
                 loyalty = 2,

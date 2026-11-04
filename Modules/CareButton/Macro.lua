@@ -1,7 +1,7 @@
 local _, ns = ...
 
--- The BeastkeeperCare macro: `#showtooltip` and the button's own `/use` line, so it casts what the
--- button casts without going through it. Beastkeeper makes it once per character (Core\Macro.lua). Its
+-- The HuntswornCare macro: `#showtooltip` and the button's own `/use` line, so it casts what the
+-- button casts without going through it. Huntsworn makes it once per character (Core\Macro.lua). Its
 -- cast line follows the button: macro conditions cannot see a dead pet whose body is gone, so the
 -- line is rewritten whenever `petdead` changes, and when the macros change. Only a macro whose
 -- first line is #showtooltip is touched, and in it only the cast line; the player's own lines

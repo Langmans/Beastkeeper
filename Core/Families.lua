@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- A pet family's ID, name and specialization, from Beastkeeper.familyInfo (Constants\Families.lua) and
+-- A pet family's ID, name and specialization, from Huntsworn.familyInfo (Constants\Families.lua) and
 -- the client.
 
 ---@type Addon
@@ -16,8 +16,8 @@ local CATEGORY_NAMES =
 ---@type string[]
 local parts = {}
 
----A family's category and modifiers before Wrath (Beastkeeper.familyMods): "Offense: +10% damage, -2%
----health", damage first; the category alone for a family without modifiers; nil for one Beastkeeper has
+---A family's category and modifiers before Wrath (Huntsworn.familyMods): "Offense: +10% damage, -2%
+---health", damage first; the category alone for a family without modifiers; nil for one Huntsworn has
 ---none for.
 ---@param familyID number?
 ---@return string?
@@ -33,7 +33,7 @@ function Addon.FamilyModsText(familyID)
     return L.FAMILY_MODS:format(category, table.concat(parts, ", "))
 end
 
--- Each food type's name, by its Beastkeeper.diets value.
+-- Each food type's name, by its Huntsworn.diets value.
 local FOOD_NAMES = {
     meat = L.FAMILY_FOOD_MEAT,
     fish = L.FAMILY_FOOD_FISH,
@@ -44,7 +44,7 @@ local FOOD_NAMES = {
     rawFish = L.FAMILY_FOOD_RAWFISH,
 }
 
----What a family eats: "Eats: Meat, Fish"; nil for a family Beastkeeper knows no diet of.
+---What a family eats: "Eats: Meat, Fish"; nil for a family Huntsworn knows no diet of.
 ---@param familyID number?
 ---@return string?
 function Addon.DietText(familyID)
@@ -57,8 +57,8 @@ function Addon.DietText(familyID)
     return L.FAMILY_EATS:format(table.concat(parts, ", "))
 end
 
----A family's ID from its name as Beastkeeper.FamilyName gives it (a pet's UnitCreatureFamily, a stable
----list's familyName); nil for a name Beastkeeper does not know.
+---A family's ID from its name as Huntsworn.FamilyName gives it (a pet's UnitCreatureFamily, a stable
+---list's familyName); nil for a name Huntsworn does not know.
 ---@param name string?
 ---@return number?
 function Addon.FamilyID(name)
@@ -83,7 +83,7 @@ end
 -- the tanks, the rest.
 local ROLE_OF_CATEGORY = { [K.offense] = S.ferocity, [K.defense] = S.tenacity, [K.general] = S.cunning }
 
----A family's role, a Beastkeeper.petSpecs value: before Wrath (Classic Era, Burning Crusade) from its
+---A family's role, a Huntsworn.petSpecs value: before Wrath (Classic Era, Burning Crusade) from its
 ---category (Offense as Ferocity, Defense as Tenacity, General as Cunning), from Wrath on its
 ---specialization; nil without either.
 ---@param familyID number
@@ -102,7 +102,7 @@ local CATEGORY_OF_ROLE = { [S.ferocity] = K.offense, [S.tenacity] = K.defense, [
 
 ---A role's name: Ferocity, Cunning or Tenacity; with `asCategory` the category it stands for
 ---before Wrath: Offense, General or Defense.
----@param role string a Beastkeeper.petSpecs value
+---@param role string a Huntsworn.petSpecs value
 ---@param asCategory boolean?
 ---@return string
 function Addon.RoleName(role, asCategory)
@@ -119,7 +119,7 @@ function Addon.SpecName(familyID)
     return info and info.spec and SPEC_NAMES[info.spec]
 end
 
----A family's name as the client words it, else the English one; nil for a family Beastkeeper does not
+---A family's name as the client words it, else the English one; nil for a family Huntsworn does not
 ---know.
 ---@param familyID number
 ---@return string?

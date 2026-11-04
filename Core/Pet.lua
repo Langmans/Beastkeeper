@@ -71,7 +71,7 @@ function Addon.IsTaming()
     return Addon.IsCasting(Addon.TAME_BEAST)
 end
 
----Whether the player knows a spell (Beastkeeper.C.SpellBook.IsSpellKnown); true on a client that cannot
+---Whether the player knows a spell (Huntsworn.C.SpellBook.IsSpellKnown); true on a client that cannot
 ---tell.
 ---@param spellID number
 ---@return boolean
@@ -101,7 +101,7 @@ end
 ---@type table<string, AddonPetSpell>, table<string, AddonPetSpell>
 local petSpells, spellEntries = {}, {}
 
----A pet spellbook entry's name, rank text and spell ID (Beastkeeper.C.SpellBook); nil for a command
+---A pet spellbook entry's name, rank text and spell ID (Huntsworn.C.SpellBook); nil for a command
 ---or an entry that cannot be read.
 ---@param index number
 ---@return string? name
@@ -115,7 +115,7 @@ function Addon.PetBookEntry(index)
     return name, type(subName) == "string" and subName or nil, type(spellID) == "number" and spellID or nil
 end
 
----Whether a pet spellbook entry can autocast and whether it does (Beastkeeper.C.SpellBook); nil for an
+---Whether a pet spellbook entry can autocast and whether it does (Huntsworn.C.SpellBook); nil for an
 ---entry that cannot be read.
 ---@param index number
 ---@return GameValue allowed
@@ -151,7 +151,7 @@ function Addon.PetSpells()
     return petSpells
 end
 
----The active pet's free training points (total minus used) and its total (Beastkeeper.C.PetInfo); nil
+---The active pet's free training points (total minus used) and its total (Huntsworn.C.PetInfo); nil
 ---without a pet, without the API or when the client hides them.
 ---@return number? free
 ---@return number? total
@@ -171,7 +171,7 @@ function Addon.PetFamilyID()
     return tonumber(familyID)
 end
 
----The stable's entry of the pet out (Beastkeeper.C.StableInfo's active pets, which WoW: Forever gives
+---The stable's entry of the pet out (Huntsworn.C.StableInfo's active pets, which WoW: Forever gives
 ---away from the stable master too): the one with the pet's name. Nil without a pet, or without
 ---exactly one entry of that name.
 ---@return AddonStablePet?
@@ -240,7 +240,7 @@ end
 
 ---The pet's loyalty level and its name, as far as the client tells them. WoW: Forever gives the
 ---name alone ("Faithful"), Classic Era "(Loyalty Level 5) Faithful", some a number
----(Beastkeeper.C.PetInfo.GetPetLoyalty). Without a number the level comes from the training points,
+---(Huntsworn.C.PetInfo.GetPetLoyalty). Without a number the level comes from the training points,
 ---which are level × (loyalty − 1), when they divide evenly; else it stays unknown.
 ---@param total number the training points total
 ---@param petLevel GameValue
@@ -264,7 +264,7 @@ function Addon.PetLoyalty(total, petLevel)
     return loyalty, name
 end
 
----The pet's happiness, a Beastkeeper.happiness value; nil without a pet, the API, or a readable answer.
+---The pet's happiness, a Huntsworn.happiness value; nil without a pet, the API, or a readable answer.
 ---@return number?
 function Addon.PetHappiness()
     local happiness = Addon.C.PetInfo.GetPetHappiness()
@@ -293,7 +293,7 @@ local function LoyaltyColor(level)
     return ("|cff%02x%02x%02x"):format(Channel(1, t), Channel(2, t), Channel(3, t))
 end
 
----A loyalty level as Beastkeeper shows it: "5 (Faithful)" with the name in its colour, or "5" when the
+---A loyalty level as Huntsworn shows it: "5 (Faithful)" with the name in its colour, or "5" when the
 ---client gave no name.
 ---@param loyalty number
 ---@param name string?

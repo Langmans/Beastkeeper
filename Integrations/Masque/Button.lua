@@ -1,9 +1,9 @@
 local _, ns = ...
 
--- Beastkeeper's buttons in the player's Masque skin: each module's buttons in a group of their own
--- under "Beastkeeper" in Masque's options. The border Masque draws is a texture Beastkeeper hands it, so it
+-- Huntsworn's buttons in the player's Masque skin: each module's buttons in a group of their own
+-- under "Huntsworn" in Masque's options. The border Masque draws is a texture Huntsworn hands it, so it
 -- can still be coloured (the feed button's happiness). Masque skins buttons only: lists keep
--- another holder skin. Only when Masque is loaded; it is in Beastkeeper's OptionalDeps.
+-- another holder skin. Only when Masque is loaded; it is in Huntsworn's OptionalDeps.
 
 local Masque = LibStub("Masque", true) --[[@as MasqueApi?]]
 if not Masque then return end

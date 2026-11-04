@@ -1,9 +1,9 @@
 local _, ns = ...
 
--- The hunter's ammo count as a data broker source ("Beastkeeper Ammo"), which displays such as
+-- The hunter's ammo count as a data broker source ("Huntsworn Ammo"), which displays such as
 -- EllesmereUI's data bars and Titan Panel show: the count of the ammo the weapon shoots (Count), orange
 -- below the low line and red below the critical one, with a toast each time it crosses one
--- (taken away once restocked) and BEASTKEEPER_AMMO for other addons. Its tooltip names the nearest
+-- (taken away once restocked) and HUNTSWORN_AMMO for other addons. Its tooltip names the nearest
 -- vendor of the hunter's faction that sells its kind of ammo (arrows for a bow or crossbow,
 -- bullets for a gun; Data\Ammo.lua); a click shows the way there through LibGoThere. Buy.lua buys
 -- at a vendor. Only for a hunter.
@@ -43,7 +43,7 @@ local SEVERITY = { ok = 0, low = 1, critical = 2 }
 -- display redraws only when the text changes.
 local EVENTS = { "BAG_UPDATE_DELAYED", "PLAYER_EQUIPMENT_CHANGED" }
 
----The kind of ammo the hunter's ranged weapon shoots (a Beastkeeper.ammoKinds value), nil without a
+---The kind of ammo the hunter's ranged weapon shoots (a Huntsworn.ammoKinds value), nil without a
 ---bow, gun or crossbow.
 ---@return AddonAmmoKind?
 function M.Kind()
@@ -262,7 +262,7 @@ end
 
 -- The nearest vendor is kept while the hunter stays within RANGE yards of where it was looked up,
 -- at most KEEP seconds, for one kind of ammo: a route addon's travel times take a while, and RANGE
--- yards are a few seconds of travel. The spot is a continent and x, y in yards (Beastkeeper.PlayerInWorld).
+-- yards are a few seconds of travel. The spot is a continent and x, y in yards (Huntsworn.PlayerInWorld).
 local RANGE, KEEP = 100, 60
 ---@type number?, number, number, AddonAmmoKind?, number, LibGoTherePoint?, number?
 local keptPlace, keptX, keptY, keptKind, keptSince, keptPoint, keptSeconds = nil, 0, 0, nil, 0, nil, nil
@@ -363,7 +363,7 @@ local function Toast(state, count)
     }
 end
 
----Brings the text and icon up to date; when the count crossed a line: BEASTKEEPER_AMMO, the old
+---Brings the text and icon up to date; when the count crossed a line: HUNTSWORN_AMMO, the old
 ---toast taken away, and a new one when it fell below a line (not on the way up while restocking).
 function M:Update()
     local object = self.object

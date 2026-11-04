@@ -1,11 +1,11 @@
--- Development dependencies only: the test tools, pinned. Beastkeeper itself is not a rock.
--- `luarocks install --only-deps beastkeeper-dev-1.rockspec` installs them, locally
+-- Development dependencies only: the test tools, pinned. Huntsworn itself is not a rock.
+-- `luarocks install --only-deps huntsworn-dev-1.rockspec` installs them, locally
 -- (tests/setup-lua.ps1) and in CI alike.
 rockspec_format = "3.0"
-package = "beastkeeper"
+package = "huntsworn"
 version = "dev-1"
-source = { url = "git+https://github.com/Langmans/Beastkeeper.git" }
-description = { summary = "Beastkeeper's test tooling", license = "MIT" }
+source = { url = "git+https://github.com/Langmans/Huntsworn.git" }
+description = { summary = "Huntsworn's test tooling", license = "MIT" }
 dependencies = {
     "lua ~> 5.1",
     "busted == 2.2.0",

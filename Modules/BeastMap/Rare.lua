@@ -23,7 +23,7 @@ local alarmed = {}
 local lines = {}
 
 ---The ranks a beast teaches that the hunter wants: their spells, a new list (it goes out with
----BEASTKEEPER_RARE_SEEN), and tooltip-style lines in `lines` (emptied first).
+---HUNTSWORN_RARE_SEEN), and tooltip-style lines in `lines` (emptied first).
 ---@param npc number
 ---@return number[]
 local function WantedRanks(npc)
@@ -44,7 +44,7 @@ local function WantedRanks(npc)
     return wanted
 end
 
----Sends BEASTKEEPER_RARE_SEEN for the creature with `guid` when it is a rare beast worth taming, and
+---Sends HUNTSWORN_RARE_SEEN for the creature with `guid` when it is a rare beast worth taming, and
 ---not yet this spawn; toasts it too when the rare toast is on. Not before Beast Training: until
 ---then a beast can teach the hunter nothing, and the spawn is not marked seen.
 ---@param guid GameValue

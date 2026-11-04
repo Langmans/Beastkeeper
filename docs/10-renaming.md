@@ -1,11 +1,11 @@
 # Renaming the addon
 
 Every name the game and other addons see is made from the addon's folder name,
-`Beastkeeper.NAME` (`Core\Addon.lua`):
+`Huntsworn.NAME` (`Core\Addon.lua`):
 
-- the saved variables (`<NAME>DB`), frame and macro names (`Beastkeeper.Global`);
+- the saved variables (`<NAME>DB`), frame and macro names (`Huntsworn.Global`);
 - the slash command (`/<name>` in lower case, plus `SLASH_ALIAS`);
-- the messages (`Beastkeeper.messages`, `<NAME>_TOAST` and so on);
+- the messages (`Huntsworn.messages`, `<NAME>_TOAST` and so on);
 - the locale, the binding header, Masque's group, the data broker objects,
   LibGoThere's owner, LibSink's sink and LS: Toasts' key.
 
@@ -31,7 +31,7 @@ or the game sees carries it: the texts (locales, README, docs), the `.toc`s,
 search and replace over the tracked files, on a branch, in one commit, then
 run `tests\check.lua`:
 
-- `Beastkeeper` → `<New>`, `beastkeeper` → `<new>`, `BEASTKEEPER` → `<NEW>`;
+- `Huntsworn` → `<New>`, `huntsworn` → `<new>`, `HUNTSWORN` → `<NEW>`;
 - `git mv` the files with the name in theirs (the `.toc`s, the rockspec).
 
 A player's saved settings live under the old `<NAME>DB` and do not move with

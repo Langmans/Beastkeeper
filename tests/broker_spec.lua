@@ -1,11 +1,11 @@
--- Data Broker: Beastkeeper as a LibDataBroker-1.1 data source, for Titan Panel, ChocolateBar, ElvUI's
--- datatexts and the like: the pet out in its text, more in its tooltip, Beastkeeper's page on a click.
+-- Data Broker: Huntsworn as a LibDataBroker-1.1 data source, for Titan Panel, ChocolateBar, ElvUI's
+-- datatexts and the like: the pet out in its text, more in its tooltip, Huntsworn's page on a click.
 -- The simulated pet is Fluffy, a level 15 cat, happy, loyalty 4, 43 of 50 training points free.
 
----Beastkeeper's data object.
+---Huntsworn's data object.
 ---@return table?
 local function broker()
-    return LibStub("LibDataBroker-1.1"):GetDataObjectByName("Beastkeeper")
+    return LibStub("LibDataBroker-1.1"):GetDataObjectByName("Huntsworn")
 end
 
 ---The tooltip a display shows for it: the texts of its lines.
@@ -27,7 +27,7 @@ describe("Data Broker", function()
         local object = broker()
         assert.are.equal("data source", object.type)
         assert.are.equal("Fluffy: Happy, 43 TP", object.text)
-        assert.are.equal("Beastkeeper", object.label)
+        assert.are.equal("Huntsworn", object.label)
         client:setHappiness(2)
         assert.are.equal("Fluffy: Content, 43 TP", object.text)
         client:gainPoints(5)
@@ -44,7 +44,7 @@ describe("Data Broker", function()
         assert.are.equal("43 of 50 training points free", lines[3])
         assert.is_truthy(table.concat(lines, "\n"):find("Out together: 1 min.", 1, true), "the journal")
         assert.are.equal(
-            "Click: Beastkeeper's window. Middle-click: the pet abilities. Right-click: settings.",
+            "Click: Huntsworn's window. Middle-click: the pet abilities. Right-click: settings.",
             lines[#lines]
         )
         client.Addon:SetModuleOn("PetJournal", false)
@@ -72,7 +72,7 @@ describe("Data Broker", function()
 
     it("has a minimap button, through LibDBIcon, which the page hides", function()
         local client = NewClient():login()
-        local button = LibStub("LibDBIcon-1.0"):GetMinimapButton("Beastkeeper")
+        local button = LibStub("LibDBIcon-1.0"):GetMinimapButton("Huntsworn")
         assert.is_true(button.shown)
         local option = client.Addon:GetModule("Broker"):GetOptions().args.minimap
         assert.is_true(option.get())
@@ -89,13 +89,13 @@ describe("Data Broker", function()
         client.Addon:SetModuleOn("Broker", true)
         assert.is_true(button.shown)
         button:GetScript("OnClick")(button, "LeftButton")
-        assert.is_true(_G.BeastkeeperWindow.shown, "a click opens the window, as the broker's")
+        assert.is_true(_G.HuntswornWindow.shown, "a click opens the window, as the broker's")
     end)
 
-    it("opens Beastkeeper's window on a click, the options on a right-click", function()
+    it("opens Huntsworn's window on a click, the options on a right-click", function()
         local client = NewClient():login()
         broker().OnClick(nil, "LeftButton")
-        assert.is_true(_G.BeastkeeperWindow.shown)
+        assert.is_true(_G.HuntswornWindow.shown)
         broker().OnClick(nil, "RightButton")
         assert.are.same({ client.Addon.optionsCategoryID }, client.opened)
     end)
@@ -103,7 +103,7 @@ describe("Data Broker", function()
     it("opens the window on the pet abilities on a middle-click", function()
         local client = NewClient():login()
         broker().OnClick(nil, "MiddleButton")
-        assert.is_true(_G.BeastkeeperWindow.shown)
+        assert.is_true(_G.HuntswornWindow.shown)
         assert.are.equal("abilities", client.Addon.window.current)
     end)
 

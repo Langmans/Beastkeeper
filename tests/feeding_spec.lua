@@ -5,12 +5,12 @@
 
 local JERKY, HAUNCH, MUTTON, MYSTERY, WOLF, BREAD = 117, 2287, 3770, 12037, 2680, 4540
 
----The toasts shown from now on, as Beastkeeper hands them to listeners.
+---The toasts shown from now on, as Huntsworn hands them to listeners.
 ---@param client table
 ---@return AddonToastInfo[]
 local function toasts(client)
     local seen = {}
-    client.Addon.RegisterMessage(seen, "BEASTKEEPER_TOAST", function(_, event)
+    client.Addon.RegisterMessage(seen, "HUNTSWORN_TOAST", function(_, event)
         seen[#seen + 1] = event.toast
     end)
     return seen
@@ -32,7 +32,7 @@ end
 ---@return table[] lines
 local function hover(client)
     client.tooltipLines, GameTooltip.text = {}, nil
-    local button = _G.BeastkeeperFeedButton
+    local button = _G.HuntswornFeedButton
     button:GetScript("OnEnter")(button)
     return GameTooltip.text, client.tooltipLines
 end
@@ -67,7 +67,7 @@ describe("Feeding", function()
             assert.are.same({ 1, 1, 0 }, lines[4].color, "half: yellow")
             assert.are.same({ 1, 0.5, 0 }, lines[5].color, "little: orange")
             assert.are.equal("Click to feed the first, right-click to choose. Shift-drag to move.", lines[#lines].text)
-            _G.BeastkeeperFeedButton:GetScript("OnLeave")(_G.BeastkeeperFeedButton)
+            _G.HuntswornFeedButton:GetScript("OnLeave")(_G.HuntswornFeedButton)
             assert.is_false(GameTooltip:IsShown())
         end)
 
@@ -91,7 +91,7 @@ describe("Feeding", function()
             local client = NewClient():login():stock(MUTTON, 5)
             client.bag[#client.bag + 1] = { itemID = MUTTON, count = 2 }
             client:fire("BAG_UPDATE_DELAYED")
-            assert.are.equal("/cast Feed Pet\n/use 0 2", _G.BeastkeeperFeedButton.attributes.macrotext)
+            assert.are.equal("/cast Feed Pet\n/use 0 2", _G.HuntswornFeedButton.attributes.macrotext)
         end)
 
         it("leaves out food the pet does not eat, and food too far below its level to please it", function()
@@ -115,7 +115,7 @@ describe("Feeding", function()
     describe("the button", function()
         it("feeds the first food: Feed Pet on its bag slot", function()
             local client = stocked()
-            local button = _G.BeastkeeperFeedButton
+            local button = _G.HuntswornFeedButton
             assert.are.equal("macro", button.attributes.type)
             assert.are.equal("/cast Feed Pet\n/use 0 5", button.attributes.macrotext, "Mutton Chop's slot")
             client:eat(MUTTON):eat(MUTTON):eat(MUTTON):eat(MUTTON):eat(MUTTON)
@@ -125,18 +125,18 @@ describe("Feeding", function()
         it("changes after combat, when it cannot before", function()
             local client = NewClient():login():stock(MUTTON, 1):enterCombat()
             client:stock(HAUNCH, 2)
-            assert.are.equal("/cast Feed Pet\n/use 0 1", _G.BeastkeeperFeedButton.attributes.macrotext)
+            assert.are.equal("/cast Feed Pet\n/use 0 1", _G.HuntswornFeedButton.attributes.macrotext)
             client:leaveCombat()
-            assert.are.equal("/cast Feed Pet\n/use 0 2", _G.BeastkeeperFeedButton.attributes.macrotext)
+            assert.are.equal("/cast Feed Pet\n/use 0 2", _G.HuntswornFeedButton.attributes.macrotext)
         end)
 
         it("acts on a click as it comes up, whatever ActionButtonUseKeyDown says, the list's rows too", function()
             local client = stocked()
-            local button = _G.BeastkeeperFeedButton
+            local button = _G.HuntswornFeedButton
             assert.are.same({ "AnyUp", "AnyDown" }, button.clicks)
             assert.is_false(button.attributes.useOnKeyDown)
             rawget(button, "foodlist")(button)
-            local row = _G.BeastkeeperFeedChoice1
+            local row = _G.HuntswornFeedChoice1
             assert.are.same({ "AnyUp", "AnyDown" }, row.clicks)
             assert.is_false(row.attributes.useOnKeyDown)
             assert.is_not_nil(client)
@@ -148,25 +148,25 @@ describe("Feeding", function()
             client:login():stock(MUTTON, 5)
             local seen = toasts(client)
             client:setHappiness(2)
-            assert.is_false(_G.BeastkeeperFeedButton.shown, "the pet is content, yet nothing to feed with")
-            assert.is_nil(_G.BeastkeeperFeedButton.attributes.macrotext)
+            assert.is_false(_G.HuntswornFeedButton.shown, "the pet is content, yet nothing to feed with")
+            assert.is_nil(_G.HuntswornFeedButton.attributes.macrotext)
             assert.are.same({}, seen, "no content toast")
             client:eat(MUTTON):eat(MUTTON):eat(MUTTON):eat(MUTTON):eat(MUTTON)
             assert.are.same({}, seen, "no out-of-food toast")
             client.unknownSpells[6991] = nil
             client:fire("SPELLS_CHANGED"):stock(MUTTON, 1)
-            assert.is_true(_G.BeastkeeperFeedButton.shown, "learned: the button for the content pet")
-            assert.are.equal("/cast Feed Pet\n/use 0 1", _G.BeastkeeperFeedButton.attributes.macrotext)
+            assert.is_true(_G.HuntswornFeedButton.shown, "learned: the button for the content pet")
+            assert.are.equal("/cast Feed Pet\n/use 0 1", _G.HuntswornFeedButton.attributes.macrotext)
         end)
 
         it("has nothing to do without food", function()
             NewClient():login()
-            assert.is_nil(_G.BeastkeeperFeedButton.attributes.macrotext)
+            assert.is_nil(_G.HuntswornFeedButton.attributes.macrotext)
         end)
 
         it("shows beside the pet frame only while the pet is not happy, changing after combat", function()
             local client = NewClient():login()
-            local button = _G.BeastkeeperFeedButton
+            local button = _G.HuntswornFeedButton
             assert.is_false(button:IsShown(), "a happy pet")
             client:setHappiness(2)
             assert.is_true(button:IsShown())
@@ -181,7 +181,7 @@ describe("Feeding", function()
 
         it("hides while the pet eats, and comes back after if it is still not happy", function()
             local client = NewClient():login()
-            local button = _G.BeastkeeperFeedButton
+            local button = _G.HuntswornFeedButton
             client:setHappiness(2)
             client:petAura(1539, true) -- Feed Pet Effect
             assert.is_false(button:IsShown(), "eating")
@@ -191,7 +191,7 @@ describe("Feeding", function()
 
         it("moves with Shift held, and stays where it was dropped", function()
             local client = NewClient():login()
-            local button = _G.BeastkeeperFeedButton
+            local button = _G.HuntswornFeedButton
             button:GetScript("OnDragStart")(button)
             assert.is_falsy(button.moving, "a plain drag does not move it")
             client.mods.shift = true
@@ -200,34 +200,34 @@ describe("Feeding", function()
             button:GetScript("OnDragStop")(button)
             client:logout()
             local again = NewClient({ saved = Saved() }):login()
-            assert.are.same({ "TOPLEFT", UIParent, "BOTTOMLEFT", 300, 700 }, { _G.BeastkeeperFeedButton:GetPoint() })
+            assert.are.same({ "TOPLEFT", UIParent, "BOTTOMLEFT", 300, 700 }, { _G.HuntswornFeedButton:GetPoint() })
             again.Addon:GetModule("Feeding"):GetOptions().args.resetPosition.func()
-            assert.are.same({ "LEFT", PetFrame, "RIGHT", 4, 0 }, { _G.BeastkeeperFeedButton:GetPoint() })
+            assert.are.same({ "LEFT", PetFrame, "RIGHT", 4, 0 }, { _G.HuntswornFeedButton:GetPoint() })
         end)
 
         it("is gone while the module is off, and on another class", function()
             local client = NewClient():login():stock(MUTTON, 1)
             client.Addon:SetModuleOn("Feeding", false)
-            assert.is_nil(_G.BeastkeeperFeedButton.attributes.macrotext)
-            assert.is_false(_G.BeastkeeperFeedButton:IsShown())
+            assert.is_nil(_G.HuntswornFeedButton.attributes.macrotext)
+            assert.is_false(_G.HuntswornFeedButton:IsShown())
             client.Addon:SetModuleOn("Feeding", true)
-            assert.is_not_nil(_G.BeastkeeperFeedButton.attributes.macrotext)
+            assert.is_not_nil(_G.HuntswornFeedButton.attributes.macrotext)
             NewClient({ class = "MAGE" }):login():stock(MUTTON, 1)
-            assert.is_nil(_G.BeastkeeperFeedButton.attributes.macrotext)
+            assert.is_nil(_G.HuntswornFeedButton.attributes.macrotext)
         end)
     end)
 
     describe("the list on a right-click", function()
         ---A right-click on the feed button: the secure button calls the module's own handler.
         local function rightClick()
-            local button = _G.BeastkeeperFeedButton
+            local button = _G.HuntswornFeedButton
             assert.are.equal("foodlist", button.attributes.type2)
             rawget(button, "foodlist")(button, nil, "RightButton")
         end
 
         ---A click on one row of the list, as the client runs its scripts.
         local function choose(index)
-            local choice = _G["BeastkeeperFeedChoice" .. index]
+            local choice = _G["HuntswornFeedChoice" .. index]
             for _, hook in ipairs(choice.hooks.OnClick) do
                 hook(choice, "LeftButton", false)
             end
@@ -236,10 +236,10 @@ describe("Feeding", function()
         it("shows every food to pick from; a row feeds that food and closes the list", function()
             stocked()
             rightClick()
-            assert.is_true(_G.BeastkeeperFeedList:IsShown())
+            assert.is_true(_G.HuntswornFeedList:IsShown())
             local rows = {}
             for i = 1, 5 do
-                local choice = _G["BeastkeeperFeedChoice" .. i]
+                local choice = _G["HuntswornFeedChoice" .. i]
                 assert.is_true(choice:IsShown())
                 rows[i] = choice.label.text .. " = " .. choice.attributes.macrotext
             end
@@ -251,29 +251,29 @@ describe("Feeding", function()
                 "Spiced Wolf Meat x2 = /cast Feed Pet\n/use 0 6",
             }, rows)
             choose(3)
-            assert.is_false(_G.BeastkeeperFeedList:IsShown())
+            assert.is_false(_G.HuntswornFeedList:IsShown())
         end)
 
         it("hides the rows it no longer needs", function()
             local client = stocked()
             rightClick()
             rightClick()
-            assert.is_false(_G.BeastkeeperFeedList:IsShown(), "a second right-click closes it")
+            assert.is_false(_G.HuntswornFeedList:IsShown(), "a second right-click closes it")
             client:eat(HAUNCH):eat(HAUNCH)
             rightClick()
-            assert.is_true(_G.BeastkeeperFeedChoice4:IsShown())
-            assert.is_false(_G.BeastkeeperFeedChoice5:IsShown())
+            assert.is_true(_G.HuntswornFeedChoice4:IsShown())
+            assert.is_false(_G.HuntswornFeedChoice5:IsShown())
         end)
 
         it("closes with Escape, and does not open in combat or without food", function()
             local client = stocked()
-            assert.is_true(tContains(UISpecialFrames, "BeastkeeperFeedList"))
+            assert.is_true(tContains(UISpecialFrames, "HuntswornFeedList"))
             client:enterCombat()
             rightClick()
-            assert.is_false(_G.BeastkeeperFeedList:IsShown())
+            assert.is_false(_G.HuntswornFeedList:IsShown())
             NewClient():login()
             rightClick()
-            assert.is_false(_G.BeastkeeperFeedList:IsShown())
+            assert.is_false(_G.HuntswornFeedList:IsShown())
         end)
     end)
 

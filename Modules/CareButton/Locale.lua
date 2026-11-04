@@ -1,6 +1,6 @@
 -- CareButton's English strings: the "CareButton" namespace on the CurseForge translation page (see
 -- Locales\README.md). Mend Pet, Revive Pet and Call Pet are hunter spells: translate them as the
--- game does in your language. BeastkeeperCare is a macro name and stays as it is.
+-- game does in your language. HuntswornCare is a macro name and stays as it is.
 local addonName = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 
@@ -11,7 +11,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 L.CAREBUTTON_TITLE = "Care Button"
 L.CAREBUTTON_DESC = "One key for your pet: Mend Pet while it lives, Revive Pet when it is dead (also once the body is gone), Call Pet when it is not out. And a toast when your pet dies, is missing at the pull or runs low."
 
--- Settings window, Beastkeeper's page: the kinds of toast, for choosing their look. Shown after "Care Button: ".
+-- Settings window, Huntsworn's page: the kinds of toast, for choosing their look. Shown after "Care Button: ".
 L.CAREBUTTON_TOASTTYPE_DEAD = "pet died"
 L.CAREBUTTON_TOASTTYPE_NOPET = "no pet at the pull"
 L.CAREBUTTON_TOASTTYPE_LOW = "low health"
@@ -33,17 +33,17 @@ L.CAREBUTTON_REASON_LEARNED = "Call Pet failed: the button casts Revive Pet now.
 L.CAREBUTTON_REASON_LEARNED_COMBAT = "Call Pet failed. In combat the button cannot switch: hold Shift for Revive Pet."
 -- Toast hint: how to press the button. %s: its key binding, such as "F".
 L.CAREBUTTON_HINT_KEY = "Press %s."
-L.CAREBUTTON_HINT_MACRO = "Press your BeastkeeperCare macro."
+L.CAREBUTTON_HINT_MACRO = "Press your HuntswornCare macro."
 
 -- Chat, after Revive Pet failed at once: there was no dead pet.
 L.CAREBUTTON_REVIVE_FAILED = "Revive Pet failed, so there is no dead pet: the button casts Call Pet again."
 -- Chat, after a button on the settings page that cannot work in combat.
 L.CAREBUTTON_IN_COMBAT = "Not in combat; try again when it ends."
 
--- The tooltip of an action button holding the BeastkeeperCare macro: what it does.
-L.CAREBUTTON_MACRO = "Beastkeeper: Mend Pet while your pet lives, Revive Pet when it is dead (also once the body is gone), Call Pet when it is not out. Shift: Revive Pet. Ctrl: Call Pet."
+-- The tooltip of an action button holding the HuntswornCare macro: what it does.
+L.CAREBUTTON_MACRO = "Huntsworn: Mend Pet while your pet lives, Revive Pet when it is dead (also once the body is gone), Call Pet when it is not out. Shift: Revive Pet. Ctrl: Call Pet."
 
--- Esc > Options > Keybindings > AddOns > Beastkeeper.
+-- Esc > Options > Keybindings > AddOns > Huntsworn.
 L.CAREBUTTON_BINDING = "Care Button: mend, revive or call pet"
 
 -- Settings page.
@@ -73,6 +73,6 @@ L.CAREBUTTON_OPTION_ALIVE = "My pet is alive"
 L.CAREBUTTON_OPTION_ALIVE_DESC = "Without a pet, the button casts Call Pet."
 L.CAREBUTTON_OPTION_TEST = "Show a toast"
 L.CAREBUTTON_OPTION_MACRO = "Make the macro"
-L.CAREBUTTON_OPTION_MACRO_DESC = "Makes the BeastkeeperCare macro again: it casts what the button casts, for an action bar."
+L.CAREBUTTON_OPTION_MACRO_DESC = "Makes the HuntswornCare macro again: it casts what the button casts, for an action bar."
 
 -- stylua: ignore end

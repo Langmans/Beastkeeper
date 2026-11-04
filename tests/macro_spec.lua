@@ -1,8 +1,8 @@
 -- The macros a module makes: once per character, per character or account-wide, never in combat.
--- AutocastCheck's three (BeastkeeperKite, BeastkeeperGrowl, BeastkeeperAutocast) serve as the example; CareButton, with a macro of its own, is switched off
+-- AutocastCheck's three (HuntswornKite, HuntswornGrowl, HuntswornAutocast) serve as the example; CareButton, with a macro of its own, is switched off
 -- here so the counts and the order are AutocastCheck's alone.
 
-local NAMES = { "BeastkeeperKite", "BeastkeeperGrowl", "BeastkeeperAutocast" }
+local NAMES = { "HuntswornKite", "HuntswornGrowl", "HuntswornAutocast" }
 
 ---A client with only AutocastCheck making macros; `modules` adds module switches.
 local function NewClient(opts, modules)
@@ -20,24 +20,24 @@ describe("module macros", function()
         local client = NewClient():login()
         assert.are.equal(3, #client.charMacros)
         assert.are.same({
-            name = "BeastkeeperKite",
+            name = "HuntswornKite",
             icon = 134400,
-            body = "#showtooltip Distracting Shot\n/beastkeeper autocast cower\n/petautocaston Cower\n"
+            body = "#showtooltip Distracting Shot\n/huntsworn autocast cower\n/petautocaston Cower\n"
                 .. "/petautocastoff Growl\n/use Distracting Shot",
-        }, client:macro("BeastkeeperKite"))
+        }, client:macro("HuntswornKite"))
         assert.are.same({
-            name = "BeastkeeperGrowl",
+            name = "HuntswornGrowl",
             icon = 132270,
-            body = "/beastkeeper autocast growl\n/petautocaston Growl\n/petautocastoff Cower",
-        }, client:macro("BeastkeeperGrowl"))
+            body = "/huntsworn autocast growl\n/petautocaston Growl\n/petautocastoff Cower",
+        }, client:macro("HuntswornGrowl"))
         assert.are.same({
-            name = "BeastkeeperAutocast",
+            name = "HuntswornAutocast",
             icon = 132162, -- Ability_Hunter_BeastTraining
             body = "/petautocaston Growl\n/petautocastoff Cower",
-        }, client:macro("BeastkeeperAutocast"))
+        }, client:macro("HuntswornAutocast"))
         assert.is_true(
             client:printedContains(
-                "Made the macros BeastkeeperKite, BeastkeeperGrowl, BeastkeeperAutocast for this character"
+                "Made the macros HuntswornKite, HuntswornGrowl, HuntswornAutocast for this character"
             )
         )
         assert.is_true(client.Addon.db.char.macrosMade.AutocastCheck)
@@ -45,13 +45,13 @@ describe("module macros", function()
 
     it("use the client's spell names, or English ones and a question mark without them", function()
         local german = NewClient({ locale = "deDE" }):login()
-        assert.truthy(german:macro("BeastkeeperKite").body:find("/use Ablenkender Schuss", 1, true))
+        assert.truthy(german:macro("HuntswornKite").body:find("/use Ablenkender Schuss", 1, true))
         assert.truthy(
-            german:macro("BeastkeeperGrowl").body:find("/petautocaston Knurren\n/petautocastoff Ducken", 1, true)
+            german:macro("HuntswornGrowl").body:find("/petautocaston Knurren\n/petautocastoff Ducken", 1, true)
         )
         local bare = NewClient({ noSpellAPI = true }):login()
-        assert.truthy(bare:macro("BeastkeeperKite").body:find("/use Distracting Shot", 1, true))
-        assert.are.equal(134400, bare:macro("BeastkeeperGrowl").icon)
+        assert.truthy(bare:macro("HuntswornKite").body:find("/use Distracting Shot", 1, true))
+        assert.are.equal(134400, bare:macro("HuntswornGrowl").icon)
     end)
 
     it("are made once: deleted afterwards, they stay gone", function()
@@ -63,9 +63,9 @@ describe("module macros", function()
 
     it("leave a macro of the same name alone", function()
         local client = NewClient()
-        client.charMacros[1] = { name = "BeastkeeperGrowl", icon = 1, body = "mine" }
+        client.charMacros[1] = { name = "HuntswornGrowl", icon = 1, body = "mine" }
         client:login()
-        assert.are.equal("mine", client:macro("BeastkeeperGrowl").body)
+        assert.are.equal("mine", client:macro("HuntswornGrowl").body)
         assert.are.equal(3, #client.charMacros)
     end)
 
@@ -79,9 +79,9 @@ describe("module macros", function()
         end
         client:login()
         assert.is_table(client.macros[120])
-        assert.are.equal("BeastkeeperKite", client.macros[120].name)
-        assert.is_true(client:printedContains("Made BeastkeeperKite among the account-wide macros"))
-        assert.is_true(client:printedContains("No room for BeastkeeperGrowl, BeastkeeperAutocast"))
+        assert.are.equal("HuntswornKite", client.macros[120].name)
+        assert.is_true(client:printedContains("Made HuntswornKite among the account-wide macros"))
+        assert.is_true(client:printedContains("No room for HuntswornGrowl, HuntswornAutocast"))
     end)
 
     it("wait for the end of combat", function()
@@ -123,19 +123,17 @@ describe("module macros", function()
 
     it("say what they do in the tooltip of the action button they are on", function()
         local client = NewClient({}, { CareButton = true }):login()
-        local lines = client:hoverAction(1, "BeastkeeperKite")
+        local lines = client:hoverAction(1, "HuntswornKite")
         assert.are.equal(1, #lines)
         assert.are.equal(
-            "Beastkeeper: puts Cower on and Growl off, then casts Distracting Shot. Holds until you enter or "
+            "Huntsworn: puts Cower on and Growl off, then casts Distracting Shot. Holds until you enter or "
                 .. "leave a dungeon group.",
             lines[1].text
         )
         assert.is_true(lines[1].wrap)
-        assert.truthy(client:hoverAction(2, "BeastkeeperGrowl")[1].text:find("puts Growl on and Cower off", 1, true))
-        assert.truthy(
-            client:hoverAction(3, "BeastkeeperAutocast")[1].text:find("sets Growl and Cower as fits", 1, true)
-        )
-        assert.truthy(client:hoverAction(4, "BeastkeeperCare")[1].text:find("Mend Pet while your pet lives", 1, true))
+        assert.truthy(client:hoverAction(2, "HuntswornGrowl")[1].text:find("puts Growl on and Cower off", 1, true))
+        assert.truthy(client:hoverAction(3, "HuntswornAutocast")[1].text:find("sets Growl and Cower as fits", 1, true))
+        assert.truthy(client:hoverAction(4, "HuntswornCare")[1].text:find("Mend Pet while your pet lives", 1, true))
     end)
 
     it("leave other actions' tooltips alone, and those of a module switched off", function()
@@ -146,7 +144,7 @@ describe("module macros", function()
         assert.are.same({}, client:hoverAction(2))
         assert.are.same({}, client:hoverAction(3))
         client.Addon:SetModuleOn("AutocastCheck", false)
-        assert.are.same({}, client:hoverAction(4, "BeastkeeperKite"))
+        assert.are.same({}, client:hoverAction(4, "HuntswornKite"))
     end)
 
     it("are not made on another class", function()

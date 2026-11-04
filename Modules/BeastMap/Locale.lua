@@ -73,7 +73,7 @@ L.BEASTMAP_SPELL_KNOWN = "You know this rank."
 L.BEASTMAP_SPELL_TAME = "Tame one of these beasts, then let it use the ability:"
 L.BEASTMAP_SPELL_SKIPPED = "You skipped this rank. Tame one of these beasts, then let it use the ability:"
 -- After the first few beasts. %d: how many more teach it.
-L.BEASTMAP_SPELL_MORE = "%d more in Beastkeeper's Abilities tab."
+L.BEASTMAP_SPELL_MORE = "%d more in Huntsworn's Abilities tab."
 
 -- Settings: pins for the hunter's other NPCs.
 L.BEASTMAP_OPTION_TRAINERS = "Pet trainers"
@@ -101,7 +101,7 @@ L.BEASTMAP_OPTION_HUNT_TAME_DESC = "The hunt is over once you tame a beast that 
 L.BEASTMAP_OPTION_RARE = "Toast when a rare beast I could learn from is near"
 L.BEASTMAP_OPTION_RARE_DESC = "Once per spawn, when a rare beast that teaches a rank you lack shows on the minimap, as a nameplate, as your target or under the mouse. Follows the choices above (lower ranks, beasts above your level). Works without HandyNotes."
 
--- Settings window, Beastkeeper's page: the kind of toast, for choosing its look. Shown after "Beast Map: ".
+-- Settings window, Huntsworn's page: the kind of toast, for choosing its look. Shown after "Beast Map: ".
 L.BEASTMAP_TOASTTYPE_REACH = "pet ability rank in reach"
 L.BEASTMAP_TOASTTYPE_RARE = "rare beast nearby"
 
@@ -134,7 +134,7 @@ L.BEASTMAP_RARE_ELITE = ", rare elite"
 -- Added after that on Classic Era and WoW: Forever, where a tamed beast keeps its melee attack speed, for one that is not the usual 2.0. %.1f: the seconds between its attacks, such as 1.2.
 L.BEASTMAP_SPEED = ", attack speed %.1f"
 
--- Beastkeeper's window, the Abilities tab: its name; beside an ability in the list, first %d the ranks
+-- Huntsworn's window, the Abilities tab: its name; beside an ability in the list, first %d the ranks
 -- the hunter knows, second the ranks beasts teach; a rank (%d); a rank the hunter knows; the heads
 -- of the ranks' columns; a rank's go button's tooltip (%s the beast).
 L.BEASTMAP_TAB_ABILITIES = "Abilities"
@@ -152,7 +152,7 @@ L.BEASTMAP_GO = "Hunt %s: the way there, the tame key, its areas on the map"
 L.BEASTMAP_GO_STOP = "Stop hunting %s"
 -- The hunt (one beast the hunter means to tame for one rank): its start (first %s the beast, second
 -- the rank, such as "Claw (Rank 3)"); its end when stopped (%s the beast); its end when the rank is
--- learned (the rank, the beast); /beastkeeper hunt stop without a hunt; that command in /beastkeeper help.
+-- learned (the rank, the beast); /huntsworn hunt stop without a hunt; that command in /huntsworn help.
 L.BEASTMAP_HUNT_START = "Hunting %s for %s."
 L.BEASTMAP_HUNT_STOPPED = "Stopped hunting %s."
 L.BEASTMAP_HUNT_LEARNED = "Learned %s: the hunt for %s is over."
@@ -161,7 +161,7 @@ L.BEASTMAP_HUNT_LEARNED = "Learned %s: the hunt for %s is over."
 L.BEASTMAP_HUNT_TAMED = "Tamed %s, which teaches %s: the hunt for %s is over. Let it use the ability to learn it."
 L.BEASTMAP_HUNT_NONE = "Not hunting a beast."
 L.BEASTMAP_CMD_STOP = "stop the hunt for a beast"
--- A rank the hunter lacks that no beast in Beastkeeper's data teaches (Forever's family abilities: the pet may get them itself).
+-- A rank the hunter lacks that no beast in Huntsworn's data teaches (Forever's family abilities: the pet may get them itself).
 L.BEASTMAP_NO_TEACHER = "No beast teaches it"
 -- After the nearest beast that teaches a rank (BEASTMAP_REACH_PLACE), comma-separated: the travel
 -- time (%d minutes), that it is above the hunter's level. In a column of its own: how many more
@@ -169,12 +169,12 @@ L.BEASTMAP_NO_TEACHER = "No beast teaches it"
 L.BEASTMAP_TRAVEL = "~%d min"
 L.BEASTMAP_ABOVE = "above your level"
 L.BEASTMAP_MORE = "+%d"
--- Beastkeeper's window, the Families tab: its name; a family in the list with how many of the hunter's
+-- Huntsworn's window, the Families tab: its name; a family in the list with how many of the hunter's
 -- pets are of it (%s the family, %d the count).
 L.BEASTMAP_TAB_FAMILIES = "Families"
 L.BEASTMAP_FAMILY_ROW = "%s (%d)"
--- Under the family's beasts list when Beastkeeper's data has none of that family.
-L.BEASTMAP_NO_BEASTS = "No beast of this family in Beastkeeper's data."
+-- Under the family's beasts list when Huntsworn's data has none of that family.
+L.BEASTMAP_NO_BEASTS = "No beast of this family in Huntsworn's data."
 -- The Families tab: how the list is grouped (by family, or under Ferocity, Tenacity and Cunning), and the switch that adds a Rares item to each group.
 L.BEASTMAP_GROUP_FAMILY = "Family"
 L.BEASTMAP_GROUP_ROLE = "Role"
@@ -182,7 +182,7 @@ L.BEASTMAP_RARES = "Rares"
 -- The page (Classic Era and Burning Crusade only): the Families tab's groups by role named as the pet specializations of Wrath of the Lich King instead of the client's own categories.
 L.BEASTMAP_OPTION_SPEC_NAMES = "Name pet roles Ferocity, Tenacity and Cunning"
 L.BEASTMAP_OPTION_SPEC_NAMES_DESC = "In the Families tab, grouped by role: the names pets have from Wrath of the Lich King on, instead of this game's Offense, Defense and General. The groups stay the same."
--- The heading for families Beastkeeper knows no role of.
+-- The heading for families Huntsworn knows no role of.
 L.BEASTMAP_ROLE_OTHER = "Other"
 -- The card for a group's rares. %s: the family or the role, such as "Cat" or "Ferocity".
 L.BEASTMAP_RARES_OF = "%s: rares"

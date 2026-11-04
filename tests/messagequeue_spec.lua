@@ -13,22 +13,22 @@ end
 
 ---Picks the MessageQueue output and a chat channel by its LibSink name.
 local function pick(output, channel)
-    output.set({ "libsink", "BeastkeeperMessageQueue" }, true)
+    output.set({ "libsink", "HuntswornMessageQueue" }, true)
     output.set({ "libsink", "ScrollArea" }, channel)
 end
 
 describe("the MessageQueue output", function()
     it("is not offered without MessageQueue", function()
         local _, output = sinking()
-        assert.is_nil(output.args.BeastkeeperMessageQueue)
+        assert.is_nil(output.args.HuntswornMessageQueue)
     end)
 
     describe("with MessageQueue", function()
         it("is offered among LibSink's outputs, with the chat channels to choose from", function()
             local client, output = sinking({ messageQueue = true })
-            assert.are.equal("Chat channel (MessageQueue)", output.args.BeastkeeperMessageQueue.name)
-            output.set({ "libsink", "BeastkeeperMessageQueue" }, true)
-            output.get({ "libsink", "BeastkeeperMessageQueue" })
+            assert.are.equal("Chat channel (MessageQueue)", output.args.HuntswornMessageQueue.name)
+            output.set({ "libsink", "HuntswornMessageQueue" }, true)
+            output.get({ "libsink", "HuntswornMessageQueue" })
             assert.are.equal("Say", output.args.ScrollArea.values.Say)
             assert.are.equal("Group", output.args.ScrollArea.values.Group)
             assert.are.same({}, client.errors)
@@ -79,7 +79,7 @@ describe("the MessageQueue output", function()
 
         it("says it in Say when no channel was chosen", function()
             local client, output = sinking({ messageQueue = true })
-            output.set({ "libsink", "BeastkeeperMessageQueue" }, true)
+            output.set({ "libsink", "HuntswornMessageQueue" }, true)
             client.Addon:ShowToast({ key = "a", title = "default" })
             assert.are.same({ "default", "SAY" }, client.queued[1])
         end)

@@ -1,7 +1,7 @@
 --@debug@
 local _, ns = ...
 
--- A probe for development: keeps in BeastkeeperDB (DevProbe's global namespace) what Beastkeeper cannot learn
+-- A probe for development: keeps in HuntswornDB (DevProbe's global namespace) what Huntsworn cannot learn
 -- from the API documentation, to read back from the SavedVariables after playing:
 --   stable      C_StableInfo's entry of each pet, as the lists give it
 --   petSpells   each spell a pet gets: its name and rank, the rank before, the pet's level and
@@ -26,7 +26,7 @@ local _, ns = ...
 --               and whether the data has the beast on that map
 -- A raw return that the client hides (a secret value) is kept as "secret"; a missing API as
 -- "missing"; one that errors as "error: ...".
--- Each finding also goes to Beastkeeper:Log (OAP Debug). Like Dev Screenshots the whole file is a
+-- Each finding also goes to Huntsworn:Log (OAP Debug). Like Dev Screenshots the whole file is a
 -- --@debug@ block, so only a copy straight from the repository has it. Off until switched on.
 
 ---@type Addon
@@ -209,7 +209,7 @@ local function RankLine(name, rank)
     return number and ("%s %s"):format(name, number) or name
 end
 
----BEASTKEEPER_PET_TAMED: a little later, what the pet knows beside what the data says it teaches.
+---HUNTSWORN_PET_TAMED: a little later, what the pet knows beside what the data says it teaches.
 ---@param _ string the message
 ---@param event AddonPetTamedEvent
 function M:OnTamed(_, event)
@@ -428,7 +428,7 @@ function M:LOCALPLAYER_PET_RENAMED()
     NoteGUID("LOCALPLAYER_PET_RENAMED")
 end
 
----BEASTKEEPER_ABILITY_LEARNED: a rank below the highest the hunter knew of that ability (Ability
+---HUNTSWORN_ABILITY_LEARNED: a rank below the highest the hunter knew of that ability (Ability
 ---Learned has not marked the learn yet when it sends this).
 ---@param _ string the message
 ---@param event AddonAbilityLearnedEvent

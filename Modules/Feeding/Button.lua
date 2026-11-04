@@ -49,7 +49,7 @@ button.foodlist = function()
     M:ToggleFoodList()
 end
 
----Puts the button where the profile keeps it, or beside the pet frame (Beastkeeper.PetFrame).
+---Puts the button where the profile keeps it, or beside the pet frame (Huntsworn.PetFrame).
 function M:PlaceButton()
     local at = self:Settings().position
     button:ClearAllPoints()

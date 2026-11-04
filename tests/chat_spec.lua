@@ -4,7 +4,7 @@
 
 ---The frame that watches keys while a message waits.
 local function keyFrame()
-    return _G.BeastkeeperChatKeys
+    return _G.HuntswornChatKeys
 end
 
 describe("sending on the next input", function()

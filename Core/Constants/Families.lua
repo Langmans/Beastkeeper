@@ -1,15 +1,15 @@
 local _, ns = ...
 
 -- Hunter pet families by CreatureFamily ID (UnitCreatureFamily's second return, the same on every
--- client language), both ways: Beastkeeper.families.cat is 2, so code says families.cat instead of a
--- bare number; Beastkeeper.familyInfo[2] is what Beastkeeper knows of the Cat. Its specialization and diet
+-- client language), both ways: Huntsworn.families.cat is 2, so code says families.cat instead of a
+-- bare number; Huntsworn.familyInfo[2] is what Huntsworn knows of the Cat. Its specialization and diet
 -- are as Wowhead's Forever hunter pet pages give them; the Fox, new in Forever, is on none of
 -- them yet. Burning Crusade's families eat what that client's CreatureFamily.PetFoodMask says
--- (raw meat counting as meat). The name shown is the client's (Beastkeeper.FamilyName in
+-- (raw meat counting as meat). The name shown is the client's (Huntsworn.FamilyName in
 -- Core\Families.lua), English as fallback.
 --
 -- Before Wrath a family has no specialization but a category and fixed modifiers to the pet's
--- health, armor and damage, in percent (Beastkeeper.familyMods, the classic clients): as Icy Veins'
+-- health, armor and damage, in percent (Huntsworn.familyMods, the classic clients): as Icy Veins'
 -- Classic and TBC Classic pet tables give them, which Wowhead's Classic pet guide bears out
 -- (a Cat 1.10 damage and 2% less health, an Owl 1.07 damage).
 
@@ -46,7 +46,7 @@ Addon.families = {
 -- The specializations, as Wowhead sorts the families.
 Addon.petSpecs = Addon.SelfKeyedEnum({ "ferocity", "cunning", "tenacity" }) --[[@as AddonPetSpecs]]
 
--- The kinds of food a family eats; each has a FAMILY_FOOD_* name (Beastkeeper.DietText), and the
+-- The kinds of food a family eats; each has a FAMILY_FOOD_* name (Huntsworn.DietText), and the
 -- emote lines' food types use them as keys.
 Addon.diets = Addon.SelfKeyedEnum({ "meat", "fish", "cheese", "bread", "fungus", "fruit", "rawFish" }) --[[@as AddonDiets]]
 

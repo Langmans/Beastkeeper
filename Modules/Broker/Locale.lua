@@ -8,7 +8,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 
 -- Settings window: the module's switch and page title, and its tooltip. Titan Panel, ChocolateBar and ElvUI are addon names.
 L.BROKER_TITLE = "Data Broker"
-L.BROKER_DESC = "Beastkeeper in Titan Panel, ChocolateBar, ElvUI's datatexts and other data broker displays: your pet's name, happiness and free training points, more when you hover, Beastkeeper's settings on a click."
+L.BROKER_DESC = "Huntsworn in Titan Panel, ChocolateBar, ElvUI's datatexts and other data broker displays: your pet's name, happiness and free training points, more when you hover, Huntsworn's settings on a click."
 
 -- The text in a display. First %s: the pet's name; second: its happiness (Happy, Content, Unhappy); %d: its free training points.
 L.BROKER_TEXT = "%s: %s, %d TP"
@@ -22,10 +22,10 @@ L.BROKER_PET = "%s, level %d %s"
 L.BROKER_LOYALTY = "Loyalty %s"
 -- First %d: free training points; second: the pet's total.
 L.BROKER_POINTS = "%d of %d training points free"
-L.BROKER_CLICK = "Click: Beastkeeper's window. Middle-click: the pet abilities. Right-click: settings."
+L.BROKER_CLICK = "Click: Huntsworn's window. Middle-click: the pet abilities. Right-click: settings."
 
 -- The module's page: the switch for the button on the minimap, and its tooltip.
 L.BROKER_OPTION_MINIMAP = "Show a button on the minimap"
-L.BROKER_OPTION_MINIMAP_DESC = "The same as the data broker: hover for your pet, click for Beastkeeper's window, right-click for the settings. Drag it around the minimap."
+L.BROKER_OPTION_MINIMAP_DESC = "The same as the data broker: hover for your pet, click for Huntsworn's window, right-click for the settings. Drag it around the minimap."
 
 -- stylua: ignore end

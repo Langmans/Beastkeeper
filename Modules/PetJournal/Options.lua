@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- PetJournal's page (Beastkeeper > Pet Journal): the tooltip switch, a choice of the character's pets
+-- PetJournal's page (Huntsworn > Pet Journal): the tooltip switch, a choice of the character's pets
 -- (the pet out first chosen), and its journal below (Journal.lua).
 
 ---@type Addon

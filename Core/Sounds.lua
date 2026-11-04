@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- Pet sounds by family (Beastkeeper.families, Families.lua), as FileDataIDs for PlaySoundFile. One
+-- Pet sounds by family (Huntsworn.families, Families.lua), as FileDataIDs for PlaySoundFile. One
 -- table per kind of sound, named <KIND>_PER_FAMILY; Pet.lua picks the active pet's. FileDataIDs
 -- from the wago.tools community listfile, with the file names so they can be looked up again.
 

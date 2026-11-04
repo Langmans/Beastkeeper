@@ -43,21 +43,21 @@ describe("the addon's names", function()
         local client = tester()
         for _, macro in ipairs(client.Addon:GetModule("AutocastCheck"):Macros()) do
             assert.truthy(macro.name:find("^Tester"), macro.name)
-            assert.is_nil(macro.body:lower():find("/beastkeeper", 1, true), macro.body)
+            assert.is_nil(macro.body:lower():find("/huntsworn", 1, true), macro.body)
         end
     end)
 
     it("answer to the slash command by the folder's name and to its short alias", function()
         local client = tester()
         client:slash("config")
-        client:slash("config", "bk")
+        client:slash("config", "hs")
         assert.are.equal(2, #client.opened)
     end)
 end)
 
 describe("the names that cannot be made from the folder", function()
     it("match it in the .toc: the saved settings", function()
-        assert.are.equal("BeastkeeperDB", TOC_SAVED)
+        assert.are.equal("HuntswornDB", TOC_SAVED)
     end)
 
     it("match it in Bindings.xml: its header and every button it clicks", function()

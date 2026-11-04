@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- AbilityLearned's page in the settings window (Beastkeeper > Ability Learned): the sound, the
+-- AbilityLearned's page in the settings window (Huntsworn > Ability Learned): the sound, the
 -- screenshot, the hints, the training points and loyalty toasts with their sounds, an example toast, a simulated learn, what the pet can teach, and the
 -- history.
 
@@ -9,7 +9,7 @@ local Addon = ns
 local L = Addon.L
 local M = Addon:GetModule("AbilityLearned") --[[@as AddonAbilityLearned]]
 
----A getter and setter for one profile setting (Beastkeeper:Setting).
+---A getter and setter for one profile setting (Huntsworn:Setting).
 ---@param key string
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set

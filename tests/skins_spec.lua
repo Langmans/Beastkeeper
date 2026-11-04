@@ -1,4 +1,4 @@
--- Toast skins: the two Beastkeeper brings, the choice of look for every toast and per kind of toast,
+-- Toast skins: the two Huntsworn brings, the choice of look for every toast and per kind of toast,
 -- and a skin another addon registers.
 
 ---A logged-in client without a pet, so no module toasts by itself.
@@ -61,7 +61,7 @@ describe("toast skins", function()
 
     it("can come from another addon, which gets the toast, the clock and the hover", function()
         local skin = recordingSkin()
-        local addon = LibStub("AceAddon-3.0"):GetAddon("Beastkeeper")
+        local addon = LibStub("AceAddon-3.0"):GetAddon("Huntsworn")
         addon:RegisterToastSkin("recorder", skin)
         Addon.db.profile.toast.skin = "recorder"
         Addon.db.profile.toast.duration = 1
@@ -104,7 +104,7 @@ describe("the raid warning look", function()
         assert.are.equal("Raid warning: big text in the middle", client.Addon:ToastSkins().raidwarning.name)
     end)
 
-    it("hands one toast after another straight on, with Beastkeeper's accent and no icon when none", function()
+    it("hands one toast after another straight on, with Huntsworn's accent and no icon when none", function()
         local client = warning()
         client.Addon:ShowToast({ key = "a:x", title = "One" })
         client.Addon:ShowToast({ key = "a:y", title = "Two", text = "more" })
@@ -139,7 +139,7 @@ describe("a skin from NewToastSkin", function()
         local skin = client.Addon:NewToastSkin("Mine")
         assert.has_error(function()
             client.Addon:RegisterToastSkin("mine", skin)
-        end, "Beastkeeper:RegisterToastSkin(mine): the skin has no Show, Update")
+        end, "Huntsworn:RegisterToastSkin(mine): the skin has no Show, Update")
         skin.Show, skin.Update = function() end, function() end
         client.Addon:RegisterToastSkin("mine", skin)
         assert.are.equal(skin, client.Addon:ToastSkins().mine)
@@ -157,15 +157,15 @@ describe("the skin contract", function()
     it("refuses a skin without an id, a table, a name or a method, saying what is missing", function()
         assert.has_error(function()
             Addon:RegisterToastSkin("", recordingSkin())
-        end, "Beastkeeper:RegisterToastSkin: id must be a non-empty string")
+        end, "Huntsworn:RegisterToastSkin: id must be a non-empty string")
         assert.has_error(function()
             Addon:RegisterToastSkin("x", "skin")
-        end, "Beastkeeper:RegisterToastSkin(x): skin must be a table")
+        end, "Huntsworn:RegisterToastSkin(x): skin must be a table")
         local skin = recordingSkin()
         skin.name, skin.Update, skin.Hide = nil, nil, nil
         assert.has_error(function()
             Addon:RegisterToastSkin("x", skin)
-        end, "Beastkeeper:RegisterToastSkin(x): the skin has no name (a string), Update, Hide")
+        end, "Huntsworn:RegisterToastSkin(x): the skin has no name (a string), Update, Hide")
         assert.is_nil(Addon:ToastSkins().x)
     end)
 
@@ -182,7 +182,7 @@ describe("the skin contract", function()
         assert.are.same({ "a", "b" }, poured)
         assert.has_error(function()
             Addon:RegisterToastSkin("nothing", { name = "No show", instant = true })
-        end, "Beastkeeper:RegisterToastSkin(nothing): the skin has no Show")
+        end, "Huntsworn:RegisterToastSkin(nothing): the skin has no Show")
     end)
 
     for _, method in ipairs({ "Show", "Update", "IsMouseOver" }) do

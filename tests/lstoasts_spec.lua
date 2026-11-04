@@ -1,5 +1,5 @@
 -- The LS: Toasts skin: a toast handed to LS: Toasts, which stacks, animates and skins it with the
--- player's other toasts. Beastkeeper keeps playing the toast's sound itself.
+-- player's other toasts. Huntsworn keeps playing the toast's sound itself.
 
 ---A logged-in client without a pet, with LS: Toasts loaded and drawing every toast.
 ---@param opts TestClientOptions?
@@ -51,7 +51,7 @@ describe("the LS: Toasts skin", function()
         assert.is_false(client.lsToasts[1].dnd)
     end)
 
-    it("fills in Beastkeeper's accent and icon, and an empty text, where the toast brings none", function()
+    it("fills in Huntsworn's accent and icon, and an empty text, where the toast brings none", function()
         local client = lsToasting()
         client.Addon:ShowToast({ key = "a", title = "Only this" })
         local toast = client.lsToasts[1]
@@ -67,7 +67,7 @@ describe("the LS: Toasts skin", function()
         assert.is_nil(client.lsToasts[1].iconBorder)
     end)
 
-    it("makes a new LS toast for each, never merging two, and does not hold Beastkeeper's queue", function()
+    it("makes a new LS toast for each, never merging two, and does not hold Huntsworn's queue", function()
         local client = lsToasting()
         client.Addon:ShowToast({ key = "a", title = "First" })
         client.Addon:ShowToast({ key = "b", title = "Second" })

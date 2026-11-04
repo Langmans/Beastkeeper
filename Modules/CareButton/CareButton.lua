@@ -198,7 +198,7 @@ local function SeeingToIt()
     return Addon.IsTaming() or Addon.IsCasting(M.REVIVE_PET) or Addon.IsCasting(M.CALL_PET)
 end
 
----Combat starts: BEASTKEEPER_PET_AT_PULL for other addons when something is wrong with the pet,
+---Combat starts: HUNTSWORN_PET_AT_PULL for other addons when something is wrong with the pet,
 ---and its toast when that is switched on. Not while the hunter tames, revives or calls. A pet that
 ---went into the fight low gets the low toast.
 function M:PLAYER_REGEN_DISABLED()

@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- Ammo's page in the settings window (Beastkeeper > Ammo): the low and critical lines, the toasts'
+-- Ammo's page in the settings window (Huntsworn > Ammo): the low and critical lines, the toasts'
 -- switch, buying at a vendor and the stacks to keep without an ammo bag.
 
 ---@type Addon

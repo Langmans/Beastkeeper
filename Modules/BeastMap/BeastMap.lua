@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- A HandyNotes plugin ("Beastkeeper"): a pin on the world map and the minimap for every beast that can
+-- A HandyNotes plugin ("Huntsworn"): a pin on the world map and the minimap for every beast that can
 -- teach the hunter a pet ability rank, with the icon of the best rank it has to offer. The beasts
 -- and their pins come from Data\Beasts.lua; what the hunter knows from AbilityLearned (the ranks it
 -- learned, and the highest per ability). On another class than a hunter the module does nothing.
@@ -496,7 +496,7 @@ local function FirstMap(beast)
 end
 
 -- Where each beast's pins lie in the world, worked out once per beast (and again when its pins
--- change): flattened continent, x, y (Beastkeeper.InWorld) per pin, in the order of `pinsOf`'s map, x,
+-- change): flattened continent, x, y (Huntsworn.InWorld) per pin, in the order of `pinsOf`'s map, x,
 -- y; false for a pin the client cannot place.
 ---@type table<number, (number|false)[]>, table<number, number[]>, table<number, table>
 local worldOf, pinsOf, pinsFrom = {}, {}, {}

@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- The Abilities tab of Beastkeeper's window (Core\Window.lua): every pet ability beasts teach, with how
+-- The Abilities tab of Huntsworn's window (Core\Window.lua): every pet ability beasts teach, with how
 -- many of its ranks the hunter knows; for the chosen one every rank with its pet level, and
 -- whether the hunter knows it or which beast teaches it, nearest first (BeastMap.lua's Nearest):
 -- the beast's place, the travel time when a route addon gives one, and in a column of its own how
@@ -214,7 +214,7 @@ local function Text(parent, skin, justify)
     return text
 end
 
----An ability's icon, cropped as the look crops icons (Beastkeeper:CropIcon).
+---An ability's icon, cropped as the look crops icons (Huntsworn:CropIcon).
 ---@param parent Frame
 ---@param skin AddonButtonHolderSkin
 ---@param size number

@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- Growl or Cower on autocast, as fits: who holds the mobs decides, someone else in a dungeon group
--- (Cower) or the pet elsewhere (Growl), unless the player chose (the BeastkeeperKite and BeastkeeperGrowl
+-- (Cower) or the pet elsewhere (Growl), unless the player chose (the HuntswornKite and HuntswornGrowl
 -- macros) until a dungeon group is entered or left. Where Growl fits and the pet has a Cower rank
 -- the hunter lacks, Cower goes on too: the hunter learns it only from the pet's use. A problem toasts when it starts and its toast
 -- goes away when solved; Button.lua sets it right with one key. The pet's spellbook shows every
@@ -19,7 +19,7 @@ local M = Addon:NewModule("AutocastCheck")
 M.title = L.AUTOCAST_TITLE
 M.description = L.AUTOCAST_DESC
 M.command = "autocast"
--- Its one kind of toast, which can have a look of its own (Beastkeeper's page).
+-- Its one kind of toast, which can have a look of its own (Huntsworn's page).
 M.toastTypes = { problem = L.AUTOCAST_TOASTTYPE_PROBLEM }
 M.defaults = {
     profile = {
@@ -103,7 +103,7 @@ local function Add(name, allowed, enabled, icon)
     end
 end
 
----Reads the pet's spellbook (Beastkeeper.PetBookEntry and PetBookAutocast). A client without a
+---Reads the pet's spellbook (Huntsworn.PetBookEntry and PetBookAutocast). A client without a
 ---spellbook API is left to the pet bar. A command (Attack, Follow) is in the book too, with no
 ---autocast values; an entry that cannot be read is skipped.
 local function ReadBook()
@@ -155,7 +155,7 @@ function M:Wanted()
     return "growl", "solo"
 end
 
----The player chose an ability (the BeastkeeperKite or BeastkeeperGrowl macro, through /beastkeeper); says so
+---The player chose an ability (the HuntswornKite or HuntswornGrowl macro, through /huntsworn); says so
 ---when it changes what fits, and checks again once the macro's own autocast lines have landed.
 ---@param ability "growl"|"cower"
 function M:Choose(ability)
@@ -263,7 +263,7 @@ function M:Problems(found)
     return found
 end
 
----Sends BEASTKEEPER_AUTOCAST_WANTED when what fits, or what decided it, changed since the last check.
+---Sends HUNTSWORN_AUTOCAST_WANTED when what fits, or what decided it, changed since the last check.
 function M:TellWanted()
     local wanted, why = self:Wanted()
     if wanted == self.lastWanted and why == self.lastWhy then return end
@@ -331,7 +331,7 @@ function M:UNIT_PET(_, unit)
     if unit == "player" then self:ScheduleCheck() end
 end
 
----BEASTKEEPER_RANKS_KNOWN: Cower may no longer be one the hunter learns from the pet.
+---HUNTSWORN_RANKS_KNOWN: Cower may no longer be one the hunter learns from the pet.
 function M:OnRanksKnown()
     self:Check()
 end
@@ -372,13 +372,13 @@ function M:OnDisable()
     self:ApplyButton()
 end
 
----/beastkeeper autocast growl: the BeastkeeperGrowl macro's line.
+---/huntsworn autocast growl: the HuntswornGrowl macro's line.
 ---@param module AddonAutocastCheck
 local function ChooseGrowl(module)
     module:Choose("growl")
 end
 
----/beastkeeper autocast cower: the BeastkeeperKite macro's line.
+---/huntsworn autocast cower: the HuntswornKite macro's line.
 ---@param module AddonAutocastCheck
 local function ChooseCower(module)
     module:Choose("cower")

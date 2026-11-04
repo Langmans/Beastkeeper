@@ -1,6 +1,6 @@
 # Locales
 
-Beastkeeper uses AceLocale-3.0 with one locale, `"Beastkeeper"`, shared by the core and
+Huntsworn uses AceLocale-3.0 with one locale, `"Huntsworn"`, shared by the core and
 every module. On the CurseForge translation page the strings are split into
 namespaces: the core's strings sit in the base namespace, each module's in a
 namespace named after the module (`AutocastCheck`, `CareButton`, ...), so a
@@ -12,7 +12,7 @@ translator sees one module's strings together.
   own file, loaded right after `enUS.lua`, adding to the same locale:
 
   ```lua
-  local L = LibStub("AceLocale-3.0"):NewLocale("Beastkeeper", "enUS", true)
+  local L = LibStub("AceLocale-3.0"):NewLocale("Huntsworn", "enUS", true)
   ```
 
 - Keys start with the module's prefix (`AUTOCAST_...`), so two modules never
@@ -66,4 +66,4 @@ matching namespace. The import API can do the same from a script.
 ## Adding a language
 
 Copy one of the keyword files, change the locale code on every line and in
-`NewLocale`, and add it to `Beastkeeper.toc` after `enUS.lua`.
+`NewLocale`, and add it to `Huntsworn.toc` after `enUS.lua`.

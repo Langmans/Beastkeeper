@@ -25,7 +25,7 @@ describe("the options", function()
 
     it("pass AceConfig's validation", function()
         -- Raises on any malformed entry.
-        LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(options, "Beastkeeper")
+        LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(options, "Huntsworn")
         assert.are.same({}, client.errors)
     end)
 
@@ -84,7 +84,7 @@ describe("the options", function()
             shared.args.resetGuideProgress = nil
         end)
 
-        it("still changes BeastkeeperDB's profile", function()
+        it("still changes HuntswornDB's profile", function()
             local profiles = options.args.profiles
             -- AceConfig calls a string `set` on the handler with AceConfig's info for the option.
             profiles.handler:SetProfile({ arg = nil }, "Tank")
@@ -94,7 +94,7 @@ describe("the options", function()
 end)
 
 describe("the settings window", function()
-    it("gets Beastkeeper, a page per module with options, Profiles and About", function()
+    it("gets Huntsworn, a page per module with options, Profiles and About", function()
         local client = NewClient({ modules = modules }):login()
         local names = {}
         for _, category in pairs(client.categories) do
@@ -103,26 +103,26 @@ describe("the settings window", function()
         end
         table.sort(names)
         assert.are.same({
-            "- > Beastkeeper",
-            "Beastkeeper > Ability Learned",
-            "Beastkeeper > About",
-            "Beastkeeper > Alpha Title",
-            "Beastkeeper > Ammo",
-            "Beastkeeper > Autocast Check",
-            "Beastkeeper > Beast Map",
-            "Beastkeeper > Beta Page",
-            "Beastkeeper > Care Button",
-            "Beastkeeper > Data Broker",
-            "Beastkeeper > Feed Emotes",
-            "Beastkeeper > Feeding",
-            "Beastkeeper > Pet Journal",
-            "Beastkeeper > Profiles",
+            "- > Huntsworn",
+            "Huntsworn > Ability Learned",
+            "Huntsworn > About",
+            "Huntsworn > Alpha Title",
+            "Huntsworn > Ammo",
+            "Huntsworn > Autocast Check",
+            "Huntsworn > Beast Map",
+            "Huntsworn > Beta Page",
+            "Huntsworn > Care Button",
+            "Huntsworn > Data Broker",
+            "Huntsworn > Feed Emotes",
+            "Huntsworn > Feeding",
+            "Huntsworn > Pet Journal",
+            "Huntsworn > Profiles",
         }, names)
     end)
 
     it("uses the page name as category ID on a client without C_SettingsUtil", function()
         local client = NewClient({ modules = modules, noSettingsPanel = true }):login()
-        assert.are.equal("Beastkeeper", client.Addon.optionsCategoryID)
+        assert.are.equal("Huntsworn", client.Addon.optionsCategoryID)
     end)
 
     it("draws every page when shown", function()
@@ -142,9 +142,9 @@ describe("the settings window", function()
         local client = NewClient({ modules = modules }):login()
         local dialog = LibStub("AceConfigDialog-3.0")
         for _, path in ipairs({ "modules", "Alpha", "Beta", "AutocastCheck", "CareButton", "profiles", "about" }) do
-            dialog:Open("Beastkeeper", path)
+            dialog:Open("Huntsworn", path)
         end
-        dialog:Close("Beastkeeper")
+        dialog:Close("Huntsworn")
         assert.are.same({}, client.errors)
     end)
 end)
@@ -165,14 +165,14 @@ describe("the About page", function()
 
     it("reads the title, notes, author and license from the .toc", function()
         local text = about()
-        assert.truthy(text:find("Beastkeeper", 1, true))
+        assert.truthy(text:find("Huntsworn", 1, true))
         assert.truthy(text:find("Hunter pet tools in one addon.", 1, true))
         assert.truthy(text:find("Author: Langmans", 1, true))
         assert.truthy(text:find("License: MIT", 1, true))
     end)
 
     it("gives the website to copy", function()
-        assert.truthy(about():find("github.com/Langmans/Beastkeeper", 1, true))
+        assert.truthy(about():find("github.com/Langmans/Huntsworn", 1, true))
     end)
 
     it("is there in every language LibAboutPanel had `true` strings in", function()

@@ -14,7 +14,7 @@ Addon.TOAST_DEFAULT_SKIN = "card"
 Addon.TOAST_ACCENT = { 1, 0.62, 0.18 }
 Addon.TOAST_ICON = 134400 -- INV_Misc_QuestionMark
 
----Beastkeeper's own accent, as a style's accent function.
+---Huntsworn's own accent, as a style's accent function.
 ---@return number[]
 function Addon.DefaultToastAccent()
     return Addon.TOAST_ACCENT
@@ -34,16 +34,14 @@ function Addon:ToastSettings()
     return self.db.profile.toast --[[@as AddonToastSettings]]
 end
 
----Makes a skin available. Another addon calls this on Beastkeeper's addon object
----(LibStub("AceAddon-3.0"):GetAddon("Beastkeeper", true)), at any time after Beastkeeper has loaded.
+---Makes a skin available. Another addon calls this on Huntsworn's addon object
+---(LibStub("AceAddon-3.0"):GetAddon("Huntsworn", true)), at any time after Huntsworn has loaded.
 ---Raises an error naming what is missing when the skin does not keep the contract.
 ---@param id string kept in the saved settings; a short lowercase word
 ---@param skin AddonToastSkin
 function Addon:RegisterToastSkin(id, skin)
-    if type(id) ~= "string" or id == "" then
-        error("Beastkeeper:RegisterToastSkin: id must be a non-empty string", 2)
-    end
-    if type(skin) ~= "table" then error("Beastkeeper:RegisterToastSkin(" .. id .. "): skin must be a table", 2) end
+    if type(id) ~= "string" or id == "" then error("Huntsworn:RegisterToastSkin: id must be a non-empty string", 2) end
+    if type(skin) ~= "table" then error("Huntsworn:RegisterToastSkin(" .. id .. "): skin must be a table", 2) end
     ---@type string[]
     local missing = {}
     if type(skin.name) ~= "string" then missing[#missing + 1] = "name (a string)" end
@@ -51,7 +49,7 @@ function Addon:RegisterToastSkin(id, skin)
         if type(skin[method]) ~= "function" then missing[#missing + 1] = method end
     end
     if #missing > 0 then
-        error("Beastkeeper:RegisterToastSkin(" .. id .. "): the skin has no " .. table.concat(missing, ", "), 2)
+        error("Huntsworn:RegisterToastSkin(" .. id .. "): the skin has no " .. table.concat(missing, ", "), 2)
     end
     skins[id] = skin
 end

@@ -1,15 +1,15 @@
--- Beastkeeper's window: a frame of its own with a tab per part (modules add them), opened by /beastkeeper,
+-- Huntsworn's window: a frame of its own with a tab per part (modules add them), opened by /huntsworn,
 -- the broker, a key binding; styled by the chosen holder skin. The Pets tab (Pet Journal): every
 -- pet of the character, the pet out first, and a card with its model and journal.
 
 local FLUFFY, SHADOW = "3069428", "77"
 
----The window, opened by /beastkeeper.
+---The window, opened by /huntsworn.
 ---@param client table
 ---@return table
 local function open(client)
     client:slash("")
-    return _G.BeastkeeperWindow
+    return _G.HuntswornWindow
 end
 
 ---Clicks a button by its OnClick script.
@@ -60,20 +60,20 @@ local function withStable()
     return client
 end
 
-describe("Beastkeeper's window", function()
-    it("opens with /beastkeeper on its first tab, and closes again; /beastkeeper config opens the options", function()
+describe("Huntsworn's window", function()
+    it("opens with /huntsworn on its first tab, and closes again; /huntsworn config opens the options", function()
         local client = NewClient():login()
         local window = open(client)
         assert.is_true(window.shown)
         assert.are.equal("pets", client.Addon.window.current)
-        assert.are.equal("Beastkeeper", window.title.text)
+        assert.are.equal("Huntsworn", window.title.text)
         open(client)
         assert.is_false(window.shown)
         client:slash("config")
         assert.are.same({ client.Addon.optionsCategoryID }, client.opened)
     end)
 
-    it("in Beastkeeper's own look: the game's dark dialog background with a tooltip border", function()
+    it("in Huntsworn's own look: the game's dark dialog background with a tooltip border", function()
         local client = NewClient():login()
         local window = open(client)
         assert.are.equal("Interface\\DialogFrame\\UI-DialogBox-Background-Dark", window.backdrop.bgFile)
@@ -97,7 +97,7 @@ describe("Beastkeeper's window", function()
         local window = open(client)
         local found = false
         for _, name in ipairs(UISpecialFrames) do
-            found = found or name == "BeastkeeperWindow"
+            found = found or name == "HuntswornWindow"
         end
         assert.is_true(found)
         window:GetScript("OnDragStart")(window)
@@ -115,7 +115,7 @@ describe("Beastkeeper's window", function()
     it("has the look of the chosen holder skin", function()
         local client = NewClient():login()
         open(client)
-        assert.are.equal("Beastkeeper", client.Addon.window.skin.name)
+        assert.are.equal("Huntsworn", client.Addon.window.skin.name)
     end)
 
     it("shows a tab only while its module is on, and the options without any", function()
@@ -133,15 +133,15 @@ describe("Beastkeeper's window", function()
     it("opens from the key binding's button and from the broker; the broker's right-click opens the options", function()
         local client = NewClient():login()
         assert.are.equal(
-            "Beastkeeper: open or close the window",
-            _G["BINDING_NAME_CLICK BeastkeeperWindowButton:LeftButton"]
+            "Huntsworn: open or close the window",
+            _G["BINDING_NAME_CLICK HuntswornWindowButton:LeftButton"]
         )
-        click(_G.BeastkeeperWindowButton)
-        assert.is_true(_G.BeastkeeperWindow.shown)
-        click(_G.BeastkeeperWindowButton)
-        local broker = LibStub("LibDataBroker-1.1"):GetDataObjectByName("Beastkeeper")
+        click(_G.HuntswornWindowButton)
+        assert.is_true(_G.HuntswornWindow.shown)
+        click(_G.HuntswornWindowButton)
+        local broker = LibStub("LibDataBroker-1.1"):GetDataObjectByName("Huntsworn")
         broker.OnClick(nil, "LeftButton")
-        assert.is_true(_G.BeastkeeperWindow.shown)
+        assert.is_true(_G.HuntswornWindow.shown)
         broker.OnClick(nil, "RightButton")
         assert.are.same({ client.Addon.optionsCategoryID }, client.opened)
     end)

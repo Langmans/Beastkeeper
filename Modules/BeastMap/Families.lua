@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- The Families tab of Beastkeeper's window (Core\Window.lua): every pet family (Core\Constants\Families.lua), with
+-- The Families tab of Huntsworn's window (Core\Window.lua): every pet family (Core\Constants\Families.lua), with
 -- how many of the hunter's pets are of it; for the chosen one (the pet out's at first) its
 -- specialization, diet, the abilities beasts teach it with how many ranks the hunter knows, and the
 -- beasts of that family nearest first (BeastMap.lua's Nearest), each with a button that goes there,
@@ -38,7 +38,7 @@ local function ByName(a, b)
     return (Addon.FamilyName(a) or "") < (Addon.FamilyName(b) or "")
 end
 
----The families on this client, by name: one Beastkeeper has for one client only (the Fox on WoW:
+---The families on this client, by name: one Huntsworn has for one client only (the Fox on WoW:
 ---Forever, Burning Crusade's on Burning Crusade) only there.
 ---@return number[]
 local function Order()
@@ -272,7 +272,7 @@ local function Text(parent, skin, template, size)
     return text
 end
 
----A family's portrait, cropped as the look crops icons (Beastkeeper:CropIcon).
+---A family's portrait, cropped as the look crops icons (Huntsworn:CropIcon).
 ---@param parent Frame
 ---@param skin AddonButtonHolderSkin
 ---@param size number

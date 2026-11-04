@@ -1,7 +1,7 @@
 local _, ns = ...
 
--- AutocastCheck's page in the settings window (Beastkeeper > Autocast Check): which abilities are
--- watched, the combat reminder, the sound, an example toast and the macros. Beastkeeper's core
+-- AutocastCheck's page in the settings window (Huntsworn > Autocast Check): which abilities are
+-- watched, the combat reminder, the sound, an example toast and the macros. Huntsworn's core
 -- builds the page from GetOptions and greys it out while the module is off.
 
 ---@type Addon
@@ -14,7 +14,7 @@ local function Recheck()
     M:Check()
 end
 
----A getter and setter for one profile setting (Beastkeeper:Setting).
+---A getter and setter for one profile setting (Huntsworn:Setting).
 ---@param key string
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set

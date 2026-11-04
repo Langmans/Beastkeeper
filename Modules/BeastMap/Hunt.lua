@@ -1,13 +1,13 @@
 local _, ns = ...
 
 -- The hunt: the hunter picks one beast to tame for one rank ("I'm taming this one for Claw 3"),
--- from a rank's button in the Abilities tab or a beast's pin. Beastkeeper then shows the way there,
+-- from a rank's button in the Abilities tab or a beast's pin. Huntsworn then shows the way there,
 -- gives the beast to the tame key, and marks the beast's areas on the world map and the minimap
 -- (Areas.lua). The hunt is kept per character and ends once the hunter knows the rank; with the
 -- huntEndsAtTame switch already when a beast that teaches the rank is tamed, the hunted one or any
 -- other (the pet still has to use the ability to teach it). It also ends on the button again, a
--- right-click on the tame key's button, or /beastkeeper hunt stop. BEASTKEEPER_HUNT_STARTED and
--- BEASTKEEPER_HUNT_ENDED tell other addons.
+-- right-click on the tame key's button, or /huntsworn hunt stop. HUNTSWORN_HUNT_STARTED and
+-- HUNTSWORN_HUNT_ENDED tell other addons.
 
 ---@type Addon
 local Addon = ns
@@ -79,14 +79,14 @@ function M:StopHunt(reason, pet)
     Addon:RefreshWindow("abilities")
 end
 
----BEASTKEEPER_RANKS_KNOWN: the pins again, and the hunt over once its rank is known.
+---HUNTSWORN_RANKS_KNOWN: the pins again, and the hunt over once its rank is known.
 function M:OnRanksKnown()
     self:Refresh()
     local hunt = self:Hunt()
     if hunt and not M.Lacking(hunt.spellID) then self:StopHunt("learned") end
 end
 
----BEASTKEEPER_PET_TAMED: with its switch on, the hunt is over once the tamed beast teaches its rank.
+---HUNTSWORN_PET_TAMED: with its switch on, the hunt is over once the tamed beast teaches its rank.
 ---@param _ string the message
 ---@param event AddonPetTamedEvent
 function M:OnPetTamed(_, event)

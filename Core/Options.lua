@@ -1,6 +1,6 @@
 local addonName, ns = ...
 
--- The options, in the game's own AddOns settings tab: a "Beastkeeper" page with a switch per module,
+-- The options, in the game's own AddOns settings tab: a "Huntsworn" page with a switch per module,
 -- under it a page per module that has options (GetOptions), and Profiles.
 --
 -- The whole table is built by GetOptionsTable every time AceConfig asks for it, so a switch
@@ -14,7 +14,7 @@ local L = Addon.L
 -- The entries of AceDBOptions' own Profiles page. AceDBOptions hands every addon the same args
 -- table, and other addons write into it (RestedXP Guides adds "Reload guides and UI", "Reset Guide
 -- Progress" and "Set current profile as default"), so taking it as it is would put their buttons
--- on Beastkeeper's page. Beastkeeper copies only these; tests/options_spec.lua checks the list still
+-- on Huntsworn's page. Huntsworn copies only these; tests/options_spec.lua checks the list still
 -- matches the AceDBOptions version in Libs/.
 Addon.PROFILE_OPTIONS = {
     "desc",
@@ -30,7 +30,7 @@ Addon.PROFILE_OPTIONS = {
     "delete",
 }
 
----The Profiles page: AceDBOptions' group for BeastkeeperDB with a copy of only its own entries.
+---The Profiles page: AceDBOptions' group for HuntswornDB with a copy of only its own entries.
 ---@return AceConfig.OptionsTable
 function Addon:GetProfileOptions()
     local shared = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
@@ -142,7 +142,7 @@ function Addon:AddSkinOptions(settings, args)
     end
 end
 
----The toast's settings, shared by every module, as a box on Beastkeeper's page below the switches.
+---The toast's settings, shared by every module, as a box on Huntsworn's page below the switches.
 ---@return AceConfig.OptionsTable
 function Addon:GetToastOptions()
     local settings = self:ToastSettings()
@@ -200,11 +200,11 @@ function Addon:GetToastOptions()
                 order = 4,
                 func = function()
                     self:ShowToast({
-                        key = "Beastkeeper:test",
+                        key = "Huntsworn:test",
                         source = addonName,
                         title = L.TOAST_TEST_TITLE,
                         text = L.TOAST_TEST_TEXT,
-                        -- The icon of Beastkeeper's entry in the addon list.
+                        -- The icon of Huntsworn's entry in the addon list.
                         icon = "Interface\\Icons\\Ability_Hunter_BeastCall",
                     })
                 end,
@@ -245,7 +245,7 @@ local function ButtonSkinSelect(key, name, register, order)
     }
 end
 
----The look of Beastkeeper's buttons, as a box on Beastkeeper's page below the toast's.
+---The look of Huntsworn's buttons, as a box on Huntsworn's page below the toast's.
 ---@return AceConfig.OptionsTable
 function Addon:GetButtonOptions()
     return {
@@ -312,7 +312,7 @@ function Addon:GetOptionsTable()
     return options
 end
 
----A module's switch on Beastkeeper's page and, when it has options, its own page.
+---A module's switch on Huntsworn's page and, when it has options, its own page.
 ---@param options table
 ---@param switches table
 ---@param name string
@@ -369,7 +369,7 @@ function Addon:SetupOptions()
     dialog:AddToBlizOptions(addonName, args.about.name, addonName, "about")
 end
 
----Opens the settings window on Beastkeeper's page, or on a module's.
+---Opens the settings window on Huntsworn's page, or on a module's.
 ---@param module string? the module's name
 function Addon:OpenOptions(module)
     Settings.OpenToCategory(module and self.moduleCategoryIDs[module] or self.optionsCategoryID)

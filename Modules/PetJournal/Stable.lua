@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- The Stable tab of Beastkeeper's window (Core\Window.lua): the pets the character has side by side,
+-- The Stable tab of Huntsworn's window (Core\Window.lua): the pets the character has side by side,
 -- the newest tame first, each card with its model, level, family line, abilities (those it could teach you
 -- in green) and how many ranks it could still teach you. A click opens the pet in the Pets tab
 -- (Window.lua).

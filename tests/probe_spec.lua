@@ -1,5 +1,5 @@
 -- The Dev Probe (Modules\DevProbe): a module only in a copy straight from the repository, off until
--- switched on, that keeps in BeastkeeperDB what Beastkeeper cannot know from the API documentation: what the
+-- switched on, that keeps in HuntswornDB what Huntsworn cannot know from the API documentation: what the
 -- stable's lists hold, when and how a pet gets a new spell, what each family eats, the client's
 -- family names, a lower rank learned after a higher one, and the pet's GUID around a tame.
 
@@ -110,7 +110,7 @@ describe("the Dev Probe", function()
         assert.is_truthy(tContains(events, "UNIT_PET Creature-0-1-1-1-3825-00000ABCDE"))
     end)
 
-    it("keeps what the client is: its build, project, the library's client, the APIs Beastkeeper leans on", function()
+    it("keeps what the client is: its build, project, the library's client, the APIs Huntsworn leans on", function()
         local client, probe = probing()
         client:fire("PLAYER_ENTERING_WORLD")
         local found = probe.client

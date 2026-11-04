@@ -1,17 +1,21 @@
-## Interface: 40402, 38002
-## Title: Beastkeeper
+## Interface: 11509
+## Title: Huntsworn
 ## Category: Hunter
 ## Notes: Hunter pet tools in one addon. Each module can be turned on or off in the options.
 ## Author: Langmans
 ## Version: @project-version@
-## SavedVariables: BeastkeeperDB
+## SavedVariables: HuntswornDB
 ## OptionalDeps: Ace3, LibStub, EllesmereUI, ElvUI, Masque, MessageQueue, HandyNotes, OAPDebug, _DebugLog, ls_Toasts, ls_Toasts_Classic
 ## IconTexture: Interface\Icons\Ability_Hunter_BeastCall
 ## X-License: MIT
-## X-Website: https://github.com/Langmans/Beastkeeper
+## X-Website: https://github.com/Langmans/Huntsworn
 
 embeds.xml
+Libs\LibTameable-1.0\Data\Era.lua
+Libs\LibTameable-1.0\Data\EraFood.lua
 Locales\Locales.xml
 Core\Core.xml
+Data\Era\Trainers.lua
+Data\Era\Ammo.lua
 Integrations\Integrations.xml
 Modules\Modules.xml

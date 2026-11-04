@@ -4,7 +4,7 @@ local _, ns = ...
 -- pointed at last (the rare alarm's, or the one whose pin was clicked) and puts a skull on it;
 -- with Shift it casts Tame Beast instead. Only a secure button may target, so its macro text holds
 -- the beast's name, rewritten outside combat. For an action bar: a macro with
--- /click BeastkeeperTameButton. During a hunt the same button shows on screen too, with Tame
+-- /click HuntswornTameButton. During a hunt the same button shows on screen too, with Tame
 -- Beast's icon (the profile's tameButton switch); Shift-drag moves it, its place kept per profile,
 -- and a right-click stops the hunt. Showing, hiding and moving it wait for combat to end, like the
 -- macro text.
@@ -94,7 +94,7 @@ function M:SetTameTarget(name)
     self:ApplyTameButton()
 end
 
----BEASTKEEPER_RARE_SEEN, the rare alarm's message: that beast is the one to tame.
+---HUNTSWORN_RARE_SEEN, the rare alarm's message: that beast is the one to tame.
 ---@param _ string the message
 ---@param event AddonRareSeenEvent
 function M:OnRareSeen(_, event)

@@ -71,7 +71,7 @@ function M:HighestRank(name)
     return Char().known[name]
 end
 
----Sends BEASTKEEPER_RANKS_KNOWN with the ranks that were news (docs\04-hooking.md).
+---Sends HUNTSWORN_RANKS_KNOWN with the ranks that were news (docs\04-hooking.md).
 ---@param source "learn"|"training"
 ---@param ranks AddonKnownRank[]
 local function RanksKnown(source, ranks)
@@ -119,7 +119,7 @@ function M:TrainingCost(name, rank)
 end
 
 ---Adds a learn to the history, keeping the last HISTORY_MAX, and to what is known; sends
----BEASTKEEPER_ABILITY_LEARNED (docs\04-hooking.md).
+---HUNTSWORN_ABILITY_LEARNED (docs\04-hooking.md).
 ---@param entry AddonLearnEntry
 function M:RecordLearn(entry)
     local history = Char().history
@@ -151,7 +151,7 @@ local function HistoryLine(entry)
     return line
 end
 
----Whether Beastkeeper's beast data (Data\Beasts.lua) has beast `npc` as a teacher of an ability's rank.
+---Whether Huntsworn's beast data (Data\Beasts.lua) has beast `npc` as a teacher of an ability's rank.
 ---@param name string the ability's name in the client's language
 ---@param rank number
 ---@param npc number
@@ -509,7 +509,7 @@ local function GrowthToast(kind, title, text, hint, sound)
     }
 end
 
----The core's BEASTKEEPER_PET_GROWTH (the pet's points total, level or loyalty changed since last seen):
+---The core's HUNTSWORN_PET_GROWTH (the pet's points total, level or loyalty changed since last seen):
 ---a toast when its total rose, naming the cause when there is one (a level-up, a higher loyalty
 ---level), and one when its loyalty level dropped, with the points that cost. A level-up at loyalty
 ---level 1 brings no points and says nothing.

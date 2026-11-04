@@ -61,7 +61,7 @@ local macrosLoaded = false
 -- Whether SPELLS_CHANGED is watched, for a hunter who does not know Call Pet yet.
 local waitingForPet = false
 
----Makes the waiting modules' macros, now or once combat ends; every macro of Beastkeeper's is for a pet,
+---Makes the waiting modules' macros, now or once combat ends; every macro of Huntsworn's is for a pet,
 ---so a hunter without Call Pet gets them once it learns it.
 function Addon:MakeOfferedMacros()
     if not self.KnowsSpell(self.CALL_PET) then
@@ -99,7 +99,7 @@ function Addon:OfferMacros(module)
     if macrosLoaded then self:MakeOfferedMacros() end
 end
 
--- What Beastkeeper's macros do, in the tooltip of an action button that holds one: the game only shows a
+-- What Huntsworn's macros do, in the tooltip of an action button that holds one: the game only shows a
 -- macro's #showtooltip spell there. Only for modules that are on.
 local DESC_COLOR = { 0.5, 0.9, 0.5 }
 

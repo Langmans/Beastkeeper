@@ -3,7 +3,7 @@ local _, ns = ...
 -- The key that sets Growl and Cower as fits. Only a macro or a secure button the player presses may
 -- change autocast, so this is a secure button whose macro text always holds the two lines for what
 -- fits now; the module rewrites them outside combat (a secure button cannot change in it). The
--- BeastkeeperAutocast macro, for an action bar, holds the same two lines itself: a /click from a
+-- HuntswornAutocast macro, for an action bar, holds the same two lines itself: a /click from a
 -- macro runs no macro text (a macro inside a macro), so it is kept in step the same way. Only its
 -- /petautocaston and /petautocastoff lines (or an old /click of this button) are rewritten; the
 -- player's own lines stay, and a macro with none of ours is left alone.

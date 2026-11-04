@@ -109,7 +109,7 @@ M.Lines.esES = {
                 "¡No electrocutes la mano que te da de comer!",
                 "¡Sorbido de un trago!",
             },
-            -- Written for Beastkeeper: Fox is new in WoW: Forever.
+            -- Written for Huntsworn: Fox is new in WoW: Forever.
             [F.FOX] = {
                 "¡Zorro astuto!",
                 "Ni una miga para las gallinas.",

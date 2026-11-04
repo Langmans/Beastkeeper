@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- The journal in a pet's tooltip (the pet frame's, or the pet under the mouse): a few grey lines
--- under the game's own, for a pet in this character's journal (Beastkeeper.OnUnitTooltip); the pet's
+-- under the game's own, for a pet in this character's journal (Huntsworn.OnUnitTooltip); the pet's
 -- number comes from its GUID.
 
 ---@type Addon

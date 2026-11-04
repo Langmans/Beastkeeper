@@ -1,8 +1,8 @@
 local _, ns = ...
 
--- The card, the splash and Beastkeeper's buttons in EllesmereUI's look: its global font, outline and
+-- The card, the splash and Huntsworn's buttons in EllesmereUI's look: its global font, outline and
 -- shadow, its 1-pixel border on a dark panel, and its theme colour as the accent. Only when
--- EllesmereUI is loaded; it is in Beastkeeper's OptionalDeps, so it loads first, and this file loads
+-- EllesmereUI is loaded; it is in Huntsworn's OptionalDeps, so it loads first, and this file loads
 -- before the modules, so its button skins are there when they style their buttons.
 
 local EUI = EllesmereUI
@@ -74,7 +74,7 @@ local function StyleHolder(frame)
     Border(frame)
 end
 
--- Between ElvUI (20) and Beastkeeper's own (0): a player with both chose ElvUI's buttons on purpose.
+-- Between ElvUI (20) and Huntsworn's own (0): a player with both chose ElvUI's buttons on purpose.
 if MakeBorder then
     Addon:RegisterButtonSkin("ellesmere", { name = "EllesmereUI", priority = 10, Style = StyleButton })
     Addon:RegisterButtonHolderSkin(

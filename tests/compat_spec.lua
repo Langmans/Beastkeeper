@@ -1,4 +1,4 @@
--- Beastkeeper.C (Core\Compat.lua): the modern pet, spellbook and tooltip API under Beastkeeper's own name,
+-- Huntsworn.C (Core\Compat.lua): the modern pet, spellbook and tooltip API under Huntsworn's own name,
 -- the same on every client: the client's own function where it has one (WoW: Forever), else the
 -- classic way (Classic Era's globals, a tooltip scan, the family's diet). Never written into the
 -- game's shared C_ tables.
@@ -18,7 +18,7 @@ local function clients()
     end
 end
 
-describe("Beastkeeper.C", function()
+describe("Huntsworn.C", function()
     it("gives the pet's happiness, training points and loyalty on both clients", function()
         for kind, client in clients() do
             local C = client.Addon.C

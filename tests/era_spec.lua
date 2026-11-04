@@ -1,4 +1,4 @@
--- Classic Era (1.15): the same Beastkeeper on a client without WoW: Forever's pet APIs. The pet's
+-- Classic Era (1.15): the same Huntsworn on a client without WoW: Forever's pet APIs. The pet's
 -- values come from the old globals, its spellbook from GetSpellBookItemName, unit tooltips from
 -- GameTooltip's OnTooltipSetUnit.
 

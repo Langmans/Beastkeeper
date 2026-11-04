@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- CareButton's page in the settings window (Beastkeeper > Care Button): the toasts, the low-health
+-- CareButton's page in the settings window (Huntsworn > Care Button): the toasts, the low-health
 -- line, the sound, whether the pet counts as dead, an example toast and the macro.
 
 ---@type Addon
@@ -23,7 +23,7 @@ end
 ---@type table<string, fun()>
 local CHANGED = { low = RecheckHealth, marker = RecheckHealth, visible = Reapply }
 
----A getter and setter for one profile setting (Beastkeeper:Setting), with what its change sets off.
+---A getter and setter for one profile setting (Huntsworn:Setting), with what its change sets off.
 ---@param key string
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set

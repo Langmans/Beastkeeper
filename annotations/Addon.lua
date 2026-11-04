@@ -1,11 +1,11 @@
 ---@meta
--- Editor-only types for Beastkeeper's own tables: the addon object and the module contract. Not
+-- Editor-only types for Huntsworn's own tables: the addon object and the module contract. Not
 -- listed in the .toc, so the game never loads this file. The Ace3 types (AceModule,
 -- AceDBObject-3.0, AceConfig.OptionsTable, ...) come with WoW Lua LS.
 
----One slash command of a module: `/beastkeeper <module.command> <name> <args>`.
+---One slash command of a module: `/huntsworn <module.command> <name> <args>`.
 ---@class AddonCommand
----@field desc string one line for /beastkeeper help
+---@field desc string one line for /huntsworn help
 ---@field func fun(module: AddonModule, args: string) gets the rest of the line, "" when there is none
 
 ---What a module may declare, besides AceAddon's OnInitialize/OnEnable/OnDisable. OnDisable must
@@ -17,18 +17,18 @@
 ---@field requires string[]? the parts of the game it needs (Addon.features' keys); off without one
 ---@field defaults AceDB.Schema? AceDB defaults; the module then has db, its own namespace
 ---@field db AceDBObject-3.0? set by the core before the module's OnInitialize, when it has defaults
----@field command string? the word after /beastkeeper that reaches its commands
+---@field command string? the word after /huntsworn that reaches its commands
 ---@field commands table<string, AddonCommand>? by the word after `command`, lowercase
 ---@field toastTypes table<string, string>? the kinds of toast it shows, by kind with a localized name; each can have a look of its own
 ---@field toastSkins table<string, string>? the look a kind starts on (a skin id), until the player picks another
 ---@field GetOptions (fun(self: AddonModule): table)? an AceConfig group (args, and name if not title); the core adds type and disabled
----@field Print fun(self: AddonModule, ...: any) a line in chat, sent on as BEASTKEEPER_PRINT with the module's name
+---@field Print fun(self: AddonModule, ...: any) a line in chat, sent on as HUNTSWORN_PRINT with the module's name
 
----A module whose settings Beastkeeper:Setting reads and writes.
+---A module whose settings Huntsworn:Setting reads and writes.
 ---@class AddonSettingsModule: AddonModule
 ---@field Settings fun(self: AddonSettingsModule): table
 
----A module that offers macros (Beastkeeper:OfferMacros, Beastkeeper:CreateMacros).
+---A module that offers macros (Huntsworn:OfferMacros, Huntsworn:CreateMacros).
 ---@class AddonMacroModule: AddonModule
 ---@field Macros fun(self: AddonMacroModule): AddonMacro[]
 
@@ -42,8 +42,8 @@
 -- AddonToastInfo, AddonSound and the message tables (AddonToastEvent and the rest) are public:
 -- they are in docs\AddonMessages.lua, which ships with the addon.
 
----A skin frame with a portrait badge (Beastkeeper:AddToastPortrait).
----A toast skin's frame (Beastkeeper:NewToastFrame).
+---A skin frame with a portrait badge (Huntsworn:AddToastPortrait).
+---A toast skin's frame (Huntsworn:NewToastFrame).
 ---@class AddonToastFrame: Frame
 ---@field dragging boolean? the mouse drags it: nothing places it meanwhile
 ---@field placed boolean? the card has slid in and is left where it is
@@ -61,11 +61,11 @@
 ---@field skins table<string, string> a skin id per kind of toast ("<module>:<kind>"), where chosen
 ---@field sink table LibSink's output choice, kept by LibSink itself
 
----What draws a toast (Core\Toast\). Beastkeeper brings "card" and "splash"; another addon adds its
----own with Beastkeeper:RegisterToastSkin(id, skin), to draw in its own style or to hand the toast to
+---What draws a toast (Core\Toast\). Huntsworn brings "card" and "splash"; another addon adds its
+---own with Huntsworn:RegisterToastSkin(id, skin), to draw in its own style or to hand the toast to
 ---something else. The engine keeps the queue and the clock and calls, for one toast: Show once,
----Update every frame until the fade is done, then Hide. Beastkeeper:NewToastFrame gives a frame that
----drags and closes like the others, Beastkeeper:PlaceToast puts it where the player dragged it.
+---Update every frame until the fade is done, then Hide. Huntsworn:NewToastFrame gives a frame that
+---drags and closes like the others, Huntsworn:PlaceToast puts it where the player dragged it.
 ---@class AddonToastSkin
 ---@field name string shown in the look choice; localized
 ---@field Show fun(self: AddonToastSkin, info: AddonToastInfo, settings: AddonToastSettings) fill it in and show it; Update follows at once
@@ -76,7 +76,7 @@
 ---@field instant boolean? it hands the toast on in Show and is done: the next toast follows at once
 ---@field GetOptions (fun(self: AddonToastSkin): table)? an AceConfig group of its own on Addon's page
 
----A skin from Beastkeeper:NewToastSkin: it draws in self.frame, and Hide, IsMouseOver and Frame are
+---A skin from Huntsworn:NewToastSkin: it draws in self.frame, and Hide, IsMouseOver and Frame are
 ---done; it adds Show and Update.
 ---@class AddonFrameSkin: AddonToastSkin
 ---@field frame Frame? made by its Show, with Addon:NewToastFrame
@@ -90,7 +90,7 @@
 ---@field Hint FontString
 ---@field Timer Texture the bar along the bottom that runs down
 
----How a card or splash skin looks (Beastkeeper:NewCardSkin, Beastkeeper:NewSplashSkin).
+---How a card or splash skin looks (Huntsworn:NewCardSkin, Huntsworn:NewSplashSkin).
 ---@class AddonSkinStyle
 ---@field frameName string the frame's global name
 ---@field accent fun(): number[] { r, g, b } for a toast that brings no accent
@@ -134,9 +134,9 @@
 ---@field toasted table<string, number> when each problem last toasted (GetTime), by problem key
 ---@field ReminderDue fun(self: AddonAutocastCheck, key: string): boolean
 ---@field checkPending boolean? a check is on its way (CheckAfter)
----@field choice ("growl"|"cower")? what the player chose (BeastkeeperKite, BeastkeeperGrowl)
+---@field choice ("growl"|"cower")? what the player chose (HuntswornKite, HuntswornGrowl)
 ---@field choiceInDungeon boolean? whether the player was in a dungeon group then
----@field lastWanted ("growl"|"cower")? what fitted at the last check (BEASTKEEPER_AUTOCAST_WANTED)
+---@field lastWanted ("growl"|"cower")? what fitted at the last check (HUNTSWORN_AUTOCAST_WANTED)
 ---@field lastWhy ("solo"|"dungeon"|"chosen")? what decided it then
 ---@field TellWanted fun(self: AddonAutocastCheck)
 ---@field SPELLS table<"growl"|"cower", number>
@@ -178,13 +178,13 @@
 ---@field icon Texture the button's icon
 ---@field group string the module the button belongs to, such as "Feeding" (Masque's group)
 
----The look of one of Beastkeeper's buttons (Core\Buttons.lua, docs\09-button-skins.md).
+---The look of one of Huntsworn's buttons (Core\Buttons.lua, docs\09-button-skins.md).
 ---@class AddonButtonSkin
 ---@field name string shown in the choice on Addon's page
 ---@field priority number? "auto" takes the highest; Addon's own is 0
 ---@field Style fun(button: Button, parts: AddonButtonParts): (fun(r: number, g: number, b: number))? styles it once; gives how to colour its border, or nil when it has none to colour
 
----The look of what holds Beastkeeper's buttons, and of the text and icons in its rows.
+---The look of what holds Huntsworn's buttons, and of the text and icons in its rows.
 ---@class AddonButtonHolderSkin
 ---@field name string
 ---@field priority number?
@@ -201,7 +201,7 @@
 ---@field holder string a holder skin id, or "auto"
 ---@field crop boolean icons lose their border, unless the look's UI decides (CropsIcons)
 
----The Data Broker module: Beastkeeper's LibDataBroker-1.1 data source.
+---The Data Broker module: Huntsworn's LibDataBroker-1.1 data source.
 ---@class AddonBroker: AddonModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field object table? the data object ("Addon"), made for a hunter on the first enable
@@ -280,7 +280,7 @@
 ---@field SPELLS_CHANGED fun(self: AddonFeeding)
 ---@field UNIT_AURA fun(self: AddonFeeding, event: string, unit: string)
 ---@field Eating fun(): boolean
----@field button Button the feed button (BeastkeeperFeedButton)
+---@field button Button the feed button (HuntswornFeedButton)
 ---@field FEED_PET number
 ---@field FeedMacro fun(food: AddonFood): string
 ---@field FoodColor fun(food: AddonFood): number, number, number
@@ -340,7 +340,7 @@
 ---@field ApplyButton fun(self: AddonCareButton)
 ---@field UpdateMacro fun(self: AddonCareButton)
 
----A spell in the active pet's spellbook (Beastkeeper.PetSpells).
+---A spell in the active pet's spellbook (Huntsworn.PetSpells).
 ---@class AddonPetSpell
 ---@field id number
 ---@field rank string? "Rank 2"; nil for a spell without ranks
@@ -363,7 +363,7 @@
 ---@field ranks table<string, table<number, true>> every rank known per ability name
 ---@field trainingRead boolean Beast Training has been read once
 
----How a pet stood when the core last saw it (BeastkeeperDB char.growth, by pet name).
+---How a pet stood when the core last saw it (HuntswornDB char.growth, by pet name).
 ---@class AddonGrowthSeen
 ---@field total number its training points total
 ---@field level number
@@ -524,7 +524,7 @@
 ---@field FillPlaceholders fun(self: AddonFeedEmotes, line: string, pet: string, food: string?, article: string?): string
 ---@field BuildEmote fun(self: AddonFeedEmotes, itemID: number?): string?
 
----The sound tables, Beastkeeper.sounds.<KIND>_PER_FAMILY (Core\Sounds.lua).
+---The sound tables, Huntsworn.sounds.<KIND>_PER_FAMILY (Core\Sounds.lua).
 ---@class AddonSounds
 ---@field AGGRO_PER_FAMILY table<number, number>
 ---@field DEATH_PER_FAMILY table<number, number>
@@ -533,8 +533,8 @@
 ---DevScreenshots: screenshots for development, only in a copy from the repository.
 ---@class AddonDevScreenshots: AddonModule
 ---@field db AceDBObject-3.0 global.shots: what has a screenshot, by kind
----@field BEASTKEEPER_TOAST fun(self: AddonDevScreenshots, message: string, event: AddonToastEvent)
----@field BEASTKEEPER_PRINT fun(self: AddonDevScreenshots, message: string, event: AddonPrintEvent)
+---@field HUNTSWORN_TOAST fun(self: AddonDevScreenshots, message: string, event: AddonToastEvent)
+---@field HUNTSWORN_PRINT fun(self: AddonDevScreenshots, message: string, event: AddonPrintEvent)
 
 ---BeastMap: a HandyNotes plugin with a pin for every beast that can teach the hunter a rank.
 ---@class AddonBeastMap: AddonSettingsModule
@@ -614,13 +614,13 @@
 ---@field [integer] number
 ---@field at table<number, integer>
 
----A spellbook entry, as C_SpellBook gives it (Beastkeeper.C.SpellBook.GetSpellBookItemInfo).
+---A spellbook entry, as C_SpellBook gives it (Huntsworn.C.SpellBook.GetSpellBookItemInfo).
 ---@class AddonBookItem
 ---@field name GameValue
 ---@field subName GameValue the rank text, "" without one
 ---@field spellID GameValue none for a command
 
----An item's or a link's tooltip data, as C_TooltipInfo gives it (Beastkeeper.C.TooltipInfo).
+---An item's or a link's tooltip data, as C_TooltipInfo gives it (Huntsworn.C.TooltipInfo).
 ---@class AddonTooltipData
 ---@field lines {leftText: GameValue}[]
 
@@ -660,7 +660,7 @@
 ---@field GetActivePetList fun(): AddonStablePet[]
 ---@field GetStabledPetList fun(): AddonStablePet[]
 
----Beastkeeper.C (Core\Compat.lua): the modern API on every client, the classic way where it is missing.
+---Huntsworn.C (Core\Compat.lua): the modern API on every client, the classic way where it is missing.
 ---@class AddonCompat
 ---@field PetInfo AddonCompatPetInfo
 ---@field SpellBook AddonCompatSpellBook
@@ -676,7 +676,7 @@
 ---@field trainers table<number, AddonTrainer>? pet trainers and stable masters by NPC ID (Data\Trainers.lua)
 ---@field ammo table<number, AddonAmmoItem> the arrows and bullets vendors sell, by item ID (Data\Ammo.lua)
 ---@field ammoVendors table<number, AddonAmmoVendor> the vendors that sell them, by NPC ID
----A kind of ammo: its Projectile item subclass, a Beastkeeper.ammoKinds value (arrow 2, bullet 3).
+---A kind of ammo: its Projectile item subclass, a Huntsworn.ammoKinds value (arrow 2, bullet 3).
 ---@alias AddonAmmoKind number
 
 ---Ammo a vendor sells.
@@ -768,7 +768,7 @@
 ---@field tames table[] { npc, family, knows, expected, match, t }
 ---@field beasts table<number, table> per NPC its first sighting: { name, map, x, y, onDataMap, dataMaps, t }
 
----A tab of Beastkeeper's window (Core\Window.lua), added by Beastkeeper:RegisterWindowTab.
+---A tab of Huntsworn's window (Core\Window.lua), added by Huntsworn:RegisterWindowTab.
 ---@class AddonWindowTab
 ---@field id string
 ---@field title string
@@ -777,7 +777,7 @@
 ---@field Create fun(panel: Frame, skin: AddonButtonHolderSkin) builds the panel, once
 ---@field Refresh fun(panel: Frame) fills it, each time it shows and on Addon:RefreshWindow
 
----Beastkeeper's window frame.
+---Huntsworn's window frame.
 ---@class AddonWindow: Frame
 ---@field skin AddonButtonHolderSkin
 ---@field title FontString
@@ -787,15 +787,15 @@
 ---@field divider Texture the line under the tabs
 ---@field close Button
 
----Beastkeeper.petSpecs, a SelfKeyedEnum.
----Beastkeeper.petCategories, a SelfKeyedEnum: a family's category before Wrath.
+---Huntsworn.petSpecs, a SelfKeyedEnum.
+---Huntsworn.petCategories, a SelfKeyedEnum: a family's category before Wrath.
 ---@class AddonPetCategories
 ---@field offense string
 ---@field defense string
 ---@field general string
 
 ---A family's category and modifiers to the pet's health, armor and damage, in percent, on the
----classic clients (Beastkeeper.familyMods).
+---classic clients (Huntsworn.familyMods).
 ---@class AddonFamilyMods
 ---@field category string a Addon.petCategories value
 ---@field health number
@@ -807,7 +807,7 @@
 ---@field cunning string
 ---@field tenacity string
 
----Beastkeeper.diets, a SelfKeyedEnum.
+---Huntsworn.diets, a SelfKeyedEnum.
 ---@class AddonDiets
 ---@field meat string
 ---@field fish string
@@ -817,14 +817,14 @@
 ---@field fruit string
 ---@field rawFish string
 
----What Beastkeeper knows of a pet family (Core\Constants\Families.lua).
+---What Huntsworn knows of a pet family (Core\Constants\Families.lua).
 ---@class AddonFamilyInfo
 ---@field name string English, when the client gives no name
 ---@field spec string? a Addon.petSpecs value
 ---@field diet string[]? Addon.diets values
 ---@field client string? the only client it is on, as LibTameable names it ("tbc", "forever"); nil for every client
 
----Beastkeeper's window's settings (profile.window): where it was dragged to.
+---Huntsworn's window's settings (profile.window): where it was dragged to.
 ---@class AddonWindowSettings
 ---@field pos { point: string, relativePoint: string, x: number, y: number }?
 
@@ -977,7 +977,7 @@
 ---@field Start fun(self: AddonSource)
 ---@field [string] any its own state and event methods
 
----The names of the messages Beastkeeper sends: "<NAME>_TOAST" and so on (Core\Addon.lua).
+---The names of the messages Huntsworn sends: "<NAME>_TOAST" and so on (Core\Addon.lua).
 ---@class AddonMessages
 ---@field print string
 ---@field toast string
@@ -1001,10 +1001,10 @@
 ---@class Addon: AceAddon, AceConsole-3.0, AceEvent-3.0
 ---@field NAME string the folder's name, which every name the game sees is made from (Core\Addon.lua)
 ---@field SLASH_ALIAS string the slash command's short form, beside NAME in lower case
----@field messages AddonMessages the messages Beastkeeper sends, by key
+---@field messages AddonMessages the messages Huntsworn sends, by key
 ---@field petArrived boolean? the session's first UNIT_PET has come: the pet's values can be read (Core\Listen.lua)
 ---@field L table<string, string> the AceLocale strings
----@field db AceDBObject-3.0 BeastkeeperDB; profile.modules[name] holds each module's switch
+---@field db AceDBObject-3.0 HuntswornDB; profile.modules[name] holds each module's switch
 ---@field modules table<string, AddonModule> AceAddon's own module table, by name
 ---@field features {happiness: boolean, ammo: boolean, beastTraining: boolean, beastData: boolean} what the client's game has (Core\Features.lua)
 ---@field C AddonCompat the modern pet, spellbook and tooltip API on every client (Core\Compat.lua)

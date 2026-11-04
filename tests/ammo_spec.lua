@@ -1,4 +1,4 @@
--- Ammo: the hunter's ammo count as a data broker source ("Beastkeeper Ammo"), orange when low, red when
+-- Ammo: the hunter's ammo count as a data broker source ("Huntsworn Ammo"), orange when low, red when
 -- critically low, a toast at each; a click sends the hunter to the nearest vendor of its faction
 -- that sells its kind of ammo; at a vendor it buys the best ammo for its level to fill the ammo bag
 -- (or the stacks set without one). The hunter here has a bow (2504) and Rough Arrows (2512).
@@ -6,9 +6,9 @@
 local ROUGH, SHARP, LIGHT_SHOT, RAZOR = 2512, 2515, 2516, 3030
 local BOW, GUN, CROSSBOW, SWORD = 2504, 2508, 15808, 25
 
----Beastkeeper's ammo data object.
+---Huntsworn's ammo data object.
 local function broker()
-    return LibStub("LibDataBroker-1.1"):GetDataObjectByName("Beastkeeper Ammo")
+    return LibStub("LibDataBroker-1.1"):GetDataObjectByName("Huntsworn Ammo")
 end
 
 ---A hunter with `count` Rough Arrows in the bags.
@@ -23,10 +23,10 @@ local function hunter(count, opts)
     return client
 end
 
----The toasts shown from now on, as Beastkeeper hands them to listeners.
+---The toasts shown from now on, as Huntsworn hands them to listeners.
 local function toasts(client)
     local seen = {}
-    client.Addon.RegisterMessage(seen, "BEASTKEEPER_TOAST", function(_, event)
+    client.Addon.RegisterMessage(seen, "HUNTSWORN_TOAST", function(_, event)
         seen[#seen + 1] = event.toast
     end)
     return seen
@@ -77,8 +77,8 @@ end
 describe("Ammo", function()
     it("has data: arrows and bullets with their level, and vendors that sell them with a pin", function()
         local ns = {}
-        assert(loadfile("Core/Constants/Enums.lua"))("Beastkeeper", ns)
-        assert(loadfile("Data/Forever/Ammo.lua"))("Beastkeeper", ns)
+        assert(loadfile("Core/Constants/Enums.lua"))("Huntsworn", ns)
+        assert(loadfile("Data/Forever/Ammo.lua"))("Huntsworn", ns)
         local ammo, vendors = ns.data.ammo, ns.data.ammoVendors
         assert.are.same({ arrow = 2, bullet = 3 }, ns.ammoKinds, "the Projectile item subclasses")
         assert.are.same({ name = "Rough Arrow", kind = ns.ammoKinds.arrow, level = 1 }, ammo[ROUGH])
@@ -203,7 +203,7 @@ describe("Ammo", function()
         it("tells other addons when it crosses a line", function()
             local client = hunter(1000)
             local heard = {}
-            client.Addon:Listen(heard, "BEASTKEEPER_AMMO", function(_, event)
+            client.Addon:Listen(heard, "HUNTSWORN_AMMO", function(_, event)
                 heard[#heard + 1] = event
             end)
             client:stock(ROUGH, 990)

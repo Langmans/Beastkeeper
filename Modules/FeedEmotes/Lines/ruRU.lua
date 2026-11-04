@@ -155,7 +155,7 @@ M.Lines.ruRU = {
                 "Не бей током руку, которая тебя кормит!",
                 "{Он} втягивает всё одним махом!",
             },
-            -- Written for Beastkeeper: Fox is new in WoW: Forever.
+            -- Written for Huntsworn: Fox is new in WoW: Forever.
             [F.FOX] = {
                 "Хитрая лиса!",
                 "Курам не осталось ни крошки.",

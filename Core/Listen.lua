@@ -1,8 +1,8 @@
 local _, ns = ...
 
--- Beastkeeper:Listen, and the core's sources: messages about the pet out that the core works out from
--- game events (BEASTKEEPER_PET_HAPPINESS, _DIED, _TAMED, _GROWTH). One source serves every
--- listener, Beastkeeper's own modules and other addons alike, and watches the game only while at least
+-- Huntsworn:Listen, and the core's sources: messages about the pet out that the core works out from
+-- game events (HUNTSWORN_PET_HAPPINESS, _DIED, _TAMED, _GROWTH). One source serves every
+-- listener, Huntsworn's own modules and other addons alike, and watches the game only while at least
 -- one listens through Listen. A message a module sends itself needs no source; Listen hands it on
 -- just the same (docs\04-hooking.md).
 
@@ -38,7 +38,7 @@ local function Follow(message)
     end
 end
 
----Listens to a Beastkeeper message: `handler` gets the message's name and its table. The owner is any
+---Listens to a Huntsworn message: `handler` gets the message's name and its table. The owner is any
 ---table, the key StopListening takes; asking again for the same message replaces the handler.
 ---@param owner table
 ---@param message string
@@ -63,10 +63,10 @@ function Addon:StopListening(owner, message)
     end
 end
 
--- BEASTKEEPER_PET_HAPPINESS: the pet out's happiness changed; before is nil for a pet just out.
+-- HUNTSWORN_PET_HAPPINESS: the pet out's happiness changed; before is nil for a pet just out.
 ---@type AddonSource
 local happiness = { events = { "UNIT_HAPPINESS", "PET_UI_UPDATE", "UNIT_PET" } }
-sources.BEASTKEEPER_PET_HAPPINESS = happiness
+sources.HUNTSWORN_PET_HAPPINESS = happiness
 
 function happiness:Start()
     self.guid, self.last = nil, nil
@@ -112,10 +112,10 @@ local function PetDead()
     return UnitExists("pet") and UnitIsDead("pet") == true
 end
 
--- BEASTKEEPER_PET_DIED: the pet out died, seen going from alive to dead.
+-- HUNTSWORN_PET_DIED: the pet out died, seen going from alive to dead.
 ---@type AddonSource
 local death = { events = { "UNIT_HEALTH", "UNIT_PET" } }
-sources.BEASTKEEPER_PET_DIED = death
+sources.HUNTSWORN_PET_DIED = death
 
 function death:Start()
     self.dead = PetDead()
@@ -137,8 +137,8 @@ function death:UNIT_PET(_, unit)
     if unit == "player" then self.dead = PetDead() end
 end
 
--- BEASTKEEPER_PET_GROWTH: the pet out's training points total, level or loyalty level changed since it
--- was last seen, kept per pet name in BeastkeeperDB (char.growth), so a pet summoned again, or the pet
+-- HUNTSWORN_PET_GROWTH: the pet out's training points total, level or loyalty level changed since it
+-- was last seen, kept per pet name in HuntswornDB (char.growth), so a pet summoned again, or the pet
 -- after a relog, tells what changed while away. A pet seen the first time is only noted, and so is a
 -- pet just tamed, whatever an earlier pet of the same name left behind. Not before
 -- the session's first UNIT_PET: until then the client may not have the pet's values (Classic Era
@@ -161,7 +161,7 @@ arrival:SetScript("OnEvent", OnArrival)
 local growth = {
     events = { "UNIT_PET_TRAINING_POINTS", "PET_UI_UPDATE", "UNIT_LEVEL", "UNIT_PET", "UNIT_SPELLCAST_SUCCEEDED" },
 }
-sources.BEASTKEEPER_PET_GROWTH = growth
+sources.HUNTSWORN_PET_GROWTH = growth
 
 local function CheckGrowthLater()
     growth.pending = false
@@ -243,11 +243,11 @@ function growth:UNIT_SPELLCAST_SUCCEEDED(_, unit, _castGUID, spellID)
     if unit == "player" and Addon.Readable(spellID) and spellID == TAME_BEAST then self.tamed = true end
 end
 
--- BEASTKEEPER_PET_TAMED: the pet that came out after a Tame Beast cast. It has no pet number until the
+-- HUNTSWORN_PET_TAMED: the pet that came out after a Tame Beast cast. It has no pet number until the
 -- next relog (its GUID is still the beast's), so petNumber is nil then.
 ---@type AddonSource
 local tame = { events = { "UNIT_SPELLCAST_SUCCEEDED", "UNIT_PET" } }
-sources.BEASTKEEPER_PET_TAMED = tame
+sources.HUNTSWORN_PET_TAMED = tame
 
 function tame:Start()
     self.taming = false

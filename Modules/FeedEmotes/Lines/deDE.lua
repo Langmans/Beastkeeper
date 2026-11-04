@@ -156,7 +156,7 @@ M.Lines.deDE = {
                 "wirft etwas in den Wind ({food}). {pet} fängt es mit knisternden Blitzen.",
                 "hält etwas hin ({food}). {pet} windet sich um den Arm und nimmt es sanft.",
             },
-            -- Für Beastkeeper geschrieben: der Fuchs ist neu in WoW: Forever.
+            -- Für Huntsworn geschrieben: der Fuchs ist neu in WoW: Forever.
             [F.FOX] = {
                 "hält etwas hin ({food}). {pet} tanzt ein kleines Gaunertänzchen und schnappt es sich.",
                 "legt etwas beiseite ({food}) und dreht sich kurz um. {pet} hat es schon vergraben und gräbt es gleich wieder aus.",
@@ -380,7 +380,7 @@ M.Lines.deDE = {
                 "Nach dem Essen bitte nicht um mich wickeln.",
                 "Zisch und funkel.",
             },
-            -- Für Beastkeeper geschrieben: der Fuchs ist neu in WoW: Forever.
+            -- Für Huntsworn geschrieben: der Fuchs ist neu in WoW: Forever.
             [F.FOX] = {
                 "Schlauer Fuchs!",
                 "Was sagt der Fuchs? Mampf.",

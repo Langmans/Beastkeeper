@@ -37,7 +37,7 @@ L.AMMO_ENOUGH = "Enough for %s of Auto Shot."
 L.AMMO_LASTS = " (%s of Auto Shot)"
 L.AMMO_MINUTES = "~%d min"
 L.AMMO_SECONDS = "~%d s"
--- Beastkeeper's page: the kinds of toast, for a look of their own.
+-- Huntsworn's page: the kinds of toast, for a look of their own.
 L.AMMO_TOASTTYPE_LOW = "Ammo low"
 L.AMMO_TOASTTYPE_CRITICAL = "Ammo critically low"
 

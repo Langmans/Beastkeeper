@@ -84,7 +84,7 @@ local function set(client, key, value)
     client.Addon:GetModule("BeastMap"):GetOptions().args[key].set(nil, value)
 end
 
----Beastkeeper's button on the world map, if it made one.
+---Huntsworn's button on the world map, if it made one.
 ---@param client table
 ---@return table?
 local function mapButton(client)
@@ -161,9 +161,9 @@ describe("Beast Map", function()
         end)
     end)
 
-    it("joins HandyNotes as the Beastkeeper plugin, and stays out without it", function()
+    it("joins HandyNotes as the Huntsworn plugin, and stays out without it", function()
         local client = hunter()
-        assert.is_not_nil(HandyNotes.plugins.Beastkeeper)
+        assert.is_not_nil(HandyNotes.plugins.Huntsworn)
         assert.is_not_nil(HandyNotes.pluginOptions)
         assert.has_no.errors(function()
             hunter(10, { handyNotes = false })
@@ -172,7 +172,7 @@ describe("Beast Map", function()
 
     it("is for hunters only", function()
         hunter(10, { class = "MAGE" })
-        assert.is_nil(HandyNotes.plugins.Beastkeeper)
+        assert.is_nil(HandyNotes.plugins.Huntsworn)
     end)
 
     it("pins the beasts at or below the hunter's level that teach a rank it lacks", function()
@@ -269,7 +269,7 @@ describe("Beast Map", function()
         _, lines = client:hoverPin(ELWYNN, spider.coord)
         assert.are.equal("Level 5", lines[1].text)
         assert.is_true(GameTooltip:IsShown())
-        HandyNotes.plugins.Beastkeeper.OnLeave()
+        HandyNotes.plugins.Huntsworn.OnLeave()
         assert.is_false(GameTooltip:IsShown())
         assert.has_no.errors(function()
             client:hoverPin(ELWYNN, 1)
@@ -423,7 +423,7 @@ describe("Beast Map", function()
             local lines = client:hoverSpell(BITE)
             assert.are.equal("Families: Wolf, Spider", lines[2].text)
             assert.are.equal(7, #lines, "three beasts and the count")
-            assert.are.same({ "2 more in Beastkeeper's Abilities tab.", GREY }, shown(lines)[7])
+            assert.are.same({ "2 more in Huntsworn's Abilities tab.", GREY }, shown(lines)[7])
         end)
 
         it("says so for a rank the hunter knows, and in yellow for a lower one it skipped", function()
@@ -490,7 +490,7 @@ describe("Beast Map", function()
 
         ---The key's release, as the client runs a key binding's click.
         local function press(client)
-            local button = _G.BeastkeeperTameButton
+            local button = _G.HuntswornTameButton
             for _, hook in ipairs(button.hooks.OnClick or {}) do
                 hook(button, "LeftButton", false)
             end
@@ -501,21 +501,21 @@ describe("Beast Map", function()
             local client = hunter(10)
             client.unitGUIDs.nameplate1 = "Creature-0-5250-0-12-104-0000ABCDEF"
             client:fire("NAME_PLATE_UNIT_ADDED", "nameplate1")
-            assert.are.equal(TARGET_RARE_CAT, _G.BeastkeeperTameButton.attributes.macrotext)
-            assert.are.equal("macro", _G.BeastkeeperTameButton.attributes.type)
+            assert.are.equal(TARGET_RARE_CAT, _G.HuntswornTameButton.attributes.macrotext)
+            assert.are.equal("macro", _G.HuntswornTameButton.attributes.type)
             assert.is_true(client:printedContains("The tame key now targets Rare Cat."))
             assert.are.equal(
                 "Beast Map: target and mark the beast to tame",
-                _G["BINDING_NAME_CLICK BeastkeeperTameButton:LeftButton"]
+                _G["BINDING_NAME_CLICK HuntswornTameButton:LeftButton"]
             )
         end)
 
         it("takes the beast whose pin was clicked, after combat when in it", function()
             local client = hunter(10):enterCombat()
             client:clickPin(TIRISFAL, client:mapPins(TIRISFAL)[1].coord)
-            assert.is_nil(_G.BeastkeeperTameButton.attributes.macrotext)
+            assert.is_nil(_G.HuntswornTameButton.attributes.macrotext)
             client:leaveCombat()
-            assert.are.equal(TARGET_RARE_CAT, _G.BeastkeeperTameButton.attributes.macrotext)
+            assert.are.equal(TARGET_RARE_CAT, _G.HuntswornTameButton.attributes.macrotext)
         end)
 
         it("says how to set a beast when there is none yet, and stays empty while switched off", function()
@@ -523,7 +523,7 @@ describe("Beast Map", function()
             assert.is_true(client:printedContains("No beast to target yet"))
             client.Addon:GetModule("BeastMap"):Disable()
             client:clickPin(TIRISFAL, 1)
-            assert.is_nil(_G.BeastkeeperTameButton.attributes.macrotext)
+            assert.is_nil(_G.HuntswornTameButton.attributes.macrotext)
         end)
     end)
 
@@ -542,11 +542,11 @@ describe("Beast Map", function()
             button:GetScript("OnClick")(button, "LeftButton")
         end
 
-        ---What BEASTKEEPER_HUNT_STARTED and BEASTKEEPER_HUNT_ENDED told, in order.
+        ---What HUNTSWORN_HUNT_STARTED and HUNTSWORN_HUNT_ENDED told, in order.
         local function heard(client)
             local events = {}
             local listener = {}
-            for _, message in ipairs({ "BEASTKEEPER_HUNT_STARTED", "BEASTKEEPER_HUNT_ENDED" }) do
+            for _, message in ipairs({ "HUNTSWORN_HUNT_STARTED", "HUNTSWORN_HUNT_ENDED" }) do
                 client.Addon:Listen(listener, message, function(_, event)
                     events[#events + 1] = { message, event }
                 end)
@@ -564,14 +564,14 @@ describe("Beast Map", function()
             assert.is_true(client:printedContains("Hunting Rare Cat for Claw (Rank 3)."))
             assert.is_true(client:printedContains("Tirisfal Glades 30.0, 30.0"), "the route")
             assert.are.equal("Rare Cat", M.tameTarget)
-            assert.are.equal("BEASTKEEPER_HUNT_STARTED", events[1][1])
+            assert.are.equal("HUNTSWORN_HUNT_STARTED", events[1][1])
             assert.are.same({ module = "BeastMap", npc = 104, spellID = CLAW_3, name = "Rare Cat" }, events[1][2])
             assert.is_true(panel.ranks[3].go.active.shown, "the hunted rank's button lit")
         end)
 
         it("shows the tame key's button on screen while hunting, movable, and hides it after", function()
             local client = hunter(10)
-            local button = _G.BeastkeeperTameButton
+            local button = _G.HuntswornTameButton
             assert.is_false(button:IsShown(), "no hunt yet")
             local panel = abilities(client, 3)
             click(panel.ranks[3].go)
@@ -599,7 +599,7 @@ describe("Beast Map", function()
             assert.is_false(button:IsShown(), "switched off, at once")
         end)
 
-        it("stops on that button again, or with /beastkeeper hunt stop", function()
+        it("stops on that button again, or with /huntsworn hunt stop", function()
             local client = hunter(10)
             local events = heard(client)
             local panel = abilities(client, 3)
@@ -625,7 +625,7 @@ describe("Beast Map", function()
         it("stops on a right-click on the tame key's button, after combat when in it", function()
             local client = hunter(10)
             click(abilities(client, 3).ranks[3].go)
-            local button = _G.BeastkeeperTameButton
+            local button = _G.HuntswornTameButton
             -- SecureActionButtonTemplate runs the button's own function named by type2 for the
             -- right button, instead of the macro its type gives every button.
             local handler = button.attributes.type2
@@ -678,7 +678,7 @@ describe("Beast Map", function()
             local panel = abilities(client, 3)
             click(panel.ranks[3].go) -- Rare Cat, Claw 3
             click(abilities(client, 1).ranks[1].go) -- Spider, Bite 1
-            assert.are.same({ "BEASTKEEPER_HUNT_STARTED", "BEASTKEEPER_HUNT_ENDED", "BEASTKEEPER_HUNT_STARTED" }, {
+            assert.are.same({ "HUNTSWORN_HUNT_STARTED", "HUNTSWORN_HUNT_ENDED", "HUNTSWORN_HUNT_STARTED" }, {
                 events[1][1],
                 events[2][1],
                 events[3][1],
@@ -817,7 +817,7 @@ describe("Beast Map", function()
         ---The toasts shown from now on.
         local function toasts(client)
             local seen = {}
-            client.Addon.RegisterMessage(seen, "BEASTKEEPER_TOAST", function(_, event)
+            client.Addon.RegisterMessage(seen, "HUNTSWORN_TOAST", function(_, event)
                 seen[#seen + 1] = event.toast
             end)
             return seen
@@ -852,7 +852,7 @@ describe("Beast Map", function()
             local client = hunter(10)
             client.unknownSpells[5149] = true -- Beast Training comes with the quest Training the Beast
             local seen, heard = toasts(client), {}
-            client.Addon:Listen(heard, "BEASTKEEPER_RARE_SEEN", function(_, event)
+            client.Addon:Listen(heard, "HUNTSWORN_RARE_SEEN", function(_, event)
                 heard[#heard + 1] = event
             end)
             nameplate(client, RARE_CAT)
@@ -864,10 +864,10 @@ describe("Beast Map", function()
             assert.are.equal(1, #seen, "the same spawn, once it can teach")
         end)
 
-        it("is told to other addons as BEASTKEEPER_RARE_SEEN, also with the toast off", function()
+        it("is told to other addons as HUNTSWORN_RARE_SEEN, also with the toast off", function()
             local client = hunter(10)
             local heard = {}
-            client.Addon:Listen(heard, "BEASTKEEPER_RARE_SEEN", function(_, event)
+            client.Addon:Listen(heard, "HUNTSWORN_RARE_SEEN", function(_, event)
                 heard[#heard + 1] = event
             end)
             local seen = toasts(client)
@@ -933,7 +933,7 @@ describe("Beast Map", function()
     end)
 
     describe("the Abilities tab", function()
-        ---The tab, opened in Beastkeeper's window.
+        ---The tab, opened in Huntsworn's window.
         local function tab(client)
             client.Addon:OpenWindow("abilities")
             return client.Addon.window.panels.abilities
@@ -1409,7 +1409,7 @@ describe("Beast Map", function()
             assert.is_false(panel.beasts[2].go.shown, "no pin to go to")
         end)
 
-        it("shows another family on a click, also one Beastkeeper knows little of", function()
+        it("shows another family on a click, also one Huntsworn knows little of", function()
             local client = hunter(10)
             client.familyNames[40] = "Fuchs"
             local panel = tab(client)
@@ -1423,7 +1423,7 @@ describe("Beast Map", function()
             assert.are.equal("", panel.diet.text)
             assert.is_false(panel.abilityRows[1].shown, "no abilities known for it")
             assert.are.same({}, shown(panel.beasts, "text"))
-            assert.are.equal("No beast of this family in Beastkeeper's data.", panel.none.text)
+            assert.are.equal("No beast of this family in Huntsworn's data.", panel.none.text)
             assert.is_false(panel.model.shown)
         end)
 

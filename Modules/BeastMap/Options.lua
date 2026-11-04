@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- BeastMap's page (Beastkeeper > Beast Map), also shown under HandyNotes' plugins: which beasts get a
+-- BeastMap's page (Huntsworn > Beast Map), also shown under HandyNotes' plugins: which beasts get a
 -- pin. HandyNotes keeps the table for the session, so each toggle reads the profile in use when
 -- asked rather than holding on to one.
 

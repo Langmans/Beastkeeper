@@ -1,10 +1,10 @@
 local _, ns = ...
 
--- Beastkeeper's window: a frame of its own with a tab per part, which modules add with
--- Beastkeeper:RegisterWindowTab. A tab shows while its module is on; without any tab the window is not
+-- Huntsworn's window: a frame of its own with a tab per part, which modules add with
+-- Huntsworn:RegisterWindowTab. A tab shows while its module is on; without any tab the window is not
 -- there and opening it opens the options. Made the first time it opens, in the look of the chosen
 -- holder skin (Core\Buttons.lua). Escape closes it; it moves by dragging and keeps its place per
--- profile. /beastkeeper, the broker and a key binding (BeastkeeperWindowButton) open it.
+-- profile. /huntsworn, the broker and a key binding (HuntswornWindowButton) open it.
 
 ---@type Addon
 local Addon = ns

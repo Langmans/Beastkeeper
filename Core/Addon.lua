@@ -2,7 +2,7 @@ local addonName, ns = ...
 
 -- The addon object, its saved settings and the module switches.
 --
--- Every feature is an AceAddon module (Beastkeeper:NewModule). What a module may declare is described
+-- Every feature is an AceAddon module (Huntsworn:NewModule). What a module may declare is described
 -- by AddonModule in annotations\Addon.lua. The core owns the switch: profile.modules[name] says
 -- whether a module runs, and the options page and a profile change both go through
 -- SetModuleOn/ApplyModuleStates. A module therefore never enables itself, and its OnDisable must
@@ -19,9 +19,9 @@ Addon.L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 -- SLASH_ALIAS), messages start with NAME in upper case. What cannot be made from it is the
 -- folder, the .tocs and Bindings.xml (docs\10-renaming.md).
 Addon.NAME = addonName
-Addon.SLASH_ALIAS = "bk"
+Addon.SLASH_ALIAS = "hs"
 
--- The messages Beastkeeper sends (docs\04-hooking.md), by key: messages.petGrowth is
+-- The messages Huntsworn sends (docs\04-hooking.md), by key: messages.petGrowth is
 -- "<NAME>_PET_GROWTH".
 Addon.messages = {} --[[@as AddonMessages]]
 for _, key in ipairs({
@@ -43,7 +43,7 @@ for _, key in ipairs({
     Addon.messages[key] = addonName:upper() .. "_" .. key:gsub("%u", "_%0"):upper()
 end
 
----A global name of Beastkeeper's own: a frame's or a macro's, NAME first ("BeastkeeperWindow").
+---A global name of Huntsworn's own: a frame's or a macro's, NAME first ("HuntswornWindow").
 ---@param suffix string
 ---@return string
 function Addon.Global(suffix)
@@ -51,7 +51,7 @@ function Addon.Global(suffix)
 end
 
 -- The game data. The pet ability ranks and the beasts that teach them are LibTameable-1.0's tables
--- (read only; empty on a client without Beast Training). The rest is generated into Beastkeeper's own
+-- (read only; empty on a client without Beast Training). The rest is generated into Huntsworn's own
 -- Data folder, empty until the client's one fills it (its .toc lists them): a client without data
 -- of its own (Burning Crusade, Mists, retail) keeps these.
 ---@type LibTameable
@@ -70,7 +70,7 @@ Addon:SetDefaultModuleLibraries("AceEvent-3.0")
 
 local consolePrint = Addon.Print
 
----AceConsole's Print, then BEASTKEEPER_PRINT ({ module, line }) for whoever listens (docs\04-hooking.md).
+---AceConsole's Print, then HUNTSWORN_PRINT ({ module, line }) for whoever listens (docs\04-hooking.md).
 ---@param module string? the module that says it; nil for the core
 ---@param ... any
 local function PrintFrom(module, ...)
@@ -84,7 +84,7 @@ function Addon:Print(...)
     PrintFrom(nil, ...)
 end
 
--- What every module has: Print, naming the module in BEASTKEEPER_PRINT.
+-- What every module has: Print, naming the module in HUNTSWORN_PRINT.
 Addon:SetDefaultModulePrototype({
     ---A line in chat from this module.
     ---@param self AddonModule
@@ -115,15 +115,15 @@ function Addon:OnInitialize()
             -- kind of toast where chosen or where its module gives one; pos is set once it is
             -- dragged. sink: LibSink's output choice (Integrations\LibSink\).
             toast = { duration = 6, scale = 1, skin = "card", skins = kindSkins, sink = {} },
-            -- The look of Beastkeeper's buttons and their holders (Core\Buttons.lua): a skin id or "auto".
+            -- The look of Huntsworn's buttons and their holders (Core\Buttons.lua): a skin id or "auto".
             buttons = { skin = "auto", holder = "auto", crop = true },
-            -- Beastkeeper's window (Core\Window.lua): pos is set once it is dragged.
+            -- Huntsworn's window (Core\Window.lua): pos is set once it is dragged.
             window = {},
             -- How much goes to OAP Debug when it is installed (Core\Debug.lua).
             oapDebug = "metrics",
         },
         -- Per character: which modules made their macros already (Core\Macro.lua); each pet's
-        -- training points total, level and loyalty as last seen, by name (BEASTKEEPER_PET_GROWTH,
+        -- training points total, level and loyalty as last seen, by name (HUNTSWORN_PET_GROWTH,
         -- Core\Listen.lua).
         char = { macrosMade = {}, growth = {} },
     }, true)
@@ -185,7 +185,7 @@ function Addon.SelfKeyedEnum(values)
 end
 
 ---Whether the current profile has this module switched on; never for a module the client's game
----lacks a part of (Beastkeeper:IsModuleUsable).
+---lacks a part of (Huntsworn:IsModuleUsable).
 ---@param name string
 ---@return boolean
 function Addon:IsModuleOn(name)

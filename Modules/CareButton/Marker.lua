@@ -4,7 +4,7 @@ local _, ns = ...
 -- below the low line. WoW: Forever may hide the pet's health from addons (a secret value), so the
 -- low toast cannot decide then; the marker needs no decision. A Step curve maps the health
 -- fraction to an alpha (1 below the line, 0 from it up), UnitHealthPercent evaluates it in the
--- client, and the result goes straight into SetAlpha, which takes a hidden value. Beastkeeper never
+-- client, and the result goes straight into SetAlpha, which takes a hidden value. Huntsworn never
 -- reads the number. The marker takes no mouse: an invisible frame would still catch clicks.
 
 ---@type Addon

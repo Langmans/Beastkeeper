@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- FeedEmotes' page in the settings window (Beastkeeper > Feed Emotes): the pet's name or he/she, the
+-- FeedEmotes' page in the settings window (Huntsworn > Feed Emotes): the pet's name or he/she, the
 -- pet's sex, an example, and the player's own lines with their conditions, edited in place.
 
 ---@type Addon
@@ -16,7 +16,7 @@ local EMOTE_COLOR = "|cffff8040"
 ---@type table<string, true>
 local draft = {}
 
----A getter and setter for one profile setting (Beastkeeper:Setting).
+---A getter and setter for one profile setting (Huntsworn:Setting).
 ---@param key string
 ---@return fun(): string|boolean|number get
 ---@return fun(info: table, value: string|boolean|number) set

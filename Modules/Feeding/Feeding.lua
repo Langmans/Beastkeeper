@@ -64,7 +64,7 @@ end
 ---@type table<number, boolean>
 local wellFed = {}
 
----Whether an item's tooltip (Beastkeeper.C.TooltipInfo) says it makes the eater Well Fed (any case:
+---Whether an item's tooltip (Huntsworn.C.TooltipInfo) says it makes the eater Well Fed (any case:
 ---"you will become well fed"). Kept per item once the client has loaded it; asked again while it
 ---has not.
 ---@param itemID number
@@ -281,7 +281,7 @@ function M:UNIT_AURA(_, unit)
     self:ApplyButton()
 end
 
--- The core's BEASTKEEPER_PET_HAPPINESS: the pet's happiness changed.
+-- The core's HUNTSWORN_PET_HAPPINESS: the pet's happiness changed.
 function M:OnHappiness()
     self:CheckHappiness()
 end

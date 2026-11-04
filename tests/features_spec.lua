@@ -1,4 +1,4 @@
--- What the client's game has (Beastkeeper.features), and modules that need what it lacks: never on,
+-- What the client's game has (Huntsworn.features), and modules that need what it lacks: never on,
 -- not on the settings page. Burning Crusade has it all; Wrath and later lack loyalty and training
 -- points, Cataclysm and later pet happiness and ammo.
 

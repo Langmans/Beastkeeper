@@ -259,7 +259,7 @@ M.Lines.enUS = {
                 "throws {a} {food} into the wind. {pet} catches it with a crackle of lightning.",
                 "holds out {a} {food}. {pet} coils around the arm and takes it gently.",
             },
-            -- Written for Beastkeeper: Fox is new in WoW: Forever.
+            -- Written for Huntsworn: Fox is new in WoW: Forever.
             [F.FOX] = {
                 "holds out {a} {food}. {pet} does a little trickster's dance, then snatches it.",
                 "turns around for a moment. {pet} has already buried the {food} for later, and is digging it up again.",
@@ -479,7 +479,7 @@ M.Lines.enUS = {
                 "Don't wrap around me after dinner.",
                 "Hiss and sparkle.",
             },
-            -- Written for Beastkeeper: Fox is new in WoW: Forever.
+            -- Written for Huntsworn: Fox is new in WoW: Forever.
             [F.FOX] = {
                 "Sly fox!",
                 "What does the fox say? Nom.",

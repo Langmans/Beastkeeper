@@ -1,8 +1,8 @@
--- Beastkeeper's names for the game's bare values that no Enum of the game covers: the pet's happiness
+-- Huntsworn's names for the game's bare values that no Enum of the game covers: the pet's happiness
 -- (GetPetHappiness), a unit's sex (UnitSex), the factions (UnitFactionGroup) and the raid target
 -- marks (SetRaidTarget, /tm).
 
-describe("Beastkeeper's enums", function()
+describe("Huntsworn's enums", function()
     local Addon
 
     before_each(function()

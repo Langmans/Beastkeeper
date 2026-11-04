@@ -3,11 +3,11 @@ local _, ns = ...
 -- Lines on the game's tooltips, from the beast data; also without HandyNotes, only for a hunter.
 --
 -- A beast's tooltip says which pet ability ranks it teaches and how the hunter stands to each: new
--- (above the highest it knows), a lower rank it never learned, or known (Beastkeeper.OnUnitTooltip);
+-- (above the highest it knows), a lower rank it never learned, or known (Huntsworn.OnUnitTooltip);
 -- the creature's NPC ID is its GUID's sixth field.
 --
 -- A pet ability rank's tooltip (the pet's spellbook, the pet bar, Beast Training:
--- Beastkeeper.OnSpellTooltip) says the pet level it needs, with its training point cost once Beast
+-- Huntsworn.OnSpellTooltip) says the pet level it needs, with its training point cost once Beast
 -- Training showed it, the families that learn it, and whether the hunter knows it; if not, the
 -- nearest few beasts that teach it (BeastMap.lua's Nearest) and how many more there are.
 

@@ -2,7 +2,7 @@ local _, ns = ...
 
 -- A silly /emote every time the hunter feeds the pet, Feed-O-Matic style. FoodTracker.lua tells
 -- which food a Feed Pet cast used, Emote.lua builds the text from Lines\<locale>.lua and the
--- player's own lines (CustomLines.lua), and Beastkeeper:SendOnInput sends it on the next key press.
+-- player's own lines (CustomLines.lua), and Huntsworn:SendOnInput sends it on the next key press.
 -- Off until switched on: the emotes go out in public chat.
 
 ---@type Addon
@@ -17,7 +17,7 @@ M.requires = { "happiness" } -- Feed Pet went with happiness
 M.enabledByDefault = false
 M.defaults = {
     profile = { petName = false, customChance = 0, customFallback = true },
-    -- petSex: pet number (Beastkeeper.PetNumber) -> Beastkeeper.sex.male or .female, where the player chose.
+    -- petSex: pet number (Huntsworn.PetNumber) -> Huntsworn.sex.male or .female, where the player chose.
     char = { sharedLines = false, customLines = {}, petSex = {} },
     global = { customLines = {} },
 }
@@ -51,7 +51,7 @@ function M:CustomLines()
     return self:Char().customLines
 end
 
----The summoned pet's sex: Beastkeeper.sex.male or .female, nil when unknown. The player's choice for
+---The summoned pet's sex: Huntsworn.sex.male or .female, nil when unknown. The player's choice for
 ---this pet comes first; WoW: Forever reports unknown for hunter pets.
 ---@return number?
 function M:PetSex()
@@ -75,7 +75,7 @@ function M:ChoosePetSex(sex)
 end
 
 ---Drops the choices of pets this hunter no longer has: a released pet is in neither of the
----stable's lists (Beastkeeper.C.StableInfo). Nothing is dropped while both are empty (the client may
+---stable's lists (Huntsworn.C.StableInfo). Nothing is dropped while both are empty (the client may
 ---not have the pets yet, or the stable master is closed on Classic Era), or when a pet has no
 ---number to go by (hidden, or none on Classic Era).
 function M:PrunePetSex()

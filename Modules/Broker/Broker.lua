@@ -1,8 +1,8 @@
 local _, ns = ...
 
--- Beastkeeper as a LibDataBroker-1.1 data source ("Beastkeeper"), which displays such as Titan Panel,
+-- Huntsworn as a LibDataBroker-1.1 data source ("Huntsworn"), which displays such as Titan Panel,
 -- ChocolateBar and ElvUI's datatexts show: the pet out in its text (name, happiness, free training
--- points), more in its tooltip (level, loyalty, points, the Pet Journal in brief), Beastkeeper's window
+-- points), more in its tooltip (level, loyalty, points, the Pet Journal in brief), Huntsworn's window
 -- on a click and the options on a right-click. A data object cannot be taken back, so while
 -- the module is off its text says so. Only for a hunter.
 
@@ -22,7 +22,7 @@ local HINT_COLOR = { 0.5, 0.5, 0.5 }
 local JOURNAL_COLOR = { 0.6, 0.6, 0.6 }
 -- The happiness levels by number, as Feeding names them.
 local HAPPINESS = { L.FEEDING_UNHAPPY, L.FEEDING_CONTENT, L.FEEDING_HAPPY }
--- Happiness and growth come from the core's BEASTKEEPER_PET_HAPPINESS and BEASTKEEPER_PET_GROWTH; points
+-- Happiness and growth come from the core's HUNTSWORN_PET_HAPPINESS and HUNTSWORN_PET_GROWTH; points
 -- spent change only what is free, which UNIT_PET_TRAINING_POINTS tells.
 local EVENTS = { "UNIT_PET", "UNIT_PET_TRAINING_POINTS" }
 
@@ -65,7 +65,7 @@ local function OnTooltipShow(tooltip)
     tooltip:AddLine(L.BROKER_CLICK, HINT_COLOR[1], HINT_COLOR[2], HINT_COLOR[3])
 end
 
----A click opens or closes Beastkeeper's window; a middle-click opens it on the pet abilities; a
+---A click opens or closes Huntsworn's window; a middle-click opens it on the pet abilities; a
 ---right-click opens the options. (Beast Training cannot open from here: casting needs a secure
 ---button, which a display's frame is not; the Care Button does it on Alt.)
 ---@param _ Frame the display's frame

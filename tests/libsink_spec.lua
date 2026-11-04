@@ -11,7 +11,7 @@ local function sinking()
 end
 
 describe("the LibSink skin", function()
-    it("is there, LibSink being part of Beastkeeper", function()
+    it("is there, LibSink being part of Huntsworn", function()
         local client = sinking()
         assert.are.equal("Floating text and more (LibSink)", client.Addon:ToastSkins().libsink.name)
     end)
@@ -25,7 +25,7 @@ describe("the LibSink skin", function()
         assert.are.same({}, client.errors)
     end)
 
-    it("pours the title alone when there is no text, in Beastkeeper's accent when none is given", function()
+    it("pours the title alone when there is no text, in Huntsworn's accent when none is given", function()
         local client = sinking()
         client.Addon:ShowToast({ key = "a", title = "Only this" })
         local message = client.combatText[1]
@@ -49,7 +49,7 @@ describe("the LibSink skin", function()
     end)
 
     describe("its output choice", function()
-        it("is LibSink's own, on Beastkeeper's page", function()
+        it("is LibSink's own, on Huntsworn's page", function()
             local client = sinking()
             local output = client.Addon:GetOptionsTable().args.modules.args.toast.args.libsink
             assert.are.equal("group", output.type)

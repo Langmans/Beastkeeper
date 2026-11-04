@@ -1,10 +1,10 @@
 local _, ns = ...
 
--- Beastkeeper.C: the modern pet, spellbook and tooltip API under Beastkeeper's own name, so a module writes
+-- Huntsworn.C: the modern pet, spellbook and tooltip API under Huntsworn's own name, so a module writes
 -- against one API on every client. Each function is the client's own where it has one (WoW:
 -- Forever), else the classic way: Classic Era's globals, a scan of a hidden tooltip, the pet
 -- family's diet. Looked up on each call, never written into the game's shared C_ tables: another
--- addon must not take Beastkeeper's stand-ins for the client's.
+-- addon must not take Huntsworn's stand-ins for the client's.
 
 ---@type Addon
 local Addon = ns
@@ -54,7 +54,7 @@ local HAS = {
     },
 }
 
----Whether the client has what Beastkeeper.C.<namespace>.<name> needs, its own or the classic way.
+---Whether the client has what Huntsworn.C.<namespace>.<name> needs, its own or the classic way.
 ---@param namespace "PetInfo"
 ---@param name string
 ---@return boolean
@@ -139,7 +139,7 @@ function C.SpellBook.IsSpellKnown(spellID)
 end
 
 ---Classic's book type for a spellbook bank.
----Beastkeeper reads only the pet's book: on Classic its book type, whatever the bank.
+---Huntsworn reads only the pet's book: on Classic its book type, whatever the bank.
 ---@param _ number the bank
 ---@return string
 local function BookType(_)
@@ -184,7 +184,7 @@ end
 -- reused from read to read.
 ---@type AddonTooltipData, {leftText: GameValue}[]
 local itemInfo, linePool = { lines = {} }, {}
--- A tooltip of Beastkeeper's own to read an item's lines from; made the first time it is needed.
+-- A tooltip of Huntsworn's own to read an item's lines from; made the first time it is needed.
 ---@type GameTooltip?
 local scanner
 

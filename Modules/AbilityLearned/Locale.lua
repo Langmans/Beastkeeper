@@ -12,7 +12,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 L.ABILITYLEARNED_TITLE = "Ability Learned"
 L.ABILITYLEARNED_DESC = "A toast when your hunter learns a pet ability from a tamed beast (Claw rank 2 from a Nightstalker, say), when your pet gains training points and when its loyalty drops, a history of learns per character, and what a pet you summon can still teach you. Abilities bought from a pet trainer do not count."
 
--- Settings window, Beastkeeper's page: the kind of toast, for choosing its look. Shown after "Ability Learned: ".
+-- Settings window, Huntsworn's page: the kind of toast, for choosing its look. Shown after "Ability Learned: ".
 L.ABILITYLEARNED_TOASTTYPE_LEARNED = "pet ability learned"
 L.ABILITYLEARNED_TOASTTYPE_POINTS = "training points gained"
 L.ABILITYLEARNED_TOASTTYPE_LOYALTY = "loyalty dropped"
@@ -27,7 +27,7 @@ L.ABILITYLEARNED_TEACH = "Teach it to your pet from the Beast Training window."
 -- plural: the game picks the form after the number (singular:plural, or one:few:many in Russian).
 L.ABILITYLEARNED_POINTS = "%s has %d training |4point:points; free."
 
--- Toast title when the pet got training points for no single reason Beastkeeper saw (its level and
+-- Toast title when the pet got training points for no single reason Huntsworn saw (its level and
 -- loyalty both rose, or it happened while the pet was away). %s: the pet's name; %d: how many.
 L.ABILITYLEARNED_POINTS_GAINED = "%s gained %d training |4point:points;"
 -- Toast text under it. %d: the pet's free training points.
@@ -47,7 +47,7 @@ L.ABILITYLEARNED_POINTS_LOST = "-%d training |4point:points;, %d free."
 
 -- Chat, when a pet is summoned or tamed. %s: the pet's name; second %s: a list like "Claw (Rank 3), Dash (Rank 1)".
 L.ABILITYLEARNED_TEACHES = "%s can teach you: %s."
-L.ABILITYLEARNED_OPEN_TRAINING = "Open Beast Training once so Beastkeeper knows your ranks."
+L.ABILITYLEARNED_OPEN_TRAINING = "Open Beast Training once so Huntsworn knows your ranks."
 -- A rank the pet's free training points can buy, in a list such as "Bite rank 2 (10), Cower rank 1 (5)". %s: the ability; first %d: the rank; second %d: its cost in training points.
 L.ABILITYLEARNED_AFFORDABLE = "%s rank %d (%d)"
 -- Chat, after the "What can my pet teach?" button. %s: the pet's name.
@@ -67,10 +67,10 @@ L.ABILITYLEARNED_HISTORY_FROM = "from %s"
 L.ABILITYLEARNED_HISTORY_EMPTY = "Nothing learned on this character yet."
 
 -- Chat, from the "Learns Beast Map does not know" button: one line per learn whose beast is not in
--- Beastkeeper's beast data as a teacher of that rank. First %s: the ability with its rank; second: the
+-- Huntsworn's beast data as a teacher of that rank. First %s: the ability with its rank; second: the
 -- pet's name; %d: the NPC ID the pet was tamed as; third %s: the zone of the learn.
 L.ABILITYLEARNED_TEACHER_MISSING = "%s: %s, tamed as NPC %d, %s"
-L.ABILITYLEARNED_TEACHERS_ALL = "Every learn from a pet is in Beastkeeper's beast data."
+L.ABILITYLEARNED_TEACHERS_ALL = "Every learn from a pet is in Huntsworn's beast data."
 
 -- Settings page.
 L.ABILITYLEARNED_OPTION_SOUND = "Sound when an ability is learned"
@@ -91,7 +91,7 @@ L.ABILITYLEARNED_OPTION_SIMULATE = "Simulate a learn"
 L.ABILITYLEARNED_OPTION_SIMULATE_DESC = "Feeds the game's learn line for one of your pet's abilities through the detection; not kept in the history."
 L.ABILITYLEARNED_OPTION_CHECK = "What can my pet teach?"
 L.ABILITYLEARNED_OPTION_TEACHERS = "Learns Beast Map does not know"
-L.ABILITYLEARNED_OPTION_TEACHERS_DESC = "Lists in chat the learns from a pet whose beast Beastkeeper's beast data does not have as a teacher of that rank. Tell Beastkeeper's author, and Beast Map can show them too."
+L.ABILITYLEARNED_OPTION_TEACHERS_DESC = "Lists in chat the learns from a pet whose beast Huntsworn's beast data does not have as a teacher of that rank. Tell Huntsworn's author, and Beast Map can show them too."
 L.ABILITYLEARNED_OPTION_HISTORY = "Learned on this character, newest first"
 
 -- stylua: ignore end

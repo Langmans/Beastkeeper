@@ -1,5 +1,5 @@
--- Beastkeeper's bridge to OAP Debug (Core\Debug.lua): when that addon is installed, Beastkeeper registers
--- with it, sends its own BEASTKEEPER_* messages to its log (each with its table), copies its chat lines
+-- Huntsworn's bridge to OAP Debug (Core\Debug.lua): when that addon is installed, Huntsworn registers
+-- with it, sends its own HUNTSWORN_* messages to its log (each with its table), copies its chat lines
 -- and counts and times what the chosen level asks for. Without it nothing is sent.
 
 local ICON = "Interface\\Icons\\Ability_Hunter_BeastCall"
@@ -51,7 +51,7 @@ local function withOAP(level)
     return client, calls
 end
 
----Beastkeeper's OAP Debug setting on its page.
+---Huntsworn's OAP Debug setting on its page.
 ---@param client table
 ---@return table
 local function option(client)
@@ -63,40 +63,40 @@ describe("OAP Debug", function()
         _G.OAPDebug = nil
     end)
 
-    it("gets Beastkeeper registered once, with its folder for Lua errors and its icon", function()
+    it("gets Huntsworn registered once, with its folder for Lua errors and its icon", function()
         local client, calls = withOAP()
         client.Addon:ShowToast({ key = "Test:one", title = "One" })
         client.Addon:Print("hello")
         assert.are.same(
-            { { "Register", "Beastkeeper", { title = "Beastkeeper", folder = "Beastkeeper", icon = ICON } } },
+            { { "Register", "Huntsworn", { title = "Huntsworn", folder = "Huntsworn", icon = ICON } } },
             only(calls, "Register")
         )
     end)
 
-    it("logs Beastkeeper's messages with their table, counts them, and copies its chat lines", function()
+    it("logs Huntsworn's messages with their table, counts them, and copies its chat lines", function()
         local client, calls = withOAP()
         client.Addon:ShowToast({ key = "Test:one", title = "One" })
         local logged = only(calls, "Log")
         local last = logged[#logged]
-        assert.are.equal("BEASTKEEPER_TOAST: {1}", last[3])
+        assert.are.equal("HUNTSWORN_TOAST: {1}", last[3])
         assert.are.equal("info", last[4])
         assert.are.equal("One", last[5].toast.title)
-        assert.are.same({ "Count", "Beastkeeper", "BEASTKEEPER_TOAST" }, only(calls, "Count")[#only(calls, "Count")])
+        assert.are.same({ "Count", "Huntsworn", "HUNTSWORN_TOAST" }, only(calls, "Count")[#only(calls, "Count")])
         client.Addon:Print("hello")
-        assert.are.same({ "Chat", "Beastkeeper", "hello" }, calls[#calls])
+        assert.are.same({ "Chat", "Huntsworn", "hello" }, calls[#calls])
     end)
 
     it("logs a module switched on or off", function()
         local client, calls = withOAP()
         client.Addon:SetModuleOn("Feeding", false)
         local logged = only(calls, "Log")
-        assert.are.same({ "Log", "Beastkeeper", "module: {1} off", "info", "Feeding" }, logged[#logged])
+        assert.are.same({ "Log", "Huntsworn", "module: {1} off", "info", "Feeding" }, logged[#logged])
     end)
 
     it("times the window's tabs from Normal + metrics", function()
         local client, calls = withOAP()
         client.Addon:OpenWindow("pets")
-        assert.are.same({ "Time", "Beastkeeper", "window: pets" }, only(calls, "Time")[1])
+        assert.are.same({ "Time", "Huntsworn", "window: pets" }, only(calls, "Time")[1])
     end)
 
     it("sends only what the level asks for", function()
@@ -115,7 +115,7 @@ describe("OAP Debug", function()
         assert.are.same({}, only(calls, "Time"))
     end)
 
-    it("has its level on Beastkeeper's page, Normal + metrics by default, taking effect at once", function()
+    it("has its level on Huntsworn's page, Normal + metrics by default, taking effect at once", function()
         local client, calls = withOAP()
         local level = option(client)
         assert.are.equal("metrics", level.get())
@@ -130,7 +130,7 @@ describe("OAP Debug", function()
         assert.are.equal(before, #calls)
         level.set(nil, "detailed")
         client.Addon:Print("loud")
-        assert.are.same({ "Chat", "Beastkeeper", "loud" }, calls[#calls])
+        assert.are.same({ "Chat", "Huntsworn", "loud" }, calls[#calls])
     end)
 
     it("sends nothing and says so without OAP Debug", function()
@@ -176,12 +176,12 @@ describe("DebugLog", function()
         _G.DLAPI, _G.OAPDebug = nil, nil
     end)
 
-    it("gets Beastkeeper's messages in a tab of its own, the message as category, the table written out", function()
+    it("gets Huntsworn's messages in a tab of its own, the message as category, the table written out", function()
         local client, lines = withDebugLog()
         client.Addon:ShowToast({ key = "Test:one", title = "One" })
         local last = lines[#lines]
-        assert.are.equal("Beastkeeper", last[1])
-        assert.truthy(last[2]:find("^BEASTKEEPER_TOAST~{"))
+        assert.are.equal("Huntsworn", last[1])
+        assert.truthy(last[2]:find("^HUNTSWORN_TOAST~{"))
         assert.truthy(last[2]:find("title=One", 1, true))
     end)
 
@@ -206,18 +206,18 @@ describe("DebugLog", function()
         )
     end)
 
-    it("gets Beastkeeper's chat lines, a % in them kept as it is", function()
+    it("gets Huntsworn's chat lines, a % in them kept as it is", function()
         local client, lines = withDebugLog()
         client.Addon:Print("100% fed")
-        assert.are.same({ "Beastkeeper", "Chat~100% fed" }, lines[#lines])
+        assert.are.same({ "Huntsworn", "Chat~100% fed" }, lines[#lines])
     end)
 
     it("keeps a ~ in the text from splitting off a category", function()
         local client, lines = withDebugLog()
         client.Addon:ShowToast({ key = "Test:one", title = "One", text = "~8 min" })
-        assert.truthy(lines[#lines][2]:find("^BEASTKEEPER_TOAST~[^~]*text=≈8 min"), lines[#lines][2])
+        assert.truthy(lines[#lines][2]:find("^HUNTSWORN_TOAST~[^~]*text=≈8 min"), lines[#lines][2])
         client.Addon:Print("~25 s left")
-        assert.are.same({ "Beastkeeper", "Chat~≈25 s left" }, lines[#lines])
+        assert.are.same({ "Huntsworn", "Chat~≈25 s left" }, lines[#lines])
     end)
 
     it("gets only what the level asks for", function()
@@ -241,7 +241,7 @@ describe("DebugLog", function()
         local client, lines, calls = withDebugLog(nil, true)
         client.Addon:ShowToast({ key = "Test:one", title = "One" })
         client.Addon:OpenWindow("pets")
-        assert.truthy(lines[#lines][2]:find("BEASTKEEPER_TOAST", 1, true))
+        assert.truthy(lines[#lines][2]:find("HUNTSWORN_TOAST", 1, true))
         assert.is_true(#only(calls, "Log") > 0)
         assert.is_true(#only(calls, "Count") > 0)
         assert.is_true(#only(calls, "Time") > 0)

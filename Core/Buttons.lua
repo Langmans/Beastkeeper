@@ -1,12 +1,12 @@
 local _, ns = ...
 
--- Button skins: the look of Beastkeeper's buttons and of what holds them, registered like toast skins
+-- Button skins: the look of Huntsworn's buttons and of what holds them, registered like toast skins
 -- (Core\Toast\Skins.lua). A button skin styles one button (AddonButtonSkin) and gives back how
 -- to colour its border; a holder skin styles a panel of buttons and the text and icons in its
--- rows (AddonButtonHolderSkin). Beastkeeper brings its own of both; integrations add another UI's
--- (Integrations\). The choice on Beastkeeper's page is a skin, or "auto": the registered one with the
+-- rows (AddonButtonHolderSkin). Huntsworn brings its own of both; integrations add another UI's
+-- (Integrations\). The choice on Huntsworn's page is a skin, or "auto": the registered one with the
 -- highest priority. A module styles a button once, the first time it shows it, so a new choice
--- shows after /reload. A skin that errors is reported and Beastkeeper's own takes over.
+-- shows after /reload. A skin that errors is reported and Huntsworn's own takes over.
 
 ---@type Addon
 local Addon = ns
@@ -24,7 +24,7 @@ local buttonSkins, holderSkins = {}, {}
 ---@param skin table
 ---@param functions string[] what the skin must have
 local function Register(method, register, id, skin, functions)
-    if type(id) ~= "string" or id == "" then error("Beastkeeper:" .. method .. ": id must be a non-empty string", 3) end
+    if type(id) ~= "string" or id == "" then error("Huntsworn:" .. method .. ": id must be a non-empty string", 3) end
     ---@type string[]
     local missing = {}
     if type(skin.name) ~= "string" then missing[#missing + 1] = "name (a string)" end
@@ -32,15 +32,15 @@ local function Register(method, register, id, skin, functions)
         if type(skin[name]) ~= "function" then missing[#missing + 1] = name end
     end
     if #missing > 0 then
-        error(("Beastkeeper:%s(%s): the skin has no %s"):format(method, id, table.concat(missing, ", ")), 3)
+        error(("Huntsworn:%s(%s): the skin has no %s"):format(method, id, table.concat(missing, ", ")), 3)
     end
     register[id] = skin
 end
 
 local BUTTON_FUNCTIONS, HOLDER_FUNCTIONS = { "Style" }, { "Style", "Font" }
 
----Makes a button skin available. Another addon calls this on Beastkeeper's addon object, before
----Beastkeeper's modules show their buttons (at load, or from its OptionalDeps).
+---Makes a button skin available. Another addon calls this on Huntsworn's addon object, before
+---Huntsworn's modules show their buttons (at load, or from its OptionalDeps).
 ---@param id string kept in the saved settings; a short lowercase word
 ---@param skin AddonButtonSkin
 function Addon:RegisterButtonSkin(id, skin)
@@ -87,13 +87,13 @@ local function Pick(register, chosen)
     return best
 end
 
----The id of the skin for Beastkeeper's buttons.
+---The id of the skin for Huntsworn's buttons.
 ---@return string
 function Addon:ButtonSkinFor()
     return Pick(buttonSkins, self:ButtonSettings().skin)
 end
 
----The id of the skin for what holds Beastkeeper's buttons.
+---The id of the skin for what holds Huntsworn's buttons.
 ---@return string
 function Addon:ButtonHolderSkinFor()
     return Pick(holderSkins, self:ButtonSettings().holder)
@@ -102,7 +102,7 @@ end
 ---For a skin whose buttons have no border to colour.
 local function NoBorder() end
 
----Styles a button with the chosen skin, or Beastkeeper's own when that one errors.
+---Styles a button with the chosen skin, or Huntsworn's own when that one errors.
 ---@param button Button
 ---@param parts AddonButtonParts
 ---@return fun(r: number, g: number, b: number) recolour sets the border's colour
@@ -117,7 +117,7 @@ function Addon:StyleButton(button, parts)
 end
 
 ---Whether icons lose their border: as the chosen look's UI says when it has a setting for it
----(ElvUI's Crop Icons), else Beastkeeper's own switch (off for an icon pack without borders, such as
+---(ElvUI's Crop Icons), else Huntsworn's own switch (off for an icon pack without borders, such as
 ---Clean Icons).
 ---@return boolean
 function Addon:CropsIcons()
@@ -140,7 +140,7 @@ function Addon:CropIcon(icon, lookCrop)
     end
 end
 
----Styles a holder with the chosen skin, or Beastkeeper's own when that one errors; gives the skin
+---Styles a holder with the chosen skin, or Huntsworn's own when that one errors; gives the skin
 ---used, for the rows' text and icons.
 ---@param frame Frame
 ---@return AddonButtonHolderSkin
@@ -154,7 +154,7 @@ function Addon:StyleButtonHolder(frame)
     return skin
 end
 
--- Beastkeeper's own: a frame of colour behind the button; a panel as the game draws its own, the dark
+-- Huntsworn's own: a frame of colour behind the button; a panel as the game draws its own, the dark
 -- dialog background inside a tooltip's border.
 
 ---@param button Button
@@ -183,7 +183,7 @@ local OWN_BACKDROP = {
 }
 local GOLD = { 1, 0.82, 0 }
 
----A holder is made with BackdropTemplate (Beastkeeper's window, the feed list).
+---A holder is made with BackdropTemplate (Huntsworn's window, the feed list).
 ---@param frame Frame
 local function OwnHolder(frame)
     local backdrop = frame --[[@as BackdropTemplate]]

@@ -14,11 +14,11 @@ Plus a `namespace="PetCare"` keyword line in every `Locales\<lang>.lua`, and
 its tests in `tests\<name>_spec.lua`. The module itself:
 
 ```lua
-local _, Beastkeeper = ...
-local L = Beastkeeper.L
+local _, Huntsworn = ...
+local L = Huntsworn.L
 
 ---@type AddonPetCare -- a class in annotations\Addon.lua
-local M = Beastkeeper:NewModule("PetCare", "AceTimer-3.0")
+local M = Huntsworn:NewModule("PetCare", "AceTimer-3.0")
 M.title = L.PETCARE_TITLE
 M.description = L.PETCARE_DESC
 M.defaults = { profile = { threshold = 40 } }
@@ -33,14 +33,14 @@ end
 
 function M:OnDisable()
     -- undo everything OnEnable did that AceEvent/AceTimer do not undo themselves
-    Beastkeeper:DropToasts(self.moduleName .. ":")
+    Huntsworn:DropToasts(self.moduleName .. ":")
 end
 ```
 
 `Modules\AutocastCheck\` is a complete example. What each field means is in
 `annotations/Addon.lua` (`AddonModule`). The rules the core relies on:
 
-- **The core owns the switch.** `profile.modules[name]` in `BeastkeeperDB` says
+- **The core owns the switch.** `profile.modules[name]` in `HuntswornDB` says
   whether a module runs; a module never calls `Enable`/`Disable` on itself.
   A module is on unless it sets `enabledByDefault = false`.
 - **`OnDisable` undoes `OnEnable`.** A profile change disables every running
@@ -50,11 +50,11 @@ end
 - **`defaults`** gives the module its own AceDB namespace as `self.db`, set
   before the module's `OnInitialize`.
 - **`GetOptions`** returns an AceConfig group. It becomes a page of its own
-  under Beastkeeper, greyed out while the module is off. The core sets `type`,
+  under Huntsworn, greyed out while the module is off. The core sets `type`,
   `disabled`, and `name` when the group has none (the module's `title`).
-  `Beastkeeper:Setting(module, key, changed)` gives an option's `get` and `set` for
+  `Huntsworn:Setting(module, key, changed)` gives an option's `get` and `set` for
   `module:Settings()[key]`; `changed` runs after a set while the module is on.
 - **`self:Print(...)`** says a line in chat; it names the module in the
-  `BEASTKEEPER_PRINT` message ([04-hooking.md](04-hooking.md)).
+  `HUNTSWORN_PRINT` message ([04-hooking.md](04-hooking.md)).
 - Every module embeds AceEvent-3.0; anything else it lists in `NewModule`
   and in `embeds.xml` / `.pkgmeta`.

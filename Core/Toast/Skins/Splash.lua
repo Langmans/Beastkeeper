@@ -3,7 +3,7 @@ local _, ns = ...
 -- The splash: a toast in the middle of the screen, for things worth a moment. The module's name
 -- over a thin line, the icon in a diamond that pops in (a unit's portrait as a round badge on its
 -- lower right, when the toast brings one), the title, text and a grey hint centred,
--- and a short timer bar; plain text, no glow. Beastkeeper's own has a black panel whose edges fade
+-- and a short timer bar; plain text, no glow. Huntsworn's own has a black panel whose edges fade
 -- out; NewSplashSkin makes one in any style (AddonSkinStyle), such as EllesmereUI's.
 
 ---@type Addon

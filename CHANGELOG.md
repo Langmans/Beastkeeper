@@ -2,10 +2,11 @@
 
 ## Unreleased
 
-- Renamed from Kennel to Beastkeeper (a 2008 addon already has the name on
-  CurseForge). The slash command is /beastkeeper, or /bk; the macros, the
-  messages (BEASTKEEPER_TOAST, ...) and the saved settings (BeastkeeperDB)
-  carry the new name.
+- Renamed from Kennel (a 2008 addon already has the name on CurseForge), then
+  from Beastkeeper to Huntsworn, a name for the whole hunter and not only the
+  pet. The slash command is /huntsworn, or /hs; the macros, the messages
+  (HUNTSWORN_TOAST, ...) and the saved settings (HuntswornDB) carry the new
+  name.
 
 ### Clients
 
@@ -22,16 +23,16 @@
 - What a pet eats on Classic Era and Burning Crusade comes from LibTameable
   too, each family's diet from the client's own tables.
 
-### Beastkeeper itself
+### Huntsworn itself
 
-- A settings page under AddOns → Beastkeeper with a switch per module, a page per
+- A settings page under AddOns → Huntsworn with a switch per module, a page per
   module with options, and profiles.
-- `/beastkeeper` opens Beastkeeper's window, `/beastkeeper config` the settings page;
-  `/beastkeeper help` lists the module commands, as does an unknown command
+- `/huntsworn` opens Huntsworn's window, `/huntsworn config` the settings page;
+  `/huntsworn help` lists the module commands, as does an unknown command
   after saying so. The window has a tab per part,
   takes the button skin's look, moves by dragging, and opens from the data
   broker and a key binding too.
-- Beastkeeper's macros say what they do in the tooltip of the action button they
+- Huntsworn's macros say what they do in the tooltip of the action button they
   are on.
 
 ### Toasts
@@ -39,7 +40,7 @@
 - A toast for every module, in two looks: a small card near the top of the
   screen, or a large splash in the middle. Both have a timer bar; drag to
   move, right-click to close, hover to keep it up. Duration, size and look on
-  Beastkeeper's page, and a look per kind of toast. Other addons can add looks.
+  Huntsworn's page, and a look per kind of toast. Other addons can add looks.
 - A kind of toast can start on a look its module picks; the pet's portrait on
   the icon; an optional screenshot per toast.
 - A look that shows toasts as the game's raid warning, and one that sends
@@ -48,7 +49,7 @@
 
 ### Modules
 
-- Care Button (from Pet Care Button): one key and the BeastkeeperCare macro for
+- Care Button (from Pet Care Button): one key and the HuntswornCare macro for
   Mend Pet, Revive Pet and Call Pet that remember a dead pet, also once the
   body is gone; toasts when the pet dies, is missing at the pull or runs low,
   or combat starts with it on Passive; a low health marker beside the pet
@@ -58,7 +59,7 @@
   default, when your hunter learns a pet ability from a tamed beast, with the
   pet's portrait and free training points; a history per character of every
   rank learned and the beast it came from, with a list of learns from beasts
-  Beastkeeper's data does not know as teachers; hints on what a summoned pet can
+  Huntsworn's data does not know as teachers; hints on what a summoned pet can
   still teach, from what Beast Training shows; a toast when your pet gains
   training points, naming the level-up or loyalty level behind them, and one
   when its loyalty drops; a sound choice for each.
@@ -67,22 +68,22 @@
   sex per pet. Off until switched on. Lines for Forever's foxes in all six
   languages.
 - Autocast Check (from Pet Autocast Check): Growl or Cower on autocast as
-  fits, Cower in a dungeon group and Growl elsewhere; the BeastkeeperKite macro
-  (Cower, Distracting Shot) and BeastkeeperGrowl macro choose until a dungeon group
+  fits, Cower in a dungeon group and Growl elsewhere; the HuntswornKite macro
+  (Cower, Distracting Shot) and HuntswornGrowl macro choose until a dungeon group
   is entered or left. A toast when it does not fit, again at a pull at most
   every 5 minutes (a slider, 0 for every pull), and one key or the
-  BeastkeeperAutocast macro that sets it right.
+  HuntswornAutocast macro that sets it right.
 - Feeding: a button beside the pet frame while the pet is not happy (and not eating), feeding
   the food that keeps it happy cheapest (Well Fed food last), the order in
   its tooltip, a list to pick another food on a right-click; toasts when the
   pet becomes content or unhappy and when the last food it eats is gone.
-- Data Broker: Beastkeeper as a LibDataBroker source (Titan Panel, ChocolateBar,
+- Data Broker: Huntsworn as a LibDataBroker source (Titan Panel, ChocolateBar,
   ElvUI datatexts): the pet's name, happiness and free training points, more
-  in its tooltip, Beastkeeper's window on a click; and as a minimap button.
+  in its tooltip, Huntsworn's window on a click; and as a minimap button.
 - Pet Journal: a page per pet with when and where it was tamed, its level and
   loyalty, what it eats, the time out together, its deaths, a forecast of the next loyalty
   level and its abilities, stabled pets included, with what each could still
-  teach you; the short version in the pet's tooltip. In Beastkeeper's window a
+  teach you; the short version in the pet's tooltip. In Huntsworn's window a
   Pets tab with a card per pet: its model, specialization, journal and
   abilities, and a Stable tab with every pet side by side. Stabled pets'
   models and names come from the stable master.
@@ -99,7 +100,7 @@
   toast when a rare beast that teaches a rank you lack comes in sight, and a
   tame key that targets and marks that beast (or the one whose pin you
   clicked), Shift for Tame Beast. Pins for the pet trainers and stable
-  masters of your faction. In Beastkeeper's window an Abilities tab (every rank,
+  masters of your faction. In Huntsworn's window an Abilities tab (every rank,
   known or the nearest beast that teaches it) and a Families tab
   (specialization, diet, what each family learns, where to tame one).
 - Ammo: your ammo count as a data broker source (EllesmereUI's data bars,
@@ -111,19 +112,19 @@
 
 ### Other addons
 
-- Button skins: Beastkeeper's buttons and lists in the look of Masque, ElvUI or
-  EllesmereUI, chosen on Beastkeeper's page (Automatic by default). Other addons
-  add theirs with Beastkeeper:RegisterButtonSkin and RegisterButtonHolderSkin.
+- Button skins: Huntsworn's buttons and lists in the look of Masque, ElvUI or
+  EllesmereUI, chosen on Huntsworn's page (Automatic by default). Other addons
+  add theirs with Huntsworn:RegisterButtonSkin and RegisterButtonHolderSkin.
 - With EllesmereUI loaded: the card and the splash in EllesmereUI's look;
   with ElvUI loaded, in ElvUI's.
 - With MessageQueue loaded: a LibSink output that says toasts in a chat
   channel (say, party, group, a custom channel); say, yell and channels go out
   on your next key press or click, as WoW: Forever requires.
-- With OAP Debug installed: Beastkeeper's messages, chat lines, counts, the
+- With OAP Debug installed: Huntsworn's messages, chat lines, counts, the
   window's timings and its Lua errors in OAP Debug's window; with DebugLog
-  installed, the messages and chat lines in a Beastkeeper tab, sorted into
-  categories. As much as the "Debug" setting on Beastkeeper's page says.
-- With LS: Toasts loaded: a toast look that hands Beastkeeper's toasts to it.
+  installed, the messages and chat lines in a Huntsworn tab, sorted into
+  categories. As much as the "Debug" setting on Huntsworn's page says.
+- With LS: Toasts loaded: a toast look that hands Huntsworn's toasts to it.
 - Care Button: Alt-click opens Beast Training while the pet has training
   points to spend; the tooltip says how many.
 - Data Broker: a middle-click opens the window on the pet abilities.
@@ -137,7 +138,7 @@
   pet: Upgrades (what it has first), Tank (Growl, armor, resistances first) or
   DPS (Bite, Claw, Dash first). Only abilities the pet's family can learn:
   Classic Era's Beast Training also lists the others, without a cost.
-- BEASTKEEPER_PET_AT_PULL for other addons: combat started without a pet, with
+- HUNTSWORN_PET_AT_PULL for other addons: combat started without a pet, with
   a dead one, or with one on Passive.
 - Beast Map: during a hunt the tame key shows as a button on screen: a click
   targets and marks the beast, Shift-click casts Tame Beast; Shift-drag moves it.
@@ -145,13 +146,13 @@
 - Beast Map: the hunt ends when you tame a beast that teaches its rank, the
   hunted one or another ("Tamed Whiskers, which teaches Claw (Rank 3): the
   hunt for Rare Cat is over."). A switch on Beast Map's page, on by default.
-- The BeastkeeperAutocast macro set nothing: a macro that /clicks a button
+- The HuntswornAutocast macro set nothing: a macro that /clicks a button
   cannot run that button's macro lines. It holds the /petautocaston and
   /petautocastoff lines itself now, rewritten after combat when what fits
   changes; an existing macro is turned over by itself, your own lines stay.
 - Autocast Check: while your pet has a Cower rank you do not know yet, Cower
   belongs on beside Growl (you learn it only once the pet uses it): the toast
-  says so, the key and the BeastkeeperAutocast macro put both on, and once
+  says so, the key and the HuntswornAutocast macro put both on, and once
   learned Cower goes off again. A switch on its page, on by default.
 - Ammo at a vendor: passes over ammo you cannot buy for gold, the reputation
   ammo your standing does not reach and ammo paid in tokens; never buys ammo
@@ -193,11 +194,11 @@
   tamed pet that has the name of one released before it.
 - An About page in the settings: title, notes, version, author, license and
   website (LibAboutPanel-2.0).
-- Messages with a table of details, heard through Beastkeeper:Listen:
-  BEASTKEEPER_TOAST, BEASTKEEPER_PRINT, BEASTKEEPER_RANKS_KNOWN, BEASTKEEPER_ABILITY_LEARNED,
-  BEASTKEEPER_AUTOCAST_WANTED, BEASTKEEPER_RARE_SEEN, BEASTKEEPER_AMMO, and from the core
-  BEASTKEEPER_PET_HAPPINESS, BEASTKEEPER_PET_DIED, BEASTKEEPER_PET_TAMED and
-  BEASTKEEPER_PET_GROWTH (training points, level and loyalty, up or down), which
-  it works out only while something listens. Beastkeeper's own modules listen the
+- Messages with a table of details, heard through Huntsworn:Listen:
+  HUNTSWORN_TOAST, HUNTSWORN_PRINT, HUNTSWORN_RANKS_KNOWN, HUNTSWORN_ABILITY_LEARNED,
+  HUNTSWORN_AUTOCAST_WANTED, HUNTSWORN_RARE_SEEN, HUNTSWORN_AMMO, and from the core
+  HUNTSWORN_PET_HAPPINESS, HUNTSWORN_PET_DIED, HUNTSWORN_PET_TAMED and
+  HUNTSWORN_PET_GROWTH (training points, level and loyalty, up or down), which
+  it works out only while something listens. Huntsworn's own modules listen the
   same way. See docs/04-hooking.md, with an example addon, and
   docs/AddonMessages.lua for their types.

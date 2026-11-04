@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- A journal per pet, per character, kept under the pet's number (Beastkeeper.PetNumber: the same
+-- A journal per pet, per character, kept under the pet's number (Huntsworn.PetNumber: the same
 -- through renames, resummons and stable swaps); a pet tamed this session has no number until the
 -- next relog and is kept under its Creature GUID, then moved to its number. It notes when and where a pet was tamed (a Tame
 -- Beast cast before a new pet comes out) or first seen, its level, family and loyalty, the time
@@ -24,7 +24,7 @@ function M:Settings()
 end
 
 local BOOK_WAIT = 1 -- seconds for a new pet's spellbook to fill in
--- Deaths, tames and growth come from the core's BEASTKEEPER_PET_DIED, _TAMED and _GROWTH.
+-- Deaths, tames and growth come from the core's HUNTSWORN_PET_DIED, _TAMED and _GROWTH.
 local EVENTS = {
     "UNIT_PET",
     "PET_STABLE_SHOW",
@@ -286,7 +286,7 @@ local function StableTwin(pets, entry)
     return found
 end
 
----Reads the stable's lists (Beastkeeper.C.StableInfo: WoW: Forever gives them anywhere, Classic Era
+---Reads the stable's lists (Huntsworn.C.StableInfo: WoW: Forever gives them anywhere, Classic Era
 ---while the stable master is open), then merges an entry they do not know (kept under the GUID's
 ---number, which is not the pet's on Forever) into the stable's entry of the same name and family.
 ---A pet tamed this session (a Creature GUID key) waits for Adopt, and a past pet is never merged:
@@ -325,20 +325,20 @@ function M:PET_STABLE_UPDATE()
 end
 M.PET_STABLE_SHOW = M.PET_STABLE_UPDATE
 
--- The core's BEASTKEEPER_PET_GROWTH: the pet's level, points or loyalty changed.
+-- The core's HUNTSWORN_PET_GROWTH: the pet's level, points or loyalty changed.
 function M:OnGrowth()
     self:Record()
     Addon:RefreshWindow("pets")
 end
 
--- The core's BEASTKEEPER_PET_DIED: the pet out died.
+-- The core's HUNTSWORN_PET_DIED: the pet out died.
 function M:OnDied()
     if not self.current then return end
     local entry = self:Pets()[self.current]
     entry.deaths = entry.deaths + 1
 end
 
----The core's BEASTKEEPER_PET_TAMED. It may come before or after this module sees the pet come out,
+---The core's HUNTSWORN_PET_TAMED. It may come before or after this module sees the pet come out,
 ---so it makes the entry if need be.
 ---@param _ string the message
 ---@param event AddonPetTamedEvent

@@ -113,7 +113,7 @@ M.Lines.frFR = {
                 "On n'électrocute pas la main qui nourrit !",
                 "Aspiré d'un coup !",
             },
-            -- Written for Beastkeeper: Fox is new in WoW: Forever.
+            -- Written for Huntsworn: Fox is new in WoW: Forever.
             [F.FOX] = {
                 "Rusé comme un renard !",
                 "Pas une miette pour les poules.",

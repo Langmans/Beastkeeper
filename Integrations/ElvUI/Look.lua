@@ -1,9 +1,9 @@
 local _, ns = ...
 
--- Beastkeeper's toasts, buttons and lists in ElvUI's look, through the methods ElvUI's Toolkit gives
+-- Huntsworn's toasts, buttons and lists in ElvUI's look, through the methods ElvUI's Toolkit gives
 -- every frame: SetTemplate for the backdrop and border, StyleButton for hover and press,
 -- FontTemplate for text, SetTexCoords for its icon crop; its value colour as the toast's accent.
--- Only when ElvUI is loaded; it is in Beastkeeper's OptionalDeps, so its Toolkit has run.
+-- Only when ElvUI is loaded; it is in Huntsworn's OptionalDeps, so its Toolkit has run.
 
 if type(ElvUI) ~= "table" then return end
 

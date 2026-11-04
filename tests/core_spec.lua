@@ -25,7 +25,7 @@ local function twoModules(Addon)
     spyModule(Addon, "Beta", { enabledByDefault = false })
 end
 
-describe("Beastkeeper", function()
+describe("Huntsworn", function()
     local client, Addon, alpha, beta
 
     local function start(opts)

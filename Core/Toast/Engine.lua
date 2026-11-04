@@ -41,7 +41,7 @@ end
 
 ---Calls a method of the skin drawing the toast. When it errors, the error goes to the error
 ---handler (BugSack and the like), and a skin other than the card is replaced by the card for the
----rest of this toast: a broken skin from another addon cannot stop Beastkeeper's toasts.
+---rest of this toast: a broken skin from another addon cannot stop Huntsworn's toasts.
 ---@param method string
 ---@param ... any the method's arguments
 ---@return boolean? result what IsMouseOver answers; false after an error
@@ -160,7 +160,7 @@ local function Queued(key)
 end
 
 ---Shows a toast now, or after the one that is up. A key whose toast is up or waiting gets no
----second one. Sends BEASTKEEPER_TOAST ({ module, toast }) first, so a listener may still change the
+---second one. Sends HUNTSWORN_TOAST ({ module, toast }) first, so a listener may still change the
 ---toast (docs\04-hooking.md); the module is the part of the key before the colon.
 ---@param info AddonToastInfo
 function Addon:ShowToast(info)

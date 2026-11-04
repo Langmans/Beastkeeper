@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- Names for the game's bare values that no Enum of the game covers, so code says
--- Beastkeeper.happiness.content instead of 2. Each holds what the API it is named after gives or takes.
+-- Huntsworn.happiness.content instead of 2. Each holds what the API it is named after gives or takes.
 
 ---@type Addon
 local Addon = ns

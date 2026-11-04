@@ -8,7 +8,7 @@ local _, ns = ...
 --
 -- On the minimap they sit around where the hunter stands, redrawn a few times a second while a
 -- hunt is on: the hunter's place on the area's map gives the offset in map percent, turned into
--- yards by measuring the map in the world (Beastkeeper.InWorld), then into the minimap's pixels by how
+-- yards by measuring the map in the world (Huntsworn.InWorld), then into the minimap's pixels by how
 -- many yards it shows across at its zoom, turned with the player when the minimap rotates. A mask
 -- keeps the discs inside the round minimap.
 

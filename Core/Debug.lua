@@ -1,19 +1,19 @@
 local addonName, ns = ...
 
--- The bridge to the debug addons, the only file that talks to them. Beastkeeper sends to each one that
+-- The bridge to the debug addons, the only file that talks to them. Huntsworn sends to each one that
 -- is installed:
 --
--- - OAP Debug (a debug window: log, inspector, metrics, Lua errors). Beastkeeper registers with it under
---   its folder (so its Lua errors are filed under Beastkeeper), sends its own BEASTKEEPER_* messages to the
+-- - OAP Debug (a debug window: log, inspector, metrics, Lua errors). Huntsworn registers with it under
+--   its folder (so its Lua errors are filed under Huntsworn), sends its own HUNTSWORN_* messages to the
 --   log with their table, copies its chat lines and counts the messages; the window's tabs are
 --   timed.
--- - _DebugLog (DLAPI: a window of log tabs). The same lines go to a "Beastkeeper" tab as text, a table
+-- - _DebugLog (DLAPI: a window of log tabs). The same lines go to a "Huntsworn" tab as text, a table
 --   written out; flags before the text colour it (ERR~, WARN~), mark detail (2~, the verbosity
 --   column) or name a category (Chat~). It has no counters or timers.
 --
 -- How much goes is the setting every OAP addon has: errors only, normal, normal + metrics (the
 -- default), detailed; it is kept as profile.oapDebug. Without either addon nothing is sent and
--- Beastkeeper listens to nothing for them.
+-- Huntsworn listens to nothing for them.
 
 ---@type Addon
 local Addon = ns
@@ -29,7 +29,7 @@ local NEEDS = { error = ERRORS, warn = NORMAL, info = NORMAL, debug = DETAILED }
 local FLAGS = { error = "ERR~", warn = "WARN~", info = "", debug = "2~" }
 -- How deep a table is written out in a DebugLog line.
 local DEPTH = 2
--- Beastkeeper's messages that go to the log; BEASTKEEPER_PRINT goes to its chat tab instead.
+-- Huntsworn's messages that go to the log; HUNTSWORN_PRINT goes to its chat tab instead.
 local MESSAGES = {
     Addon.messages.toast,
     Addon.messages.ranksKnown,
@@ -45,17 +45,17 @@ local MESSAGES = {
 }
 
 local level = METRICS
--- OAP Debug's table, found once when Beastkeeper's settings load (OptionalDeps loads it first); nil
+-- OAP Debug's table, found once when Huntsworn's settings load (OptionalDeps loads it first); nil
 -- without it.
 ---@type OAPDebugApi?
 local api
 -- DebugLog's table, found the same way; nil without it.
 ---@type DebugLogApi?
 local dl
--- The table Beastkeeper listens with, to its own messages.
+-- The table Huntsworn listens with, to its own messages.
 local listener = {}
 
----Finds the debug addons and registers Beastkeeper with OAP Debug, once.
+---Finds the debug addons and registers Huntsworn with OAP Debug, once.
 local function Connect()
     dl = dl or rawget(_G, "DLAPI") --[[@as DebugLogApi?]]
     if api then return end
@@ -88,7 +88,7 @@ local function Written(value, depth)
     return "{" .. table.concat(parts, ", ") .. "}"
 end
 
----A line to DebugLog's Beastkeeper tab, as text: "%s" keeps a % in it from being read as a format.
+---A line to DebugLog's Huntsworn tab, as text: "%s" keeps a % in it from being read as a format.
 ---DebugLog reads every "~" as the end of a flag and has no escape, so a "~" in the text ("~8 min")
 ---becomes "≈"; the flags ("ERR~", "Chat~") come in separately.
 ---@param flags string
@@ -143,7 +143,7 @@ function Addon:Time(name, fn, ...)
     end
 end
 
----A Beastkeeper message: to the log with its table, and counted.
+---A Huntsworn message: to the log with its table, and counted.
 ---@param message string
 ---@param event table
 local function OnMessage(message, event)
@@ -151,7 +151,7 @@ local function OnMessage(message, event)
     Addon:Count(message)
 end
 
----A chat line Beastkeeper printed: to OAP Debug's chat tab, and to DebugLog as a Chat line.
+---A chat line Huntsworn printed: to OAP Debug's chat tab, and to DebugLog as a Chat line.
 ---@param _ string the message
 ---@param event AddonPrintEvent
 local function OnPrint(_, event)
@@ -159,7 +159,7 @@ local function OnPrint(_, event)
     ToDebugLog("Chat~", event.line)
 end
 
----Takes the profile's level; listens to Beastkeeper's messages while a debug addon is there and the
+---Takes the profile's level; listens to Huntsworn's messages while a debug addon is there and the
 ---level logs them, stops otherwise.
 function Addon:ApplyDebugLevel()
     Connect()

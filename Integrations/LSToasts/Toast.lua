@@ -3,9 +3,9 @@ local _, ns = ...
 -- An instant skin: hands a toast to LS: Toasts, which stacks, animates and skins it with the
 -- player's other toasts, at its first anchor. Its global, named after the addon (ls_Toasts_Classic
 -- on the classic clients, ls_Toasts on retail, the same API in both), holds { E, C, L }; a toast
--- comes from E:GetToast, which reuses one already out with the same data. Each Beastkeeper toast gets
+-- comes from E:GetToast, which reuses one already out with the same data. Each Huntsworn toast gets
 -- a number of its own there, so two are never merged. The borders take the toast's accent where
--- LS: Toasts colours borders (its Colors settings). Beastkeeper plays the toast's sound itself.
+-- LS: Toasts colours borders (its Colors settings). Huntsworn plays the toast's sound itself.
 
 local LS = ls_Toasts_Classic or ls_Toasts --[[@as LSToastsGlobal?]]
 if not LS then return end
@@ -17,7 +17,7 @@ local E, C = LS[1], LS[2]
 
 -- LS: Toasts' first anchor, which every install has.
 local ANCHOR = 1
--- Beastkeeper's toasts handed over so far: each one's key in LS: Toasts.
+-- Huntsworn's toasts handed over so far: each one's key in LS: Toasts.
 local count = 0
 
 local skin = { name = L.TOAST_SKIN_LSTOASTS, instant = true } --[[@as AddonToastSkin]]

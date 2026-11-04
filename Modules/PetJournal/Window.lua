@@ -1,9 +1,9 @@
 local _, ns = ...
 
--- The Pets tab of Beastkeeper's window (Core\Window.lua): every pet in the journal on the left, the
+-- The Pets tab of Huntsworn's window (Core\Window.lua): every pet in the journal on the left, the
 -- newest tame first, the ones the hunter no longer has under a Past pets heading at the end, and a card
 -- for the chosen one on the right: its model, name, level and loyalty, its
--- family's specialization (Ferocity, Cunning, Tenacity: Beastkeeper.SpecName), the journal (Journal.lua)
+-- family's specialization (Ferocity, Cunning, Tenacity: Huntsworn.SpecName), the journal (Journal.lua)
 -- and its abilities, those it could teach you in green. The model is the pet
 -- out itself; a stabled pet's as the stable showed it (its displayID), else the beast it was
 -- tamed as. Dragging turns it.

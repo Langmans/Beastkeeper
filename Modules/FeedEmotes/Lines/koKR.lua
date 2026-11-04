@@ -121,7 +121,7 @@ M.Lines.koKR = {
                 "먹이 주는 손에 전기 쏘지 마!",
                 "후루룩 삼켜버렸네!",
             },
-            -- Written for Beastkeeper: Fox is new in WoW: Forever.
+            -- Written for Huntsworn: Fox is new in WoW: Forever.
             [F.FOX] = {
                 "꾀 많은 여우!",
                 "닭들 몫은 하나도 안 남았네.",

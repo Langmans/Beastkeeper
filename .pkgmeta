@@ -1,4 +1,4 @@
-package-as: Beastkeeper
+package-as: Huntsworn
 
 # Ace3 is fetched at package time and never committed, pinned to a commit on master of its GitHub
 # mirror: the latest release (Release-r1403, 2026-08-12) lacks AceDB's WoW: Forever fixes of
@@ -67,7 +67,7 @@ externals:
     url: https://github.com/Myrroddin/libaboutpanel-2.0.git
     commit: 38ec916c1b035a327d2856fa81d4a09fb99e89bc
     path: LibAboutPanel-2.0
-  # The route library, Beastkeeper's own (github.com/Langmans/LibGoThere-1.0); pinned to a commit.
+  # The route library, Huntsworn's own (github.com/Langmans/LibGoThere-1.0); pinned to a commit.
   Libs/LibGoThere-1.0:
     url: https://github.com/Langmans/LibGoThere-1.0.git
     commit: 510d0318645d1a2ce01d159c761d3b5da9567d53
@@ -77,7 +77,7 @@ externals:
   Libs/Krowi_WorldMapButtons:
     url: https://github.com/TheKrowi/Krowi_WorldMapButtons.git
     commit: 8c6eee65fecf8d3a70423993a16d538d0a3dcb0a
-  # The pet ability ranks and the beasts that teach them, Beastkeeper's own
+  # The pet ability ranks and the beasts that teach them, Huntsworn's own
   # (github.com/Langmans/LibTameable-1.0, GPL-3.0); pinned to a commit.
   Libs/LibTameable-1.0:
     url: https://github.com/Langmans/LibTameable-1.0.git
@@ -94,7 +94,7 @@ ignore:
   - annotations
   - coverage
   - tests
-  - beastkeeper-dev-1.rockspec
+  - huntsworn-dev-1.rockspec
   - stylua.toml
   - tasks
   - Locales/README.md
