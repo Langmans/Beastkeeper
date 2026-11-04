@@ -304,7 +304,9 @@ Forever, Move Fast, TomTom, the game's own map pin, or a map pin link in chat).
   minimap, as a nameplate, your target or under the mouse), once per spawn.
 - **On a beast's tooltip**, also without HandyNotes: a line per rank it
   teaches, green when you lack it, yellow for a lower rank you never
-  learned, grey when you know it.
+  learned, grey when you know it. On Classic Era any tameable beast's
+  attack speed where it is not the usual 2.0 ("Attack speed 1.7"): a tamed
+  beast keeps it.
 - **On a pet ability's tooltip** (the pet's spellbook, the pet bar, Beast
   Training): the pet level it needs, its training points once Beast Training
   showed them, the families that learn it, and whether you know the rank; if

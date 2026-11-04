@@ -59,6 +59,7 @@ local Tameable = LibStub("LibTameable-1.0")
 Addon.data = {
     petAbilityRanks = Tameable.ranks,
     beasts = Tameable.beasts,
+    speeds = Tameable.speeds,
     trainers = {},
     ammo = {},
     ammoVendors = {},

@@ -672,6 +672,7 @@
 ---@class AddonData
 ---@field petAbilityRanks table<number, AddonPetAbilityRank> by the rank's spell ID
 ---@field beasts table<number, AddonBeast> by NPC ID
+---@field speeds table<number, number>? every tameable beast's attack speed where not 2.0, by NPC ID (Classic Era)
 ---@field trainers table<number, AddonTrainer>? pet trainers and stable masters by NPC ID (Data\Trainers.lua)
 ---@field ammo table<number, AddonAmmoItem> the arrows and bullets vendors sell, by item ID (Data\Ammo.lua)
 ---@field ammoVendors table<number, AddonAmmoVendor> the vendors that sell them, by NPC ID

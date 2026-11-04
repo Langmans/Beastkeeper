@@ -165,6 +165,8 @@
 - Classic Era and WoW: Forever: a beast's attack speed beside its level where
   it is not the usual 2.0 ("Level 37, rare, attack speed 1.0"), in the pin's
   tooltip, the Families tab and the rare alarm: a tamed beast keeps it there.
+  On Classic Era also in the tooltip of any tameable beast ("Attack speed
+  1.7"), teaching or not, by Petopia's list of tamed pets' speeds.
 - Families tab: the list by family or by role (Offense, Defense, General on
   Classic, the strongest first; or named Ferocity, Tenacity, Cunning with a
   switch on the Beast Map page), scrolled with the mouse wheel, and with

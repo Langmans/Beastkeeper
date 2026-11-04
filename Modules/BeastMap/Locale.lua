@@ -48,6 +48,9 @@ L.BEASTMAP_OPTION_TOOLTIP_DESC = "Hover a beast: a line per pet ability rank it 
 -- with its rank, such as "Claw (Rank 3)"; second: one of the three short endings below (a rank the
 -- hunter lacks; a lower rank the hunter skipped; a rank the hunter knows).
 L.BEASTMAP_TOOLTIP_TEACHES = "Teaches %s: %s"
+-- A tameable beast's tooltip, above those lines, where its attack speed is not the usual 2.0 (a
+-- tamed beast keeps it on Classic Era and WoW: Forever). %.1f: seconds.
+L.BEASTMAP_TOOLTIP_SPEED = "Attack speed %.1f"
 L.BEASTMAP_TOOLTIP_NEW = "new"
 L.BEASTMAP_TOOLTIP_GAP = "skipped"
 L.BEASTMAP_TOOLTIP_KNOWN = "known"

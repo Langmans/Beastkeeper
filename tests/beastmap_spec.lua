@@ -364,6 +364,23 @@ describe("Beast Map", function()
             assert.are.same({}, hunter(10, { class = "MAGE" }):hoverUnit(creature(101)))
         end)
 
+        it("says the attack speed of any tameable beast where it is not 2.0, teaching or not", function()
+            local client = hunter(10)
+            local data = client.Addon.data
+            data.speeds = { [525] = 1.7 }
+            data.beasts[101].speed = 1.2
+            data.beasts[103].speed = 2
+            local lines = client:hoverUnit(creature(525))
+            assert.are.equal(1, #lines, "a beast that teaches nothing")
+            assert.are.same({ "Attack speed 1.7", { 1, 1, 1 } }, { lines[1].text, lines[1].color })
+            assert.are.equal("Attack speed 1.2", client:hoverUnit(creature(101))[1].text, "a teacher, first")
+            assert.are.equal(
+                "|T132278:0|t Teaches Bite (Rank 1): new",
+                client:hoverUnit(creature(103))[1].text,
+                "2.0: nothing"
+            )
+        end)
+
         it("is there without HandyNotes too", function()
             local lines = hunter(10, { handyNotes = false }):hoverUnit(creature(101))
             assert.are.equal("|T132140:0|t Teaches Claw (Rank 2): new", lines[2].text)

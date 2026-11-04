@@ -49,12 +49,24 @@ local function AddLine(tooltip, text, color)
     tooltip:AddLine(text, color[1], color[2], color[3])
 end
 
----Adds the ranks a beast teaches to the game's tooltip of it.
+---A tameable beast's attack speed where it is not the usual 2.0: any tameable beast's from the
+---data's speeds (Classic Era), else a teacher's own; nil otherwise.
+---@param npc number
+---@return number?
+local function AttackSpeed(npc)
+    local speeds, beast = Addon.data.speeds, Addon.data.beasts[npc]
+    local speed = speeds and speeds[npc] or beast and beast.speed
+    if speed and speed ~= 2 then return speed end
+end
+
+---Adds a beast's attack speed and the ranks it teaches to the game's tooltip of it.
 ---@param tooltip GameTooltip
 ---@param guid GameValue
 local function OnUnitTooltip(tooltip, guid)
     if not Wanted(tooltip, "tooltip") then return end
     local npc = Addon.NPCFromGUID(guid, "Creature")
+    local speed = npc and AttackSpeed(npc)
+    if speed then AddLine(tooltip, L.BEASTMAP_TOOLTIP_SPEED:format(speed), WHITE) end
     ---@type number[]
     local ranks = npc and M.TeachesOf(npc) or NOTHING
     for _, spellID in ipairs(ranks) do
