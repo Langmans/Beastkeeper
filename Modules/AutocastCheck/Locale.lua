@@ -65,6 +65,9 @@ L.AUTOCAST_OPTION_LEARN_COWER = "Cower on while learning it from your pet"
 L.AUTOCAST_OPTION_LEARN_COWER_DESC = "Your hunter learns a rank from a tamed beast only when the pet uses it. While your pet has a Cower rank you do not know yet, Cower belongs on autocast beside Growl, and the key and the BeastkeeperAutocast macro put it on."
 L.AUTOCAST_OPTION_REMIND = "Remind me when combat starts"
 L.AUTOCAST_OPTION_REMIND_DESC = "Whatever is still wrong toasts again at the pull."
+-- A slider under it, in minutes.
+L.AUTOCAST_OPTION_REMIND_EVERY = "At most every (minutes)"
+L.AUTOCAST_OPTION_REMIND_EVERY_DESC = "A problem toasts again at a pull only when its last toast is at least this many minutes ago. 0: at every pull."
 L.AUTOCAST_OPTION_SOUND = "Sound"
 -- Settings page: the sound choices.
 L.AUTOCAST_OPTION_SOUND_FAMILY = "Your pet's call, as when you send it to attack (raid warning when it has none)"

@@ -125,11 +125,14 @@
 ---@field cower boolean watch Cower
 ---@field learnCower boolean Cower on beside Growl while the pet has a rank the hunter can learn from it
 ---@field remind boolean toast what is still wrong when combat starts
+---@field remindEvery number minutes between two reminders of one problem; 0: every pull
 ---@field sound "family"|"warning"|"off"
 
 ---@class AddonAutocastCheck: AddonMacroModule, AddonSettingsModule
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field active table<string, true> the problems the last check found, by problem key
+---@field toasted table<string, number> when each problem last toasted (GetTime), by problem key
+---@field ReminderDue fun(self: AddonAutocastCheck, key: string): boolean
 ---@field checkPending boolean? a check is on its way (CheckAfter)
 ---@field choice ("growl"|"cower")? what the player chose (BeastkeeperKite, BeastkeeperGrowl)
 ---@field choiceInDungeon boolean? whether the player was in a dungeon group then

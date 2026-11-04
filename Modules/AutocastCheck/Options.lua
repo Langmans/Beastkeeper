@@ -28,6 +28,7 @@ function M:GetOptions()
     local cowerGet, cowerSet = Setting("cower")
     local learnGet, learnSet = Setting("learnCower")
     local remindGet, remindSet = Setting("remind")
+    local remindEveryGet, remindEverySet = Setting("remindEvery")
     local soundGet, soundSet = Setting("sound")
     return {
         args = {
@@ -69,6 +70,20 @@ function M:GetOptions()
                 width = "full",
                 get = remindGet,
                 set = remindSet,
+            },
+            remindEvery = {
+                type = "range",
+                name = L.AUTOCAST_OPTION_REMIND_EVERY,
+                desc = L.AUTOCAST_OPTION_REMIND_EVERY_DESC,
+                order = 5.1,
+                min = 0,
+                max = 30,
+                step = 1,
+                disabled = function()
+                    return not M:Settings().remind
+                end,
+                get = remindEveryGet,
+                set = remindEverySet,
             },
             sound = {
                 type = "select",

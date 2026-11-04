@@ -27,6 +27,7 @@ M.defaults = {
         cower = true,
         learnCower = true,
         remind = true,
+        remindEvery = 5,
         sound = "family",
     },
 }
@@ -276,15 +277,26 @@ function M:TellWanted()
     )
 end
 
+---Whether a problem that is still there toasts again at a pull: its last toast is at least the
+---reminder's minutes ago (0: every pull).
+---@param key string
+---@return boolean
+function M:ReminderDue(key)
+    local last = self.toasted[key]
+    return last == nil or GetTime() - last >= self:Settings().remindEvery * 60
+end
+
 ---Compares what is wrong now with the last check: a new problem toasts, a solved one takes its
----toast away. With remindAll, every problem toasts, new or not. The button follows what fits.
+---toast away. With remindAll, a problem still there toasts again once the reminder is due. The
+---button follows what fits.
 ---@param remindAll boolean?
 function M:Check(remindAll)
     self:TellWanted()
     self:ApplyButton()
     local found, active = self:Problems(spare), self.active
     for _, key in ipairs(ORDER) do
-        if found[key] and (remindAll or not active[key]) then
+        if found[key] and (not active[key] or remindAll and self:ReminderDue(key)) then
+            self.toasted[key] = GetTime()
             Addon:ShowToast(self:ProblemToast(key, self:Reason(), problemName[key], problemIcon[key]))
         elseif not found[key] and active[key] then
             Addon:DropToast(self.moduleName .. ":" .. key)
@@ -332,6 +344,8 @@ end
 function M:OnEnable()
     ---@type table<string, true>
     self.active = {}
+    ---@type table<string, number>
+    self.toasted = {}
     local _, class = UnitClass("player")
     if class ~= "HUNTER" then return end
     -- Autocast switched (Blizzard's spellbook redraws its pet autocast on this event too) or the

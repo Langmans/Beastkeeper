@@ -69,7 +69,8 @@
 - Autocast Check (from Pet Autocast Check): Growl or Cower on autocast as
   fits, Cower in a dungeon group and Growl elsewhere; the BeastkeeperKite macro
   (Cower, Distracting Shot) and BeastkeeperGrowl macro choose until a dungeon group
-  is entered or left. A toast when it does not fit, and one key or the
+  is entered or left. A toast when it does not fit, again at a pull at most
+  every 5 minutes (a slider, 0 for every pull), and one key or the
   BeastkeeperAutocast macro that sets it right.
 - Feeding: a button beside the pet frame while the pet is not happy (and not eating), feeding
   the food that keeps it happy cheapest (Well Fed food last), the order in
