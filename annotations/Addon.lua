@@ -123,6 +123,7 @@
 ---@class AddonAutocastSettings
 ---@field growl boolean watch Growl
 ---@field cower boolean watch Cower
+---@field learnCower boolean Cower on beside Growl while the pet has a rank the hunter can learn from it
 ---@field remind boolean toast what is still wrong when combat starts
 ---@field sound "family"|"warning"|"off"
 
@@ -142,8 +143,10 @@
 ---@field TestToast fun(self: AddonAutocastCheck) used by Options.lua too
 ---@field Wanted fun(self: AddonAutocastCheck): "growl"|"cower", "solo"|"dungeon"|"chosen"
 ---@field Choose fun(self: AddonAutocastCheck, ability: "growl"|"cower")
----@field AutocastLines fun(on: "growl"|"cower"): string
+---@field AutocastLines fun(on: "growl"|"cower", both: boolean?): string
 ---@field ApplyButton fun(self: AddonAutocastCheck)
+---@field LearningCower fun(self: AddonAutocastCheck): boolean
+---@field WantedLines fun(self: AddonAutocastCheck): string
 
 ---An ability that can autocast, as AutocastCheck reads it from the pet.
 ---@class AddonAutocastState
@@ -415,6 +418,7 @@
 ---@field adviceRoles {upgrades: string, tank: string, dps: string} the kinds of advice
 ---@field HighestRank fun(self: AddonAbilityLearned, name: string): number?
 ---@field CanTeach fun(self: AddonAbilityLearned, name: string, rank: string?): boolean
+---@field SurelyTeaches fun(self: AddonAbilityLearned, name: string, rank: string?): boolean
 ---@field HasRank fun(self: AddonAbilityLearned, name: string, rank: number): boolean
 ---@field RecordLearn fun(self: AddonAbilityLearned, entry: AddonLearnEntry)
 ---@field HistoryText fun(self: AddonAbilityLearned): string

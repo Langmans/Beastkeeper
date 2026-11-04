@@ -18,9 +18,10 @@ local CLICK = "/click " .. Addon.Global("AutocastButton")
 
 local button = CreateFrame("Button", Addon.Global("AutocastButton"), UIParent, "SecureActionButtonTemplate")
 button:RegisterForClicks("AnyUp", "AnyDown")
--- The ability the button's lines put on autocast; nil while it has none.
----@type ("growl"|"cower")?
-local on
+-- The ability the button's lines put on autocast, nil while it has none; and whether they put the
+-- other one on too (Cower while learning it).
+---@type ("growl"|"cower")?, boolean
+local on, both = nil, false
 
 -- The macro's lines while UpdatedBody works on them; kept, not built anew for each change.
 ---@type string[]
@@ -34,31 +35,31 @@ local function Ours(line)
     return lower:find("^/petautocaston ") ~= nil or lower:find("^/petautocastoff ") ~= nil or line == CLICK
 end
 
----The macro text with its autocast lines for `ability`, where the first of ours stood; nil for a
----macro without a line of ours (left alone).
+---The macro text with `autocast` (the lines for what fits) where the first of ours stood; nil for
+---a macro without a line of ours (left alone).
 ---@param body string
----@param ability "growl"|"cower"
+---@param autocast string
 ---@return string?
-local function UpdatedBody(body, ability)
+local function UpdatedBody(body, autocast)
     wipe(lines)
     local placed = false
     for line in (body .. "\n"):gmatch("(.-)\n") do
         if not Ours(line) then
             lines[#lines + 1] = line
         elseif not placed then
-            lines[#lines + 1], placed = M.AutocastLines(ability), true
+            lines[#lines + 1], placed = autocast, true
         end
     end
     return placed and table.concat(lines, "\n") or nil
 end
 
 ---Puts the macro's autocast lines in step with the button.
----@param ability "growl"|"cower"
-local function UpdateMacro(ability)
+---@param autocast string
+local function UpdateMacro(autocast)
     local index = GetMacroIndexByName(MACRO)
     if index == 0 then return end
     local _, _, current = GetMacroInfo(index)
-    local body = UpdatedBody(current, ability)
+    local body = UpdatedBody(current, autocast)
     if body and body ~= current then EditMacro(index, nil, nil, body) end
 end
 
@@ -68,14 +69,15 @@ function M:ApplyButton()
     Addon:OutOfCombat("AutocastCheck:button", function()
         local _, class = UnitClass("player")
         if self:IsEnabled() and class == "HUNTER" then
-            on = (self:Wanted())
+            on, both = (self:Wanted()), self:LearningCower()
+            local autocast = self:WantedLines()
             -- On the key's release, as a key binding's click comes.
             button:SetAttribute("useOnKeyDown", false)
             button:SetAttribute("type", "macro")
-            button:SetAttribute("macrotext", M.AutocastLines(on))
-            UpdateMacro(on)
+            button:SetAttribute("macrotext", autocast)
+            UpdateMacro(autocast)
         else
-            on = nil
+            on, both = nil, false
             button:SetAttribute("type", nil)
             button:SetAttribute("macrotext", nil)
         end
@@ -89,8 +91,8 @@ end
 ---@param down boolean
 button:HookScript("OnClick", function(_, _mouse, down)
     if down or not on then return end
-    local off = on == "growl" and "cower" or "growl"
-    M:Print(L.AUTOCAST_SET:format(M.Spell(M.SPELLS[on]), M.Spell(M.SPELLS[off])))
+    local other = on == "growl" and "cower" or "growl"
+    M:Print((both and L.AUTOCAST_SET_BOTH or L.AUTOCAST_SET):format(M.Spell(M.SPELLS[on]), M.Spell(M.SPELLS[other])))
 end)
 
 _G["BINDING_NAME_CLICK " .. Addon.Global("AutocastButton") .. ":LeftButton"] = L.AUTOCAST_BINDING

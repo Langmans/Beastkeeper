@@ -2,7 +2,8 @@ local _, ns = ...
 
 -- Growl or Cower on autocast, as fits: who holds the mobs decides, someone else in a dungeon group
 -- (Cower) or the pet elsewhere (Growl), unless the player chose (the BeastkeeperKite and BeastkeeperGrowl
--- macros) until a dungeon group is entered or left. A problem toasts when it starts and its toast
+-- macros) until a dungeon group is entered or left. Where Growl fits and the pet has a Cower rank
+-- the hunter lacks, Cower goes on too: the hunter learns it only from the pet's use. A problem toasts when it starts and its toast
 -- goes away when solved; Button.lua sets it right with one key. The pet's spellbook shows every
 -- ability (Cower is often not on the bar); names come from spell IDs, so any language and rank
 -- work. On another class the module registers nothing.
@@ -24,6 +25,7 @@ M.defaults = {
     profile = {
         growl = true,
         cower = true,
+        learnCower = true,
         remind = true,
         sound = "family",
     },
@@ -201,9 +203,31 @@ function M:ProblemToast(key, reason, name, icon)
     }
 end
 
+---Whether Cower goes on beside Growl: Growl fits, and the hunter learns Cower from the pet (it has
+---a rank the hunter surely lacks, Ability Learned says; the hunter learns it only when the pet uses
+---it), with that setting on.
+---@return boolean
+function M:LearningCower()
+    if not self:Settings().learnCower or self:Wanted() ~= "growl" then return false end
+    local learned = Addon:GetModule("AbilityLearned", true) --[[@as AddonAbilityLearned?]]
+    local name = Addon.SpellInfo(COWER)
+    local spell = name and Addon.PetSpells()[name]
+    return learned ~= nil
+        and learned:IsEnabled()
+        and spell ~= nil
+        and learned:SurelyTeaches(name --[[@as string]], spell.rank)
+end
+
+---The lines that set autocast as fits now (AutocastLines), Cower on too while learning it.
+---@return string
+function M:WantedLines()
+    return M.AutocastLines((self:Wanted()), self:LearningCower())
+end
+
 ---The toast's text for what fits now.
 ---@return string
 function M:Reason()
+    if self:LearningCower() then return L.AUTOCAST_REASON_LEARNING end
     local wanted, why = self:Wanted()
     return REASONS[why == "chosen" and wanted or why]
 end
@@ -234,7 +258,7 @@ function M:Problems(found)
     self:PetAutocasts()
     local growlWanted = self:Wanted() == "growl"
     if settings.growl then self:Compare(found, "growl", growlWanted) end
-    if settings.cower then self:Compare(found, "cower", not growlWanted) end
+    if settings.cower then self:Compare(found, "cower", not growlWanted or self:LearningCower()) end
     return found
 end
 
@@ -295,6 +319,11 @@ function M:UNIT_PET(_, unit)
     if unit == "player" then self:ScheduleCheck() end
 end
 
+---BEASTKEEPER_RANKS_KNOWN: Cower may no longer be one the hunter learns from the pet.
+function M:OnRanksKnown()
+    self:Check()
+end
+
 ---Combat starts: the moment a wrong autocast costs something.
 function M:PLAYER_REGEN_DISABLED()
     self:Check(self:Settings().remind)
@@ -312,13 +341,17 @@ function M:OnEnable()
     self:RegisterEvent("PLAYER_ENTERING_WORLD", "ScheduleCheck")
     self:RegisterEvent("UNIT_PET")
     self:RegisterEvent("PLAYER_REGEN_DISABLED")
+    -- A rank learned: Cower on may be wrong again. At once: a check already on its way may have
+    -- read the pet before.
+    Addon:Listen(self, Addon.messages.ranksKnown, "OnRanksKnown")
     Addon:OfferMacros(self)
     self:ApplyButton()
     self:ScheduleCheck()
 end
 
--- AceEvent drops the events by itself; the toasts and the button go here.
+-- AceEvent drops the events by itself; the toasts, messages and the button go here.
 function M:OnDisable()
+    Addon:StopListening(self)
     Addon:DropToasts(self.moduleName .. ":")
     self.active = {}
     self.lastWanted, self.lastWhy = nil, nil
@@ -342,12 +375,15 @@ M.commands = {
     cower = { desc = L.AUTOCAST_CMD_COWER, func = ChooseCower },
 }
 
----The lines that put `on` on autocast and the other one off, with the client's spell names.
+---The lines that put `on` on autocast and the other one off, or with `both` the other one on too,
+---with the client's spell names.
 ---@param on "growl"|"cower"
+---@param both boolean?
 ---@return string
-function M.AutocastLines(on)
-    local off = on == "growl" and "cower" or "growl"
-    return "/petautocaston " .. Spell(M.SPELLS[on]) .. "\n/petautocastoff " .. Spell(M.SPELLS[off])
+function M.AutocastLines(on, both)
+    local other = on == "growl" and "cower" or "growl"
+    local verb = both and "\n/petautocaston " or "\n/petautocastoff "
+    return "/petautocaston " .. Spell(M.SPELLS[on]) .. verb .. Spell(M.SPELLS[other])
 end
 
 ---The macros, with their text as this client would write it now. Each sets autocast itself (the
@@ -379,7 +415,7 @@ function M:Macros()
             name = Addon.Global("Autocast"),
             icon = BEAST_TRAINING_ICON,
             -- The lines themselves: a /click from a macro runs no macro text (Button.lua).
-            body = M.AutocastLines((self:Wanted())),
+            body = self:WantedLines(),
             desc = L.AUTOCAST_MACRO_AUTOCAST,
         },
     }

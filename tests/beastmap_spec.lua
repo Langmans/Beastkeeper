@@ -1462,6 +1462,8 @@ describe("Beast Map", function()
 
         it("leaves out ranks the hunter has, and ranks a lower beast taught already", function()
             local client = hunter(4)
+            -- Beast Training read without Cower: the pet's Cower would toast for autocast too.
+            client.Addon:GetModule("AutocastCheck"):Disable()
             client:openTrainer({ { "Claw", "used", CLAW_2 } }):closeTrainer()
             assert.are.equal("Now in reach: Bite (Rank 1)", (levelUp(client, 5)))
             client = hunter(10)

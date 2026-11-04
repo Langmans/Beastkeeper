@@ -87,6 +87,17 @@ function M:CanTeach(name, rank)
     return M.IsWildAbility(name) and RankNumber(rank) > (Char().known[name] or 0)
 end
 
+---Whether a pet with this ability at this rank surely teaches it to this character: it can teach
+---it (CanTeach), and what the character knows of it is certain, from a rank learned or Beast
+---Training read.
+---@param name string
+---@param rank string? the client's rank text, "Rank 3"
+---@return boolean
+function M:SurelyTeaches(name, rank)
+    local char = Char()
+    return M:CanTeach(name, rank) and (char.known[name] ~= nil or char.trainingRead == true)
+end
+
 ---Whether this character knows an ability at exactly this rank. Ranks are separate spells, so a
 ---lower one can be missing below a higher one (it suits a young pet, or costs fewer points).
 ---@param name string

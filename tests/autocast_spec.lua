@@ -95,6 +95,57 @@ describe("AutocastCheck", function()
             assert.are.equal("Cower is on autocast", client:toastTitle())
         end)
 
+        it("wants Cower on too while the pet has a rank the hunter can still learn from it", function()
+            local client = NewClient():login()
+            local char = client.Addon:GetModule("AbilityLearned").db.char
+            -- Beast Training read: the hunter knows no Cower, the pet has rank 1 (from its tame).
+            char.trainingRead, char.known = true, {}
+            -- After Ability Learned's login wait; the pet bar's next update checks.
+            client:advance(5):petBarUpdate():advance(1)
+            assert.are.equal("Cower is not on autocast", client:toastTitle())
+            assert.are.equal(
+                "Your pet has a rank of Cower you do not know yet: you learn it only once your pet uses it. Growl on, Cower on.",
+                client:toast().Text.text
+            )
+            local both = "/petautocaston Growl\n/petautocaston Cower"
+            assert.are.equal(both, _G.BeastkeeperAutocastButton.attributes.macrotext, "the key puts both on")
+            for _, hook in ipairs(_G.BeastkeeperAutocastButton.hooks.OnClick) do
+                hook(_G.BeastkeeperAutocastButton, "LeftButton", false)
+            end
+            assert.is_true(client:printedContains("Autocast: Growl on, Cower on."))
+            client:autocast(COWER, true):animate(1)
+            assert.is_falsy(module(client).active.cowerOff, "on as wanted")
+            client:learnLine("Cower (Rank 1)"):advance(1)
+            assert.is_true(module(client).active.cowerOn, "learned: off again")
+            assert.are.equal(
+                "/petautocaston Growl\n/petautocastoff Cower",
+                _G.BeastkeeperAutocastButton.attributes.macrotext
+            )
+        end)
+
+        it(
+            "still wants Cower off while unsure what the hunter knows, with Ability Learned off, or with the setting off",
+            function()
+                local client = NewClient():login()
+                client.Addon:GetModule("AbilityLearned").db.char.trainingRead = false
+                client:autocast(COWER, true)
+                assert.are.equal("Cower is on autocast", client:toastTitle(), "unsure")
+                client = NewClient({ saved = savedWith({ learnCower = false }) }):login()
+                client.Addon:GetModule("AbilityLearned").db.char.known = {}
+                client:autocast(COWER, true)
+                assert.are.equal("Cower is on autocast", client:toastTitle(), "the setting off")
+                assert.are.equal(
+                    "/petautocaston Growl\n/petautocastoff Cower",
+                    _G.BeastkeeperAutocastButton.attributes.macrotext
+                )
+                client = NewClient():login()
+                client.Addon:GetModule("AbilityLearned").db.char.known = {}
+                client.Addon:GetModule("AbilityLearned"):Disable()
+                client:autocast(COWER, true)
+                assert.are.equal("Cower is on autocast", client:toastTitle(), "Ability Learned off")
+            end
+        )
+
         it("names the button's key in the hint when it has one", function()
             local client = NewClient()
             client.bindings["CLICK BeastkeeperAutocastButton:LeftButton"] = "G"

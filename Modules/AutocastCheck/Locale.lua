@@ -28,6 +28,8 @@ L.AUTOCAST_REASON_DUNGEON = "In a dungeon group the tank holds the mobs: Growl o
 L.AUTOCAST_REASON_CHOSEN_COWER = "You chose Cower: the mob is on you, not on your pet. Growl off, Cower on."
 -- Toast text, after the player chose Growl with the BeastkeeperGrowl macro (the pet tanks).
 L.AUTOCAST_REASON_CHOSEN_GROWL = "You chose Growl: your pet holds the mobs. Growl on, Cower off."
+-- Toast text, while the pet has a Cower rank the hunter does not know (it is learned from the pet's use).
+L.AUTOCAST_REASON_LEARNING = "Your pet has a rank of Cower you do not know yet: you learn it only once your pet uses it. Growl on, Cower on."
 -- Toast hint: how to set it right. %s: the key bound to it, such as "G". BeastkeeperAutocast is a macro name and stays as it is.
 L.AUTOCAST_HINT_KEY = "Press %s."
 L.AUTOCAST_HINT_MACRO = "Press your BeastkeeperAutocast macro."
@@ -35,6 +37,8 @@ L.AUTOCAST_HINT_MACRO = "Press your BeastkeeperAutocast macro."
 -- Chat, after the BeastkeeperAutocast macro or its key. First %s: the ability put on autocast (Growl
 -- or Cower, the client's name); second: the one put off.
 L.AUTOCAST_SET = "Autocast: %s on, %s off."
+-- The same, with both put on (Growl, and Cower while learning it from the pet).
+L.AUTOCAST_SET_BOTH = "Autocast: %s on, %s on."
 
 -- Chat, after the BeastkeeperKite or BeastkeeperGrowl macro chose.
 L.AUTOCAST_CHOSE_COWER = "Cower from now on, until you enter or leave a dungeon group."
@@ -57,6 +61,8 @@ L.AUTOCAST_OPTION_GROWL = "Watch Growl"
 L.AUTOCAST_OPTION_GROWL_DESC = "A toast when Growl's autocast does not fit."
 L.AUTOCAST_OPTION_COWER = "Watch Cower"
 L.AUTOCAST_OPTION_COWER_DESC = "A toast when Cower's autocast does not fit."
+L.AUTOCAST_OPTION_LEARN_COWER = "Cower on while learning it from your pet"
+L.AUTOCAST_OPTION_LEARN_COWER_DESC = "Your hunter learns a rank from a tamed beast only when the pet uses it. While your pet has a Cower rank you do not know yet, Cower belongs on autocast beside Growl, and the key and the BeastkeeperAutocast macro put it on."
 L.AUTOCAST_OPTION_REMIND = "Remind me when combat starts"
 L.AUTOCAST_OPTION_REMIND_DESC = "Whatever is still wrong toasts again at the pull."
 L.AUTOCAST_OPTION_SOUND = "Sound"

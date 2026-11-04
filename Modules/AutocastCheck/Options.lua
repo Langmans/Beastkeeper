@@ -26,6 +26,7 @@ end
 function M:GetOptions()
     local growlGet, growlSet = Setting("growl")
     local cowerGet, cowerSet = Setting("cower")
+    local learnGet, learnSet = Setting("learnCower")
     local remindGet, remindSet = Setting("remind")
     local soundGet, soundSet = Setting("sound")
     return {
@@ -47,6 +48,18 @@ function M:GetOptions()
                 width = "full",
                 get = cowerGet,
                 set = cowerSet,
+            },
+            learnCower = {
+                type = "toggle",
+                name = L.AUTOCAST_OPTION_LEARN_COWER,
+                desc = L.AUTOCAST_OPTION_LEARN_COWER_DESC,
+                order = 4.5,
+                width = "full",
+                disabled = function()
+                    return not M:Settings().cower
+                end,
+                get = learnGet,
+                set = learnSet,
             },
             remind = {
                 type = "toggle",

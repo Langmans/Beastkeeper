@@ -143,6 +143,10 @@
   cannot run that button's macro lines. It holds the /petautocaston and
   /petautocastoff lines itself now, rewritten after combat when what fits
   changes; an existing macro is turned over by itself, your own lines stay.
+- Autocast Check: while your pet has a Cower rank you do not know yet, Cower
+  belongs on beside Growl (you learn it only once the pet uses it): the toast
+  says so, the key and the BeastkeeperAutocast macro put both on, and once
+  learned Cower goes off again. A switch on its page, on by default.
 - Ammo at a vendor: passes over ammo you cannot buy for gold, the reputation
   ammo your standing does not reach and ammo paid in tokens; never buys ammo
   worse than the ammo slot's (no Rough Arrows while you shoot Sharp ones);
