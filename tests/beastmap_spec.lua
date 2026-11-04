@@ -309,6 +309,23 @@ describe("Beast Map", function()
         assert.is_true(client:printedContains("Wailing Caverns"))
     end)
 
+    it("finds a dungeon's entrances by name also when they word it otherwise than its area", function()
+        local client = hunter(12)
+        local data = client.Addon.data
+        data.beasts[108] = { name = "Spire Hound", family = 5, minLevel = 12, maxLevel = 12, zones = { 1583 } }
+        data.beasts[109] = { name = "Temple Boar", family = 5, minLevel = 12, maxLevel = 12, zones = { 1417 } }
+        data.petAbilityRanks[CHARGE].teachers = { 105, 107, 108, 109 }
+        local steppes = {}
+        for _, pin in ipairs(client:mapPins(1428)) do
+            steppes[#steppes + 1] = pin.x .. "," .. pin.y
+        end
+        table.sort(steppes)
+        assert.are.same({ "20,30", "21,31" }, steppes, "Lower and Upper Blackrock Spire, not Blackrock Depths")
+        local temple = client:mapPins(1435)
+        assert.are.equal(1, #temple, "Sunken Temple: The Temple of Atal'Hakkar")
+        assert.are.same({ 70, 54 }, { temple[1].x, temple[1].y })
+    end)
+
     describe("on a beast's tooltip", function()
         ---A creature's GUID, as the client gives it.
         local function creature(npc)

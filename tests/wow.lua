@@ -751,7 +751,7 @@ function NewClient(opts)
     -- Map and area names the client knows: a uiMapID's (C_Map.GetMapInfo) and an AreaTable
     -- ID's, as an instance has (C_Map.GetAreaInfo). Anything else is unknown (nil).
     local MAP_NAMES = { [1429] = "Elwynn Forest", [1420] = "Tirisfal Glades", [1430] = "Border Valley" }
-    local AREA_NAMES = { [718] = "Wailing Caverns" }
+    local AREA_NAMES = { [718] = "Wailing Caverns", [1583] = "Blackrock Spire", [1417] = "Sunken Temple" }
     -- Where the player stands in the world (UnitPosition: y, x and the instance; nil inside an
     -- instance) and on its map (0..1). client.mapWorld: where each map lies in the world, its
     -- middle (y, x as UnitPosition gives them), size in yards and continent; map 1430 lies right
@@ -798,8 +798,9 @@ function NewClient(opts)
             return CreateVector2D(client.mapPos[1], client.mapPos[2])
         end,
     }
-    -- Dungeon entrances on a map, named as the instance's area: Wailing Caverns and Razorfen
-    -- Kraul in the Barrens (1413).
+    -- Dungeon entrances on a map: Wailing Caverns and Razorfen Kraul in the Barrens (1413), named
+    -- as the instance's area; in the Burning Steppes (1428) Blackrock Spire's two, and in the
+    -- Swamp of Sorrows (1435) the Sunken Temple's, named otherwise than the area.
     ---@param x number
     ---@param y number
     local function Position(x, y)
@@ -815,6 +816,14 @@ function NewClient(opts)
         [1413] = {
             { areaPoiID = 1, name = "Wailing Caverns", position = Position(0.46, 0.36) },
             { areaPoiID = 2, name = "Razorfen Kraul", position = Position(0.41, 0.94) },
+        },
+        [1428] = {
+            { areaPoiID = 3, name = "Lower Blackrock Spire", position = Position(0.20, 0.30) },
+            { areaPoiID = 4, name = "Upper Blackrock Spire", position = Position(0.21, 0.31) },
+            { areaPoiID = 5, name = "Blackrock Depths", position = Position(0.22, 0.32) },
+        },
+        [1435] = {
+            { areaPoiID = 6, name = "The Temple of Atal'Hakkar", position = Position(0.70, 0.54) },
         },
     }
     C_EncounterJournal = {

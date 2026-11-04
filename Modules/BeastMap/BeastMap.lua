@@ -178,8 +178,33 @@ local function Pins(handyNotes)
     return maps
 end
 
+-- Instance areas whose entrance carries another name altogether, by AreaTable ID: the area's
+-- English name stands in for the client's (an alias matches in English clients only).
+local ENTRANCE_NAMES = {
+    [1417] = "Temple of Atal'Hakkar", -- Sunken Temple
+}
+
+---A name to compare entrances by: lower case, without a leading "The ".
+---@param name string
+---@return string
+local function Plain(name)
+    return (name:lower():gsub("^the ", ""))
+end
+
+---Whether an entrance leads into an instance area: the same name, or one in the other ("Upper
+---Blackrock Spire" for Blackrock Spire, a wing of Scarlet Monastery), or the area's alias.
+---@param entrance string
+---@param area number
+---@return boolean
+local function LeadsInto(entrance, area)
+    local name = C_Map.GetAreaInfo(area)
+    if not name or name == "" then return false end
+    local door, inside = Plain(entrance), Plain(ENTRANCE_NAMES[area] or name)
+    return door:find(inside, 1, true) ~= nil or inside:find(door, 1, true) ~= nil
+end
+
 ---Adds a pin at each dungeon entrance on a map whose instance has beasts, the first time the map
----is asked for. The client names an entrance as the instance's area, so the names are matched.
+---is asked for. Entrances are matched to the instance's area by name (LeadsInto).
 ---@param handyNotes HandyNotesApi
 ---@param uiMapID number
 local function AddEntrances(handyNotes, uiMapID)
@@ -188,7 +213,7 @@ local function AddEntrances(handyNotes, uiMapID)
     entrancesRead[uiMapID] = true
     for _, entrance in ipairs(C_EncounterJournal.GetDungeonEntrancesForMap(uiMapID)) do
         for area in pairs(inInstance) do
-            if C_Map.GetAreaInfo(area) == entrance.name then
+            if LeadsInto(entrance.name, area) then
                 AddPin(maps, uiMapID, -area, handyNotes:getCoord(entrance.position:GetXY()))
             end
         end
