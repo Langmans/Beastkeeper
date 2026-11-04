@@ -140,6 +140,7 @@ local SPELLS = {
         [982] = { "Revive Pet", 132163, "" },
         [883] = { "Call Pet", 132161, "" },
         [5149] = { "Beast Training", 132162, "" },
+        [1539] = { "Feed Pet Effect", 132165, "" },
         [1515] = { "Tame Beast", 132164, "" },
     },
     deDE = {
@@ -439,6 +440,13 @@ function NewClient(opts)
             GetSpellSubtext = spellRank,
         }
     end
+    -- The pet's buffs by name (client:petAura), as C_UnitAuras finds them.
+    client.petAuras = {}
+    C_UnitAuras = {
+        GetAuraDataBySpellName = function(unit, name, filter)
+            if unit == "pet" and filter == "HELPFUL" and client.petAuras[name] then return { name = name } end
+        end,
+    }
     local learnLines = not opts.noLearnLines and (LEARN_LINES[locale] or LEARN_LINES.enUS) or {}
     ERR_LEARN_ABILITY_S, ERR_LEARN_SPELL_S = learnLines[1], learnLines[2]
 
@@ -2083,6 +2091,14 @@ function NewClient(opts)
             fn(tooltip, { type = Enum.TooltipDataType.Unit, guid = guid })
         end
         return self.tooltipLines
+    end
+
+    ---A buff on the pet, by the spell's name, comes (`on`) or goes; the client says so.
+    ---@param spellID number
+    ---@param on boolean
+    function client:petAura(spellID, on)
+        self.petAuras[spellName(spellID)] = on or nil
+        return self:fire("UNIT_AURA", "pet")
     end
 
     ---The pet's happiness changes (1 unhappy, 2 content, 3 happy); the client says so.

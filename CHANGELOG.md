@@ -71,7 +71,7 @@
   (Cower, Distracting Shot) and BeastkeeperGrowl macro choose until a dungeon group
   is entered or left. A toast when it does not fit, and one key or the
   BeastkeeperAutocast macro that sets it right.
-- Feeding: a button beside the pet frame while the pet is not happy, feeding
+- Feeding: a button beside the pet frame while the pet is not happy (and not eating), feeding
   the food that keeps it happy cheapest (Well Fed food last), the order in
   its tooltip, a list to pick another food on a right-click; toasts when the
   pet becomes content or unhappy and when the last food it eats is gone.

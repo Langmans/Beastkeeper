@@ -179,6 +179,16 @@ describe("Feeding", function()
             assert.is_false(button:IsShown(), "no pet")
         end)
 
+        it("hides while the pet eats, and comes back after if it is still not happy", function()
+            local client = NewClient():login()
+            local button = _G.BeastkeeperFeedButton
+            client:setHappiness(2)
+            client:petAura(1539, true) -- Feed Pet Effect
+            assert.is_false(button:IsShown(), "eating")
+            client:petAura(1539, false)
+            assert.is_true(button:IsShown(), "done eating, still content")
+        end)
+
         it("moves with Shift held, and stays where it was dropped", function()
             local client = NewClient():login()
             local button = _G.BeastkeeperFeedButton

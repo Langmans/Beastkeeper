@@ -28,6 +28,8 @@ M.toastTypes = {
 M.defaults = { profile = { content = true, unhappy = true, noFood = true } }
 
 M.FEED_PET = Addon.FEED_PET
+-- The buff on the pet while it eats (the same ID on Classic Era and WoW: Forever).
+local FEED_PET_EFFECT = 1539
 local FEED_PET_NAME = "Feed Pet" -- for a client that cannot name the spell itself
 local FEED_PET_ICON = 132165
 local WELL_FED = 19705 -- a Well Fed buff: its name is what a food's tooltip says
@@ -260,13 +262,32 @@ function M:UNIT_LEVEL(_, unit)
     if unit == "pet" then self:Update() end
 end
 
+---Whether the pet is eating: Feed Pet Effect is on it. False where the client cannot tell.
+---@return boolean
+function M.Eating()
+    local name = Addon.SpellInfo(FEED_PET_EFFECT)
+    return name ~= nil and C_UnitAuras ~= nil and C_UnitAuras.GetAuraDataBySpellName("pet", name, "HELPFUL") ~= nil
+end
+
+-- The pet's buffs changed: the button again when it started or stopped eating (UNIT_AURA comes
+-- often, the button changes only then).
+---@param _ string the event
+---@param unit string
+function M:UNIT_AURA(_, unit)
+    if unit ~= "pet" then return end
+    local eating = M.Eating()
+    if eating == self.eating then return end
+    self.eating = eating
+    self:ApplyButton()
+end
+
 -- The core's BEASTKEEPER_PET_HAPPINESS: the pet's happiness changed.
 function M:OnHappiness()
     self:CheckHappiness()
 end
 
 -- Not every client has every one; a missing one is skipped.
-local EVENTS = { "BAG_UPDATE_DELAYED", "UNIT_PET", "UNIT_LEVEL", "SPELLS_CHANGED" }
+local EVENTS = { "BAG_UPDATE_DELAYED", "UNIT_PET", "UNIT_LEVEL", "SPELLS_CHANGED", "UNIT_AURA" }
 
 ---Feed Pet learned (or the spellbook changed otherwise): the button again when that changed.
 function M:SPELLS_CHANGED()

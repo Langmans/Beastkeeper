@@ -273,7 +273,10 @@
 ---@field db AceDBObject-3.0 always set: the module has defaults
 ---@field happiness number? the pet's happiness at the last check; nil for a new pet
 ---@field canFeed boolean? whether the hunter knew Feed Pet at the last look
+---@field eating boolean? whether the pet was eating at the last UNIT_AURA
 ---@field SPELLS_CHANGED fun(self: AddonFeeding)
+---@field UNIT_AURA fun(self: AddonFeeding, event: string, unit: string)
+---@field Eating fun(): boolean
 ---@field button Button the feed button (BeastkeeperFeedButton)
 ---@field FEED_PET number
 ---@field FeedMacro fun(food: AddonFood): string
